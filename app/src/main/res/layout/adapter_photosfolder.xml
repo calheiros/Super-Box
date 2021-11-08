@@ -6,14 +6,14 @@
 	android:orientation="vertical">
 
 	<android.support.v7.widget.CardView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
 		android:id="@+id/card_view"
 		android:focusable="true"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
-		cardCornerRadius="7dp"
-		android:layout_margin="5dp"
-		contentPadding="10dp">
+		app:cardCornerRadius="16dp"
+		android:layout_margin="5dp">
 
 		<LinearLayout
 			android:layout_width="match_parent"
@@ -22,28 +22,31 @@
 			android:layout_height="wrap_content">
 
 			<FrameLayout
-				android:layout_width="match_parent"
+                android:layout_width="match_parent"
 				android:layout_height="match_parent">
 
 				<ImageView
 					android:layout_width="match_parent"
 					android:layout_gravity="center"
 					android:layout_height="100dp"
-					android:background="#000"
-					android:id="@+id/iv_image"
+                    android:id="@+id/iv_image"
 					android:scaleType="centerCrop"/>
 
 				<ImageView
-					android:layout_width="50dp"
+					android:layout_width="40dp"
 					android:layout_gravity="center"
-					android:layout_height="50dp"
+					android:layout_height="40dp"
 					android:id="@+id/play_view"
 					android:src="@drawable/ic_play"
 					android:visibility="gone"
 					android:scaleType="centerCrop"/>
 
 			</FrameLayout>
-
+            <LinearLayout
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:padding="8dp">
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
@@ -51,7 +54,6 @@
 				android:textStyle="bold"
 				android:textColor="@color/item_normal"
 				android:textSize="15dp"
-				android:layout_margin="5dp"
 				android:singleLine="true"/>
 
 			<TextView
@@ -59,10 +61,8 @@
 				android:layout_height="wrap_content"
 				android:id="@+id/tv_folder2"
 				android:textColor="#dfdfdf"
-				android:layout_marginBottom="5dp"
-				android:layout_marginLeft="10dp"
 				android:textSize="15dp"/>
-
+            </LinearLayout>
 		</LinearLayout>
 
 	</android.support.v7.widget.CardView>

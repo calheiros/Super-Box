@@ -1,13 +1,18 @@
 package com.jefferson.application.br.app;
 
-import android.content.*;
-import android.support.v7.app.*;
-import android.view.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.Library.*;
-import android.widget.*;
-import android.os.*;
-import java.util.*;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v7.app.AlertDialog;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import com.jefferson.application.br.Library.NumberProgressBar;
+import com.jefferson.application.br.R;
 
 public class SimpleDialog extends AlertDialog {
 
@@ -87,6 +92,7 @@ public class SimpleDialog extends AlertDialog {
 		progressBar.setMax(100);
 		positive_container = contentView.findViewById(R.id.positive_bt_container);
 		negative_container = contentView.findViewById(R.id.negative_bt_container);
+        getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 		configure(style);
     }
 

@@ -46,7 +46,7 @@
 	<string name="senha_definida_como">Seu padrão de desbloqueio foi definido como:</string>
 	<string name="apagar_mensagem">Tem certeza que quer apagar %s permanentimente?</string>
 	<string name="restart_to_change_linguage">Reinicie a aplicação para as mudanças terem efeito</string>
-	<string name="vazio">Nada aquí...</string>
+	<string name="vazio">Por enquanto vazio...</string>
 	<string name="intruder_vazio">Tudo limpo! Nenhum intruso foi capturado.</string>
 	<string name="inserir">Insira a senha</string>
 	<string name="criar">Definir senha</string>

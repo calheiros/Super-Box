@@ -2,7 +2,7 @@
 <resources>
 	<!-- Styles -->
 
-	<style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+	<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 		<item name="colorPrimary">#8D00DA</item>
 		<item name="colorPrimaryDark">#840EC5</item>
 		<item name="colorAccent">#00D9CE</item>
@@ -28,7 +28,7 @@
 	<item name="android:statusBarColor">@android:color/transparent</item>
     </style>-->
 
-	<style name="ActionBar" parent="Theme.AppCompat">
+	<style name="ActionBar" parent="Theme.AppCompat.Light">
 		<item name="colorPrimary">#2270FF</item>
 		<item name="colorPrimaryDark">#0449C7</item>
 		<item name="colorAccent">#10D863</item>
@@ -58,12 +58,7 @@
 	<style name="Video" parent="Theme.AppCompat.NoActionBar">
 		<item name="android:colorPrimaryDark">#00FFFEFF</item>
 	</style>
-	<style name="temaP" parent="Theme.AppCompat.NoActionBar">
-		<item name="colorPrimary">#2270FF</item>
-		<item name="colorPrimaryDark">#0449C7</item>
-		<item name="colorAccent">#2270FF</item>
-	</style>
-
+	
 	<style name="swipeStyle" parent="Theme.AppCompat.NoActionBar">
 		<item name="android:windowIsTranslucent">true</item>
         <item name="android:windowBackground">@android:color/transparent</item>
