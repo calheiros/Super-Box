@@ -1,2 +1,3 @@
 # Super-Box
-App lock application and med
+
+Cofre para proteger conteúdo sensível.
