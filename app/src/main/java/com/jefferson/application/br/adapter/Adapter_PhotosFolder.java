@@ -15,6 +15,8 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.GalleryAlbum;
 import com.jefferson.application.br.activity.SelectionActivity;
 import java.util.ArrayList;
+import android.os.Build;
+import android.util.Log;
 
 public class Adapter_PhotosFolder extends ArrayAdapter<FolderModel> {
 	
@@ -74,7 +76,11 @@ public class Adapter_PhotosFolder extends ArrayAdapter<FolderModel> {
             mViewHolder.iv_image = (ImageView) convertView.findViewById(R.id.iv_image);
 			mViewHolder.cd_layout = (CardView) convertView.findViewById(R.id.card_view);
 			mViewHolder.play_view = (ImageView) convertView.findViewById(R.id.play_view);
-			
+            
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mViewHolder.iv_image.setClipToOutline(true);
+                Log.i(getClass().getName(), "setClipToOutline => true");
+            }
 			if (option == 1)
 				mViewHolder.play_view.setVisibility(View.VISIBLE);
 			
