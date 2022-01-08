@@ -82,13 +82,15 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
+        
 		if (savedInstanceState != null) {
 			startActivity(new Intent(this, VerifyActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
         initialize();
 		initGoogleAdView();
 		createInterstitial();
+        //test only
+        startActivity(new Intent(this, ContatosActvity.class));
 	}
 
 	private void initGoogleAdView() {

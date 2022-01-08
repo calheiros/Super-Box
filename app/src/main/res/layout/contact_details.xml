@@ -31,16 +31,15 @@
 					android:fitsSystemWindows="true"
 		
 					app:layout_collapseMode="parallax" />
-				
-				<de.hdodenhof.circleimageview.CircleImageView
-					android:layout_width="55dp"
-					android:layout_height="55dp"
-					android:layout_gravity="bottom|start"
-					android:layout_marginLeft="29dp"
-					android:layout_marginBottom="63dp"
-					android:id="@+id/imagePhoto">
-				</de.hdodenhof.circleimageview.CircleImageView>
-				
+                
+				  <ImageView
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_gravity="bottom|start"
+                    android:layout_marginLeft="29dp"
+                    android:layout_marginBottom="63dp"
+                    android:id="@+id/imagePhoto"/>
+                
 				<android.support.v7.widget.Toolbar
 					android:id="@+id/toolbar"
 					android:layout_width="match_parent"

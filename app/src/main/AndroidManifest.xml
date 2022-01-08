@@ -25,7 +25,15 @@
 	<uses-permission
 		android:name="android.permission.ACCESS_NETWORK_STATE"/>
 	<uses-permission
-		android:name="android.permission.READ_PHONE_STATE"/>
+		android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission
+		android:name="android.permission.WRITE_CONTATCS"/>
+    <uses-permission 
+        android:name="READ_PHONE_STATE"
+        android:maxSdkVersion="29"/>
+    <uses-permission
+        android:name="READ_PHONE_NUMBERS"/>
+    
 	<uses-permission 
 		android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
 
@@ -128,7 +136,7 @@
 			android:configChanges="orientation|screenSize"
 			android:theme="@style/MainTheme"/>
 		<activity
-			android:name=".activity.TestActivity"
+			android:name=".ContatosActvity"
 			android:screenOrientation="portrait"/>
 		<activity
 			android:name=".activity.ViewAlbum"

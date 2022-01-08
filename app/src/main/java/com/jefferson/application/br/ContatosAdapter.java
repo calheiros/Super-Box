@@ -1,24 +1,28 @@
 package com.jefferson.application.br;
-import android.app.*;
-import android.content.*;
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.jefferson.application.br.*;
-import java.io.*;
-import java.util.*;
 
+import android.app.Activity;
+import android.content.Context;
+import android.graphics.BitmapFactory;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.TextView;
 import com.jefferson.application.br.R;
+import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 
 public class ContatosAdapter extends BaseAdapter
 {  
     ArrayList<ContactsData> selecionados;
-	ArrayList<ContactsData> data;
-	ContactsData contactsData;
+	ArrayList<ContactsData> contacts;
 	LayoutInflater inflater;
+    
     public ContatosAdapter(ArrayList<ContactsData> data, Activity mActivity)
 	{
-		this.data = data;
+		this.contacts = data;
 		selecionados = new ArrayList<ContactsData>();
 		inflater = (LayoutInflater) mActivity
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -28,7 +32,7 @@ public class ContatosAdapter extends BaseAdapter
 	public int getCount()
 	{
 
-		return data.size();
+		return contacts.size();
 	}
 
 	@Override
@@ -52,28 +56,25 @@ public class ContatosAdapter extends BaseAdapter
 			vi = inflater.inflate(R.layout.list_contatos_itens, null);
 		TextView nome = (TextView)vi.findViewById(R.id.contatos_nome);
 		TextView numero = (TextView)vi.findViewById(R.id.contatos_numero);
-		//CircleImageView photo = (CircleImageView)vi.findViewById(R.id.imagePhoto);
+		ImageView myImageView = (ImageView)vi.findViewById(R.id.imagePhoto);
 		CheckBox checkW = (CheckBox)vi.findViewById(R.id.check_contacts);
 
-		contactsData = data.get(position);
-		nome.setText(contactsData.nome);
-		numero.setText(contactsData.numero_phone);
+		ContactsData myContact = contacts.get(position);
+		nome.setText(myContact.nome);
+		numero.setText(myContact.numero_phone);
 
 
-       /* if (contactsData.photo == null)
-			photo.setImageResource(R.drawable.ic_photo_contact_null);
-		else 
-			photo.setImageBitmap(BitmapFactory.decodeStream(new ByteArrayInputStream(data.get(position).photo)));
+       if (myContact.photo == null){
+			myImageView.setImageResource(R.drawable.ic_photo_contact_null);
+        } else {
+			myImageView.setImageBitmap(BitmapFactory.decodeStream(new ByteArrayInputStream(myContact.photo)));
 
-		if (selecionados.contains(contactsData))
-		{
+		} if (selecionados.contains(myContact)) {
 			checkW.setChecked(true);
-		}
-		else
-		{
+		} else {
 			checkW.setChecked(false);
-		}
-      */
+	
+          }
 		return vi;
 	}
 

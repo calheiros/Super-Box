@@ -1,10 +1,10 @@
 package com.jefferson.application.br.activity;
-import android.os.*;
-import android.widget.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.fragment.*;
+
+import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.support.v7.app.*;
+import android.widget.FrameLayout;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.fragment.LockFragment;
 
 public class LockActivity extends MyCompatActivity {
 	Toolbar toolbar;

@@ -27,7 +27,7 @@ public class ContatosActvity extends AppCompatActivity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list_contatos);
 	    ListView mlistView = (ListView)findViewById(R.id.listcontatosListView1);
-		new loadContacts(this, mlistView).execute();
+		new LoadContacts(this, mlistView).execute();
 	    db = new DatabaseHandler(this);
 		
 		mlistView.setOnItemClickListener(new OnItemClickListener(){
@@ -84,14 +84,14 @@ public class ContatosActvity extends AppCompatActivity
         return stream.toByteArray();
     }
 
-	public class loadContacts extends AsyncTask<Void,Void,Boolean>
+	public class LoadContacts extends AsyncTask<Void,Void,Boolean>
 	{
 		ProgressDialog progress;
 		Activity mContext;
 		ListView listContatos;
 		int intProg;
 
-		public loadContacts(Activity mContext, ListView listContatos)
+		public LoadContacts(Activity mContext, ListView listContatos)
 		{   intProg = 0;
 			this.mContext = mContext;
 			this.listContatos = listContatos;
