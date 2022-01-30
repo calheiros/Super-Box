@@ -43,13 +43,5 @@
 			android:layout_marginRight="8dp"/>
 
 	</LinearLayout>
-
-	<View
-		android:layout_height="1dp"
-		android:layout_width="match_parent"
-		android:layout_marginLeft="62dp"
-		android:background="#E0E0E0"
-		android:layout_gravity="bottom"/>
-
 </LinearLayout>
 

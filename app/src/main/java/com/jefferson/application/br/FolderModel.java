@@ -1,19 +1,20 @@
 package com.jefferson.application.br;
 
-import java.util.*;
+import java.util.ArrayList;
 
-public class FolderModel
-{
-	String name = "";
-	String path = "";
-	ArrayList<String> items = new ArrayList<>();
+public class FolderModel {
+    
+    public static final String NO_FOLDER_NAME = "0";
+	private String name = NO_FOLDER_NAME;
+	private String path = "";
+	private ArrayList<String> items = new ArrayList<>();
 
 	public String getPath() {
 		return path;
 	}
-
 	public void setName(String name) {
-		this.name = name;
+        if (name != null) 
+            this.name = name;
 	}
 	public void addItem(String path) {
 		items.add(path);
@@ -21,11 +22,11 @@ public class FolderModel
 	public String getName() {
 		return name;
 	}
-	public void setPath(String path){
+	public void setPath(String path) {
 		this.path = path;
 	}
-	public ArrayList<String> getItems(){
-	
+	public ArrayList<String> getItems() {
 		return items;
 	}
+
 }

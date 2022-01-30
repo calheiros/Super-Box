@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
+    <string name="minha_caixa">Minha Caixa</string>
+    <string name="preferecias_gerais">Preferecias gerais</string>
+    <string name="preferecias_sobre">Sobre</string>
+    <string name="preferecias_avancadas">Avançado</string>
 	<string name="importar_imagem">Importar Imagens</string>
 	<string name="importar_video">Importar Vídeos</string>
 	<string name="selecionar_sdcard">Vocé precisa selecionar a pasta raiz do seu Cartão SD para continuar a tarefa.</string>

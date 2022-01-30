@@ -25,10 +25,10 @@ public class ImportTask extends AsyncTask {
 	private int maxProgress;
 	private PathsData db;
     private ArrayList<FileModel> models;
-	private SimpleDialog mDialog;
-	private Activity activity;
+	private SimpleDialog myAlertDialog;
+	private Activity myActivity;
 	private int mode;
-	private PathsData.Folder folderDB;
+	private PathsData.Folder folderDatabase;
 	private StringBuilder err_message = new StringBuilder();
 	private int err_count = 0;
 	private FileTransfer mTransfer;
@@ -40,11 +40,11 @@ public class ImportTask extends AsyncTask {
 
 	public ImportTask(ArrayList<FileModel> models, Activity activity, int mode) {
 
-		this.activity = activity;
+		this.myActivity = activity;
 		this.maxProgress = models.size();
 		this.mode = mode;
 		this.models = models;
-		this.folderDB = PathsData.Folder.getInstance(activity);
+		this.folderDatabase = PathsData.Folder.getInstance(activity);
         this.db = PathsData.getInstance(activity, Storage.getDefaultStorage());
 		this.mTransfer = new FileTransfer();
 
@@ -53,13 +53,13 @@ public class ImportTask extends AsyncTask {
 	@Override
 	protected void onPreExecute() {
 
-	    if(SESSION_INSIDE_APP == mode) {
-			((MainActivity)activity).prepareAd();
+	    if (SESSION_INSIDE_APP == mode) {
+			((MainActivity)myActivity).prepareAd();
 		}
-		mDialog = new SimpleDialog(activity, SimpleDialog.PROGRESS_STYLE);
-		mDialog.setCancelable(false);
-		mDialog.setContentTitle(activity.getString(R.string.movendo))
-			.setNegativeButton(activity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
+		myAlertDialog = new SimpleDialog(myActivity, SimpleDialog.PROGRESS_STYLE);
+		myAlertDialog.setCancelable(false);
+		myAlertDialog.setContentTitle(myActivity.getString(R.string.movendo))
+			.setNegativeButton(myActivity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
 
 				@Override
 				public boolean onClick(SimpleDialog dialog) {
@@ -70,45 +70,45 @@ public class ImportTask extends AsyncTask {
 			})
 			.show();
 
-		mUpdate = new ProgressThreadUpdate(mTransfer, mDialog);
+		mUpdate = new ProgressThreadUpdate(mTransfer, myAlertDialog);
 	}
 	@Override
 	protected void onPostExecute(Object result) {
 
 		synchronize();
 		String message = err_count > 0 ? "Transferencia completada com " + err_count + " " + (err_count > 1 ? "erros": "erro") + ":\n"  + err_message.toString() : "Transferência concluída com sucesso.";
-		mDialog.setStyle(SimpleDialog.ALERT_STYLE);
-		mDialog.setContentTitle("Resultado");
-		mDialog.setContentText(message);
-		mDialog.setPositiveButton("Ok", new SimpleDialog.OnDialogClickListener(){
+		myAlertDialog.setStyle(SimpleDialog.ALERT_STYLE);
+		myAlertDialog.setContentTitle("Resultado");
+		myAlertDialog.setContentText(message);
+		myAlertDialog.setPositiveButton("Ok", new SimpleDialog.OnDialogClickListener(){
 
 				@Override
 				public boolean onClick(SimpleDialog progress) {
 					if (mode == SESSION_OUTSIDE_APP)
-						activity.finish();
+						myActivity.finish();
 					return true;
 				}
 			}).show();
-		mDialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
+		myAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
 
 				@Override
 				public void onDismiss(DialogInterface dialog) {
 					if (mode == SESSION_INSIDE_APP) {
-						((MainActivity)activity).showAd();
+						((MainActivity)myActivity).showAd();
 					}
 				}
 			});
-		folderDB.close();
+		folderDatabase.close();
 		db.close();
 	}
 
 	private void synchronize() {
 
 		mUpdate.die();
-		mDialog.dismiss();
+		myAlertDialog.dismiss();
 		Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]));
 		if (mode == SESSION_INSIDE_APP) {
-		    ((MainActivity)activity)
+		    ((MainActivity)myActivity)
 				.update(MainFragment.ID.BOTH);
 		} 
 	}
@@ -117,9 +117,9 @@ public class ImportTask extends AsyncTask {
 
 		synchronize();
 		if (mode == SESSION_OUTSIDE_APP) {
-			activity.finish();
+			myActivity.finish();
 		}
-		Toast.makeText(activity, "Cancelado!", 1).show();
+		Toast.makeText(myActivity, "Cancelado!", 1).show();
 	}
 
 	@Override
@@ -128,7 +128,7 @@ public class ImportTask extends AsyncTask {
 			warningAlert((String)values[1]);
 		} else {
 			String name = (String)values[1];
-			mDialog.setContentText(name);
+			myAlertDialog.setContentText(name);
 		}
 	}
 	@Override
@@ -152,11 +152,11 @@ public class ImportTask extends AsyncTask {
 		try {
 			for (FileModel model: models) {
 				if (isCancelled()) return null;
-                
+
 				File file = new File(model.getResource());
 				if (!file.exists()) {
 					err_count++;
-					err_message.append("\n" + activity.getString(R.string.erro) + " " + err_count + ": O arquivo \"" + file.getName() + "\" não existe!\n");
+					err_message.append("\n" + myActivity.getString(R.string.erro) + " " + err_count + ": O arquivo \"" + file.getName() + "\" não existe!\n");
 					continue;
 				}
 				publishProgress(null, file.getName());
@@ -165,11 +165,11 @@ public class ImportTask extends AsyncTask {
 				String randomString = RandomString.getRandomString(24);
 				String randomString2 = RandomString.getRandomString(24);
 
-				String folderId = folderDB.getFolderId(folderName, model.getType());
+				String folderId = folderDatabase.getFolderId(folderName, model.getType());
 				String str = folderId;
 
 				if (folderId == null) {
-					folderDB.addName(folderName, randomString2, model.getType());
+					folderDatabase.addName(folderName, randomString2, model.getType());
 				} else {
 					randomString2 = str;
 				}
@@ -194,13 +194,14 @@ public class ImportTask extends AsyncTask {
 						err_message.append(no_left_space_error_message);
 						break;
 					} else {
-						err_message.append("\n" + activity.getString(R.string.erro) + err_count + ": " + response + " when moving: " + file.getName() + "\n");
+						err_message.append("\n" + myActivity.getString(R.string.erro) + err_count + ": " + response + " when moving: " + file.getName() + "\n");
 					}
 				}
 			}
 		} catch (Exception e) {
 			err_message.append("Erro inesperado ocorrido!");
 		}
+
 		return true;
 	}
 	public void waitForResponse() {
@@ -214,7 +215,7 @@ public class ImportTask extends AsyncTask {
 	}
 	private void warningAlert(String msg) {
 
-		SimpleDialog mDialog = new SimpleDialog(activity, SimpleDialog.ALERT_STYLE);
+		SimpleDialog mDialog = new SimpleDialog(myActivity, SimpleDialog.ALERT_STYLE);
 		mDialog.setContentTitle("Aviso");
 		mDialog.setContentText(msg);
 		mDialog.setCancelable(false);
@@ -227,7 +228,7 @@ public class ImportTask extends AsyncTask {
 				}
 			});
 
-		mDialog.setNegativeButton(activity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
+		mDialog.setNegativeButton(myActivity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
 
 				@Override
 				public boolean onClick(SimpleDialog dialog) {

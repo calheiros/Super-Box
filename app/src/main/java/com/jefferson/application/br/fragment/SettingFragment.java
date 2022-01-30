@@ -55,7 +55,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 			PreferenceItem item = new PreferenceItem();
 			switch (i) {
 				case 0:
-					item.item_name = "Preferencias gerais";
+					item.item_name = getString(R.string.preferecias_gerais);
 					item.type = item.SECTION_TYPE;
 					break;
 			    case 1:
@@ -71,7 +71,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 					break;
 				case 3:
 					item.type = item.SECTION_TYPE;
-					item.item_name = "Avançado";
+					item.item_name = getString(R.string.preferecias_avancadas);
 					break;
 				case 4:
 				    item.type = item.ITEM_TYPE;
@@ -92,7 +92,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 					item.description = getCallCode();
 					break;
 				case 7:
-					item.item_name = "Sobre";
+					item.item_name = getString(R.string.preferecias_sobre);
 					item.type = item.SECTION_TYPE;
 					break;
 				case 8:

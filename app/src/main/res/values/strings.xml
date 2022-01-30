@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="apagar_mensagem">%s will be deleted permanently. This action can\'t be undone!</string>
+    <string name="minha_caixa">My Box</string>
+    <string name="preferecias_gerais">General management</string>
+    <string name="preferecias_sobre">About</string>
+    <string name="preferecias_avancadas">Advanced</string>
 	<string name="importar_imagem">Import images</string>
 	<string name="importar_video">Import videos</string>
 	<string name="selecionar_sdcard">You need to select the root folder of your SD card to continue the task.</string>
@@ -91,5 +96,5 @@
     <string name="excluir_face_intruder">The photo will be deleted, are you sure you want to continue?</string>
     <string name="excluir_aviso_imagem">the image will be deleted forever and can not be recovered, are you sure you want to continue?</string>
     <string name="excluir_aviso_video">the video will be deleted forever and can not be recovered, are you sure you want to continue?</string>
-  
+
 </resources>

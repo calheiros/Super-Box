@@ -39,8 +39,8 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
-		
-	    //requestPermission();
+		//Toast.makeText(this, "Tiktok!", 1).show();
+	    requestPermission();
 
 		Handler = new Handler();
 		Runnable = new Runnable()
@@ -97,7 +97,9 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 				// Show an explanation to the user *asynchronously* -- don't block
 				// this thread waiting for the user's response! After the user
 				// sees the explanation, try again to request the permission.
-                 Toast.makeText(this, "Erro code 404",1).show();
+                 Intent inten = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
+                 startActivity(inten);
+                  
 			} else {
 				// No explanation needed, we can request the permission.
 				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 12);

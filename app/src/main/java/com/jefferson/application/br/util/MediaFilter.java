@@ -6,8 +6,8 @@ import java.io.*;
 
 public class MediaFilter {
 
-	final static String[] imageExt = new String[]{".jpg", ".png", ".gif", ".jpeg"};
-	final static String[] videoExt = new String[]{".mp4", ".3gp", ".flv"};
+	final static String[] imageExt = {".jpg", ".png", ".gif", ".jpeg", ".webp"};
+	final static String[] videoExt = {".mp4", ".3gp", ".flv", ".webm"};
 
 	public static boolean isVideo(File file) {
 

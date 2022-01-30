@@ -16,6 +16,7 @@ import java.util.*;
 import android.hardware.Camera;
 import org.w3c.dom.*;
 import android.support.v4.provider.*;
+import com.jefferson.application.br.util.Storage;
 
 public class Camera extends MyCompatActivity implements SurfaceHolder.Callback {
     SurfaceHolder holder;
@@ -83,7 +84,7 @@ public class Camera extends MyCompatActivity implements SurfaceHolder.Callback {
         mRecorder.setOutputFile("/sdcard/videocapture_example.mp4");
         mRecorder.setMaxDuration(50000); 
         mRecorder.setMaxFileSize(15000000); 
-		File file = new File("/sdcard/");
+		File file = new File(Storage.getExternalStorage());
 
 		Toast.makeText(getApplicationContext(), Long.toString(file.getFreeSpace() / (1024 * 1024)) + " mb", 1).show();
         mRecorder.setOnErrorListener(new MediaRecorder.OnErrorListener(){

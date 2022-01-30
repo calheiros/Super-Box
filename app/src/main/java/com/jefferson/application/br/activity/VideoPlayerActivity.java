@@ -53,7 +53,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
 			{
 				@Override
 				public void onCompletion(MediaPlayer mp) {
-					finish();
+				 mp.start();
 				}
 			});
 		mVideoView.setOnErrorListener(new MediaPlayer.OnErrorListener(){
@@ -64,4 +64,11 @@ public class VideoPlayerActivity extends MyCompatActivity {
 				}
 			}); 
 	}
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        
+    }
+    
 }

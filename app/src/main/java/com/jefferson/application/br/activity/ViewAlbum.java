@@ -346,7 +346,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	}
 	public class ExportMedia extends AsyncTask {
 
-		private SimpleDialog mDialog;
+		private SimpleDialog mySimpleDialog;
 		private List<String> selectedItens;
 		private ArrayList<String> mArrayPath = new ArrayList<>();
 		private FileTransfer mTransfer = new FileTransfer();
@@ -355,18 +355,18 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		private String ACTION_UPDATE = "_UPDATE";
 
 		public ExportMedia(List<String> itens, SimpleDialog progress) {
-			this.mDialog = progress;
+			this.mySimpleDialog = progress;
 			this.selectedItens = itens;
-			this.mUpdate = new ProgressThreadUpdate(mTransfer, mDialog);
+			this.mUpdate = new ProgressThreadUpdate(mTransfer, mySimpleDialog);
 		}
 		@Override
 		protected void onPreExecute() {
 
             MainActivity.getInstance().prepareAd();
-			mDialog.setStyle(SimpleDialog.PROGRESS_STYLE);
-			mDialog.setContentTitle(getString(R.string.mover));
-			mDialog.setCancelable(false);
-			mDialog.setNegativeButton(getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
+			mySimpleDialog.setStyle(SimpleDialog.PROGRESS_STYLE);
+			mySimpleDialog.setContentTitle(getString(R.string.mover));
+			mySimpleDialog.setCancelable(false);
+			mySimpleDialog.setNegativeButton(getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
 					@Override
 					public boolean onClick(SimpleDialog dialog) {
 						mTransfer.cancel();
@@ -387,7 +387,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 			MainActivity.getInstance().showAd();
 			Storage.scanMediaFiles(mArrayPath.toArray(new String[mArrayPath.size()]));
 
-			mDialog.dismiss();
+			mySimpleDialog.dismiss();
 			mUpdate.die();
 
 			if (mAdapter.mListItemsPath.isEmpty()) {
@@ -418,7 +418,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 				mListTemp.clear();
 			} else {
 				String name = (String)values[1];
-				mDialog.setContentText(name);
+				mySimpleDialog.setContentText(name);
 			}
 		}
 

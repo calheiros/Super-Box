@@ -1,24 +1,25 @@
 package com.jefferson.application.br.activity;
 
-import android.*;
-import android.content.*;
-import android.content.pm.*;
-import android.database.*;
-import android.net.*;
-import android.os.*;
-import android.preference.*;
-import android.provider.*;
-import android.support.v7.widget.*;
-import android.view.*;
-import android.widget.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.R;
-import com.jefferson.application.br.activity.*;
-import com.jefferson.application.br.adapter.*;
-import com.jefferson.application.br.task.*;
-import java.io.*;
-import java.util.*;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
+import com.jefferson.application.br.FileModel;
+import com.jefferson.application.br.FolderModel;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.adapter.Adapter_PhotosFolder;
+import java.util.ArrayList;
 
 public class GalleryAlbum extends MyCompatActivity {
 
@@ -75,8 +76,7 @@ public class GalleryAlbum extends MyCompatActivity {
 
     public ArrayList<FolderModel> fn_imagespath() {
 	    ArrayList<FolderModel> al_images = new ArrayList<FolderModel>();
-
-        int int_position = 0;
+        
         Uri uri = null;
         Cursor cursor;
 		String orderBy = null;
@@ -97,41 +97,40 @@ public class GalleryAlbum extends MyCompatActivity {
 			orderBy = MediaStore.Video.Media.DATE_TAKEN;
 		}
 
-        try {
-			String absolutePathOfImage = null;
+        String absolutePathOfImage = "";
+        String[] projection = {MediaStore.MediaColumns.DATA, Bucket};
 
-			String[] projection = {MediaStore.MediaColumns.DATA, Bucket};
+        cursor = getApplicationContext().getContentResolver().query(uri, projection, null, null, orderBy + " DESC");
+        column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
+        column_index_folder_name = cursor.getColumnIndexOrThrow(index_fname);
+        while (cursor.moveToNext()) {
+            absolutePathOfImage = cursor.getString(column_index_data);
+            String folderName = cursor.getString(column_index_folder_name);
+            int folderPosition = folderPosition(al_images, folderName);
 
-			cursor = getApplicationContext().getContentResolver().query(uri, projection, null, null, orderBy + " DESC");
+            if (folderPosition == -1) {
+                FolderModel model = new FolderModel();
+                model.setName(cursor.getString(column_index_folder_name));
+                model.addItem(absolutePathOfImage);
+                al_images.add(model);
+            } else {
+                al_images.get(folderPosition).addItem(absolutePathOfImage);
+            }
+        }
+        cursor.close();
 
-			column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-			column_index_folder_name = cursor.getColumnIndexOrThrow(index_fname);
-			while (cursor.moveToNext()) {
-				absolutePathOfImage = cursor.getString(column_index_data);
-
-				for (int i = 0; i < al_images.size(); i++) {
-					if (al_images.get(i).getName().equals(cursor.getString(column_index_folder_name))) {
-						boolean_folder = true;
-						int_position = i;
-						break;
-					} else {
-						boolean_folder = false;
-					}
-				}
-				if (boolean_folder) {
-					al_images.get(int_position).addItem(absolutePathOfImage);
-				} else {
-					FolderModel model = new FolderModel();
-					model.setName(cursor.getString(column_index_folder_name));
-					model.addItem(absolutePathOfImage);
-					al_images.add(model);
-				}
-			}
-			cursor.close();
-        } catch (Exception e) {
-	        e.printStackTrace();
-		}
         return al_images;
+    }
+    private int folderPosition(ArrayList<FolderModel> list, String name) {
+        
+        if ( name == null ) name = FolderModel.NO_FOLDER_NAME;
+            
+        for (int i = 0; i < list.size(); i++) {
+            String folderName = list.get(i).getName();
+            if (name.equals(folderName)) 
+                return i;
+        }
+        return -1;
     }
     private void setAdapter(ArrayList<FolderModel> list) {
 		obj_adapter = new Adapter_PhotosFolder(GalleryAlbum.this, list, position);

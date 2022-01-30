@@ -111,7 +111,7 @@ public class Storage extends DocumentUtil {
     public static boolean deleteFile(File file) {
 
         if (VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-
+            
 			DocumentFile documentFile = getDocumentFile(file, false);
 			if (documentFile != null)
 				return documentFile.delete();

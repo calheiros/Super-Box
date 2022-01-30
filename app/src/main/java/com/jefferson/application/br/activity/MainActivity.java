@@ -29,6 +29,7 @@ import com.jefferson.application.br.R;
 import android.support.v4.provider.*;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    
 	public static final String admob_key="ca-app-pub-3062666120925607/8250392170";
     public static final String ACTION_INIT_WITH_PREFERENCES = "preferences_init_action";
 
@@ -66,6 +67,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.abc_action_bar_home_description);
 		toggle.syncState();
+      
 		drawerLayout.setDrawerListener(toggle);
 	}
 
@@ -90,7 +92,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		initGoogleAdView();
 		createInterstitial();
         //test only
-        startActivity(new Intent(this, ContatosActvity.class));
+        //startActivity(new Intent(this, ContatosActvity.class));
 	}
 
 	private void initGoogleAdView() {
@@ -251,19 +253,19 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 			try {
 				IntentUtils.shareApp(this);
 			} catch (ActivityNotFoundException e) {
-				ActivityNotFound();
+				activityNotFound();
 			}
 		} else if (id == R.id.item_5) {
 			try {
 				IntentUtils.reportBug(this);
 			} catch (ActivityNotFoundException e) {
-				ActivityNotFound();
+				activityNotFound();
 			}
 		}
 		drawerLayout.closeDrawer(GravityCompat.START);
 		return true;
 	}
-	public void ActivityNotFound() {
+	public void activityNotFound() {
 		Toast.makeText(this, "Nenhum app encontrado!", Toast.LENGTH_LONG).show();
 	}
 	@Override
@@ -332,7 +334,12 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 	@Override
 	public void onBackPressed() {
-		showExitDialog();
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
+           showExitDialog();
+        } else {
+            drawerLayout.openDrawer(GravityCompat.START);
+        }
+            
 	}
 
 	private void showExitDialog() {
@@ -377,4 +384,5 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         super.onDestroy();
 		adview.destroy();
     }
+    
 }
