@@ -184,7 +184,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		MainFragment.ID id = position == 0 ? MainFragment.ID.FIRST : MainFragment.ID.SECOND;
 		if ((mActivity = MainActivity.getInstance()) != null) {
 			mActivity.update(id);
-		}
+		} else {
+            Toast.makeText(this, "Can't synchronize data!", 1).show();
+        }
 	}
 
 	@Override
@@ -227,9 +229,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 			switch (position) {
 				case 0:
-					/*new ImageViewer.Builder(this, Storage.toArrayString(mAdapter.mListItemsPath, true))
+					new ImageViewer.Builder(this, Storage.toArrayString(mAdapter.mListItemsPath, true))
 						.setStartPosition(item_position)
-						.show();*/
+						.show();
 
 					break;
 				case 1:

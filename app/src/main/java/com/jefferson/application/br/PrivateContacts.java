@@ -24,7 +24,7 @@ public class PrivateContacts extends AppCompatActivity
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.private_contatos_listview);
+		setContentView(R.layout.private_contacts_listview);
 
 		lista = (ListView)findViewById(R.id.listcontatosListView1);
 		database = new DatabaseHandler(this);

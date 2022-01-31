@@ -29,7 +29,7 @@ import com.jefferson.application.br.R;
 import android.support.v4.provider.*;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    
+
 	public static final String admob_key="ca-app-pub-3062666120925607/8250392170";
     public static final String ACTION_INIT_WITH_PREFERENCES = "preferences_init_action";
 
@@ -48,7 +48,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	private static final int GET_URI_CODE_TASK = 54;
 	private AdView adview;
 	private InterstitialAd interstitial;
-    
+
 	public static MainActivity getInstance() {
 		return instante;
 	}
@@ -60,14 +60,14 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 
 	public void setupToolbar(Toolbar toolbar, CharSequence title) {
-       
+
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setTitle(title);
 		getSupportActionBar().setDisplayShowHomeEnabled(false);
 
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.abc_action_bar_home_description);
 		toggle.syncState();
-      
+
 		drawerLayout.setDrawerListener(toggle);
 	}
 
@@ -77,14 +77,14 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
         this.instante = this;
-	     
+
 		MobileAds.initialize(this);
-		
+
 		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        
+
 		if (savedInstanceState != null) {
 			startActivity(new Intent(this, VerifyActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
@@ -102,19 +102,19 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-       // getMenuInflater().inflate(R.menu.main_menu, menu);
+        // getMenuInflater().inflate(R.menu.main_menu, menu);
 		return super.onCreateOptionsMenu(menu);
 	}
-	
+
 	public void createInterstitial() {
 		interstitial = new InterstitialAd(this);
 		interstitial.setAdUnitId("ca-app-pub-3062666120925607/8580168530");
 		interstitial.setAdListener(new AdListener() {
-			@Override
-			public void onAdClosed() {
-				prepareAd();
-			}
-		});
+                @Override
+                public void onAdClosed() {
+                    prepareAd();
+                }
+            });
 		prepareAd();
 	}
 	public void prepareAd() {
@@ -123,21 +123,16 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		}
 	}
     public void showAd() {
-		if(interstitial.isLoaded()) {
+		if (interstitial.isLoaded()) {
 			interstitial.show();
 		} 
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if(item.getItemId() == R.id.ads_item_menu) {
-	
+		if (item.getItemId() == R.id.ads_item_menu) {
+
 		}
 		return super.onOptionsItemSelected(item);
-	}
-    
-	private void log(String text) {
-		
-		Toast.makeText(this, text, 1).show();
 	}
 
 	private void initialize() {
@@ -181,7 +176,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		builder.setNegativeButton(getString(R.string.cancelar), null);
 		builder.create().show();
 	}
-    
+
 	public int getStoragePosition() {
 
         String storageLocation = Storage.getStorageLocation();
@@ -243,24 +238,29 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	public boolean onNavigationItemSelected(MenuItem item) {
 		int id = item.getItemId();
 
-		if (id == R.id.main_item1) {
-			changeFragment(mainFragment);
-        } else if (id == R.id.main_item2) {
-			changeFragment(lockFragment);
-		} else if (id == R.id.item3) {
-			changeFragment(settingFragment);
-		} else if (id == R.id.item_4) {
-			try {
-				IntentUtils.shareApp(this);
-			} catch (ActivityNotFoundException e) {
-				activityNotFound();
-			}
-		} else if (id == R.id.item_5) {
-			try {
-				IntentUtils.reportBug(this);
-			} catch (ActivityNotFoundException e) {
-				activityNotFound();
-			}
+        switch (id) {
+            case R.id.main_item1:
+                changeFragment(mainFragment);
+                break;
+            case R.id.main_item2:
+                changeFragment(lockFragment);
+                break;
+            case R.id.item3:
+                changeFragment(settingFragment);
+                break;
+            case R.id.item_4:
+                try {
+                    IntentUtils.shareApp(this);
+                } catch (ActivityNotFoundException e) {
+                    activityNotFound();
+                }
+                break;
+            case R.id.item_5:
+                try {
+                    IntentUtils.reportBug(this);
+                } catch (ActivityNotFoundException e) {
+                    activityNotFound();
+                }
 		}
 		drawerLayout.closeDrawer(GravityCompat.START);
 		return true;
@@ -280,11 +280,11 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 		if (resultCode == MyCompatActivity.RESULT_OK) {
-            if(requestCode == MainFragment.GET_FILE) {
+            if (requestCode == MainFragment.GET_FILE) {
 				Uri uri = null;
-				if(data != null) {
+				if (data != null) {
 					uri = data.getData();
-					Toast.makeText(this, uri.getPath(),1).show();
+					Toast.makeText(this, uri.getPath(), 1).show();
 				}
 				return;
 			}
@@ -320,7 +320,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 
 	private void getSdCardUri(int code) {
-	
+
 		Toast.makeText(this, getString(R.string.selecionar_sdcard), 1).show();
 		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
 		startActivityForResult(intent, code);
@@ -334,12 +334,12 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 	@Override
 	public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)){
-           showExitDialog();
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            showExitDialog();
         } else {
             drawerLayout.openDrawer(GravityCompat.START);
         }
-            
+
 	}
 
 	private void showExitDialog() {
@@ -384,5 +384,5 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         super.onDestroy();
 		adview.destroy();
     }
-    
+
 }

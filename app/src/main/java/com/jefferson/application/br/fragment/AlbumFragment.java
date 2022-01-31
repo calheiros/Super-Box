@@ -108,10 +108,7 @@ public class AlbumFragment extends Fragment {
 		protected void onPostExecute(Object result) {
 			super.onPostExecute(result);
 			((MainActivity)getActivity()).update(getPagerPosition() == 0 ? MainFragment.ID.FIRST:MainFragment.ID.SECOND);
-			
 		}
-        
-		
 	}
     public void deleteAlbum(final FolderModel model) {
 		

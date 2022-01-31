@@ -80,7 +80,6 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
             selectedOverlay = itemView.findViewById(R.id.selected_overlay);
 		
             itemLayoutView.setOnClickListener(this);
-
             itemLayoutView.setOnLongClickListener(this);
         }
 

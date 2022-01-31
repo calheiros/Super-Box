@@ -49,7 +49,7 @@ public class PrivateContactsAdapter extends BaseAdapter
 
 		View vi = convertView;
 		if (convertView == null)
-			vi = inflater.inflate(R.layout.private_contatos_itens, null);
+			vi = inflater.inflate(R.layout.private_contacts_items, null);
 		TextView nome = (TextView)vi.findViewById(R.id.contatos_nome);
 		
 		/*CircleImageView photo = (CircleImageView)vi.findViewById(R.id.imagePhoto);

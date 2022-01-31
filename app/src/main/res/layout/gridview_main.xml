@@ -63,7 +63,6 @@
 			android:layout_width="0dp"
 			android:id="@+id/moveView"
 			android:padding="5dp"
-			android:visibility="gone"
 			android:src="@drawable/ic_move_item"/>
 
 		<ImageView
