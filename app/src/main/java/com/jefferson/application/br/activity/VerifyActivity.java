@@ -29,7 +29,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pattern);
-	    
+	    LocaleManager.configureLocale(this);
 	
 		settings = getSharedPreferences("config", MODE_PRIVATE);
         password = settings.getString("pattern", "");

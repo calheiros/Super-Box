@@ -10,11 +10,11 @@ import com.jefferson.application.br.model.*;
 import java.util.*;
 
 public class FilePickerAdapter extends BaseAdapter {
-	
+
     private Context context;
     private LayoutInflater mLayoutInflater;
     public List<PickerModel> models;
-    private int selected_item = -1;
+    private int selectedItem = -1;
 
     public FilePickerAdapter(List<PickerModel> list, Context context) {
 
@@ -31,12 +31,12 @@ public class FilePickerAdapter extends BaseAdapter {
 
     public int getSelectedItem() {
 
-        return this.selected_item;
+        return this.selectedItem;
     }
 
     public void setSelectedItem(int i) {
 
-        this.selected_item = i;
+        this.selectedItem = i;
         notifyDataSetChanged();
     }
 
@@ -67,11 +67,13 @@ public class FilePickerAdapter extends BaseAdapter {
         ImageView imageView = (ImageView) view.findViewById(R.id.tumbView);
         TextView textView = (TextView) view.findViewById(R.id.item_name);
         TextView textView2 = (TextView) view.findViewById(R.id.item_size);
+        View overlay = view.findViewById(R.id.layoutOverlay);
         PickerModel pickerModel = models.get(i);
-        view.setBackgroundColor(i == selected_item ? Color.parseColor("#1c000000") : Color.parseColor("#00f0f0f0"));
+        
+        overlay.setVisibility(i == selectedItem ? View.VISIBLE : View.GONE);
         textView.setText(pickerModel.getName());
         textView2.setText(String.valueOf(pickerModel.getSize()));
-       Glide.with(context).load("file://" + pickerModel.getTumbPath()).centerCrop().into(imageView);
+        Glide.with(context).load("file://" + pickerModel.getTumbPath()).centerCrop().into(imageView);
         return view;
     }
 }

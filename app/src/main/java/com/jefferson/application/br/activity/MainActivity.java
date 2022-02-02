@@ -73,11 +73,10 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-
+        this.instante = this;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
-        this.instante = this;
-
+        
 		MobileAds.initialize(this);
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);

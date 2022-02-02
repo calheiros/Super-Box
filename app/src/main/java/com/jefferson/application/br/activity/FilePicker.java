@@ -22,14 +22,14 @@ import android.support.v7.widget.Toolbar;
 public class FilePicker extends MyCompatActivity implements OnItemClickListener {
 
     private String currentPath;
-    private FilePickerAdapter mAdapter;
+    private FilePickerAdapter filePickerAdapter;
     private ListView mListView;
-    private TextView mText;
+    private View myOverlay;
     private Toolbar mToolbar;
     private List<String> paths;
     private int position;
 
-    class MoveFiles extends AsyncTask {
+    public class MoveFiles extends AsyncTask {
 
         ArrayList<String> mMovedArray;
         String folder;
@@ -97,52 +97,57 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
 
         this.mListView = (ListView) findViewById(R.id.androidList);
         this.mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        this.mText = (TextView) findViewById(R.id.mTextView);
+        this.myOverlay = findViewById(R.id.myOverlayLayout);
 
         this.position = getIntent().getIntExtra("position", -1);
         this.paths = getIntent().getStringArrayListExtra("selection");
         this.currentPath = getIntent().getStringExtra("current_path");
 
-        this.mAdapter = new FilePickerAdapter(getModels(this.position), this);
-        this.mListView.setAdapter(this.mAdapter);
+        this.filePickerAdapter = new FilePickerAdapter(getModels(this.position), this);
+        this.mListView.setAdapter(this.filePickerAdapter);
         this.mListView.setOnItemClickListener(this);
 
         setSupportActionBar(this.mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Move to");
+        
     }
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long j) {
 
-        int selectedItem = this.mAdapter.getSelectedItem();
-        invalidateOptionsMenu();
+        int selectedItem = this.filePickerAdapter.getSelectedItem();
         if (selectedItem == -1) {
             invalidateOptionsMenu();
         }
-        mAdapter.setSelectedItem(i);
+        filePickerAdapter.setSelectedItem(i);
     }
 
     public void update() {
-        this.mAdapter.update(getModels(this.position));
+        this.filePickerAdapter.update(getModels(this.position));
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_confirm, menu);
+        
+        if (filePickerAdapter.getSelectedItem() != -1) {
+            getMenuInflater().inflate(R.menu.menu_confirm, menu);
+        }
         return super.onCreateOptionsMenu(menu);
     }
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
 
         int itemId = menuItem.getItemId();
+        
         if (itemId == R.id.confirm) {
-            new MoveFiles(this, (mAdapter.models.get(mAdapter.getSelectedItem())).getPath()).execute();
+            new MoveFiles(this, (filePickerAdapter.models.get(filePickerAdapter.getSelectedItem())).getPath()).execute();
         } else if (itemId == 2131231044) {
 			MainFragment.createFolder(position, this, this);
         } else {
             finish();
         }
+        
         return super.onOptionsItemSelected(menuItem);
     }
 
@@ -174,9 +179,7 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
             }
         }
         if (arrayList.isEmpty()) {
-            mText.setText("Nenhuma pasta");
-        } else {
-            mText.setVisibility(View.GONE);
+            myOverlay.setVisibility(View.VISIBLE);
         }
         return arrayList;
     }

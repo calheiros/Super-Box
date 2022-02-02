@@ -14,7 +14,7 @@ public class Utils {
 
 		String currentApp = "NULL";
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-			UsageStatsManager usm = (UsageStatsManager)App.app.getSystemService("usagestats");
+			UsageStatsManager usm = (UsageStatsManager)App.getInstance().getSystemService("usagestats");
 			long time = System.currentTimeMillis();
 			List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,  time - 1000 * 1000, time);
 			if (appList != null && appList.size() > 0) {
@@ -27,7 +27,7 @@ public class Utils {
 				}
 			}
 		} else {
-			ActivityManager mActivityManager = (ActivityManager)App.app.getSystemService(Context.ACTIVITY_SERVICE);
+			ActivityManager mActivityManager = (ActivityManager)App.getInstance().getSystemService(Context.ACTIVITY_SERVICE);
 			List<ActivityManager.RunningTaskInfo> RunningTask = mActivityManager.getRunningTasks(1);
 			ActivityManager.RunningTaskInfo ar = RunningTask.get(0);
 			currentApp = ar.topActivity.getPackageName();

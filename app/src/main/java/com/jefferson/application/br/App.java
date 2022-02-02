@@ -18,13 +18,14 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
 	public static final String EXCEPTION_FOUND = "_exception_found";
     public static final String EXCEPTION_LOG = "_exception_log";
     public static String TAG;
-    public static App app;
+    private static App application;
 	public static final String INTERSTICAL_ID = "ca-app-pub-3062666120925607/8580168530";
 	public static final String INTERSTICAL_TEST_ID = "ca-app-pub-3940256099942544/1033173712";
 
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
     private Handler mHandler = new Handler();;
     private SharedPreferences mSharedPrefs;
+    public static boolean localeConfigured = false;
     private ArrayList<MyCompatActivity> activities = new ArrayList<>();
 	//private InterstitialAd mInterstitialAd;
 	private boolean timing = false;
@@ -36,109 +37,107 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
 				destroyActivities();
 			}
 			App.this.timing = false;
-			}
-		};
-		private boolean isAnyNotRunning() {
-		    for(MyCompatActivity activity : activities){
-				if(activity.isAlive()) return false;
-			}
-			return true;
-		}
-		public AppLockService appLockService;
+        }
+    };
+    private boolean isAnyNotRunning() {
+        for (MyCompatActivity activity : activities) {
+            if (activity.isAlive()) return false;
+        }
+        return true;
+    }
+    public AppLockService appLockService;
 
-		public void remove(MyCompatActivity p0) {
-			// TODO: Implement this method
-			activities.remove(p0);
-		}
+    public void remove(MyCompatActivity p0) {
+        // TODO: Implement this method
+        activities.remove(p0);
+    }
 
-		public boolean isTiming() {
-			// TODO: Implement this method
-			return timing;
-		}
+    public boolean isTiming() {
+        // TODO: Implement this method
+        return timing;
+    }
 
-		@Override
-		public void uncaughtException(Thread Thre, Throwable Thow) {
-			mSharedPrefs.edit().putBoolean(EXCEPTION_FOUND, true).commit();
+    @Override
+    public void uncaughtException(Thread Thre, Throwable Thow) {
+        mSharedPrefs.edit().putBoolean(EXCEPTION_FOUND, true).commit();
 
-			File file = new File(Environment.getExternalStorageDirectory() + "/.application/logs", "exption.io");
-			file.getParentFile().mkdirs();
-			write(Thow.getMessage(), file);
+        File file = new File(Environment.getExternalStorageDirectory() + "/.application/logs", "exption.io");
+        file.getParentFile().mkdirs();
+        write(Thow.getMessage(), file);
 
-			mDefaultExceptionHandler.uncaughtException(Thre, Thow);
-		}
+        mDefaultExceptionHandler.uncaughtException(Thre, Thow);
+    }
 
-		private void write(String message, File file) {
-			try {
-				FileWriter output = new FileWriter(file);
-				output.write(message);
-				output.close();
-			} catch (FileNotFoundException e) {} catch (IOException e) {}
-		}
+    private void write(String message, File file) {
+        try {
+            FileWriter output = new FileWriter(file);
+            output.write(message);
+            output.close();
+        } catch (FileNotFoundException e) {} catch (IOException e) {}
+    }
 
-		public void onCreate() {
-			this.app = this;
-			super.onCreate();
+    public void onCreate() {
 
-			mSharedPrefs = getSharedPreferences(EXCEPTION_LOG, MODE_PRIVATE);
-			mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
-			Thread.setDefaultUncaughtExceptionHandler(this);
+        this.application = this;
+        super.onCreate();
 
-			//MobileAds.initialize(this, "ca-app-pub-3062666120925607~3930477089");
-			ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
-				.setProgressiveJpegConfig(new SimpleProgressiveJpegConfig())
-				.setResizeAndRotateEnabledForNetwork(true)
-				.setDownsampleEnabled(true)
-				.build();
-			Fresco.initialize(this, config);
-			if (LocaleManager.getLanguage(this) != null) {
-				LocaleManager.setLocale(this);
-			}
-			//createInterstitial();
-		}
+        mSharedPrefs = getSharedPreferences(EXCEPTION_LOG, MODE_PRIVATE);
+        mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
+        Thread.setDefaultUncaughtExceptionHandler(this);
 
-		public static Context getAppContext() {
-			return app;
-		}
+        //MobileAds.initialize(this, "ca-app-pub-3062666120925607~3930477089");
+        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
+            .setProgressiveJpegConfig(new SimpleProgressiveJpegConfig())
+            .setResizeAndRotateEnabledForNetwork(true)
+            .setDownsampleEnabled(true)
+            .build();
+        Fresco.initialize(this, config);
+        //createInterstitial();
+    }
 
-		public void putActivity(MyCompatActivity activity, String str) {
-			this.activities.add(activity);
-		}
+    public static Context getAppContext() {
+        return application;
+    }
+
+    public void putActivity(MyCompatActivity activity, String str) {
+        this.activities.add(activity);
+    }
 
 
-		public void finishActivities() {
+    public void finishActivities() {
 
-			for (Activity activity : this.activities) {
+        for (Activity activity : this.activities) {
 
-				if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-					activity.finishAndRemoveTask();
-				} else {
-					activity.finish();
-				}
-			}
-			activities.clear();
-		}
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+                activity.finishAndRemoveTask();
+            } else {
+                activity.finish();
+            }
+        }
+        activities.clear();
+    }
 
-		public static App getInstance() {
-			return app;
-		}
+    public static App getInstance() {
+        return application;
+    }
 
-		public void destroyActivities() {
-			for (Activity activity : activities) {
-				activity.finish();
-			}
-			activities.clear();
-		}
+    public void destroyActivities() {
+        for (Activity activity : activities) {
+            activity.finish();
+        }
+        activities.clear();
+    }
 
-		public void stopCount() {
-			mHandler.removeCallbacks(mRunnable);
-		}
-		public void startCount(int millis) {
-			long upTime = SystemClock.uptimeMillis();
-			mHandler.postAtTime(mRunnable, upTime + millis);
-			timing = true;
-		}
-		public void startCount() {
-			startCount(60000);
-			timing = true;
-		}
-	}
+    public void stopCount() {
+        mHandler.removeCallbacks(mRunnable);
+    }
+    public void startCount(int millis) {
+        long upTime = SystemClock.uptimeMillis();
+        mHandler.postAtTime(mRunnable, upTime + millis);
+        timing = true;
+    }
+    public void startCount() {
+        startCount(60000);
+        timing = true;
+    }
+}

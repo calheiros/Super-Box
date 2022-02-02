@@ -33,7 +33,7 @@
 		<item name="colorPrimaryDark">#0449C7</item>
 		<item name="colorAccent">#10D863</item>
 	</style>
-	<style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
+	<style name="MainTheme" parent="Theme.AppCompat.Light.NoActionBar">
 		<item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>

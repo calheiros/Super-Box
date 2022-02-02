@@ -17,6 +17,7 @@ import java.util.*;
 import com.jefferson.application.br.R.id.*;
 import android.support.v7.widget.Toolbar;
 import com.jefferson.application.br.util.*;
+import android.content.pm.PackageManager.NameNotFoundException;
 
 public class SettingFragment extends Fragment implements OnItemClickListener {
 
@@ -26,7 +27,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 
     SettingAdapter mAdapter;
 	Toolbar mToolbar;
-	PackageInfo pInfo;
 	SharedPreferences mShared;
 	SharedPreferences.Editor mEdit;
 	int count;
@@ -44,11 +44,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 
 		ListView mListView = (ListView)view.findViewById(R.id.list_config);
 		mListView.setDivider(null);
-
-		try {
-			pInfo = getContext().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
-		} catch (PackageManager.NameNotFoundException e) {}
-
+		
 		ArrayList<PreferenceItem> items = new ArrayList<>();
 
 		for (int i = 0; i <= 8; i++) {
@@ -80,16 +76,16 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 					item.description = getStorageName();
 					break;
 				case 5:
-					item.item_name = "Esconder icone";
+					item.item_name = getString(R.string.modo_secreto);
 					item.icon_id = R.drawable.ic_android;
 					item.type = PreferenceItem.ITEM_SWITCH_TYPE;
 					item.description = getString(R.string.ocultar_descricao);
 					break;
 				case 6:
-					item.item_name = "Código de chamada";
+					item.item_name = getString(R.string.codigo_discador);
 					item.type = item.ITEM_TYPE;
 					item.icon_id = R.drawable.ic_dialpad;
-					item.description = getCallCode();
+					item.description = getDialerCode();
 					break;
 				case 7:
 					item.item_name = getString(R.string.preferecias_sobre);
@@ -99,6 +95,9 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 					item.icon_id = R.drawable.ic_about;
 					item.item_name = getString(R.string.app_name);
 					item.type = item.ITEM_TYPE;
+                    try {
+                        item.description = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0).versionName;
+                    } catch (PackageManager.NameNotFoundException e) {}
 					break;
 			}
 			items.add(item);
@@ -109,7 +108,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 		return view;
 	}
 
-	private String getCallCode() {
+	private String getDialerCode() {
 		return mShared.getString("secret_code", "#4321");
 
 	}
@@ -155,7 +154,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 
 		final View view = getLayoutInflater(null).inflate(R.layout.dialog_call, null);
 		final EditText editText = (EditText) view.findViewById(R.id.editTextDialogUserInput);
-		editText.append(getCallCode());
+		editText.append(getDialerCode());
 		
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle("Novo código");
@@ -165,9 +164,9 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 				public void onClick(DialogInterface p1, int p2) {
 					String code = editText.getText().toString();
 					if(code.length() < 3){
-						Toast.makeText(getContext(), "O comprimento do código não pode ser menor que 3.", 1).show();
+						Toast.makeText(getContext(), "O Código não pode ser menor que 3 caractéres.", 1).show();
 					} else if(code.length() > 15) {
-						Toast.makeText(getContext(), "O código não pode ter mais que 15 de comprimento.",1).show();
+						Toast.makeText(getContext(), "O código não pode ter maior que 15 caractéres.",1).show();
 					} else {
 						mEdit.putString("secret_code", code).commit();
 						mAdapter.getItem(6).description = code;
@@ -216,7 +215,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 		new AlertDialog.Builder(getContext())
 		.setTitle("Informação")
 		.setIcon(R.drawable.ic_information)
-		.setMessage(String.format("Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", getCallCode()))
+		.setMessage(String.format("Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", getDialerCode()))
 		.setPositiveButton("fechar", null)
 		.setView(view)
 			.show().setOnDismissListener(new DialogInterface.OnDismissListener(){

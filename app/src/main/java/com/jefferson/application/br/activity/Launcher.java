@@ -10,15 +10,9 @@ public class Launcher extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		new Thread() {
-			
-			@Override
-			public void run() {
-				Intent i = new Intent(Launcher.this, VerifyActivity.class);
-				i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(i);
-			}
-		}.start();
+        
+        Intent i = new Intent(Launcher.this, VerifyActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(i);
 	}
 }
