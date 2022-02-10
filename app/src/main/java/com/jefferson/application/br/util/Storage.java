@@ -1,20 +1,26 @@
 package com.jefferson.application.br.util;
 
-import android.annotation.*;
-import android.content.*;
-import android.database.*;
-import android.media.*;
-import android.net.*;
-import android.os.*;
-import android.os.Build.*;
-import android.preference.*;
-import android.provider.*;
-import android.provider.MediaStore.*;
-import android.support.v4.provider.*;
-import android.util.*;
-import com.jefferson.application.br.*;
-import java.io.*;
-import java.util.*;
+import android.annotation.TargetApi;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Build.VERSION;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.provider.DocumentsContract;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Files;
+import android.support.v4.provider.DocumentFile;
+import android.util.Log;
+import com.jefferson.application.br.App;
+import com.jefferson.application.br.R;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class Storage extends DocumentUtil {
 
@@ -60,6 +66,19 @@ public class Storage extends DocumentUtil {
     public static String getStorageLocation() {
         return PreferenceManager.getDefaultSharedPreferences(App.getAppContext()).getString(STORAGE_LOCATION, INTERNAL);
     }
+    
+    public static int getStoragePosition() {
+
+        String storageLocation = Storage.getStorageLocation();
+
+        if (Storage.INTERNAL.equals(storageLocation)) {
+            return 0;
+        }
+        if (Storage.EXTERNAL.equals(storageLocation)) {
+            return 1;
+        } 
+        return -1;
+    }
 
     public static String getDefaultStorage() {
 
@@ -75,7 +94,7 @@ public class Storage extends DocumentUtil {
     public static String getExternalStorage() {
         try {
             File[] externalFilesDirs = App.getAppContext().getExternalFilesDirs("");
-			if(externalFilesDirs == null) 
+			if (externalFilesDirs == null) 
 				return null;
             for (int i = 0; i < externalFilesDirs.length; i ++) {
                 File file = externalFilesDirs[i];
@@ -111,7 +130,7 @@ public class Storage extends DocumentUtil {
     public static boolean deleteFile(File file) {
 
         if (VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            
+
 			DocumentFile documentFile = getDocumentFile(file, false);
 			if (documentFile != null)
 				return documentFile.delete();
@@ -156,7 +175,7 @@ public class Storage extends DocumentUtil {
 		}
 	}
 	public static String getPathFromMediaUri(Uri uri, Context context) {
-		
+
 		String filePath = null;
 		if (uri != null && "content".equals(uri.getScheme())) {
 			String[] proj = { MediaStore.Video.Media.DATA };

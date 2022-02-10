@@ -6,7 +6,7 @@ import android.util.*;
 import android.widget.*;
 import android.preference.*;
 
-public class receber_adm extends DeviceAdminReceiver { 
+public class AdmReceiver extends DeviceAdminReceiver { 
 
 	@Override  
 	public void onEnabled(Context context, Intent intent) {      

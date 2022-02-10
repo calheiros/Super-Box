@@ -19,24 +19,28 @@ public class PathsData extends SQLiteOpenHelper {
 	public static String getBaseCommand() {
 		return "CREATE TABLE " + TABLE_NAME + " (" + COL_1 + " TEXT NOT NULL," + COL_2 + " TEXT);";
 	}
+    
     private PathsData(Context context, String path) {
 	
 		super(context, path, null, DATABASE_VERSION);
 		//SQLiteDatabase.openOrCreateDatabase(path, null);
 
     }
+    
 	public static PathsData getInstance(Context context, String path) {
 		return new PathsData(context, path + "/" +  DATABASE_NAME);
 	}
+    
     @Override
     public void onCreate(SQLiteDatabase db) {
 		db.execSQL(getBaseCommand());
 		db.execSQL(PathsData.Folder.base_command_sql);
 		//Toast.makeText(App.getAppContext(),"onCreate called: database", 1).show();
     }
+    
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+		//db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
     }
 
     public String getPath(String id) {   
@@ -55,19 +59,23 @@ public class PathsData extends SQLiteOpenHelper {
 		db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + COL_1 + " = '" + id + "';");
 		db.close();
 	}
+    
     public List<String> getAllData() {
-		SQLiteDatabase db = this.getReadableDatabase();
+		
+        SQLiteDatabase db = this.getReadableDatabase();
 		List<String> allData = new ArrayList<String>();
-        Cursor res = db.rawQuery("Select * from " + TABLE_NAME, null);
+        Cursor cursor = db.rawQuery("Select * from " + TABLE_NAME, null);
 
-		while (res.moveToNext()) {
-			allData.add(res.getString(1));
+		while (cursor.moveToNext()) {
+			allData.add(cursor.getString(1));
 		}
-		res.close();
+		cursor.close();
 		db.close();
 		return allData;
 	}
+    
 	public boolean insertData(String id , String name) {
+        
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2, name);
@@ -83,7 +91,8 @@ public class PathsData extends SQLiteOpenHelper {
 		}
 	}
 	public static class Folder extends SQLiteOpenHelper {
-		public static String base_command_sql = "CREATE TABLE IF NOT EXISTS FOLDER_ (id TEXT NOT NULL, name TEXT, type VARCHAR(6) NOT NULL);";
+		
+        public static String base_command_sql = "CREATE TABLE IF NOT EXISTS FOLDER_ (id TEXT NOT NULL, name TEXT, type VARCHAR(6) NOT NULL);";
 
 		@Override
 		public void onCreate(SQLiteDatabase sQLiteDatabase) {
@@ -109,15 +118,16 @@ public class PathsData extends SQLiteOpenHelper {
 			writableDatabase.close();
 		}
 
-		public void updateName(String str, String str2, String type) {
-
-			SQLiteDatabase writableDatabase = getWritableDatabase();
-			writableDatabase.execSQL("UPDATE FOLDER_ SET name = '" + str2 + "' WHERE id = '" + str + "' AND type = '" + type +"'");
+		public void updateName(String id, String name, String type) {
+           
+            SQLiteDatabase writableDatabase = getWritableDatabase();
+			writableDatabase.execSQL("UPDATE FOLDER_ SET name = '" + name + "' WHERE id = '" + id + "' AND type = '" + type +"'");
 			writableDatabase.close();
 		}
 
 		public static Folder getInstance(Context context) {
-			File file = new File(Storage.getDefaultStorage(),"database.db");
+			
+            File file = new File(Storage.getDefaultStorage(),"database.db");
 			file.getParentFile().mkdirs();
             return new Folder(file.getAbsolutePath(), context);
 		}
@@ -133,16 +143,17 @@ public class PathsData extends SQLiteOpenHelper {
 			SQLiteDatabase readableDatabase = getReadableDatabase();
 			Cursor rawQuery = readableDatabase.rawQuery("SELECT name FROM FOLDER_ WHERE id='" + str + "' AND type = '" + type + "';", null);
 			String res = null;
+            
 			if (rawQuery.moveToFirst()) {
 				res = rawQuery.getString(0);
 			}
+            
 			rawQuery.close();
 			readableDatabase.close();
 			return res;
 		}
 
 		public void delete(String f_name, String type) {
-
 			SQLiteDatabase writableDatabase = getWritableDatabase();
 			writableDatabase.execSQL("DELETE FROM FOLDER_ WHERE id='" + f_name + "' AND type = '" + type + "';");
 		}

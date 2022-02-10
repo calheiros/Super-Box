@@ -13,7 +13,6 @@ import com.jefferson.application.br.fragment.*;
 import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
-
 import com.jefferson.application.br.R;
 
 public class ImportTask extends AsyncTask {
@@ -36,7 +35,6 @@ public class ImportTask extends AsyncTask {
 	private boolean waiting = false;
 	private String WARNING_ALERT = "warning_alert";
 	private String no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n";
-
 
 	public ImportTask(ArrayList<FileModel> models, Activity activity, int mode) {
 
@@ -72,7 +70,8 @@ public class ImportTask extends AsyncTask {
 
 		mUpdate = new ProgressThreadUpdate(mTransfer, myAlertDialog);
 	}
-	@Override
+	
+    @Override
 	protected void onPostExecute(Object result) {
 
 		synchronize();
@@ -107,19 +106,21 @@ public class ImportTask extends AsyncTask {
 		mUpdate.die();
 		myAlertDialog.dismiss();
 		Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]));
-		if (mode == SESSION_INSIDE_APP) {
+		
+        if (mode == SESSION_INSIDE_APP) {
 		    ((MainActivity)myActivity)
 				.update(MainFragment.ID.BOTH);
 		} 
 	}
-	@Override
+	
+    @Override
 	protected void onCancelled(Object result) { 
 
 		synchronize();
 		if (mode == SESSION_OUTSIDE_APP) {
 			myActivity.finish();
 		}
-		Toast.makeText(myActivity, "Cancelado!", 1).show();
+		Toast.makeText(myActivity, "Cancelado pelo usuario!", 1).show();
 	}
 
 	@Override
@@ -131,7 +132,8 @@ public class ImportTask extends AsyncTask {
 			myAlertDialog.setContentText(name);
 		}
 	}
-	@Override
+	
+    @Override
 	protected Boolean doInBackground(Object[] v) {
 
 		long max = 0;
@@ -164,8 +166,7 @@ public class ImportTask extends AsyncTask {
 				String folderName = file.getParentFile().getName();
 				String randomString = RandomString.getRandomString(24);
 				String randomString2 = RandomString.getRandomString(24);
-
-				String folderId = folderDatabase.getFolderId(folderName, model.getType());
+                String folderId = folderDatabase.getFolderId(folderName, model.getType());
 				String str = folderId;
 
 				if (folderId == null) {
@@ -173,8 +174,9 @@ public class ImportTask extends AsyncTask {
 				} else {
 					randomString2 = str;
 				}
+                
 				File destFile = new File(model.getDestination() + File.separator + randomString2 + File.separator + randomString);
-				destFile.getParentFile().mkdir();
+				destFile.getParentFile().mkdirs();
 
 				InputStream inputStream = new FileInputStream(file);
 				OutputStream outputStream = new FileOutputStream(destFile);
@@ -201,10 +203,11 @@ public class ImportTask extends AsyncTask {
 		} catch (Exception e) {
 			err_message.append("Erro inesperado ocorrido!");
 		}
-
+        
 		return true;
 	}
-	public void waitForResponse() {
+	
+    public void waitForResponse() {
 
 		waiting = true;
 		while (waiting) {
@@ -213,7 +216,8 @@ public class ImportTask extends AsyncTask {
 			} catch (InterruptedException e) {}
 		}
 	}
-	private void warningAlert(String msg) {
+	
+    private void warningAlert(String msg) {
 
 		SimpleDialog mDialog = new SimpleDialog(myActivity, SimpleDialog.ALERT_STYLE);
 		mDialog.setContentTitle("Aviso");

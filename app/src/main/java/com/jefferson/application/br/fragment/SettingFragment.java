@@ -1,23 +1,33 @@
 package com.jefferson.application.br.fragment;
-import android.content.*;
-import android.content.pm.*;
-import android.os.*;
-import android.preference.*;
-import android.support.v4.app.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.view.*;
-import android.widget.*;
-import android.widget.AdapterView.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.activity.*;
-import com.jefferson.application.br.adapter.*;
-import com.jefferson.application.br.model.*;
-import java.util.*;
-import com.jefferson.application.br.R.id.*;
+
+import android.content.ComponentName;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import com.jefferson.application.br.util.*;
-import android.content.pm.PackageManager.NameNotFoundException;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Switch;
+import android.widget.Toast;
+import com.jefferson.application.br.LocaleManager;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.activity.CreatePattern;
+import com.jefferson.application.br.activity.MainActivity;
+import com.jefferson.application.br.adapter.SettingAdapter;
+import com.jefferson.application.br.model.PreferenceItem;
+import com.jefferson.application.br.util.Storage;
+import java.util.ArrayList;
 
 public class SettingFragment extends Fragment implements OnItemClickListener {
 
@@ -31,8 +41,11 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 	SharedPreferences.Editor mEdit;
 	int count;
 
+    private int storageChoiceIndex;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        
         View view = inflater.inflate(R.layout.config, null);
 		mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 		storages = new String[]{getString(R.string.armaz_interno),getString(R.string.armaz_externo)};
@@ -44,7 +57,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 
 		ListView mListView = (ListView)view.findViewById(R.id.list_config);
 		mListView.setDivider(null);
-		
+
 		ArrayList<PreferenceItem> items = new ArrayList<>();
 
 		for (int i = 0; i <= 8; i++) {
@@ -110,8 +123,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 
 	private String getDialerCode() {
 		return mShared.getString("secret_code", "#4321");
-
 	}
+
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 		switch (position) {
@@ -128,14 +141,14 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 				Switch mSwitch = (Switch) view.findViewById(R.id.my_switch);
 				boolean isChecked = !mSwitch.isChecked();
 				/*if(isChecked && !mShared.getBoolean("dont_show_info_on_hidden", false)) {
-					showWarning();
-					break;
-				}*/
+                 showWarning();
+                 break;
+                 }*/
 				changeIconVisibility(isChecked);
 				mSwitch.setChecked(isChecked);
 				break;
 			case 4:
-				((MainActivity)getActivity()).showDialogChoose();
+				showDialogChoose();
 				break;
 			case 6:
 				changeCodeDialog();
@@ -146,48 +159,90 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 		}
 	}
 
+    public void showDialogChoose() {
+
+        storageChoiceIndex = 0;
+
+        String[] options = new String[]{getString(R.string.armaz_interno), getString(R.string.armaz_externo)};
+        if (Storage.getExternalStorage() == null)
+            options = new String[]{getString(R.string.armaz_interno)};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle(getString(R.string.armazenamento));
+        builder.setSingleChoiceItems(options, Storage.getStoragePosition(), new DialogInterface.OnClickListener(){
+
+                @Override
+                public void onClick(DialogInterface dialog, int position) {
+                    storageChoiceIndex = position;
+                }
+            });
+        builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener(){
+
+                @Override
+                public void onClick(DialogInterface dialog, int p2) {
+
+                    Storage.setNewLocalStorage(storageChoiceIndex);
+
+                    ((MainActivity) getActivity()).
+                        mainFragment.update(MainFragment.ID.BOTH);
+                    updateItem(4);
+                }
+            });
+        builder.setNegativeButton(getString(R.string.cancelar), null);
+        builder.create().show();
+	}
+
 	private void changeIconVisibility(boolean isChecked) {
 		getActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), "com.jefferson.application.br.LuancherAlias"), 
 																	 isChecked ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED: PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 	}
+
 	public void changeCodeDialog() {
 
 		final View view = getLayoutInflater(null).inflate(R.layout.dialog_call, null);
 		final EditText editText = (EditText) view.findViewById(R.id.editTextDialogUserInput);
 		editText.append(getDialerCode());
-		
+
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle("Novo código");
 		builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener(){
 
 				@Override
 				public void onClick(DialogInterface p1, int p2) {
-					String code = editText.getText().toString();
-					if(code.length() < 3){
+
+                    String code = editText.getText().toString();
+
+                    if (code.length() < 3) {
 						Toast.makeText(getContext(), "O Código não pode ser menor que 3 caractéres.", 1).show();
-					} else if(code.length() > 15) {
-						Toast.makeText(getContext(), "O código não pode ter maior que 15 caractéres.",1).show();
+					} else if (code.length() > 15) {
+						Toast.makeText(getContext(), "O código não pode ter maior que 15 caractéres.", 1).show();
 					} else {
 						mEdit.putString("secret_code", code).commit();
 						mAdapter.getItem(6).description = code;
 						mAdapter.notifyDataSetChanged();
 					}
 				}
-			});
+			}
+        );
+
 		builder.setNegativeButton(getString(R.string.cancelar), null);
 		builder.setView(view);
 		builder.show();
 	}
+
 	public int getComponentEnabledSetting() {
 		return getActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(getContext(), "com.jefferson.application.br.LuancherAlias"));
 	}
+
 	private String getStorageName() {
 		return Storage.getStorageLocation().equals(Storage.INTERNAL) ? getString(R.string.armaz_interno) : getString(R.string.armaz_externo);
     }
+
     public void updateItem(int position) {
 		mAdapter.getItem(position).description = getStorageName();
 		mAdapter.notifyDataSetChanged();
 	}
+
     private String getLanguage() {
 		String locale = LocaleManager.getLanguage(getContext());
 		if (locale == null)
@@ -203,35 +258,43 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
         }
 		return null;
     }
+
 	private void showAbout() {
-		AlertDialog.Builder build = new AlertDialog.Builder(getContext());
+
+        AlertDialog.Builder build = new AlertDialog.Builder(getContext());
 		build.setView(LayoutInflater.from(getContext()).inflate(R.layout.about, null, false));
 		build.setPositiveButton("fechar", null);
 		build.create().show();
 	}
+
 	private void showWarning() {
-		View view = getLayoutInflater(null).inflate(R.layout.dialog_check_box_view, null);
+
+        View view = getLayoutInflater(null).inflate(R.layout.dialog_check_box_view, null);
 		final CheckBox mCheckBox = (CheckBox) view.findViewById(R.id.dialogcheckbox);
 		new AlertDialog.Builder(getContext())
-		.setTitle("Informação")
-		.setIcon(R.drawable.ic_information)
-		.setMessage(String.format("Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", getDialerCode()))
-		.setPositiveButton("fechar", null)
-		.setView(view)
+            .setTitle("Informação")
+            .setIcon(R.drawable.ic_information)
+            .setMessage(String.format("Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", getDialerCode()))
+            .setPositiveButton("fechar", null)
+            .setView(view)
 			.show().setOnDismissListener(new DialogInterface.OnDismissListener(){
 
 				@Override
 				public void onDismiss(DialogInterface dInterface) {
-					if(mCheckBox.isChecked()) {
+					if (mCheckBox.isChecked()) {
 						mEdit.putBoolean("dont_show_info_on_hidden", true);
 					}
-					
+
 				}
-		});
+            }
+        );
 	}
+
 	private void showDialog() {
-		final CharSequence[] itens={"Português(Brasil)","English","Español"};
-		AlertDialog.Builder b = new AlertDialog.Builder(getContext())
+
+        final CharSequence[] itens={"Português(Brasil)","English","Español"};
+
+        AlertDialog.Builder b = new AlertDialog.Builder(getContext())
 			.setTitle(R.string.escolha_idioma)
 			.setItems(itens, new DialogInterface.OnClickListener(){
 

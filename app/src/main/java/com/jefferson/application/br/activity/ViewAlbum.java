@@ -1,29 +1,42 @@
 package com.jefferson.application.br.activity;
 
-import android.content.*;
-import android.os.*;
-import android.support.v7.widget.*;
-import android.view.*;
-import android.view.View.*;
-import android.view.animation.*;
-import android.widget.*;
-
-import com.google.android.gms.ads.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.activity.*;
-import com.jefferson.application.br.app.*;
-import com.jefferson.application.br.database.*;
-import com.jefferson.application.br.fragment.*;
-import com.jefferson.application.br.util.*;
-import com.stfalcon.frescoimageviewer.*;
-import java.io.*;
-import java.util.*;
-
+import android.content.Context;
+import android.content.Intent;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Toast;
+import com.jefferson.application.br.App;
+import com.jefferson.application.br.FileModel;
+import com.jefferson.application.br.MultiSelectRecyclerViewAdapter;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.database.PathsData.*;
-import com.jefferson.application.br.task.*;
+import com.jefferson.application.br.app.ProgressThreadUpdate;
+import com.jefferson.application.br.app.SimpleDialog;
+import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.fragment.MainFragment;
+import com.jefferson.application.br.task.DeleteFilesTask;
+import com.jefferson.application.br.util.FileTransfer;
+import com.jefferson.application.br.util.Storage;
+import com.stfalcon.frescoimageviewer.ImageViewer;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener {
 

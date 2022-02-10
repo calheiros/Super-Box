@@ -27,7 +27,6 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     private SharedPreferences mSharedPrefs;
     public static boolean localeConfigured = false;
     private ArrayList<MyCompatActivity> activities = new ArrayList<>();
-	//private InterstitialAd mInterstitialAd;
 	private boolean timing = false;
 	private Runnable mRunnable = new Runnable(){
 
@@ -39,12 +38,14 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
 			App.this.timing = false;
         }
     };
+    
     private boolean isAnyNotRunning() {
         for (MyCompatActivity activity : activities) {
             if (activity.isAlive()) return false;
         }
         return true;
     }
+    
     public AppLockService appLockService;
 
     public void remove(MyCompatActivity p0) {
@@ -60,20 +61,27 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     @Override
     public void uncaughtException(Thread Thre, Throwable Thow) {
         mSharedPrefs.edit().putBoolean(EXCEPTION_FOUND, true).commit();
-
-        File file = new File(Environment.getExternalStorageDirectory() + "/.application/logs", "exption.io");
-        file.getParentFile().mkdirs();
-        write(Thow.getMessage(), file);
-
+        //startActivity(new Intent(this, MainActivity.class));
+        writeLog(Thow);
         mDefaultExceptionHandler.uncaughtException(Thre, Thow);
     }
 
-    private void write(String message, File file) {
+    private void writeLog(Throwable throwable) {
         try {
+            File file = new File(Environment.getExternalStorageDirectory() + 
+                                 File.separator + "." + getApplicationInfo().packageName + File.separator + "logs", "log.txt");
+            file.getParentFile().mkdirs();
+            StackTraceElement[] stackTrace = throwable.getStackTrace();
             FileWriter output = new FileWriter(file);
-            output.write(message);
+
+            for (int i = 0; i < stackTrace.length; i++) {
+                StackTraceElement trace = stackTrace[i];
+                output.append(trace.toString());
+            }
+            output.flush();
             output.close();
         } catch (FileNotFoundException e) {} catch (IOException e) {}
+  
     }
 
     public void onCreate() {
@@ -116,7 +124,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         }
         activities.clear();
     }
-
+    
     public static App getInstance() {
         return application;
     }
@@ -131,6 +139,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     public void stopCount() {
         mHandler.removeCallbacks(mRunnable);
     }
+
     public void startCount(int millis) {
         long upTime = SystemClock.uptimeMillis();
         mHandler.postAtTime(mRunnable, upTime + millis);

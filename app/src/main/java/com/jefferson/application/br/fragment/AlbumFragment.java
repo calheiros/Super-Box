@@ -14,28 +14,34 @@ import com.jefferson.application.br.database.*;
 import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
-
 import android.support.v4.app.Fragment;
 import com.jefferson.application.br.task.*;
+import com.jefferson.application.br.database.PathsData.Folder;
+import android.widget.EditText;
+import android.widget.Toast;
 
 public class AlbumFragment extends Fragment {
-	
+
 	private String root;
 	private int position;
 	private AlbumAdapter mAdapter;
 	private View view;
 	private SharedPreferences sharedPref;
 
+    public final static int ACTION_CREATE_FOLDER = 122;
+    public final static int ACTION_RENAME_FOLDER = 54;
+
 	public AlbumFragment() {
 
 	}
 
 	public static Fragment newInstance(int position) {
-		AlbumFragment frament = new AlbumFragment();
+
+        AlbumFragment frament = new AlbumFragment();
 		Bundle bundle = new Bundle();
 		bundle.putInt("position", position);
 		frament.setArguments(bundle);
-	
+
 		return frament;
 	}
 
@@ -45,13 +51,13 @@ public class AlbumFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		view = inflater.inflate(R.layout.main_gallery, container, false);
-		
+
+        view = inflater.inflate(R.layout.main_gallery, container, false);
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		root = Environment.getExternalStorageDirectory().getAbsolutePath();
 		position = getArguments() != null ? getArguments().getInt("position", 0): 0;
 
-		RecyclerView mRecyclerView= (RecyclerView) view.findViewById(R.id.recyclerView);
+        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 	    GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
 
 		mRecyclerView.setLayoutManager(layoutManager);
@@ -60,13 +66,15 @@ public class AlbumFragment extends Fragment {
 
 		return view;
 	}
+
 	private ArrayList<FolderModel> getLocalList() {
 
 		ArrayList<FolderModel> models = new ArrayList<FolderModel>();
         File root = Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO);
 		root.mkdirs();
-		PathsData.Folder db = PathsData.Folder.getInstance(getContext());
-		if (root.exists()) {
+		PathsData.Folder sqldb = PathsData.Folder.getInstance(getContext());
+
+        if (root.exists()) {
 
 			String Files[] = root.list();
 			for (int i = 0;i < Files.length;i++) {
@@ -74,32 +82,36 @@ public class AlbumFragment extends Fragment {
 
 				if (file.isDirectory()) {
 					File folder_list[] = file.listFiles();
-					String folder_name = db.getFolderName(Files[i], position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
+					String folder_name = sqldb.getFolderName(Files[i], position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
 					FolderModel model = new FolderModel();
-					
+
 					model.setName(folder_name == null ?  Files[i]: folder_name);
 					model.setPath(file.getAbsolutePath());
-					
+
 					for (int j = 0; j < folder_list.length; j++) {
 						model.addItem(folder_list[j].getAbsolutePath());
 					}
 					models.add(model);
 					/*if (folder_list.length > 0)
-						models.add(model);
-					else file.delete();*/
+                     models.add(model);
+                     else file.delete();*/
 				}
 			}
 		}
-		View notice_view = view.findViewById(R.id.empty_linearLayout);
-		notice_view.setVisibility(models.isEmpty() ? View.VISIBLE : View.GONE);
-		db.close();
+
+		View noticeView = view.findViewById(R.id.empty_linearLayout);
+		noticeView.setVisibility(models.isEmpty() ? View.VISIBLE : View.GONE);
+		sqldb.close();
 		return models;
 	}
+
 	final class DeleteAlbumTask extends DeleteFilesTask  {
-		public DeleteAlbumTask(Context p1, ArrayList<String> p2, int p3, File p4) {
-			super(p1, p2,p3,p4);
+
+        public DeleteAlbumTask(Context p1, ArrayList<String> p2, int p3, File p4) {
+			super(p1, p2, p3, p4);
 		}
-		@Override
+
+        @Override
 		protected void onPreExecute() {
 			super.onPreExecute();
 		}
@@ -107,11 +119,75 @@ public class AlbumFragment extends Fragment {
 		@Override
 		protected void onPostExecute(Object result) {
 			super.onPostExecute(result);
-			((MainActivity)getActivity()).update(getPagerPosition() == 0 ? MainFragment.ID.FIRST:MainFragment.ID.SECOND);
+			((MainActivity)getActivity()).update(getPagerPosition() == 0 ? MainFragment.ID.FIRST: MainFragment.ID.SECOND);
 		}
 	}
+
+    public void inputFolderDialog(final FolderModel model, final int action) {
+
+        Context context = getContext();
+        View contentView = getActivity().getLayoutInflater().
+            inflate(R.layout.dialog_edit_text, null);
+        final EditText editText = contentView.findViewById(R.id.editTextInput);
+
+        editText.setText(model.getName());
+
+        new AlertDialog.Builder(context)
+            .setTitle("Renomear pasta")
+            .setView(contentView)
+            .setPositiveButton(context.getString(R.string.renomear), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dInterface, int p) {
+                    String text = editText.getText().toString();
+                    switch (action) {
+                        case ACTION_RENAME_FOLDER:
+                            renameFolder(model, editText.getText().toString());
+                            break;
+                        case ACTION_CREATE_FOLDER:
+                            createFolder(text);
+                            break;
+                    }
+                }
+            }
+        ).show();
+    }
+
+    public void renameFolder(FolderModel model, String newName) {
+
+        Context activity = App.getAppContext();
+        String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
+        PathsData.Folder folderDatabase = PathsData.Folder.getInstance(activity);
+        String folderId = folderDatabase.getFolderId(model.getName(), folderType);
+
+        if (folderId == null) {
+            File file = new File(model.getPath());
+            folderId = file.getName();
+            folderDatabase.addName(folderId, newName, folderType);
+        } else {
+            //folderDatabase.updateName(name, model.getName(), folderType);
+            folderDatabase.updateName(folderId, newName, folderType);
+        }
+        folderDatabase.close();
+        update();
+    }
+    public void createFolder(String name) {
+        
+        String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
+        PathsData.Folder folderDatabase = PathsData.Folder.getInstance(getContext());
+        String folderId = folderDatabase.getFolderId(name, folderType);
+        String randomString = RandomString.getRandomString(24);
+        Storage.getFolder(null);
+        
+        if (folderId == null) {
+            folderDatabase.addName(folderId, name, folderType);
+        } else {
+            Toast.makeText(getContext(), "Folder alreay exists!", 1).show();
+        }
+        folderDatabase.close();
+        update();
+    }
     public void deleteAlbum(final FolderModel model) {
-		
+
 		String name = model.getName();
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(getString(R.string.apagar));
@@ -123,11 +199,12 @@ public class AlbumFragment extends Fragment {
 					File root = new File(model.getPath());
 					new DeleteAlbumTask(getContext(), model.getItems(), position, root).execute();
 				}
-		});
+            });
 		builder.setNegativeButton("Não", null);
 		builder.create().show();
 	}
-	public void Update() {
+
+	public void update() {
 		if (mAdapter != null) {
 			mAdapter.setUpdatedData(getLocalList());
 		}

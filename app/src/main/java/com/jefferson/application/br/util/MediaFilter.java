@@ -1,8 +1,7 @@
 package com.jefferson.application.br.util;
 
-
-import android.util.*;
-import java.io.*;
+import android.util.Log;
+import java.io.File;
 
 public class MediaFilter {
 

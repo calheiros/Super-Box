@@ -60,7 +60,7 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-
+        LocaleManager.configureLocale(this);
 		super.onCreate(savedInstanceState);
 
         pm = (PowerManager) getSystemService("power");

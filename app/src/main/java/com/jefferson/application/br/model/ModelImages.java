@@ -1,8 +1,8 @@
-package com.jefferson.application.br;
+package com.jefferson.application.br.model;
 
 import java.util.ArrayList;
 
-public class Model_images
+public class ModelImages
 {
     String str_folder;
     ArrayList<String> al_imagepath;

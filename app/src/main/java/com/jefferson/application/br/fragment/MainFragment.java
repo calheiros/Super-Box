@@ -11,13 +11,10 @@ import android.support.v7.widget.*;
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
-//import com.getbase.floatingactionbutton.*;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.activity.*;
-
 import android.support.v7.widget.Toolbar;
 import android.view.View.OnClickListener;
-//import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.jefferson.application.br.R;
 
 public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener {
@@ -30,18 +27,14 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     private TabLayout tabLayout;
 	public static final String UNIT_TEST_ID="ca-app-pub-3940256099942544/6300978111";
 	public static final String UNIT_ID="ca-app-pub-3062666120925607/7395488498";
-
 	public static final int GET_FILE = 35;
-
-	//private FloatingActionButton mFloating;
 
 	public static final enum ID {
 		FIRST,
 		SECOND,
 		BOTH
 		}
-	//private View closeView;
-	//private AdView adView;
+	
 	public MainFragment() {
 
 	}
@@ -53,12 +46,12 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		if (view == null) {
 			view = inflater.inflate(R.layout.main_fragment, null);
 			pagerAdapter = new pagerAdapter(getActivity().getSupportFragmentManager());
-			toolbar = (Toolbar) view.findViewById(R.id.toolbar);
-			viewPager = (ViewPager) view.findViewById(R.id.mainViewPager);
+			toolbar = view.findViewById(R.id.toolbar);
+			viewPager = view.findViewById(R.id.mainViewPager);
 
 			viewPager.setAdapter(pagerAdapter);
 			viewPager.setOnPageChangeListener(this);
-			tabLayout = (TabLayout)view.findViewById(R.id.tabLayoutPedido);
+			tabLayout = view.findViewById(R.id.tabLayoutPedido);
 			//tabLayout.setSelectedTabIndicatorColor(getRe
 			int selected = getResources().getColor(R.color.tab_selected);
 			int unselected = getResources().getColor(R.color.tab_unsected);
@@ -93,27 +86,15 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 				//createFolder(viewPager.getCurrentItem(), getContext(), (FilePicker) null);
 				break;
 		} 
-		//fabMenu.collapse();
 	}
-
-	public static void createFolder(int position, Context context, Object p2) {
-		new AlertDialog.Builder(context)
-			.setTitle("Criar pasta")
-			.setView(R.id.editTextDialogUserInput)
-			.setPositiveButton(context.getString(R.string.criar), new DialogInterface.OnClickListener() {
-
-				@Override
-				public void onClick(DialogInterface dInterface, int p) {
-
-				}
-			}).show();
-
-	}
+    
 	public void importFromGallery() {
+        
 		Intent intent = new Intent(getContext(), GalleryAlbum.class);
 		intent.putExtra("position", viewPager.getCurrentItem());
 		getActivity().startActivityForResult(intent, 23);
 	}
+    
 	private void setupTabs(int position) {
         MainFragment mainFragment = this;
 
@@ -182,7 +163,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		}
         public void update(int position) {
 
-			((AlbumFragment)fragments[position]).Update();
+			((AlbumFragment)fragments[position]).update();
 			notifyDataSetChanged();
 		}
 		@Override

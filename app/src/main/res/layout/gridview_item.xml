@@ -17,12 +17,13 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:scaleType="centerCrop"/>
-		<ImageView
+		
+        <ImageView
 			android:layout_width="50dp"
 			android:layout_gravity="center"
 			android:layout_height="50dp"
 			android:id="@+id/play_view"
-			android:src="@drawable/ic_play"
+			android:src="@drawable/ic_play_circle_outline"
 			android:visibility="gone"
 			android:scaleType="centerCrop"
 			android:layout_centerInParent="true"/>

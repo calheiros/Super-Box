@@ -106,11 +106,11 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
         this.filePickerAdapter = new FilePickerAdapter(getModels(this.position), this);
         this.mListView.setAdapter(this.filePickerAdapter);
         this.mListView.setOnItemClickListener(this);
-
+        
         setSupportActionBar(this.mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Move to");
-        
+
     }
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long j) {
@@ -143,7 +143,7 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
         if (itemId == R.id.confirm) {
             new MoveFiles(this, (filePickerAdapter.models.get(filePickerAdapter.getSelectedItem())).getPath()).execute();
         } else if (itemId == 2131231044) {
-			MainFragment.createFolder(position, this, this);
+			//MainFragment.createFolder(position, this, this);
         } else {
             finish();
         }

@@ -7,15 +7,17 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.fragment.LockFragment;
 
 public class LockActivity extends MyCompatActivity {
-	Toolbar toolbar;
-	@Override
+
+    Toolbar toolbar;
+
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		FrameLayout conteiner = (FrameLayout) findViewById(R.id.fragment_container);
 		getLayoutInflater().inflate(R.layout.lock_activity, conteiner);
+        int frameId = R.id.lock_FrameLayout_conteiner;
 
-		int frameId = R.id.lock_FrameLayout_conteiner;
         if (conteiner.findViewById(frameId) != null) {
 			getSupportFragmentManager().beginTransaction().add(frameId, new LockFragment()).commit();
 		} else {

@@ -87,6 +87,7 @@ public class LockFragment extends Fragment {
 		mActivity.getSupportActionBar().dispatchMenuVisibilityChanged(true);
 		return view;
 	}
+    
 	public void initTask() {
 
 		mTask = new Task(App.getAppContext());

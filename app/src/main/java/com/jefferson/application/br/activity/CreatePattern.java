@@ -1,17 +1,21 @@
 package com.jefferson.application.br.activity;
 
-import android.content.*;
-import android.os.*;
-import android.support.v7.app.*;
-import android.view.*;
-import android.view.View.*;
-import android.widget.*;
-import com.jefferson.application.br.*;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.TextView;
+import com.jefferson.application.br.MaterialLockView;
+import com.jefferson.application.br.PasswordManager;
+import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MyCompatActivity;
-import java.util.*;
+import java.util.List;
 
 public class CreatePattern extends MyCompatActivity {
-	
+
 	private SharedPreferences settings;
 	private SharedPreferences.Editor editor;
 	private String password = null;
@@ -32,10 +36,8 @@ public class CreatePattern extends MyCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_pattern);
-
         passwordManager = new PasswordManager(this);
-
-	    action = getIntent().getAction();
+        action = getIntent().getAction();
 		defaultText = getString(R.string.desenhe_seu_padrao);
 
 	    text = (TextView) findViewById(R.id.pattern_text);
@@ -45,11 +47,10 @@ public class CreatePattern extends MyCompatActivity {
 
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
-
-		settings = getSharedPreferences("config", MODE_PRIVATE);
+        settings = getSharedPreferences("config", MODE_PRIVATE);
 		editor = settings.edit();
 
-		materialLockView.setOnPatternListener(new MaterialLockView.OnPatternListener() {
+		materialLockView.setOnPatternListener( new MaterialLockView.OnPatternListener() {
                 public void onPatternStart() {
 					if (runnableC != null && handlerC != null) {
 						handlerC.removeCallbacks(runnableC);
@@ -96,10 +97,11 @@ public class CreatePattern extends MyCompatActivity {
 					}
 
 					super.onPatternDetected(pattern, SimplePattern);
+                }
+            }
+        );
 
-				}});
-
-		button.setOnClickListener(new OnClickListener(){
+		button.setOnClickListener( new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
@@ -115,8 +117,10 @@ public class CreatePattern extends MyCompatActivity {
 						finish();
 				    else throw new NullPointerException("Action desconhecida");
 				}
-			});
+            }
+        );
 	}
+    
     private void clearPattern() {
 		handlerC = new Handler();
 		runnableC = new Runnable(){

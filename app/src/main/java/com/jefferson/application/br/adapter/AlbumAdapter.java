@@ -10,7 +10,6 @@ import com.bumptech.glide.*;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.activity.*;
 import com.jefferson.application.br.fragment.*;
-//import com.squareup.picasso.*;
 import java.util.*;
 import com.jefferson.application.br.util.*;
 
@@ -38,18 +37,20 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
 	@Override
 	public void onBindViewHolder(final viewHolder holder, final int position) {
-		FolderModel f_model = items.get(position);
+
+        FolderModel f_model = items.get(position);
 	    holder.tv_foldern.setText(f_model.getName());
 		holder.tv_foldersize.setText(String.valueOf(f_model.getItems().size()));
-		
+
 		if (fragment.getPagerPosition() == 1)
 			holder.play_view.setVisibility(View.VISIBLE);
-		
+
 		if (f_model.getItems().size() != 0) {
 			Glide.with(fragment).load("file://" + f_model.getItems().get(0))
 				.skipMemoryCache(true)
 				.into(holder.iv_image);
         }
+
 		holder.cd_layout.setOnClickListener(new OnClickListener(){
 
 				@Override
@@ -61,7 +62,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 					intent.putExtra("folder", items.get(position).getPath());
 					fragment.getActivity().startActivity(intent);
 				}
-			});
+			}
+        );
+
 		holder.cd_layout.setOnLongClickListener(new View.OnLongClickListener(){
 
 				@Override
@@ -71,16 +74,21 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 					builder.setItems(options, new DialogInterface.OnClickListener(){
 
 							@Override
-							public void onClick(DialogInterface p1, int p2) {
-								if (p2 == 0) {
+							public void onClick(DialogInterface dInterface, int index) {
+
+                                if (index == 0) {
 									fragment.deleteAlbum(items.get(position));
-								}
+								} else {
+                                    fragment.inputFolderDialog(items.get(position), fragment.ACTION_RENAME_FOLDER);
+                                }
 							}
-						});
+						}
+                    );
 					builder.show();
 					return false;
 				}
-			});
+			}
+        );
 	}
 
 	@Override
@@ -90,19 +98,20 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 	}
 
 	public class viewHolder extends RecyclerView.ViewHolder {
-		TextView tv_foldern, tv_foldersize;
+		
+        TextView tv_foldern, tv_foldersize;
         ImageView iv_image;
 		CardView cd_layout;
 		ImageView play_view;
-		
+
 		public viewHolder(View view) {
 			super(view);
-            
-		    tv_foldern = (TextView) view.findViewById(R.id.tv_folder);
-            tv_foldersize = (TextView) view.findViewById(R.id.tv_folder2);
-            iv_image = (ImageView) view.findViewById(R.id.iv_image);
-			cd_layout = (CardView) view.findViewById(R.id.card_view);
-			play_view = (ImageView) view.findViewById(R.id.play_view);
+
+		    tv_foldern = view.findViewById(R.id.tv_folder);
+            tv_foldersize = view.findViewById(R.id.tv_folder2);
+            iv_image = view.findViewById(R.id.iv_image);
+			cd_layout = view.findViewById(R.id.card_view);
+			play_view = view.findViewById(R.id.play_view);
 
 		}
 	}

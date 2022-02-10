@@ -19,8 +19,9 @@ public class DeleteFilesTask extends AsyncTask {
 	private int position;
 	private File rootFile;
 	private PathsData mData;
-
-	public DeleteFilesTask(Context context,ArrayList<String> items, int position, File rootFile) {
+    PathsData.Folder folderDatabase;
+    
+	public DeleteFilesTask(Context context, ArrayList<String> items, int position, File rootFile) {
 
 		this.items = items;
 		this.position = position;
@@ -28,12 +29,14 @@ public class DeleteFilesTask extends AsyncTask {
 		this.context = context;
 		File file = new File(Storage.getDefaultStorage());
 		this.mData = PathsData.getInstance(context, file.getAbsolutePath());
+        folderDatabase = PathsData.Folder.getInstance(context);
+		
 
 	}
 
 	@Override
 	protected void onPreExecute() {
-
+        
 		super.onPreExecute();
 		dialog = new SimpleDialog(context);
 		dialog.showProgressBar(true)
@@ -86,7 +89,8 @@ public class DeleteFilesTask extends AsyncTask {
 					break;
 				}
 				File file = new File(item);
-				if (file.delete()) {
+
+                if (file.delete()) {
 					progress++;
 					String name = null;
 					if ((name = mData.getPath(file.getName())) != null) {
@@ -100,8 +104,8 @@ public class DeleteFilesTask extends AsyncTask {
 	}
 
 	private void deleteFolder(File file) {
-		PathsData.Folder folderDatabase = PathsData.Folder.getInstance(context);
-		if (file.delete()) {
+		
+        if (file.delete()) {
 			folderDatabase.delete(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
 		}
 		folderDatabase.close();

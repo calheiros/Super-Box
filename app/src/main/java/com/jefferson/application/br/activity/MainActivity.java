@@ -1,32 +1,46 @@
 package com.jefferson.application.br.activity;
 
-import android.content.*;
-import android.content.res.*;
-import android.graphics.*;
-import android.net.*;
-import android.os.*;
-import android.preference.*;
-import android.support.design.widget.*;
-import android.support.v4.app.*;
-import android.support.v4.view.*;
-import android.support.v4.widget.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.view.*;
-import android.widget.*;
-import com.google.android.gms.ads.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.app.*;
-import com.jefferson.application.br.fragment.*;
-import com.jefferson.application.br.task.*;
-import com.jefferson.application.br.util.*;
-import java.io.*;
-import java.util.*;
-
+import android.annotation.TargetApi;
+import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.provider.Settings;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.jefferson.application.br.App;
+import com.jefferson.application.br.AppLockService;
+import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
-import android.support.v4.provider.*;
+import com.jefferson.application.br.app.SimpleDialog;
+import com.jefferson.application.br.fragment.LockFragment;
+import com.jefferson.application.br.fragment.MainFragment;
+import com.jefferson.application.br.fragment.SettingFragment;
+import com.jefferson.application.br.task.ImportTask;
+import com.jefferson.application.br.util.IntentUtils;
+import com.jefferson.application.br.util.Storage;
+import com.jefferson.application.br.util.Utils;
+import java.io.File;
+import java.util.ArrayList;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -34,7 +48,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     public static final String ACTION_INIT_WITH_PREFERENCES = "preferences_init_action";
 
 	private final int GET_URI_CODE = 98;
-    private MainFragment mainFragment;
+    public MainFragment mainFragment;
 	private LockFragment lockFragment;
 	private DrawerLayout drawerLayout;
 	private SettingFragment settingFragment;
@@ -48,6 +62,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	private static final int GET_URI_CODE_TASK = 54;
 	private AdView adview;
 	private InterstitialAd interstitial;
+
+    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 0;
 
 	public static MainActivity getInstance() {
 		return instante;
@@ -76,7 +92,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         this.instante = this;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
-        
+
 		MobileAds.initialize(this);
 
 		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
@@ -90,12 +106,14 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         initialize();
 		initGoogleAdView();
 		createInterstitial();
+
         //test only
         //startActivity(new Intent(this, ContatosActvity.class));
 	}
 
 	private void initGoogleAdView() {
-		adview = (AdView)findViewById(R.id.ad_view);
+
+        adview = (AdView)findViewById(R.id.ad_view);
 		adview.loadAd(new AdRequest.Builder().build());
 	}
 
@@ -106,7 +124,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 
 	public void createInterstitial() {
-		interstitial = new InterstitialAd(this);
+
+        interstitial = new InterstitialAd(this);
 		interstitial.setAdUnitId("ca-app-pub-3062666120925607/8580168530");
 		interstitial.setAdListener(new AdListener() {
                 @Override
@@ -116,26 +135,41 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             });
 		prepareAd();
 	}
-	public void prepareAd() {
-		if (interstitial.isLoading() == false && interstitial.isLoaded() == false) {
+
+    public void prepareAd() {
+
+        if (interstitial.isLoading() == false && interstitial.isLoaded() == false) {
 			interstitial.loadAd(new AdRequest.Builder().build());
 		}
 	}
+
     public void showAd() {
-		if (interstitial.isLoaded()) {
+
+        if (interstitial.isLoaded()) {
 			interstitial.show();
 		} 
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() == R.id.ads_item_menu) {
+
+        if (item.getItemId() == R.id.ads_item_menu) {
 
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
+    
+    public boolean requestPermission() { 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (!Settings.canDrawOverlays(this)) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE); 
+                return true; } 
+        } return false;
+    }
+    
 	private void initialize() {
-		this.mainFragment = new MainFragment();
+
+        this.mainFragment = new MainFragment();
 	    this.lockFragment = new LockFragment();
         this.settingFragment = new SettingFragment();
 
@@ -144,51 +178,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		navigationView.getMenu().getItem(toSetting ? 2 : 0).setChecked(true);
 
 	}
-	private int index;
-	public void showDialogChoose() {
 
-		index = 0;
-		String[] options = new String[]{getString(R.string.armaz_interno), getString(R.string.armaz_externo)};
-		if (Storage.getExternalStorage() == null)
-			options = new String[]{getString(R.string.armaz_interno)};
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle(getString(R.string.armazenamento));
-		builder.setSingleChoiceItems(options, getStoragePosition(), new DialogInterface.OnClickListener(){
-
-				@Override
-				public void onClick(DialogInterface dialog, int position) {
-					index = position;
-				}
-			});
-		builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener(){
-
-				@Override
-				public void onClick(DialogInterface dialog, int p2) {
-
-					Storage.setNewLocalStorage(index);
-					if (mainFragment != null)
-						mainFragment.update(MainFragment.ID.BOTH);
-					settingFragment.updateItem(4);
-				}
-			});
-		builder.setNegativeButton(getString(R.string.cancelar), null);
-		builder.create().show();
-	}
-
-	public int getStoragePosition() {
-
-        String storageLocation = Storage.getStorageLocation();
-        if (Storage.INTERNAL.equals(storageLocation)) {
-            return 0;
-        }
-        if (Storage.EXTERNAL.equals(storageLocation)) {
-            return 1;
-        }
-        return -1;
-    }
-
-	private void sorryAlert() {
+    private void sorryAlert() {
 
 		View view = getLayoutInflater().inflate(R.layout.dialog_check_box_view, null);
 
@@ -235,7 +226,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	@Override
 	public boolean onNavigationItemSelected(MenuItem item) {
-		int id = item.getItemId();
+
+        int id = item.getItemId();
 
         switch (id) {
             case R.id.main_item1:
@@ -264,53 +256,74 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		drawerLayout.closeDrawer(GravityCompat.START);
 		return true;
 	}
+
 	public void activityNotFound() {
 		Toast.makeText(this, "Nenhum app encontrado!", Toast.LENGTH_LONG).show();
 	}
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
-		if (!Utils.isMyServiceRunning(AppLockService.class)) {
+
+        if (!Utils.isMyServiceRunning(AppLockService.class)) {
 			startService(new Intent(this, AppLockService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
+            if (Settings.canDrawOverlays(this)) { 
+             
+            }
+               
+        } 
 		if (resultCode == MyCompatActivity.RESULT_OK) {
+
             if (requestCode == MainFragment.GET_FILE) {
-				Uri uri = null;
-				if (data != null) {
+
+                Uri uri = null;
+
+                if (data != null) {
 					uri = data.getData();
 					Toast.makeText(this, uri.getPath(), 1).show();
 				}
 				return;
 			}
+
 			if (requestCode == GET_URI_CODE || requestCode == GET_URI_CODE_TASK) {
-				Uri uri = data.getData();
-				if (Storage.checkIfSDCardRoot(uri)) {
-					getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+
+                Uri uri = data.getData();
+
+                if (Storage.checkIfSDCardRoot(uri)) {
+
+                    getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 					sharedPreferences.edit().putString(getString(R.string.EXTERNAL_URI), uri.toString()).commit();
 				} 
+
 			} else {
-				models = new ArrayList<>();
+
+                models = new ArrayList<>();
 				position = data.getIntExtra("position", -1);
 				ArrayList<String> paths = data.getStringArrayListExtra("selection");
-				for (String path : paths) {
+
+                for (String path : paths) {
 					FileModel model = new FileModel();
 					model.setResource(path);
 					model.setDestination(Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
 					model.setType(data.getStringExtra("type"));
 					models.add(model);
 				}
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-					if (hasExternalFile(paths) && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty())) {
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+
+                    if (hasExternalFile(paths) && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty())) {
 						getSdCardUri(GET_URI_CODE_TASK);
 						return;
 					}
 			} 
-			if (requestCode != GET_URI_CODE) {
+
+            if (requestCode != GET_URI_CODE) {
 				ImportTask mTask = new ImportTask(models, this, ImportTask.SESSION_INSIDE_APP);
 				mTask.execute();
 			}
@@ -324,15 +337,19 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
 		startActivityForResult(intent, code);
 	}
-	private boolean hasExternalFile(ArrayList<String> paths) {
-		for (String file:paths) {
+
+    private boolean hasExternalFile(ArrayList<String> paths) {
+
+        for (String file:paths) {
 			if (Environment.isExternalStorageRemovable(new File(file)))
 				return true;
 		}
 		return false;
 	}
-	@Override
+
+    @Override
 	public void onBackPressed() {
+
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             showExitDialog();
         } else {
@@ -357,10 +374,12 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 			})
 			.show();
 	}
-	@Override
+
+    @Override
     public void onStart() {
         super.onStart();
     }
+
     @Override
     public void onResume() {
         super.onResume();

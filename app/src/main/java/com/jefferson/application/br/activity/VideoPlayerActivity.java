@@ -1,74 +1,115 @@
 package com.jefferson.application.br.activity;
 
-import android.content.*;
-import android.content.pm.*;
-import android.media.*;
-import android.net.*;
-import android.os.*;
-import android.view.*;
-import android.widget.*;
-import com.jefferson.application.br.*;
-
-import java.io.*;
-import java.security.*;
-import java.util.*;
-import javax.crypto.*;
-import javax.crypto.spec.*;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.Toast;
+import com.jefferson.application.br.App;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.fragment.VideoPlayFragment;
+import java.util.ArrayList;
 
 public class VideoPlayerActivity extends MyCompatActivity {
-	
-	private VideoView mVideoView;
-	private Handler controllerHandler;
-	private SeekBar mSeek;
+
+    class MyPageListerner implements ViewPager.OnPageChangeListener {
+
+        private VideoPagerAdapter adpter;
+        private int lastFragmentIndex;
+
+        public MyPageListerner(VideoPagerAdapter adapter, int position) {
+            this.adpter = adapter;
+            lastFragmentIndex = position;
+        }
+
+        @Override
+        public void onPageScrolled(int p1, float p2, int p3) {
+
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            
+            VideoPlayFragment fragment = pagerAdapter.getItem(position);
+            VideoPlayFragment lastFragment = adpter.getItem(lastFragmentIndex);
+            
+            lastFragment.pause();
+            fragment.resume();
+            lastFragmentIndex = position;
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int p1) {
+
+        }
+
+    }
+    private VideoPlayerActivity.VideoPagerAdapter pagerAdapter;
+    private ViewPager viewPager;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        super.onCreate(savedInstanceState);
 
-		Window win = getWindow();
-        WindowManager.LayoutParams winParams = win.getAttributes();
-        int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;
-		winParams.flags |=  bits;
-        win.setAttributes(winParams);
+        setContentView(R.layout.video_view_activity);
+        Intent intent = getIntent();
+        int position = intent.getExtras().getInt("position");
+        ArrayList<String> filesPath = intent.getStringArrayListExtra("filepath");
 
-		setContentView(R.layout.view_video);
-		mVideoView = (VideoView) findViewById(R.id.my_video_view);
-        mSeek = (SeekBar) findViewById(R.id.video_progress);
-
-		Intent i = getIntent();
-	    int position = i.getExtras().getInt("position");
-
-		ArrayList<String> filepath = i.getStringArrayListExtra("filepath");
-        controllerHandler = new Handler();
-
-		File file = new File(filepath.get(position));
-	
-		mVideoView.setVideoURI(Uri.parse(file.getAbsolutePath()));
-		mVideoView.requestFocus();
-		mVideoView.setMediaController(new MediaController(this));
-		mVideoView.start();
-
-		mVideoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener()
-			{
-				@Override
-				public void onCompletion(MediaPlayer mp) {
-				 mp.start();
-				}
-			});
-		mVideoView.setOnErrorListener(new MediaPlayer.OnErrorListener(){
-
-				@Override
-				public boolean onError(MediaPlayer p1, int p2, int p3) {
-					return false;
-				}
-			}); 
+        pagerAdapter = new VideoPagerAdapter(getSupportFragmentManager(), filesPath);
+        viewPager = findViewById(R.id.video_view_pager);
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.setOnPageChangeListener(new MyPageListerner(pagerAdapter, position));
+        viewPager.setCurrentItem(position);
+        pagerAdapter.getItem(position).setAutoplay(true);
 	}
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        
+    private void requestOrientation(int width, int height) {
+
+        int orientation = width > height ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
+        setRequestedOrientation(orientation);
     }
-    
+
+    public void window() {
+
+        Window win = getWindow();
+        WindowManager.LayoutParams winParams = win.getAttributes();
+        int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        winParams.flags |=  bits;
+        win.setAttributes(winParams);
+    }
+
+    private class VideoPagerAdapter extends FragmentPagerAdapter {
+
+        private ArrayList<String> filesPath;
+        private VideoPlayFragment fragments[];
+
+        public VideoPagerAdapter(FragmentManager fm, ArrayList<String> paths) {
+
+            super(fm);
+            this.filesPath = paths;
+            this.fragments = new VideoPlayFragment[paths.size()];
+        }
+
+        @Override
+        public VideoPlayFragment getItem(int position) {
+
+            if (fragments[position] == null) {
+                fragments[position] = new VideoPlayFragment(filesPath.get(position));
+                Log.i("VideoPlayerActivy", "fragment created => " + position);
+            }
+            return fragments[position];
+        }
+
+        @Override
+        public int getCount() {
+            return filesPath.size();
+        }
+    }
 }

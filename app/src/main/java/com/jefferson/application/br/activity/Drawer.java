@@ -1,30 +1,24 @@
 package com.jefferson.application.br.activity;
 
-import android.app.*;
-import android.content.*;
-import android.media.*;
-import android.net.*;
-import android.os.*;
-import android.preference.*;
-import android.support.design.widget.*;
-import android.support.v4.app.*;
-import android.support.v4.view.*;
-import android.support.v4.widget.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.fragment.*;
-import java.io.*;
-import java.util.*;
-
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
+import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
-
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.fragment.LockFragment;
 
 public class Drawer extends MyCompatActivity {
     private DrawerLayout mDrawerLayout;

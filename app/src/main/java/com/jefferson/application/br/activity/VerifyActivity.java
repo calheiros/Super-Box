@@ -30,7 +30,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pattern);
 	    LocaleManager.configureLocale(this);
-	
+
 		settings = getSharedPreferences("config", MODE_PRIVATE);
         password = settings.getString("pattern", "");
 
@@ -39,17 +39,18 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
-		//Toast.makeText(this, "Tiktok!", 1).show();
+		
 	    requestPermission();
 
 		Handler = new Handler();
-		Runnable = new Runnable()
-		{
+		Runnable = new Runnable() {
+            
 			@Override
 			public void run() {
 				materialLockView.clearPattern();
 			}
 		};
+
 		materialLockView.setOnPatternListener(new MaterialLockView.OnPatternListener() {
                 public void onPatternStart() {
 					try {
@@ -69,9 +70,11 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 					}
 					super.onPatternDetected(pattern, SimplePattern);
 
-				}});
+				}
+            }
+        );
 	}
-	
+
 	private void startPopupMenu(View view) {
 		PopupMenu popMenu = new PopupMenu(this, view);
 		popMenu.getMenuInflater().inflate(R.menu.menu_recovery_pass, popMenu.getMenu());
@@ -97,9 +100,9 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 				// Show an explanation to the user *asynchronously* -- don't block
 				// this thread waiting for the user's response! After the user
 				// sees the explanation, try again to request the permission.
-                 Intent inten = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
-                 startActivity(inten);
-                  
+                Intent inten = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
+                startActivity(inten);
+
 			} else {
 				// No explanation needed, we can request the permission.
 				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 12);
@@ -111,6 +114,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 			checkPassword();
 		}
 	}
+
 	public void checkPassword() {
 		if (password.isEmpty()) {
 			startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
@@ -133,7 +137,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 			}
 		}
 	}
-	
+
 	@Override
 	public void onBackPressed() {
 		super.onBackPressed();
