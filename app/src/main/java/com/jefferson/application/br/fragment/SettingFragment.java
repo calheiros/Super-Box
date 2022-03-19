@@ -28,8 +28,12 @@ import com.jefferson.application.br.adapter.SettingAdapter;
 import com.jefferson.application.br.model.PreferenceItem;
 import com.jefferson.application.br.util.Storage;
 import java.util.ArrayList;
+import android.view.View.OnLongClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.Adapter;
+import com.jefferson.application.br.util.Debug;
 
-public class SettingFragment extends Fragment implements OnItemClickListener {
+public class SettingFragment extends Fragment implements OnItemClickListener, OnItemLongClickListener {
 
 	public String[] storages;
 	public String version;
@@ -45,7 +49,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        
+
         View view = inflater.inflate(R.layout.config, null);
 		mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 		storages = new String[]{getString(R.string.armaz_interno),getString(R.string.armaz_externo)};
@@ -118,13 +122,27 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 		mAdapter = new SettingAdapter(items, this);
 		mListView.setAdapter(mAdapter);
 		mListView.setOnItemClickListener(this);
+        mListView.setOnItemLongClickListener(this);
 		return view;
 	}
 
 	private String getDialerCode() {
 		return mShared.getString("secret_code", "#4321");
 	}
+    @Override
+    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
 
+        if (position == 8) {
+            
+            boolean debug = Debug.isDebugOn();
+            Debug.setDebug(!debug);
+            String msg = debug? "Debug mode disabled!": "Debug mode enabled!";
+            Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+            
+            return true;
+        }
+        return false;
+    }
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 		switch (position) {
@@ -138,14 +156,10 @@ public class SettingFragment extends Fragment implements OnItemClickListener {
 				showDialog();
 				break;
 			case 5:
-				Switch mSwitch = (Switch) view.findViewById(R.id.my_switch);
-				boolean isChecked = !mSwitch.isChecked();
-				/*if(isChecked && !mShared.getBoolean("dont_show_info_on_hidden", false)) {
-                 showWarning();
-                 break;
-                 }*/
+				Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
+				boolean isChecked = !mySwitch.isChecked();
 				changeIconVisibility(isChecked);
-				mSwitch.setChecked(isChecked);
+				mySwitch.setChecked(isChecked);
 				break;
 			case 4:
 				showDialogChoose();

@@ -3,14 +3,19 @@ import android.widget.Toast;
 import com.jefferson.application.br.App;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.os.Handler;
+import android.os.Looper;
 
 public class Debug {
-    
+
     private static String PREFERENCE_NAME = "Debug";
-    
-    public static void msg(String msg) {
-        if (isDebugOn())
-            Toast.makeText(App.getAppContext(), msg, Toast.LENGTH_LONG).show();
+
+    public static void toast(String msg) {
+        toast(null, msg, Toast.LENGTH_SHORT);
+    }
+
+    public static void toast(String msg, int duration) {
+        toast(null, msg, Toast.LENGTH_SHORT);
     }
 
     public static boolean isDebugOn() {
@@ -18,12 +23,21 @@ public class Debug {
         boolean debugOn = prefs.getBoolean(PREFERENCE_NAME, false);
         return debugOn;
     }
-    
-    public static void msg(String tag, String msg) {
+
+    public static void toast(final String tag, final String msg, final int duration) {
+
         if (isDebugOn())
-            Toast.makeText(App.getAppContext(), tag + ": " + msg, Toast.LENGTH_LONG).show();
+            new Handler(Looper.getMainLooper()).post(new Runnable(){
+
+                    @Override
+                    public void run() {
+                        String text = tag == null ? msg: tag + ": " + msg;
+                        Toast.makeText(App.getAppContext(), text, duration).show();
+                    }
+                }
+            );
     }
-    
+
     public static void setDebug(boolean on) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
         prefs.edit().putBoolean(PREFERENCE_NAME, on).commit();

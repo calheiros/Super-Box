@@ -15,41 +15,32 @@ import com.jefferson.application.br.App;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.fragment.VideoPlayFragment;
 import java.util.ArrayList;
+import com.jefferson.application.br.util.Debug;
 
 public class VideoPlayerActivity extends MyCompatActivity {
 
-    class MyPageListerner implements ViewPager.OnPageChangeListener {
+    public class MyPageListerner implements ViewPager.OnPageChangeListener {
 
         private VideoPagerAdapter adpter;
         private int lastFragmentIndex;
 
         public MyPageListerner(VideoPagerAdapter adapter, int position) {
             this.adpter = adapter;
-            lastFragmentIndex = -1;
+            lastFragmentIndex = position;
         }
 
         @Override
         public void onPageScrolled(int p1, float p2, int p3) {
-            //Toast.makeText(App.getInstance(), "p1: " + p1,1). show();
+            Debug.toast("p2 = " + p1 + ", p3 = " + p3);
         }
 
         @Override
         public void onPageSelected(int position) {
 
             VideoPlayFragment fragment = pagerAdapter.getItem(position);
-
-            if (lastFragmentIndex != position) {
-                
-                if (lastFragmentIndex != -1) {
-                    VideoPlayFragment lastFragment = adpter.getItem(lastFragmentIndex);
-                    lastFragment.stop();
-                }
-                fragment.start();
-
-            } else {
-                fragment.resume();
-            }
-            
+            VideoPlayFragment lastFragment = adpter.getItem(lastFragmentIndex);
+            lastFragment.stop();
+            fragment.start();
             lastFragmentIndex = position;
         }
 
@@ -76,7 +67,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOnPageChangeListener(new MyPageListerner(pagerAdapter, position));
         viewPager.setCurrentItem(position);
-        pagerAdapter.getItem(position).setAutoplay(true);
+        pagerAdapter.getItem(position).setPlayOnCreate(true);
     }
 
     private void requestOrientation(int width, int height) {

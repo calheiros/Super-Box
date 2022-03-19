@@ -163,18 +163,18 @@ public class PathsData extends SQLiteOpenHelper {
 		public String getFolderId(String str, String type) {
 
 			SQLiteDatabase readableDatabase = getReadableDatabase();
-
-			Cursor rawQuery = readableDatabase.rawQuery("SELECT id FROM FOLDER_ WHERE name = '" + str + "' AND type = '" + type + "'", (String[]) null);
-			if (rawQuery.moveToFirst()) {
+            Cursor rawQuery = readableDatabase.rawQuery("SELECT id FROM FOLDER_ WHERE name = '" + str + "' AND type = '" + type + "'", (String[]) null);
+			
+            if (rawQuery.moveToFirst()) {
 				return rawQuery.getString(0);
 			}
 			return null;
 		}
 
-		public void addName(String str, String str2, String type) {
+		public void addName(String id, String name, String type) {
 
 			SQLiteDatabase writableDatabase = getWritableDatabase();
-			writableDatabase.execSQL("INSERT INTO FOLDER_ VALUES ('" + str2 + "', '" + str + "', '" + type + "');");
+			writableDatabase.execSQL("INSERT INTO FOLDER_ VALUES ('" + id + "', '" + name + "', '" + type + "');");
 			writableDatabase.close();
 		}
 

@@ -92,7 +92,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	}
     @Override
     public boolean onLongClick(View view) {
-       
+        
         return true;
     }
 	public void importFromGallery() {

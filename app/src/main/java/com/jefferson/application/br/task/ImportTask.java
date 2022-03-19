@@ -170,7 +170,7 @@ public class ImportTask extends AsyncTask {
 				String str = folderId;
 
 				if (folderId == null) {
-					folderDatabase.addName(folderName, randomString2, model.getType());
+					folderDatabase.addName(randomString2, folderName, model.getType());
 				} else {
 					randomString2 = str;
 				}

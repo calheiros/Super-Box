@@ -14,6 +14,7 @@ import com.jefferson.application.br.database.*;
 import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
+import com.jefferson.application.br.util.Debug;
 import android.support.v4.app.Fragment;
 import com.jefferson.application.br.task.*;
 import com.jefferson.application.br.database.PathsData.Folder;
@@ -59,7 +60,7 @@ public class AlbumFragment extends Fragment {
 
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 	    GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
-    
+
 		mRecyclerView.setLayoutManager(layoutManager);
 		mAdapter = new AlbumAdapter(this, getLocalList());
         mRecyclerView.setAdapter(mAdapter);
@@ -157,27 +158,32 @@ public class AlbumFragment extends Fragment {
         Context activity = App.getAppContext();
         String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(activity);
-        String folderId = folderDatabase.getFolderId(model.getName(), folderType);
+        File file = new File(model.getPath());
+        String id = file.getName();
+        String folderName = folderDatabase.getFolderName(id, folderType);
+        Debug.toast("ID => " + folderName + "\n NAME => " + model.getName());
 
-        if (folderId == null) {
-            File file = new File(model.getPath());
-            folderId = file.getName();
-            folderDatabase.addName(folderId, newName, folderType);
+        if (folderName == null) {
+            folderDatabase.addName(id, newName, folderType);
+        } else if (folderName.equals(newName)) {
+            Toast.makeText(getContext(), "The new name can not be the same!", Toast.LENGTH_LONG).show();
+            folderDatabase.close();
+            return;
         } else {
-            //folderDatabase.updateName(name, model.getName(), folderType);
-            folderDatabase.updateName(folderId, newName, folderType);
+            folderDatabase.updateName(id, newName, folderType);
         }
         folderDatabase.close();
         update();
     }
+
     public void createFolder(String name) {
-        
+
         String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(getContext());
         String folderId = folderDatabase.getFolderId(name, folderType);
         String randomString = RandomString.getRandomString(24);
-       //  Storage.getFolder(null);
-        
+        //Storage.getFolder(null);
+
         if (folderId == null) {
             folderDatabase.addName(folderId, name, folderType);
         } else {

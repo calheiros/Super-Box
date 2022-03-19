@@ -30,6 +30,13 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         this.map = new HashMap<>();
     }
 
+    public void updateItemDuration(String path, String time) {
+        
+        this.map.put(path, time);
+        int index = mListItemsPath.indexOf(path);
+        notifyItemChanged(index);
+    }
+
     public void setMediaDuration(HashMap<String, String> map) {
         this.map = map;
         notifyDataSetChanged();
@@ -52,9 +59,11 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
     @Override
     public MultiSelectRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        
         View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gridview_item, null);
         ViewHolder viewHolder = new ViewHolder(itemLayoutView, clickListener);
-		if (mediaType == 1)
+		
+        if (mediaType == 1)
 			viewHolder.playView.setVisibility(View.VISIBLE);
 		
         return viewHolder;
@@ -71,7 +80,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
             viewHolder.textView.setVisibility(View.VISIBLE);
             viewHolder.textView.setText(result);
             
-            Debug.msg("Result => " + result);
+            Debug.toast("Result => " + result);
         } else {
             
         }
@@ -95,8 +104,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
             super(rootView);
 
             this.listener = listener;
-		
-            imageView = (ImageView) rootView.findViewById(R.id.image);
+		    imageView = (ImageView) rootView.findViewById(R.id.image);
 			playView = (ImageView) rootView.findViewById(R.id.play_view);
             textView = rootView.findViewById(R.id.gridview_itemTextView);
             selectedOverlay = itemView.findViewById(R.id.selected_overlay);
@@ -107,12 +115,15 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
         @Override
         public void onClick(View v) {
+            
             if (listener != null) {
                 listener.onItemClicked(getAdapterPosition());
             }
         }
+        
         @Override
         public boolean onLongClick(View view) {
+            
             if (listener != null) {
                 return listener.onItemLongClicked(getAdapterPosition());
             }

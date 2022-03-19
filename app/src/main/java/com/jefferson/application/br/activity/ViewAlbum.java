@@ -93,7 +93,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		mViewDelete.setOnClickListener(this);
 		mViewMove.setOnClickListener(this);
 		mViewSelect.setOnClickListener(this);
-        
+
         if (position == 1) {
             updateDatabase(mListItemsPath, mAdapter);
         }
@@ -117,20 +117,21 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 break;
         }
     }
-    
+
     private void updateDatabase(final ArrayList<String> list, final MultiSelectRecyclerViewAdapter adapter) {
 
         final Handler handler = new Handler(Looper.getMainLooper());
+
         new Thread() {
-            
+
             @Override
             public void run() {
                 final HashMap<String, String> map = new HashMap<String, String>();
-                for (String path: list) {
-                   
+                for (final String path: list) {
+
                     File file = new File(path);
                     int duration = database.getDuration(file.getName());
-                    
+
                     if (duration == 0) {
                         Uri uri = Uri.parse(path); 
                         MediaMetadataRetriever mmr = new MediaMetadataRetriever(); 
@@ -139,17 +140,25 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         duration = Integer.parseInt(durationStr);
                         database.updateFileDuration(file.getName(), duration);
                     }
-                    String time = String.format("%d:%d", TimeUnit.MILLISECONDS.toMinutes(duration), TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+                    final String time = String.format("%d:%d", TimeUnit.MILLISECONDS.toMinutes(duration), TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+                    Debug.toast("updateDatabase", "duration => " + time, Toast.LENGTH_SHORT);
                     map.put(path, time);
-                    Debug.msg("ViewAlbumActivity", "duration => " + time);
+
+                    runOnUiThread(new Runnable(){
+
+                            @Override
+                            public void run() {
+                                adapter.updateItemDuration(path, time);
+                            }
+                        });
                 }
 
                 handler.post(new Runnable(){
 
                         @Override
                         public void run() {
-                            adapter.setMediaDuration(map);
-                            Debug.msg("database update finished!");
+                            //adapter.setMediaDuration(map);
+                            Debug.toast("database update finished!");
                         }
                     }
                 );
@@ -276,11 +285,13 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 		if (resultCode == RESULT_OK) {
-			ArrayList<String> list = data.getStringArrayListExtra("moved_files");
+
+            ArrayList<String> list = data.getStringArrayListExtra("moved_files");
 			Toast.makeText(this, "Moved " + list.size() + " file(s)", 1).show();
 			mAdapter.removeAll(list);
 			synchronizeData();
-			if (mAdapter.getItemCount() == 0) {
+
+            if (mAdapter.getItemCount() == 0) {
 				finish();
 			}
 		}

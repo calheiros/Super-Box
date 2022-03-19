@@ -19,17 +19,17 @@ public class VideoPlayFragment extends Fragment {
     private View view;
     private VideoView mVideoView;
     private String videoPath;
-    private boolean autoplay;
     private MediaController mediaController;
+
+    private boolean playOnCreate;
 
     public VideoPlayFragment(String videoPath) {
 
         this.videoPath = videoPath;
-        this.autoplay = false;
     }
 
-    public void setAutoplay(boolean autoplay) {
-        this.autoplay = autoplay;
+    public void setPlayOnCreate(boolean autoplay) {
+        this.playOnCreate = autoplay;
     }
 
     @Override
@@ -74,8 +74,8 @@ public class VideoPlayFragment extends Fragment {
                 }
             );
 
-            if (autoplay) {
-                resume();
+            if (playOnCreate) {
+                start();
             }
         }
 
