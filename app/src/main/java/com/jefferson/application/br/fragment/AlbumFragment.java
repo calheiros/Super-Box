@@ -59,7 +59,7 @@ public class AlbumFragment extends Fragment {
 
         RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 	    GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
-
+    
 		mRecyclerView.setLayoutManager(layoutManager);
 		mAdapter = new AlbumAdapter(this, getLocalList());
         mRecyclerView.setAdapter(mAdapter);
@@ -141,7 +141,7 @@ public class AlbumFragment extends Fragment {
                     String text = editText.getText().toString();
                     switch (action) {
                         case ACTION_RENAME_FOLDER:
-                            renameFolder(model, editText.getText().toString());
+                            renameFolder(model, text);
                             break;
                         case ACTION_CREATE_FOLDER:
                             createFolder(text);
@@ -176,7 +176,7 @@ public class AlbumFragment extends Fragment {
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(getContext());
         String folderId = folderDatabase.getFolderId(name, folderType);
         String randomString = RandomString.getRandomString(24);
-        Storage.getFolder(null);
+       //  Storage.getFolder(null);
         
         if (folderId == null) {
             folderDatabase.addName(folderId, name, folderType);

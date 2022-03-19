@@ -41,6 +41,7 @@ import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.Utils;
 import java.io.File;
 import java.util.ArrayList;
+import android.content.pm.ActivityInfo;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -83,7 +84,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.abc_action_bar_home_description);
 		toggle.syncState();
-
 		drawerLayout.setDrawerListener(toggle);
 	}
 

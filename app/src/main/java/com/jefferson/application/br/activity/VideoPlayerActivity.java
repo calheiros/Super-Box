@@ -25,22 +25,31 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
         public MyPageListerner(VideoPagerAdapter adapter, int position) {
             this.adpter = adapter;
-            lastFragmentIndex = position;
+            lastFragmentIndex = -1;
         }
 
         @Override
         public void onPageScrolled(int p1, float p2, int p3) {
-
+            //Toast.makeText(App.getInstance(), "p1: " + p1,1). show();
         }
 
         @Override
         public void onPageSelected(int position) {
-            
+
             VideoPlayFragment fragment = pagerAdapter.getItem(position);
-            VideoPlayFragment lastFragment = adpter.getItem(lastFragmentIndex);
+
+            if (lastFragmentIndex != position) {
+                
+                if (lastFragmentIndex != -1) {
+                    VideoPlayFragment lastFragment = adpter.getItem(lastFragmentIndex);
+                    lastFragment.stop();
+                }
+                fragment.start();
+
+            } else {
+                fragment.resume();
+            }
             
-            lastFragment.pause();
-            fragment.resume();
             lastFragmentIndex = position;
         }
 
@@ -68,7 +77,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
         viewPager.setOnPageChangeListener(new MyPageListerner(pagerAdapter, position));
         viewPager.setCurrentItem(position);
         pagerAdapter.getItem(position).setAutoplay(true);
-	}
+    }
 
     private void requestOrientation(int width, int height) {
 

@@ -27,7 +27,15 @@
 			android:visibility="gone"
 			android:scaleType="centerCrop"
 			android:layout_centerInParent="true"/>
-
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="8:38"
+            android:layout_alignParentEnd="true"
+           
+            android:id="@+id/gridview_itemTextView"/>
+        
 		<FrameLayout
 			android:id="@+id/selected_overlay"
 			android:layout_width="match_parent"
@@ -42,7 +50,7 @@
 				android:layout_width="45dp"
 				android:src="@drawable/item_checked"
 				android:layout_gravity="center"/>
-
+            
 		</FrameLayout>
 
 	</RelativeLayout>

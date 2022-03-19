@@ -12,6 +12,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 import com.jefferson.application.br.R;
 import java.io.File;
+import android.os.Handler;
 
 public class VideoPlayFragment extends Fragment {
 
@@ -43,18 +44,17 @@ public class VideoPlayFragment extends Fragment {
                 Toast.makeText(getContext(), "File does not exists " + videoPath, 1).show();
                 return view;
             }
-            
+
             mediaController = new MediaController(getActivity());
             mediaController.setAnchorView(mVideoView);
-            mVideoView.setVideoURI(Uri.parse(file.getAbsolutePath()));
             mVideoView.setMediaController(mediaController);
-            mVideoView.setOnCompletionListener( 
+            mVideoView.setOnPreparedListener(
 
-                new MediaPlayer.OnCompletionListener() {
+                new MediaPlayer.OnPreparedListener() {
 
                     @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        mp.start();
+                    public void onPrepared(MediaPlayer mp) {
+                        mp.setLooping(true);
                     }
                 }
             );
@@ -82,10 +82,36 @@ public class VideoPlayFragment extends Fragment {
         return view;
     }
 
+    public void start() {
+        new Handler().postDelayed(new Runnable(){
+
+                @Override
+                public void run() {
+                    if (mVideoView != null) {
+                        mVideoView.setVideoURI(Uri.parse(videoPath));
+                        mVideoView.start();
+                        mVideoView.requestFocus();
+                    }
+                }
+            }, 100);
+
+    }
+
+    public void stop() {
+
+        if (mVideoView != null) {
+            mVideoView.stopPlayback();
+        }
+        if (mediaController != null) {
+            mediaController.hide();
+
+        }
+    }
+
     public void resume() {
 
         if (mVideoView != null) {
-            mVideoView.start();
+            mVideoView.resume();
             mVideoView.requestFocus();
         }
     }
@@ -95,10 +121,10 @@ public class VideoPlayFragment extends Fragment {
         if (mVideoView != null) {
             mVideoView.pause();
         }
-        if (mediaController != null) {
-            mediaController.hide();
-            
-        }
-        
+        /*
+         if (mediaController != null) {
+         mediaController.hide();
+         }
+         */
     }
 }

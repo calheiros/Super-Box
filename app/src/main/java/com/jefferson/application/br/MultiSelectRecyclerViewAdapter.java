@@ -10,21 +10,31 @@ import android.widget.*;
 import com.bumptech.glide.*;
 import java.io.*;
 import java.util.*;
+import com.jefferson.application.br.util.Debug;
 
 public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelectRecyclerViewAdapter.ViewHolder> {
 
     public ArrayList<String> mListItemsPath;
+    public ArrayList<Integer> duration;
     private static Context context;
     private ViewHolder.ClickListener clickListener;
 	private int mediaType;
-	
+	private HashMap<String, String> map;
+    
     public MultiSelectRecyclerViewAdapter(Context context, ArrayList<String> arrayList, ViewHolder.ClickListener clickListener, int mediaType) {
+        
         this.mListItemsPath = arrayList;
         this.context = context;
         this.clickListener = clickListener;
 		this.mediaType = mediaType;
+        this.map = new HashMap<>();
     }
 
+    public void setMediaDuration(HashMap<String, String> map) {
+        this.map = map;
+        notifyDataSetChanged();
+    }
+    
 	public void removeAll(ArrayList<String> list) {
 	
 		this.mListItemsPath.removeAll(list);
@@ -55,6 +65,17 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
 		viewHolder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
 		Glide.with(context).load("file://" + mListItemsPath.get(position)).skipMemoryCache(true).into(viewHolder.imageView);
+        String result = map.get(mListItemsPath.get(position));
+        
+        if (result != null) {
+            viewHolder.textView.setVisibility(View.VISIBLE);
+            viewHolder.textView.setText(result);
+            
+            Debug.msg("Result => " + result);
+        } else {
+            
+        }
+        
  	}
 
     @Override
@@ -67,20 +88,21 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         public ImageView imageView;
         private ClickListener listener;
         private final View selectedOverlay;
-
+        public TextView textView;
 		public ImageView playView;
 	
-        public ViewHolder(View itemLayoutView, ClickListener listener) {
-            super(itemLayoutView);
+        public ViewHolder(View rootView, ClickListener listener) {
+            super(rootView);
 
             this.listener = listener;
 		
-            imageView = (ImageView) itemLayoutView.findViewById(R.id.image);
-			playView = (ImageView) itemLayoutView.findViewById(R.id.play_view);
+            imageView = (ImageView) rootView.findViewById(R.id.image);
+			playView = (ImageView) rootView.findViewById(R.id.play_view);
+            textView = rootView.findViewById(R.id.gridview_itemTextView);
             selectedOverlay = itemView.findViewById(R.id.selected_overlay);
 		
-            itemLayoutView.setOnClickListener(this);
-            itemLayoutView.setOnLongClickListener(this);
+            rootView.setOnClickListener(this);
+            rootView.setOnLongClickListener(this);
         }
 
         @Override

@@ -17,7 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View.OnClickListener;
 import com.jefferson.application.br.R;
 
-public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener {
+public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener, OnLongClickListener {
+
 	//private FABRevealLayout FABReveal;
 	private ViewPager viewPager;
 	private Toolbar toolbar;
@@ -59,10 +60,12 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 			tabLayout.setupWithViewPager(viewPager);
 
 			//fabMenu = (FloatingActionsMenu) view.findViewById(R.id.mFloatingActionsMenu);
-			view.findViewById(R.id.fab).setOnClickListener(this);
+			View fab = view.findViewById(R.id.fab);
+            fab.setOnClickListener(this);
+            fab.setOnLongClickListener(this);
 			//view.findViewById(R.id.fab_create).setOnClickListener(this);
-
-			setupTabs(0);
+            
+			toogleTabIcon(0);
 		}
 		main.setupToolbar(toolbar, getToolbarName(viewPager.getCurrentItem()));
 		return view;
@@ -87,7 +90,11 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 				break;
 		} 
 	}
-    
+    @Override
+    public boolean onLongClick(View view) {
+       
+        return true;
+    }
 	public void importFromGallery() {
         
 		Intent intent = new Intent(getContext(), GalleryAlbum.class);
@@ -95,7 +102,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		getActivity().startActivityForResult(intent, 23);
 	}
     
-	private void setupTabs(int position) {
+	private void toogleTabIcon(int position) {
         MainFragment mainFragment = this;
 
         int id = position == 0 ? R.drawable.ic_videos : R.drawable.ic_pictures;
@@ -128,7 +135,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 
 	@Override
     public void onPageSelected(int i) {
-        setupTabs(i);
+        toogleTabIcon(i);
         ((MainActivity) getActivity()).setupToolbar(this.toolbar, getToolbarName(i));
     }
 

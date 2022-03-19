@@ -1,6 +1,7 @@
 package com.jefferson.application.br.model;
 
 public class PickerModel {
+    
     private String name;
     private String path;
     private int size;
