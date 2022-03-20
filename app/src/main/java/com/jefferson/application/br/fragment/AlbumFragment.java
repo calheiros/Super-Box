@@ -20,6 +20,7 @@ import com.jefferson.application.br.task.*;
 import com.jefferson.application.br.database.PathsData.Folder;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.support.design.widget.Snackbar;
 
 public class AlbumFragment extends Fragment {
 
@@ -31,7 +32,7 @@ public class AlbumFragment extends Fragment {
 
     public final static int ACTION_CREATE_FOLDER = 122;
     public final static int ACTION_RENAME_FOLDER = 54;
-
+    
 	public AlbumFragment() {
 
 	}
@@ -64,7 +65,6 @@ public class AlbumFragment extends Fragment {
 		mRecyclerView.setLayoutManager(layoutManager);
 		mAdapter = new AlbumAdapter(this, getLocalList());
         mRecyclerView.setAdapter(mAdapter);
-
 		return view;
 	}
 
@@ -114,6 +114,7 @@ public class AlbumFragment extends Fragment {
 
         @Override
 		protected void onPreExecute() {
+           
 			super.onPreExecute();
 		}
 
@@ -130,11 +131,13 @@ public class AlbumFragment extends Fragment {
         View contentView = getActivity().getLayoutInflater().
             inflate(R.layout.dialog_edit_text, null);
         final EditText editText = contentView.findViewById(R.id.editTextInput);
+        String title = action == ACTION_RENAME_FOLDER ? "Renomear pasta" : "Criar pasta";
 
-        editText.setText(model.getName());
+        if (model != null)
+            editText.setText(model.getName());
 
         new AlertDialog.Builder(context)
-            .setTitle("Renomear pasta")
+            .setTitle(title)
             .setView(contentView)
             .setPositiveButton(context.getString(R.string.renomear), new DialogInterface.OnClickListener() {
                 @Override
@@ -172,20 +175,28 @@ public class AlbumFragment extends Fragment {
         } else {
             folderDatabase.updateName(id, newName, folderType);
         }
+        Snackbar.make(view, "Folder renamed: " + newName, Snackbar.LENGTH_SHORT).show();
         folderDatabase.close();
         update();
     }
 
     public void createFolder(String name) {
 
-        String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
+        String type = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(getContext());
-        String folderId = folderDatabase.getFolderId(name, folderType);
-        String randomString = RandomString.getRandomString(24);
-        //Storage.getFolder(null);
+        String id = folderDatabase.getFolderId(name, type);
+        String randomStr = RandomString.getRandomString(24);
 
-        if (folderId == null) {
-            folderDatabase.addName(folderId, name, folderType);
+        if (id == null) {
+            
+            id = randomStr;
+            int strType = position == 0 ? Storage.IMAGE: Storage.VIDEO;
+            File file = new File(Storage.getFolder(strType), randomStr);
+            
+            if (file.mkdirs()) {
+                folderDatabase.addName(id, name, type);
+                Snackbar.make(view, "Creating folder \"" + name + "\"", Snackbar.LENGTH_SHORT).show();
+            }
         } else {
             Toast.makeText(getContext(), "Folder alreay exists!", 1).show();
         }

@@ -46,6 +46,7 @@ import java.util.HashMap;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import com.jefferson.application.br.util.Debug;
+import android.support.design.widget.Snackbar;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener {
 
@@ -65,8 +66,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.gridview_main);
-        initToolbar();
-
+       
         File file = new File(Storage.getDefaultStorage());
 		database = PathsData.getInstance(this, file.getAbsolutePath());
 		mainLayout = findViewById(R.id.main_linear_layout);
@@ -93,7 +93,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		mViewDelete.setOnClickListener(this);
 		mViewMove.setOnClickListener(this);
 		mViewSelect.setOnClickListener(this);
-
+        
+        initToolbar();
+        
         if (position == 1) {
             updateDatabase(mListItemsPath, mAdapter);
         }
@@ -180,7 +182,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         invalidateOptionsMenu();
         switchIcon();
     }
-
+    
     private void exportGallery() {
 
         if (mAdapter.getSelectedItemCount() == 0) {
@@ -285,15 +287,12 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 		if (resultCode == RESULT_OK) {
-
+            exitSelectionMode();
             ArrayList<String> list = data.getStringArrayListExtra("moved_files");
-			Toast.makeText(this, "Moved " + list.size() + " file(s)", 1).show();
+            Snackbar.make(mRecyclerView, list.size() + " file(s) moved", Snackbar.LENGTH_SHORT).show();
 			mAdapter.removeAll(list);
 			synchronizeData();
-
-            if (mAdapter.getItemCount() == 0) {
-				finish();
-			}
+            
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}

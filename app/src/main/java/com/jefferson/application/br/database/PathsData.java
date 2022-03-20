@@ -160,10 +160,10 @@ public class PathsData extends SQLiteOpenHelper {
 
 		}
 
-		public String getFolderId(String str, String type) {
+		public String getFolderId(String name, String type) {
 
 			SQLiteDatabase readableDatabase = getReadableDatabase();
-            Cursor rawQuery = readableDatabase.rawQuery("SELECT id FROM FOLDER_ WHERE name = '" + str + "' AND type = '" + type + "'", (String[]) null);
+            Cursor rawQuery = readableDatabase.rawQuery("SELECT id FROM FOLDER_ WHERE name = '" + name + "' AND type = '" + type + "'", (String[]) null);
 			
             if (rawQuery.moveToFirst()) {
 				return rawQuery.getString(0);

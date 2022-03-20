@@ -16,6 +16,7 @@ import com.jefferson.application.br.activity.*;
 import android.support.v7.widget.Toolbar;
 import android.view.View.OnClickListener;
 import com.jefferson.application.br.R;
+import java.util.ArrayList;
 
 public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener, OnLongClickListener {
 
@@ -93,6 +94,8 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     @Override
     public boolean onLongClick(View view) {
         
+        AlbumFragment fragment = (AlbumFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
+        fragment.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER);
         return true;
     }
 	public void importFromGallery() {
@@ -165,8 +168,11 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 
 		@Override
 		public Fragment getItem(int position) {
-
-			return fragments[position] = AlbumFragment.newInstance(position);
+            
+            if (fragments[position] == null) {
+			    fragments[position] = AlbumFragment.newInstance(position);
+            }
+            return fragments[position];
 		}
         public void update(int position) {
 

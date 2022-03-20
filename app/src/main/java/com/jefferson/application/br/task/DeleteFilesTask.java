@@ -12,9 +12,9 @@ import java.util.*;
 
 public class DeleteFilesTask extends AsyncTask {
 
-	private int progress;
+	public int progress;
 	private List<String> items;
-	private SimpleDialog dialog;
+	public SimpleDialog dialog;
 	private Context context;
 	private int position;
 	private File rootFile;
@@ -39,7 +39,7 @@ public class DeleteFilesTask extends AsyncTask {
         
 		super.onPreExecute();
 		dialog = new SimpleDialog(context);
-		dialog.showProgressBar(true)
+		dialog.showProgressBar(!items.isEmpty())
 			.setContentTitle("Excluindo")
 			.setMax(items.size())
 			.setProgress(0)
