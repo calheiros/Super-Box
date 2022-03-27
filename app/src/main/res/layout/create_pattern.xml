@@ -56,10 +56,9 @@
 			style="?android:attr/buttonBarButtonStyle"
 			android:layout_height="50dp"
 			android:layout_width="100dp"
-			android:text="Concluir"
+			android:text="@string/concluir"
 			android:layout_gravity="center"
-			android:id="@+id/bt_pattern"
-			android:textColor="#FFFFFF"/>
+			android:id="@+id/bt_pattern"/>
 
 	</LinearLayout>
 

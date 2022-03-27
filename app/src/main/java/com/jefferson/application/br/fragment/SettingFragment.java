@@ -58,67 +58,10 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
 		mShared = PreferenceManager.getDefaultSharedPreferences(getContext());
 		mEdit = mShared.edit();
-
 		ListView mListView = (ListView)view.findViewById(R.id.list_config);
 		mListView.setDivider(null);
 
-		ArrayList<PreferenceItem> items = new ArrayList<>();
-
-		for (int i = 0; i <= 8; i++) {
-			PreferenceItem item = new PreferenceItem();
-			switch (i) {
-				case 0:
-					item.item_name = getString(R.string.preferecias_gerais);
-					item.type = item.SECTION_TYPE;
-					break;
-			    case 1:
-					item.icon_id = R.drawable.ic_key;
-		            item.item_name = getString(R.string.mudar_senha);
-					item.type = item.ITEM_TYPE;
-					break;
-				case 2:
-					item.icon_id = R.drawable.ic_language;
-					item.item_name = getString(R.string.idioma);
-					item.type = item.ITEM_TYPE;
-					item.description = getLanguage();
-					break;
-				case 3:
-					item.type = item.SECTION_TYPE;
-					item.item_name = getString(R.string.preferecias_avancadas);
-					break;
-				case 4:
-				    item.type = item.ITEM_TYPE;
-					item.icon_id = R.drawable.ic_storage;
-					item.item_name = getString(R.string.local_armazenamento);
-					item.description = getStorageName();
-					break;
-				case 5:
-					item.item_name = getString(R.string.modo_secreto);
-					item.icon_id = R.drawable.ic_android;
-					item.type = PreferenceItem.ITEM_SWITCH_TYPE;
-					item.description = getString(R.string.ocultar_descricao);
-					break;
-				case 6:
-					item.item_name = getString(R.string.codigo_discador);
-					item.type = item.ITEM_TYPE;
-					item.icon_id = R.drawable.ic_dialpad;
-					item.description = getDialerCode();
-					break;
-				case 7:
-					item.item_name = getString(R.string.preferecias_sobre);
-					item.type = item.SECTION_TYPE;
-					break;
-				case 8:
-					item.icon_id = R.drawable.ic_about;
-					item.item_name = getString(R.string.app_name);
-					item.type = item.ITEM_TYPE;
-                    try {
-                        item.description = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0).versionName;
-                    } catch (PackageManager.NameNotFoundException e) {}
-					break;
-			}
-			items.add(item);
-		}
+        ArrayList<PreferenceItem> items = createItemsList();
 		mAdapter = new SettingAdapter(items, this);
 		mListView.setAdapter(mAdapter);
 		mListView.setOnItemClickListener(this);
@@ -129,16 +72,77 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	private String getDialerCode() {
 		return mShared.getString("secret_code", "#4321");
 	}
+
+    public ArrayList<PreferenceItem> createItemsList() {
+        ArrayList<PreferenceItem> items = new ArrayList<>();
+
+        for (int i = 0; i <= 8; i++) {
+            PreferenceItem item = new PreferenceItem();
+            switch (i) {
+                case 0:
+                    item.item_name = getString(R.string.preferecias_gerais);
+                    item.type = item.SECTION_TYPE;
+                    break;
+                case 1:
+                    item.icon_id = R.drawable.ic_key;
+                    item.item_name = getString(R.string.mudar_senha);
+                    item.type = item.ITEM_TYPE;
+                    break;
+                case 2:
+                    item.icon_id = R.drawable.ic_language;
+                    item.item_name = getString(R.string.idioma);
+                    item.type = item.ITEM_TYPE;
+                    item.description = getLanguage();
+                    break;
+                case 3:
+                    item.type = item.SECTION_TYPE;
+                    item.item_name = getString(R.string.preferecias_avancadas);
+                    break;
+                case 4:
+                    item.type = item.ITEM_TYPE;
+                    item.icon_id = R.drawable.ic_storage;
+                    item.item_name = getString(R.string.local_armazenamento);
+                    item.description = getStorageName();
+                    break;
+                case 5:
+                    item.item_name = getString(R.string.modo_secreto);
+                    item.icon_id = R.drawable.ic_android;
+                    item.type = PreferenceItem.ITEM_SWITCH_TYPE;
+                    item.description = getString(R.string.ocultar_descricao);
+                    break;
+                case 6:
+                    item.item_name = getString(R.string.codigo_discador);
+                    item.type = item.ITEM_TYPE;
+                    item.icon_id = R.drawable.ic_dialpad;
+                    item.description = getDialerCode();
+                    break;
+                case 7:
+                    item.item_name = getString(R.string.preferecias_sobre);
+                    item.type = item.SECTION_TYPE;
+                    break;
+                case 8:
+                    item.icon_id = R.drawable.ic_about;
+                    item.item_name = getString(R.string.app_name);
+                    item.type = item.ITEM_TYPE;
+                    try {
+                        item.description = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0).versionName;
+                    } catch (PackageManager.NameNotFoundException e) {}
+                    break;
+            }
+            items.add(item);
+		}
+        return items;
+    }
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
 
         if (position == 8) {
-            
+
             boolean debug = Debug.isDebugOn();
             Debug.setDebug(!debug);
-            String msg = debug? "Debug mode disabled!": "Debug mode enabled!";
+            String msg = debug ? "Debug mode disabled!": "Debug mode enabled!";
             Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-            
+
             return true;
         }
         return false;
@@ -158,7 +162,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 			case 5:
 				Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
 				boolean isChecked = !mySwitch.isChecked();
-             
+
 				changeIconVisibility(isChecked);
 				mySwitch.setChecked(isChecked);
 				break;
@@ -190,7 +194,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 public void onClick(DialogInterface dialog, int position) {
                     storageChoiceIndex = position;
                 }
-            });
+            }
+        );
         builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener(){
 
                 @Override
@@ -202,7 +207,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                         mainFragment.update(MainFragment.ID.BOTH);
                     updateItem(4);
                 }
-            });
+            }
+        );
         builder.setNegativeButton(getString(R.string.cancelar), null);
         builder.create().show();
 	}

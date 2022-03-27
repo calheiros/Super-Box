@@ -14,8 +14,10 @@ import com.jefferson.application.br.R;
 import java.io.File;
 import android.os.Handler;
 import com.jefferson.application.br.util.Debug;
+import android.view.View.OnTouchListener;
+import android.view.MotionEvent;
 
-public class VideoPlayFragment extends Fragment {
+public class VideoPlayFragment extends Fragment implements OnTouchListener {
 
     private View view;
     private VideoView mVideoView;
@@ -28,7 +30,7 @@ public class VideoPlayFragment extends Fragment {
 
         this.videoPath = videoPath;
     }
-    
+
     public void setPlayOnCreate(boolean autoplay) {
         this.playOnCreate = autoplay;
     }
@@ -39,7 +41,7 @@ public class VideoPlayFragment extends Fragment {
         if (view == null) {
             view = inflater.inflate(R.layout.video_view_fragment, null);
             mVideoView = view.findViewById(R.id.video_view);
-
+           
             File file = new File(videoPath);
             if (!file.exists()) {
                 Toast.makeText(getContext(), "File does not exists " + videoPath, 1).show();
@@ -47,7 +49,7 @@ public class VideoPlayFragment extends Fragment {
             }
 
             mediaController = new MediaController(getActivity());
-            mediaController.setAnchorView(mVideoView);
+            mediaController.setAnchorView(view);
             mVideoView.setMediaController(mediaController);
             mVideoView.setOnPreparedListener(
 
@@ -57,7 +59,7 @@ public class VideoPlayFragment extends Fragment {
                     public void onPrepared(MediaPlayer mp) {
                         mp.setLooping(true);
                         Debug.toast("position " + mp.getCurrentPosition());
-                      
+
                     }
                 }
             );
@@ -85,6 +87,21 @@ public class VideoPlayFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public boolean onTouch(View vi, MotionEvent event) {
+
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (mediaController.isShowing()) {
+                mediaController.hide();
+            } else {
+                mediaController.show();
+            }
+            return true;
+        }
+        return false;
+    }
+
+
     public void start() {
         new Handler().postDelayed(new Runnable(){
 
@@ -92,7 +109,7 @@ public class VideoPlayFragment extends Fragment {
                 public void run() {
                     if (mVideoView != null) {
                         mVideoView.setVideoURI(Uri.parse(videoPath));
-                        
+
                         mVideoView.start();
                         mVideoView.requestFocus();
                     }

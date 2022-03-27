@@ -93,7 +93,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         return mListItemsPath.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener,View.OnLongClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener, View.OnLongClickListener {
 
         public ImageView imageView;
         private ClickListener listener;

@@ -14,12 +14,14 @@ public class AdmReceiver extends DeviceAdminReceiver {
 		SharedPreferences.Editor editor = config.edit();
 		editor.putBoolean("ADMIN_ENABLED", true).commit();
 
-	}   
+	}
+    
 	@Override   
 	public CharSequence onDisableRequested(Context context, Intent intent) {   
 
 		return context.getString(R.string.admin_receiver_status_disable_warning);   
-	}   
+	}
+    
 	@Override  
 	public void onDisabled(Context context, Intent intent) {     
 
@@ -37,11 +39,11 @@ public class AdmReceiver extends DeviceAdminReceiver {
 		SharedPreferences config = PreferenceManager.getDefaultSharedPreferences(context);
 		boolean enabled = config.getBoolean("Capture Enabled", false);
 		DevicePolicyManager mgr = (DevicePolicyManager) context.getSystemService(Context.DEVICE_POLICY_SERVICE);
-        int no = mgr.getCurrentFailedPasswordAttempts();
+        int failedAttempts = mgr.getCurrentFailedPasswordAttempts();
 		int captureNumber = config.getInt("Tentativas", 2);
 
-        if (no >= captureNumber && enabled) {
-			Intent in = new Intent(context, Take_photo.class);
+        if (failedAttempts >= captureNumber && enabled) {
+			Intent in = new Intent(context, TakePhotoService.class);
 			in.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.startService(in);
 

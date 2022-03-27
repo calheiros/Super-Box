@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="concluir">Conclude</string>
     <string name="ascii_dead_face">(×_×)</string>
     <string name="ascii_shrug">¯\_(ツ)_/¯</string>
     <string name="modo_secreto">Stealth mode</string>

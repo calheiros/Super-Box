@@ -112,4 +112,15 @@ public class VideoPlayerActivity extends MyCompatActivity {
             return filesPath.size();
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        
+        Intent intent = new Intent();
+        intent.putExtra("index", viewPager.getCurrentItem());
+        setResult(RESULT_OK,intent);
+       
+        super.onBackPressed();
+        
+    }
 }

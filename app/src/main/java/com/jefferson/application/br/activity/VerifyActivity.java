@@ -36,7 +36,11 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 
 		checkPassword();
 		getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-
+        
+        if (com.jefferson.application.br.util.Debug.isDebugOn()) {
+            Intent intent = new Intent(this, PinActivity.class);
+            startActivity(intent);
+        }
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
 		
@@ -65,9 +69,10 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 						Handler.postDelayed(Runnable, 2000);
 					} else {
 						materialLockView.setDisplayMode(MaterialLockView.DisplayMode.Correct);
-	                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-						finish();
-					}
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+	                    startActivity(intent);
+                    }
 					super.onPatternDetected(pattern, SimplePattern);
 
 				}

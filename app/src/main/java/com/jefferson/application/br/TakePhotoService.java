@@ -12,15 +12,13 @@ import java.util.*;
 
 import android.hardware.Camera;
 
-public class Take_photo extends Service implements SurfaceHolder.Callback
-{
-	
+public class TakePhotoService extends Service implements SurfaceHolder.Callback {
+
 	@Override
-	public IBinder onBind(Intent p1)
-	{
+	public IBinder onBind(Intent p1) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	//a variable to store a reference to the Image View at the main.xml file
 	//a variable to store a reference to the Surface View at the main.xml file
     private SurfaceView sv;
@@ -35,17 +33,17 @@ public class Take_photo extends Service implements SurfaceHolder.Callback
 	private Camera mCamera;
 	//the camera parameters
 	private Parameters parameters;
-	
+
 	private WindowManager wm;
-	
+
 	private View vi;
-	
+
 	private int cameraId;
 
     /** Called when the activity is first created. */
     @Override
-    public void onCreate() 
-    {
+    public void onCreate() {
+
         super.onCreate();
 		final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
 			1,
@@ -58,8 +56,8 @@ public class Take_photo extends Service implements SurfaceHolder.Callback
 	    vi = LayoutInflater.from(this)
 			.inflate(R.layout.pre_view, null);
 
-        
-        sv = (SurfaceView)vi.findViewById(R.id.surfaceView);
+
+        sv = (SurfaceView) vi.findViewById(R.id.surfaceView);
 
         sHolder = sv.getHolder();
 
@@ -70,14 +68,14 @@ public class Take_photo extends Service implements SurfaceHolder.Callback
         sHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
 		cameraId = Camera.CameraInfo.CAMERA_FACING_FRONT; 
-	
-	wm.addView(vi, params);
+
+        wm.addView(vi, params);
     }
-	Camera.PictureCallback mCall = new Camera.PictureCallback() 
-	{
+
+    Camera.PictureCallback mCall = new Camera.PictureCallback()  {
+
 		@Override
-		public void onPictureTaken(byte[] data, Camera camera) 
-		{
+		public void onPictureTaken(byte[] data, Camera camera) {
 			//decode the data obtained by the camera into a Bitmap
 			bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
 			Matrix matrix = new Matrix();
@@ -86,7 +84,7 @@ public class Take_photo extends Service implements SurfaceHolder.Callback
 			wm.removeView(vi);
 
 			String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-			File file = new File (Environment.getExternalStorageDirectory()+"/.application/data/Intruder", timeStamp+".jpg");
+			File file = new File(Environment.getExternalStorageDirectory() + "/.application/data/Intruder", timeStamp + ".jpg");
 			Calendar c = Calendar.getInstance();
 
 			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd   HH:mm:ss");
@@ -118,8 +116,7 @@ public class Take_photo extends Service implements SurfaceHolder.Callback
 		}
 	};
 	@Override
-	public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) 
-	{
+	public void surfaceChanged(SurfaceHolder arg0, int arg1, int arg2, int arg3) {
 		//get camera parameters
 		parameters = mCamera.getParameters();
 
@@ -128,13 +125,12 @@ public class Take_photo extends Service implements SurfaceHolder.Callback
 		mCamera.startPreview();
 
 		//sets what code should be executed after the picture is taken
-		
+
 		mCamera.takePicture(null, null, mCall);
 	}
 
 	@Override
-	public void surfaceCreated(SurfaceHolder holder) 
-	{
+	public void surfaceCreated(SurfaceHolder holder) {
 		// The Surface has been created, acquire the camera and tell it where
         // to draw the preview.
         mCamera = Camera.open(cameraId);
@@ -149,8 +145,7 @@ public class Take_photo extends Service implements SurfaceHolder.Callback
 	}
 
 	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) 
-	{
+	public void surfaceDestroyed(SurfaceHolder holder) {
 		//stop the preview
 		mCamera.stopPreview();
 		//release the camera

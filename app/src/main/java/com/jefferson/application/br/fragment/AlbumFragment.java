@@ -175,7 +175,7 @@ public class AlbumFragment extends Fragment {
         } else {
             folderDatabase.updateName(id, newName, folderType);
         }
-        Snackbar.make(view, "Folder renamed: " + newName, Snackbar.LENGTH_SHORT).show();
+        Snackbar.make(view, "Folder renamed to \"" + newName + "\"", Snackbar.LENGTH_SHORT).show();
         folderDatabase.close();
         update();
     }
@@ -195,7 +195,7 @@ public class AlbumFragment extends Fragment {
             
             if (file.mkdirs()) {
                 folderDatabase.addName(id, name, type);
-                Snackbar.make(view, "Creating folder \"" + name + "\"", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(view, "Created folder \"" + name + "\"", Snackbar.LENGTH_SHORT).show();
             }
         } else {
             Toast.makeText(getContext(), "Folder alreay exists!", 1).show();

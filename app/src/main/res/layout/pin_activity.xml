@@ -4,8 +4,8 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical"
-	android:gravity="center"
-	android:background="@color/colorPrimary">
+   android:background="@color/colorPrimary"
+	android:gravity="center">
 
 	<RelativeLayout
 		android:layout_height="wrap_content"
@@ -15,21 +15,21 @@
 
 		<EditText
 			android:layout_height="wrap_content"
-			android:inputType="textPassword"
+			android:inputType="numberDecimal|numberPassword"
 			android:layout_width="wrap_content"
 			android:ems="7"
 			android:focusable="false"
 			android:textSize="25sp"
-            android:clickable="false"
+			android:clickable="false"
 			android:textColor="#FFFFFF"
 			android:gravity="center"
-			android:id="@+id/pinactivityEditText1"
+			android:id="@+id/pinActivityEditText"
 			android:layout_centerHorizontal="true"/>
 
 		<ImageView
 			android:layout_height="32dp"
 			android:layout_width="35dp"
-			android:layout_toRightOf="@id/pinactivityEditText1"
+			android:layout_toRightOf="@id/pinActivityEditText"
 			android:layout_centerVertical="true"/>
 
 	</RelativeLayout>
@@ -44,85 +44,115 @@
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="1"
+			android:onClick="one"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="2"
+			android:onClick="two"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="3"
+			android:onClick="three"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="4"
+			android:onClick="four"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="5"
+			android:onClick="five"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:textColor="#FCFCFC"
 			android:textSize="30sp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="6"
+			android:onClick="six"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="7"
+			android:onClick="seven"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="8"
+			android:onClick="eight"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="9"
+			android:onClick="nine"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
 			android:text="0"
+			android:onClick="zero"
+            android:layout_marginBottom="10dp"
 			android:layout_height="wrap_content"
-			android:layout_width="100dp"
+			android:layout_width="110dp"
 			android:layout_row="3"
 			android:layout_column="1"
 			android:textColor="#FFFFFF"
 			android:textSize="30sp"/>
-
+        <ImageButton
+            style="?android:attr/buttonBarButtonStyle"
+            android:onClick="backspace"
+            android:id="@+id/pin_activityBackspaceButton"
+            android:layout_marginBottom="10dp"
+            android:layout_height="wrap_content"
+            android:layout_width="110dp"
+            android:layout_row="3"
+            android:src="@drawable/ic_backspace_outline"
+            android:layout_column="2"/>
+        
 	</GridLayout>
 
 </LinearLayout>

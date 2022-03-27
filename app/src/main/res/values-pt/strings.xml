@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
+    <string name="concluir">Concluir</string>
     <string name="modo_secreto">Modo furtivo</string>
     <string name="codigo_discador">Código do discador</string>
     <string name="minha_caixa">Minha Caixa</string>

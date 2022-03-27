@@ -13,6 +13,7 @@
 		android:layout_height="wrap_content">
 
 		<ImageView
+            android:tint="@color/item_normal"
 			android:id="@+id/ic_view"
 			android:layout_width="30dp"
 			android:layout_height="30dp"

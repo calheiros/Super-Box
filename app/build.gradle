@@ -8,9 +8,10 @@ android {
         applicationId "com.jefferson.application.br"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 1
-        versionName "1"
+        versionCode 10
+        versionName "1.9 alpha b1"
     }
+    
     buildTypes {
         release {
             minifyEnabled true

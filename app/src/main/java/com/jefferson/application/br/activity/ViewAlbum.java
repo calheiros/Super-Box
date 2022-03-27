@@ -63,6 +63,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	private String title;
 	private File folder;
 
+    private static final int VIDEO_PLAY_CODE = 7;
+
+    private static final int CHANGE_DIRECTORY_CODE = 3;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -143,10 +147,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         duration = Integer.parseInt(durationStr);
                         database.updateFileDuration(file.getName(), duration);
                     }
-                    
+
                     long secunds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
                     String secStr = secunds > 9 ? String.valueOf(secunds): "0" + secunds;
-                    
+
                     final String time = String.format("%d:%s", TimeUnit.MILLISECONDS.toMinutes(duration), secStr);
                     Debug.toast("updateDatabase", "duration => " + time, Toast.LENGTH_SHORT);
                     map.put(path, time);
@@ -258,7 +262,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         intent.putExtra("selection", getSelectedItensPath());
         intent.putExtra("position", position);
         intent.putExtra("current_path", folder.getAbsolutePath());
-        startActivityForResult(intent, 10);
+        startActivityForResult(intent, CHANGE_DIRECTORY_CODE);
     }
 
 	private String getItemName(int count) {
@@ -292,14 +296,30 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		if (resultCode == RESULT_OK) {
-            exitSelectionMode();
-            ArrayList<String> list = data.getStringArrayListExtra("moved_files");
-            Snackbar.make(mRecyclerView, list.size() + " file(s) moved", Snackbar.LENGTH_SHORT).show();
-			mAdapter.removeAll(list);
-			synchronizeData();
+		if (resultCode == RESULT_OK) { 
+        
+            if (requestCode == CHANGE_DIRECTORY_CODE) {
+                
+                exitSelectionMode();
+                ArrayList<String> list = data.getStringArrayListExtra("moved_files");
+                Snackbar.make(mRecyclerView, list.size() + " file(s) moved", Snackbar.LENGTH_SHORT).show();
+                mAdapter.removeAll(list);
+                synchronizeData();
+                
+            } else if (requestCode == VIDEO_PLAY_CODE) {
 
-		}
+                final int index = data.getIntExtra("index", 0);
+                mRecyclerView.post(new Runnable() { 
+
+                        @Override
+                        public void run() {
+                            mRecyclerView.smoothScrollToPosition(index);
+                        }
+                    }
+                );
+            }
+        }
+
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
@@ -338,7 +358,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 					Intent intent = new Intent(getApplicationContext(), mClass);
 					intent.putExtra("position", item_position);
 					intent.putExtra("filepath", mAdapter.mListItemsPath);
-					startActivity(intent);
+					startActivityForResult(intent, VIDEO_PLAY_CODE);
 					break;
 			}
 			return;
@@ -555,12 +575,12 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 					File fileOut = new File(path);
 				    if (fileOut.exists())
 						fileOut = new File(getNewFileName(fileOut));
-                    
+
 					fileOut.getParentFile().mkdirs();
 					publishProgress(null, fileOut.getName());
 
                     if (file.renameTo(fileOut)) {
-                        
+
                         mArrayPath.add(fileOut.getAbsolutePath());
                         database.deleteData(file.getName());
                         mListTemp.add(item);
