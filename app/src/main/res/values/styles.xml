@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<!-- Styles -->
-
-	<style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-		<item name="colorPrimary">#8D00DA</item>
-		<item name="colorPrimaryDark">#840EC5</item>
-		<item name="colorAccent">#00D9CE</item>
-	</style>
+	
 	<style name="menu_labels_style">
 		<item name="android:background">@drawable/fab_label_background</item>
 		<item name="android:textColor">@color/white</item>
@@ -33,10 +28,12 @@
 		<item name="colorPrimaryDark">#0449C7</item>
 		<item name="colorAccent">#10D863</item>
 	</style>
-	<style name="MainTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    
+	<style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
 		<item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@android:color/black</item> 
 		<!-- specify shared element transitions -->
 		<!--<item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
 		<item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>
@@ -44,35 +41,6 @@
 	</style>
 	<style name="drawer_theme" parent="Theme.AppCompat.NoActionBar">
 		<item name="colorControlHighlight">@color/highLightColor</item> 
-	</style>
-	<style name="DefaultTheme" parent="Theme.AppCompat.NoActionBar">
-		<item name="colorPrimary">@color/colorPrimary</item>
-		<item name="colorPrimaryDark">#5E40D6</item>
-		<item name="colorAccent">@color/colorAccent</item>
-	</style>
-	<style name="Gallery" parent="Theme.AppCompat.NoActionBar">
-		<item name="colorPrimary">#EDEDED</item>
-		<item name="colorPrimaryDark">#607D8B</item>
-		<item name="colorAccent">#10D863</item>
-	</style>
-	<style name="Video" parent="Theme.AppCompat.NoActionBar">
-		<item name="android:colorPrimaryDark">#00FFFEFF</item>
-	</style>
-	
-	<style name="swipeStyle" parent="Theme.AppCompat.NoActionBar">
-		<item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-		<item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">#5E40D6</item>
-        <item name="colorAccent">@color/colorAccent</item>
-		
-	</style>
-
-	<style name="ImageView" parent="Theme.AppCompat.NoActionBar">
-		<item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="windowActionBar">false</item>
-        <item name="android:windowNoTitle">true</item>
 	</style>
 
 	<style name="Theme.Transparent" parent="Theme.AppCompat"> 

@@ -18,8 +18,11 @@ import com.jefferson.application.br.model.*;
 import java.util.*;
 
 import android.support.v7.widget.Toolbar;
+import android.net.Uri;
 
 public class LockFragment extends Fragment {
+
+    private static final int REQUEST_OVERLAY_CODE = 9;
 
 	public LockFragment() {
 		initTask();
@@ -62,6 +65,14 @@ public class LockFragment extends Fragment {
 						mPosition = position;
 						adapterView = vi;
 
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) { 
+                            Log.v("App", "Requesting Permission" + Settings.canDrawOverlays(getContext())); // if not construct intent to request permission 
+                            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName())); // request permission via start activity for result 
+                            startActivityForResult(intent, REQUEST_OVERLAY_CODE); //It will call onActivityResult Function After you press Yes/No and go Back after giving permission 
+                        } else {
+                            Log.v("App", "We already have permission for it."); // disablePullNotificationTouch(); // Do your stuff, we got permission captain 
+                        }
+
 						if (!needPermissionForBlocking(getContext())) {
 							mAdapter.toogleSelection(position);
 						} else {
@@ -85,22 +96,24 @@ public class LockFragment extends Fragment {
 		Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 		mActivity.setupToolbar(toolbar, getString(R.string.bloquear_apps));
 		mActivity.getSupportActionBar().dispatchMenuVisibilityChanged(true);
+
 		return view;
 	}
-    
-	public void initTask() {
 
+	public void initTask() {
 		mTask = new Task(App.getAppContext());
 		mTask.execute();
 	}
-	public void finalizeTask() {
+
+    public void finalizeTask() {
 
 		mAdapter = new AppsAdapter(getActivity(), models);
 		mListView.setAdapter(mAdapter);
 		mProgressBar.setVisibility(View.GONE);
 		mTextView.setVisibility(View.GONE);
 	}
-	private boolean needPermissionForBlocking(Context context) {
+
+    private boolean needPermissionForBlocking(Context context) {
 		return CodeManager.needPermissionForGetUsages(context);
 	}
 
@@ -116,9 +129,16 @@ public class LockFragment extends Fragment {
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		if (!CodeManager.needPermissionForGetUsages(getContext())) {
-			mAdapter.toogleSelection(mPosition);
-		}
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+           if (Settings.canDrawOverlays(getContext()) && !CodeManager.needPermissionForGetUsages(getContext())) {
+               mAdapter.toogleSelection(mPosition);
+           }
+           
+        } else {
+            if (!CodeManager.needPermissionForGetUsages(getContext())) {
+                mAdapter.toogleSelection(mPosition);
+            }
+        }
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 

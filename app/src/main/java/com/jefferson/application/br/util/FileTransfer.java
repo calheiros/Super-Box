@@ -9,7 +9,12 @@ import javax.crypto.spec.*;
 
 public class FileTransfer {
 
-	boolean running = true;
+	private boolean running = true;
+    private double kilobytes = 0;
+    
+    public void increment(long length) {
+        this.kilobytes += length;
+    }
 	
 	public long getTransferedKbs() {
 		return (long)kilobytes;
@@ -18,7 +23,7 @@ public class FileTransfer {
 		public final static String NO_LEFT_SPACE = "java.io.IOException: write failed: ENOSPC (No space left on device)";
 	}
 	public static final String OK = "_Ok";
-	private double kilobytes = 0;
+	
 	
 	public String transferStream(InputStream inputStream, OutputStream outputStream) {
 

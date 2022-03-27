@@ -13,7 +13,7 @@
 
 		<ImageView
 			android:id="@+id/image"
-			android:background="#ffffff"
+			android:background="#FF3C3C3C"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:scaleType="centerCrop"/>

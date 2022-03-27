@@ -7,6 +7,8 @@ import android.util.*;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.util.*;
 import android.widget.Toast;
+import android.view.View;
+import android.graphics.Color;
 
 public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
    
@@ -57,7 +59,7 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
         this.allowQuit = true;
         super.finish();
     }
-
+   
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         LocaleManager.configureLocale(this);

@@ -13,6 +13,7 @@ import android.widget.VideoView;
 import com.jefferson.application.br.R;
 import java.io.File;
 import android.os.Handler;
+import com.jefferson.application.br.util.Debug;
 
 public class VideoPlayFragment extends Fragment {
 
@@ -27,7 +28,7 @@ public class VideoPlayFragment extends Fragment {
 
         this.videoPath = videoPath;
     }
-
+    
     public void setPlayOnCreate(boolean autoplay) {
         this.playOnCreate = autoplay;
     }
@@ -55,6 +56,8 @@ public class VideoPlayFragment extends Fragment {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
                         mp.setLooping(true);
+                        Debug.toast("position " + mp.getCurrentPosition());
+                      
                     }
                 }
             );
@@ -89,6 +92,7 @@ public class VideoPlayFragment extends Fragment {
                 public void run() {
                     if (mVideoView != null) {
                         mVideoView.setVideoURI(Uri.parse(videoPath));
+                        
                         mVideoView.start();
                         mVideoView.requestFocus();
                     }

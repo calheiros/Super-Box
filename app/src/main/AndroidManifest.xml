@@ -117,12 +117,15 @@
 			android:excludeFromRecents="true"
 			android:configChanges="orientation|screenSize"
 			android:theme="@style/MainTheme"/>
+        
 		<activity
 			android:name="com.google.android.gms.ads.AdActivity"
 			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+        
 		<activity
 			android:name=".activity.LockActivity"
 			android:theme="@style/MainTheme"/>
+        
 		<activity
 			android:name=".activity.GalleryAlbum"
 			android:excludeFromRecents="true"
@@ -130,14 +133,22 @@
 			android:label="Galeria"
 			android:screenOrientation="portrait"
 			android:theme="@style/MainTheme"/>
+        
+        <activity
+            android:name=".activity.PinActivity"
+            android:excludeFromRecents="true"
+			android:screenOrientation="portrait"/>
+        
 		<activity
 			android:name=".activity.SelectionActivity"
 			android:excludeFromRecents="true"
 			android:configChanges="orientation|screenSize"
 			android:theme="@style/MainTheme"/>
+        
 		<activity
 			android:name=".ContatosActvity"
 			android:screenOrientation="portrait"/>
+        
 		<activity
 			android:name=".activity.ViewAlbum"
 			android:excludeFromRecents="true"
@@ -217,10 +228,6 @@
 			android:screenOrientation="portrait"
 			android:theme="@style/MainTheme"/>
   
-		<activity
-			android:name=".activity.Visualizar_Imagem"
-			android:configChanges="orientation|screenSize"
-			android:theme="@style/ImageView"/>
 		<activity
 			android:name=".activity.VideoPlayerActivity"
 			android:excludeFromRecents="true"

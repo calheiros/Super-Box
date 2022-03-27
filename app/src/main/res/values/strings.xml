@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="ascii_dead_face">(×_×)</string>
+    <string name="ascii_shrug">¯\_(ツ)_/¯</string>
     <string name="modo_secreto">Stealth mode</string>
     <string name="codigo_discador">Dialer code</string>
     <string name="apagar_mensagem">%s will be deleted permanently. This action can\'t be undone!</string>

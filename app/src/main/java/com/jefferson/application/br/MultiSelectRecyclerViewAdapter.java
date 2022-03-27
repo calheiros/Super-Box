@@ -74,6 +74,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
 		viewHolder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
 		Glide.with(context).load("file://" + mListItemsPath.get(position)).skipMemoryCache(true).into(viewHolder.imageView);
+        
         String result = map.get(mListItemsPath.get(position));
         
         if (result != null) {

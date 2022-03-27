@@ -2,6 +2,7 @@
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto" 
 	android:layout_height="match_parent"
 	android:orientation="vertical">
 
@@ -9,6 +10,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
 		android:id="@+id/card_view"
 		android:focusable="true"
+        app:cardBackgroundColor="@color/colorBackground"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_gravity="center"
@@ -42,17 +44,19 @@
 					android:scaleType="centerCrop"/>
 
 			</FrameLayout>
+            
             <LinearLayout
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
                 android:orientation="vertical"
                 android:padding="8dp">
+                
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/tv_folder"
 				android:textStyle="bold"
-				android:textColor="@color/item_normal"
+				android:textColor="#FFE0E7EE"
 				android:textSize="15dp"
 				android:singleLine="true"/>
 
@@ -60,8 +64,8 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/tv_folder2"
-				android:textColor="#dfdfdf"
-				android:textSize="15dp"/>
+				android:textColor="@color/item_normal"
+				android:textSize="13dp"/>
             </LinearLayout>
 		</LinearLayout>
 

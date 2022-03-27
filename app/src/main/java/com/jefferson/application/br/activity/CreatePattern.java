@@ -1,9 +1,13 @@
 package com.jefferson.application.br.activity;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -110,9 +114,7 @@ public class CreatePattern extends MyCompatActivity {
 					passwordManager.setPassword(password);
 
 					if (action == ENTER_FIST_CREATE) { 
-						Intent intent = new Intent(CreatePattern.this, MainActivity.class);
-						startActivity(intent);
-						finish();
+						requestPermission();
 					} else if (action == ENTER_RECREATE)
 						finish();
 				    else throw new NullPointerException("Action desconhecida");
@@ -120,7 +122,34 @@ public class CreatePattern extends MyCompatActivity {
             }
         );
 	}
-    
+    public void requestPermission() {
+
+        if (ContextCompat.checkSelfPermission(this,
+                                              Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                Intent intent = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
+                startActivity(intent);
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 12);
+                // MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE is an
+                // app-defined int constant. The callback method gets the
+                // result of the request.
+            }
+        } else {
+            Intent intent = new Intent(CreatePattern.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
+	}
     private void clearPattern() {
 		handlerC = new Handler();
 		runnableC = new Runnable(){

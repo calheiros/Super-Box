@@ -5,7 +5,7 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical"
 	android:gravity="center"
-	android:background="#00B4FF">
+	android:background="@color/colorPrimary">
 
 	<RelativeLayout
 		android:layout_height="wrap_content"
@@ -20,6 +20,7 @@
 			android:ems="7"
 			android:focusable="false"
 			android:textSize="25sp"
+            android:clickable="false"
 			android:textColor="#FFFFFF"
 			android:gravity="center"
 			android:id="@+id/pinactivityEditText1"

@@ -158,6 +158,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 			case 5:
 				Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
 				boolean isChecked = !mySwitch.isChecked();
+             
 				changeIconVisibility(isChecked);
 				mySwitch.setChecked(isChecked);
 				break;
@@ -306,7 +307,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
 	private void showDialog() {
 
-        final CharSequence[] itens={"Português(Brasil)","English","Español"};
+        final CharSequence[] itens = {"Português(Brasil)","English","Español"};
 
         AlertDialog.Builder b = new AlertDialog.Builder(getContext())
 			.setTitle(R.string.escolha_idioma)

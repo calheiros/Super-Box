@@ -1,19 +1,26 @@
 package com.jefferson.application.br.task;
 
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import android.widget.*;
-import com.google.android.gms.ads.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.activity.*;
-import com.jefferson.application.br.app.*;
-import com.jefferson.application.br.database.*;
-import com.jefferson.application.br.fragment.*;
-import com.jefferson.application.br.util.*;
-import java.io.*;
-import java.util.*;
+import android.app.Activity;
+import android.content.DialogInterface;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.widget.Toast;
+import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.activity.MainActivity;
+import com.jefferson.application.br.app.ProgressThreadUpdate;
+import com.jefferson.application.br.app.SimpleDialog;
+import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.fragment.MainFragment;
+import com.jefferson.application.br.util.FileTransfer;
+import com.jefferson.application.br.util.RandomString;
+import com.jefferson.application.br.util.Storage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
 
 public class ImportTask extends AsyncTask {
 
@@ -70,7 +77,7 @@ public class ImportTask extends AsyncTask {
 
 		mUpdate = new ProgressThreadUpdate(mTransfer, myAlertDialog);
 	}
-	
+
     @Override
 	protected void onPostExecute(Object result) {
 
@@ -106,13 +113,13 @@ public class ImportTask extends AsyncTask {
 		mUpdate.die();
 		myAlertDialog.dismiss();
 		Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]));
-		
+
         if (mode == SESSION_INSIDE_APP) {
 		    ((MainActivity)myActivity)
 				.update(MainFragment.ID.BOTH);
 		} 
 	}
-	
+
     @Override
 	protected void onCancelled(Object result) { 
 
@@ -132,7 +139,7 @@ public class ImportTask extends AsyncTask {
 			myAlertDialog.setContentText(name);
 		}
 	}
-	
+
     @Override
 	protected Boolean doInBackground(Object[] v) {
 
@@ -174,39 +181,48 @@ public class ImportTask extends AsyncTask {
 				} else {
 					randomString2 = str;
 				}
-                
+
 				File destFile = new File(model.getDestination() + File.separator + randomString2 + File.separator + randomString);
 				destFile.getParentFile().mkdirs();
 
-				InputStream inputStream = new FileInputStream(file);
-				OutputStream outputStream = new FileOutputStream(destFile);
-				String response = mTransfer.transferStream(inputStream, outputStream);
+                if (file.renameTo(destFile)) {
+                    
+                    db.insertData(randomString, model.getResource());
+                    importedFilesPath.add(file.getAbsolutePath());
+                    mTransfer.increment(destFile.length() / 1024);
 
-				if (FileTransfer.OK.equals(response)) {
-					if (Storage.deleteFile(file)) {
-						db.insertData(randomString, model.getResource());
-						importedFilesPath.add(file.getAbsolutePath());
-					} else {
-						destFile.delete();
-					}
-				} else {
-					destFile.delete();
-					err_count++;
-					if (FileTransfer.Error.NO_LEFT_SPACE.equals(response)) {
-						err_message.append(no_left_space_error_message);
-						break;
-					} else {
-						err_message.append("\n" + myActivity.getString(R.string.erro) + err_count + ": " + response + " when moving: " + file.getName() + "\n");
-					}
-				}
+                } else {
+
+                    InputStream inputStream = new FileInputStream(file);
+                    OutputStream outputStream = new FileOutputStream(destFile);
+                    String response = mTransfer.transferStream(inputStream, outputStream);
+
+                    if (FileTransfer.OK.equals(response)) {
+                        if (Storage.deleteFile(file)) {
+                            db.insertData(randomString, model.getResource());
+                            importedFilesPath.add(file.getAbsolutePath());
+                        } else {
+                            destFile.delete();
+                        }
+                    } else {
+                        destFile.delete();
+                        err_count++;
+                        if (FileTransfer.Error.NO_LEFT_SPACE.equals(response)) {
+                            err_message.append(no_left_space_error_message);
+                            break;
+                        } else {
+                            err_message.append("\n" + myActivity.getString(R.string.erro) + err_count + ": " + response + " when moving: " + file.getName() + "\n");
+                        }
+                    }
+                }
 			}
 		} catch (Exception e) {
 			err_message.append("Erro inesperado ocorrido!");
 		}
-        
+
 		return true;
 	}
-	
+
     public void waitForResponse() {
 
 		waiting = true;
@@ -216,7 +232,7 @@ public class ImportTask extends AsyncTask {
 			} catch (InterruptedException e) {}
 		}
 	}
-	
+
     private void warningAlert(String msg) {
 
 		SimpleDialog mDialog = new SimpleDialog(myActivity, SimpleDialog.ALERT_STYLE);

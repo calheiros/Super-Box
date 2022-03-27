@@ -25,15 +25,22 @@ public class WindowLockApps {
 	private AppsDatabase db;
 	private ImageView image_icon;
 	private View lastView;
+
+    
 	
 	public WindowLockApps(final Context context, final AppsDatabase db) {
+        // orientation.enable();
 	    this.context = context;
         this.db = db;
-		// orientation.enable();
+        
+        int layoutParamsType = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? 
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY:
+            WindowManager.LayoutParams.TYPE_PHONE; 
+  
 		params = new WindowManager.LayoutParams(
 			WindowManager.LayoutParams.MATCH_PARENT,
 			WindowManager.LayoutParams.MATCH_PARENT,
-			WindowManager.LayoutParams.TYPE_PRIORITY_PHONE,
+            layoutParamsType,
 			WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
 			PixelFormat.RGBX_8888);
 

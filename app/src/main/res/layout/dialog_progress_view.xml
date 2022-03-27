@@ -18,7 +18,7 @@
 		android:id="@+id/contentTitle"
 		android:visibility="gone"
 		android:singleLine="true"
-		android:textColor="#565F5E"
+		android:textColor="@color/item_normal"
 		android:layout_marginBottom="12dp"/>
 
 	<com.jefferson.application.br.Library.NumberProgressBar
@@ -38,7 +38,7 @@
 			android:layout_width="match_parent"
 			android:id="@+id/content_text_view"
 			android:textSize="15sp"
-			android:textColor="#727C7B"
+			android:textColor="@color/item_normal"
 			android:visibility="gone"
 			android:layout_marginBottom="5dp"/>
 	</ScrollView>

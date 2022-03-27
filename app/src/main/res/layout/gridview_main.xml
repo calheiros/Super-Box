@@ -32,9 +32,9 @@
 	</RelativeLayout>
 
 	<LinearLayout
+        android:background="#FF0F0E0E"
 		android:id="@+id/lock_layout"
 		android:visibility="gone"
-		android:background="#f0f0f0"
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent">
 

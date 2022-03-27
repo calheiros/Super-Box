@@ -42,15 +42,20 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 	    holder.tv_foldern.setText(f_model.getName());
 		holder.tv_foldersize.setText(String.valueOf(f_model.getItems().size()));
 
-		if (fragment.getPagerPosition() == 1)
+		if (fragment.getPagerPosition() == 1) {
 			holder.play_view.setVisibility(View.VISIBLE);
-
+            holder.play_view.setImageResource(R.drawable.ic_play);
+        }
+        
 		if (f_model.getItems().size() != 0) {
 			Glide.with(fragment).load("file://" + f_model.getItems().get(0))
 				.skipMemoryCache(true)
 				.into(holder.iv_image);
+        } else {
+            holder.iv_image.setImageResource(0);
+            holder.play_view.setImageResource(R.drawable.ic_file_image);
         }
-
+        
 		holder.cd_layout.setOnClickListener(new OnClickListener(){
 
 				@Override

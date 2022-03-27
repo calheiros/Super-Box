@@ -47,6 +47,7 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import com.jefferson.application.br.util.Debug;
 import android.support.design.widget.Snackbar;
+import com.jefferson.application.br.util.DocumentUtil;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener {
 
@@ -66,7 +67,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.gridview_main);
-       
+
         File file = new File(Storage.getDefaultStorage());
 		database = PathsData.getInstance(this, file.getAbsolutePath());
 		mainLayout = findViewById(R.id.main_linear_layout);
@@ -93,9 +94,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		mViewDelete.setOnClickListener(this);
 		mViewMove.setOnClickListener(this);
 		mViewSelect.setOnClickListener(this);
-        
+
         initToolbar();
-        
+
         if (position == 1) {
             updateDatabase(mListItemsPath, mAdapter);
         }
@@ -142,7 +143,11 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         duration = Integer.parseInt(durationStr);
                         database.updateFileDuration(file.getName(), duration);
                     }
-                    final String time = String.format("%d:%d", TimeUnit.MILLISECONDS.toMinutes(duration), TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration)));
+                    
+                    long secunds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
+                    String secStr = secunds > 9 ? String.valueOf(secunds): "0" + secunds;
+                    
+                    final String time = String.format("%d:%s", TimeUnit.MILLISECONDS.toMinutes(duration), secStr);
                     Debug.toast("updateDatabase", "duration => " + time, Toast.LENGTH_SHORT);
                     map.put(path, time);
 
@@ -152,7 +157,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                             public void run() {
                                 adapter.updateItemDuration(path, time);
                             }
-                        });
+                        }
+                    );
                 }
 
                 handler.post(new Runnable(){
@@ -182,7 +188,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         invalidateOptionsMenu();
         switchIcon();
     }
-    
+
     private void exportGallery() {
 
         if (mAdapter.getSelectedItemCount() == 0) {
@@ -292,7 +298,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             Snackbar.make(mRecyclerView, list.size() + " file(s) moved", Snackbar.LENGTH_SHORT).show();
 			mAdapter.removeAll(list);
 			synchronizeData();
-            
+
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -549,30 +555,43 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 					File fileOut = new File(path);
 				    if (fileOut.exists())
 						fileOut = new File(getNewFileName(fileOut));
-
+                    
 					fileOut.getParentFile().mkdirs();
 					publishProgress(null, fileOut.getName());
 
-					OutputStream output = getOutputStream(fileOut);
-					InputStream input = new FileInputStream(file);
-					String response = mTransfer.transferStream(input, output);
+                    if (file.renameTo(fileOut)) {
+                        
+                        mArrayPath.add(fileOut.getAbsolutePath());
+                        database.deleteData(file.getName());
+                        mListTemp.add(item);
+                        mTransfer.increment(fileOut.length() / 1024);
 
-					if (FileTransfer.OK.equals(response)) {
-						if (file.delete()) {
-							mArrayPath.add(fileOut.getAbsolutePath());
-							database.deleteData(file.getName());
-							mListTemp.add(item);
-						}
-					} else {
-						Storage.deleteFile(fileOut);
-						if (FileTransfer.Error.NO_LEFT_SPACE.equals(response))
-							break;
-					}
-					if (System.currentTimeMillis() - start >= 1000 && mListTemp.size() > 0) {
-						publishProgress(ACTION_UPDATE);
-						start = System.currentTimeMillis();
-					}
-				}
+                    } else {
+
+                        OutputStream output = getOutputStream(fileOut);
+                        InputStream input = new FileInputStream(file);
+                        String response = mTransfer.transferStream(input, output);
+
+                        if (FileTransfer.OK.equals(response)) {
+                            if (file.delete()) {
+                                mArrayPath.add(fileOut.getAbsolutePath());
+                                database.deleteData(file.getName());
+                                mListTemp.add(item);
+                            }
+                        } else {
+                            Storage.deleteFile(fileOut);
+                            if (FileTransfer.Error.NO_LEFT_SPACE.equals(response))
+                                break;
+                        }
+
+                    }
+
+                    if (System.currentTimeMillis() - start >= 1000 && mListTemp.size() > 0) {
+                        publishProgress(ACTION_UPDATE);
+                        start = System.currentTimeMillis();
+                    }
+                }
+
 				if (mListTemp.size() > 0) {
 					publishProgress(ACTION_UPDATE);
 				}

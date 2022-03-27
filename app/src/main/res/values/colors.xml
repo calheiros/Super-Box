@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="colorBackground">#FF151414</color>
     <color name="darkTransparent">#4E000000</color>
 	<color name="verdana">#875443</color>
 	<color name="yellow">#FFDB00</color>
@@ -35,11 +36,14 @@
     <color name="colorAccent">@color/green</color>
     <color name="colorPrimaryDark">#640BCB</color>
     <color name="fab_pressed">#00b899</color>
-    <color name="highLightColor">#10404040</color>
-    <color name="item_normal">#5d626c</color>
+    <color name="highLightColor">#11FFFFFF</color>
+    <color name="item_normal">#FFA0A8B5</color>
     <color name="blue_bt">#4dc9f7</color>
     <color name="blue_bt_pressed">#88dcff</color>
     <color name="red_bt">#f8584d</color>
     <color name="red_bt_pressed">#ff8f88</color>
-	
+    
+    <!-- BACKUP THIS! 
+    <color name="item_normal">#5d626c</color>
+    -->
 </resources>

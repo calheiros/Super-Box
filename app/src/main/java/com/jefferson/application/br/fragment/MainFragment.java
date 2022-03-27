@@ -20,10 +20,8 @@ import java.util.ArrayList;
 
 public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener, OnLongClickListener {
 
-	//private FABRevealLayout FABReveal;
 	private ViewPager viewPager;
 	private Toolbar toolbar;
-	//private FloatingActionsMenu fabMenu;
 	private View view = null;
 	private pagerAdapter pagerAdapter;
     private TabLayout tabLayout;
@@ -65,7 +63,6 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             fab.setOnClickListener(this);
             fab.setOnLongClickListener(this);
 			//view.findViewById(R.id.fab_create).setOnClickListener(this);
-            
 			toogleTabIcon(0);
 		}
 		main.setupToolbar(toolbar, getToolbarName(viewPager.getCurrentItem()));
