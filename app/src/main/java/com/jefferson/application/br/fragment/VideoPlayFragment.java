@@ -1,25 +1,28 @@
 package com.jefferson.application.br.fragment;
 
+import android.content.Context;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
 import com.jefferson.application.br.R;
-import java.io.File;
-import android.os.Handler;
 import com.jefferson.application.br.util.Debug;
-import android.view.View.OnTouchListener;
-import android.view.MotionEvent;
+import java.io.File;
+import android.view.TouchDelegate;
+import android.graphics.Rect;
 
 public class VideoPlayFragment extends Fragment implements OnTouchListener {
 
-    private View view;
+    private View parentView;
     private VideoView mVideoView;
     private String videoPath;
     private MediaController mediaController;
@@ -27,7 +30,6 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
     private boolean playOnCreate;
 
     public VideoPlayFragment(String videoPath) {
-
         this.videoPath = videoPath;
     }
 
@@ -38,18 +40,18 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        if (view == null) {
-            view = inflater.inflate(R.layout.video_view_fragment, null);
-            mVideoView = view.findViewById(R.id.video_view);
-           
+        if (parentView == null) {
+            parentView = inflater.inflate(R.layout.video_view_fragment, null);
+            mVideoView = parentView.findViewById(R.id.video_view);
+
             File file = new File(videoPath);
             if (!file.exists()) {
                 Toast.makeText(getContext(), "File does not exists " + videoPath, 1).show();
-                return view;
+                return parentView;
             }
 
             mediaController = new MediaController(getActivity());
-            mediaController.setAnchorView(view);
+            mediaController.setAnchorView(parentView);
             mVideoView.setMediaController(mediaController);
             mVideoView.setOnPreparedListener(
 
@@ -58,8 +60,6 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
                     @Override
                     public void onPrepared(MediaPlayer mp) {
                         mp.setLooping(true);
-                        Debug.toast("position " + mp.getCurrentPosition());
-
                     }
                 }
             );
@@ -78,13 +78,19 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
                     }
                 }
             );
-
+            
             if (playOnCreate) {
                 start();
             }
+            
+            Rect delegateArea = new Rect();
+            parentView.getHitRect(delegateArea);
+            Debug.toast("top " + delegateArea.top + "\nbottom " + delegateArea.bottom);
+            TouchDelegate touchDelegate = new TouchDelegate(delegateArea, mVideoView);
+            mVideoView.setTouchDelegate(touchDelegate);
         }
 
-        return view;
+        return parentView;
     }
 
     @Override
@@ -109,9 +115,8 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
                 public void run() {
                     if (mVideoView != null) {
                         mVideoView.setVideoURI(Uri.parse(videoPath));
-
                         mVideoView.start();
-                        mVideoView.requestFocus();
+                        //mVideoView.requestFocus();
                     }
                 }
             }, 100);
@@ -148,4 +153,7 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
          }
          */
     }
+
+    
+    
 }

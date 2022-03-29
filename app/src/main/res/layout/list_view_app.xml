@@ -34,8 +34,11 @@
 			android:choiceMode="multipleChoice"/>
 
 		<ProgressBar
+            style="?android:attr/progressBarStyleHorizontal"
 			android:layout_height="wrap_content"
-			android:layout_width="wrap_content"
+			android:layout_width="180dp"
+            android:indeterminate="true"
+            android:layout_marginBottom="5dp"
 			android:layout_gravity="center"
 			android:id="@+id/progressApps"
 			android:visibility="visible"

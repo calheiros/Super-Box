@@ -17,25 +17,37 @@
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"
 			android:scaleType="centerCrop"/>
-		
+
         <ImageView
-			android:layout_width="50dp"
+			android:layout_width="35dp"
 			android:layout_gravity="center"
-			android:layout_height="50dp"
+			android:layout_height="35dp"
 			android:id="@+id/play_view"
-			android:src="@drawable/ic_play_circle_outline"
+			android:src="@drawable/ic_play_circle"
 			android:visibility="gone"
-			android:scaleType="centerCrop"
 			android:layout_centerInParent="true"/>
-        
-        <TextView
-            android:textColor="@android:color/white"
+
+        <LinearLayout
+            android:background="@drawable/bg_time_video"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:layout_margin="3dp"
+            android:id="@+id/timeViewLayout"
+            android:gravity="center"
+            android:visibility="gone"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
-            android:id="@+id/gridview_itemTextView"/>
-        
+            android:layout_alignParentRight="true">
+
+            <TextView
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:id="@+id/gridview_itemTextView"/>
+        </LinearLayout>
+
 		<FrameLayout
 			android:id="@+id/selected_overlay"
 			android:layout_width="match_parent"
@@ -50,7 +62,7 @@
 				android:layout_width="45dp"
 				android:src="@drawable/item_checked"
 				android:layout_gravity="center"/>
-            
+
 		</FrameLayout>
 
 	</RelativeLayout>

@@ -149,10 +149,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     }
 
                     long secunds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
-                    String secStr = secunds > 9 ? String.valueOf(secunds): "0" + secunds;
-
-                    final String time = String.format("%d:%s", TimeUnit.MILLISECONDS.toMinutes(duration), secStr);
-                    Debug.toast("updateDatabase", "duration => " + time, Toast.LENGTH_SHORT);
+                    
+                    final String time = String.format("%d:%02d", TimeUnit.MILLISECONDS.toMinutes(duration), secunds);
+                    // Debug.toast("updateDatabase", "duration => " + time, Toast.LENGTH_SHORT);
                     map.put(path, time);
 
                     runOnUiThread(new Runnable(){

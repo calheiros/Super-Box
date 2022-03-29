@@ -49,4 +49,10 @@ public class Utils {
 
 		return netInfo != null && netInfo.isConnected();
 	}
+    public static String formatMillisecunds(long milliseconds){
+        
+        String formated = null;
+        
+        return formated;
+    }
 }

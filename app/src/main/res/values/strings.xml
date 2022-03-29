@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
+    
 <resources>
-    <string name="concluir">Conclude</string>
+    <string name="apagar_pasta_aviso">Are you sure you want to delete the %s folder and all your content permanently?</string>
+    <string name="criar_pasta">Create folder</string>
+    <string name="renomear_pasta">Rename folder</string>
+    <string name="concluir">Confirm</string>
     <string name="ascii_dead_face">(×_×)</string>
     <string name="ascii_shrug">¯\_(ツ)_/¯</string>
+    <string name="galeria">Gallery</string>
     <string name="modo_secreto">Stealth mode</string>
     <string name="codigo_discador">Dialer code</string>
     <string name="apagar_mensagem">%s will be deleted permanently. This action can\'t be undone!</string>

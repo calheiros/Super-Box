@@ -15,6 +15,7 @@
         <item name="colorControlHighlight">@color/blue_semi_transparent</item> 
 
     </style>
+    
 	<!--
 	<style name="AppTheme.NoActionBar">
 	<item name="windowActionBar">false</item>
@@ -22,7 +23,15 @@
 	<item name="android:windowDrawsSystemBarBackgrounds">true</item>
 	<item name="android:statusBarColor">@android:color/transparent</item>
     </style>-->
-
+    
+    <style name="CustomAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
+        <!--<item name="android:background">@drawable/alert_background</item>
+        
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        -->
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    
 	<style name="ActionBar" parent="Theme.AppCompat.Light">
 		<item name="colorPrimary">#2270FF</item>
 		<item name="colorPrimaryDark">#0449C7</item>

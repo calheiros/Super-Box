@@ -12,6 +12,7 @@ import java.io.*;
 import java.util.*;
 import com.jefferson.application.br.util.*;
 import android.widget.*;
+import android.util.Log;
 
 public class App extends Application implements Thread.UncaughtExceptionHandler {
 
@@ -67,20 +68,22 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     }
 
     private void writeLog(Throwable throwable) {
+        
         try {
             File file = new File(Environment.getExternalStorageDirectory() + 
                                  File.separator + "." + getApplicationInfo().packageName + File.separator + "logs", "log.txt");
             file.getParentFile().mkdirs();
-            StackTraceElement[] stackTrace = throwable.getStackTrace();
+            String stackTrace = Log.getStackTraceString(throwable);
             FileWriter output = new FileWriter(file);
 
-            for (int i = 0; i < stackTrace.length; i++) {
-                StackTraceElement trace = stackTrace[i];
-                output.append(trace.toString());
-            }
+            output.write(stackTrace);
             output.flush();
             output.close();
-        } catch (FileNotFoundException e) {} catch (IOException e) {}
+        } catch (FileNotFoundException e) {
+            
+        } catch (IOException e) {
+            
+        }
   
     }
 

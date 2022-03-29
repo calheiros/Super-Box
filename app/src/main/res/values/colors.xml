@@ -33,7 +33,7 @@
     <color name="blue_semi_transparent">#805677fc</color>
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
     <color name="colorPrimary">#710BE7</color>
-    <color name="colorAccent">@color/green</color>
+    <color name="colorAccent">#00D07C</color>
     <color name="colorPrimaryDark">#640BCB</color>
     <color name="fab_pressed">#00b899</color>
     <color name="highLightColor">#11FFFFFF</color>

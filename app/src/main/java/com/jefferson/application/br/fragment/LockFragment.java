@@ -1,28 +1,51 @@
 package com.jefferson.application.br.fragment;
 
-import android.content.*;
-import android.content.pm.*;
-import android.os.*;
-import android.provider.*;
-import android.support.v4.app.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-import android.widget.AdapterView.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.activity.*;
-import com.jefferson.application.br.adapter.*;
-import com.jefferson.application.br.model.*;
-import java.util.*;
-
-import android.support.v7.widget.Toolbar;
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import com.jefferson.application.br.App;
+import com.jefferson.application.br.CodeManager;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.activity.MainActivity;
+import com.jefferson.application.br.adapter.AppsAdapter;
+import com.jefferson.application.br.model.AppModel;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import com.jefferson.application.br.util.DialogUtils;
 
-public class LockFragment extends Fragment {
+public class LockFragment extends Fragment implements OnItemClickListener {
 
+    
     private static final int REQUEST_OVERLAY_CODE = 9;
+
+    private View lastClickedCheckView;
+    private int lastClickedItemPosition;
 
 	public LockFragment() {
 		initTask();
@@ -34,15 +57,15 @@ public class LockFragment extends Fragment {
 	private AppsAdapter mAdapter;
 	private ListView mListView;
 	private Intent intent;
-	private int mPosition;
-	private View adapterView, view;
+
+	private View view;
 	private Task mTask;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 		MainActivity mActivity = ((MainActivity)getActivity());
 		if (view == null) {
-			view = inflater.inflate(R.layout.list_view_apps, container, false);
+			view = inflater.inflate(R.layout.list_view_app, container, false);
 			mProgressBar = (ProgressBar)view.findViewById(R.id.progressApps);            
 			mTextView = (TextView) view.findViewById(R.id.porcent);
 			mListView = (ListView) view.findViewById(R.id.appList);
@@ -57,56 +80,66 @@ public class LockFragment extends Fragment {
 					mTextView.setVisibility(View.VISIBLE);
 				} 
 			}
+
 			intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-			mListView.setOnItemClickListener(new OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> p1, View vi, int position, long p4) {
-						mPosition = position;
-						adapterView = vi;
-
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) { 
-                            Log.v("App", "Requesting Permission" + Settings.canDrawOverlays(getContext())); // if not construct intent to request permission 
-                            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName())); // request permission via start activity for result 
-                            startActivityForResult(intent, REQUEST_OVERLAY_CODE); //It will call onActivityResult Function After you press Yes/No and go Back after giving permission 
-                        } else {
-                            Log.v("App", "We already have permission for it."); // disablePullNotificationTouch(); // Do your stuff, we got permission captain 
-                        }
-
-						if (!needPermissionForBlocking(getContext())) {
-							mAdapter.toogleSelection(position);
-						} else {
-							AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
-							alert.setMessage("Apartir do android 5.0 acima você precisa ativar a permisão \"Acessar dados de uso\" para esta função funcionar corretamente.");
-							alert.setPositiveButton("conceder", new DialogInterface.OnClickListener(){
-
-									@Override
-									public void onClick(DialogInterface p1, int p2) {
-										startActivityForResult(intent, 0);
-									}});
-							alert.setNegativeButton("Ignorar", null);
-							AlertDialog alertDialog = alert.create();
-							alertDialog.setCanceledOnTouchOutside(false);
-							alertDialog.show();
-						}
-					}
-				});
-
+			mListView.setOnItemClickListener(this);
 		}
+
 		Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 		mActivity.setupToolbar(toolbar, getString(R.string.bloquear_apps));
 		mActivity.getSupportActionBar().dispatchMenuVisibilityChanged(true);
 
 		return view;
 	}
+    @Override
+    public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 
+        lastClickedItemPosition = position;
+        lastClickedCheckView = view.findViewById(R.id.check1);
+        boolean noNeedOverlayPermission = false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) { 
+            Log.v("App", "Requesting Permission" + Settings.canDrawOverlays(getContext())); // if not construct intent to request permission 
+            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName())); // request permission via start activity for result 
+            startActivityForResult(intent, REQUEST_OVERLAY_CODE); //It will call onActivityResult Function After you press Yes/No and go Back after giving permission 
+        } else {
+            noNeedOverlayPermission = true;
+            Log.v("App", "We already have permission for it."); // disablePullNotificationTouch(); // Do your stuff, we got permission captain 
+        }
+
+        if (!needPermissionForBlocking(getContext())) {
+            if (noNeedOverlayPermission) {
+                mAdapter.toogleSelection(position);
+                animateCheckView(lastClickedCheckView);
+            }
+        } else {
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+            alert.setMessage("Você precisa ativar a permisão \"Acessar dados de uso\" para esta função funcionar corretamente.");
+            alert.setPositiveButton("conceder", new DialogInterface.OnClickListener(){
+
+                    @Override
+                    public void onClick(DialogInterface p1, int p2) {
+                        startActivityForResult(intent, 0);
+                    }
+                }
+            );
+            alert.setNegativeButton("Ignorar", null);
+            AlertDialog alertDialog = alert.create();
+            DialogUtils.configureRoudedDialog(alertDialog);
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.show();
+        }
+    }
+    public void animateCheckView(View vi) {
+        Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
+        vi.startAnimation(animation);
+    }
 	public void initTask() {
 		mTask = new Task(App.getAppContext());
 		mTask.execute();
 	}
 
     public void finalizeTask() {
-
 		mAdapter = new AppsAdapter(getActivity(), models);
 		mListView.setAdapter(mAdapter);
 		mProgressBar.setVisibility(View.GONE);
@@ -130,13 +163,15 @@ public class LockFragment extends Fragment {
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-           if (Settings.canDrawOverlays(getContext()) && !CodeManager.needPermissionForGetUsages(getContext())) {
-               mAdapter.toogleSelection(mPosition);
-           }
-           
+            if (Settings.canDrawOverlays(getContext()) && !CodeManager.needPermissionForGetUsages(getContext())) {
+                mAdapter.toogleSelection(lastClickedItemPosition);
+                animateCheckView(lastClickedCheckView);
+            }
+
         } else {
             if (!CodeManager.needPermissionForGetUsages(getContext())) {
-                mAdapter.toogleSelection(mPosition);
+                mAdapter.toogleSelection(lastClickedItemPosition);
+                animateCheckView(lastClickedCheckView);
             }
         }
 		super.onActivityResult(requestCode, resultCode, data);
@@ -159,13 +194,24 @@ public class LockFragment extends Fragment {
 		@Override
 		protected void onProgressUpdate(Object[] values) {
 			super.onProgressUpdate(values);
-			if (mTextView != null)
+
+            if (mTextView != null)
 				mTextView.setText(String.valueOf((int)progress) + "%");
+
+            if (mProgressBar != null) {
+
+                if (mProgressBar.isIndeterminate()) {
+                    mProgressBar.setIndeterminate(false);
+                    mProgressBar.setMax(100);
+                }
+                mProgressBar.setProgress((int)progress);
+            }
 		}
 
         @Override
         protected Void doInBackground(Object... params) {
-			try {
+
+            try {
 				Intent launch = new Intent(Intent.ACTION_MAIN, null);
 				launch.addCategory(Intent.CATEGORY_LAUNCHER);
 
@@ -174,8 +220,10 @@ public class LockFragment extends Fragment {
 				Collections.sort(apps, new ResolveInfo.DisplayNameComparator(pm)); 
 
 				for (int i = 0;i < apps.size();i++) {
-					if (isCancelled())
+
+					if (isCancelled()) {
 						break;
+                    }
 					ResolveInfo p = apps.get(i);
 
 					if (p.activityInfo.packageName.equals(context.getPackageName()))

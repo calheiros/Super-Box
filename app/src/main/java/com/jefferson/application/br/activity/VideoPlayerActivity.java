@@ -31,7 +31,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
         @Override
         public void onPageScrolled(int p1, float p2, int p3) {
-            Debug.toast("p2 = " + p1 + ", p3 = " + p3);
+            //Debug.toast("p2 = " + p1 + ", p3 = " + p3);
         }
 
         @Override
@@ -45,11 +45,11 @@ public class VideoPlayerActivity extends MyCompatActivity {
         }
 
         @Override
-        public void onPageScrollStateChanged(int p1) {
-
+        public void onPageScrollStateChanged(int state) {
+            
         }
-
     }
+    
     private VideoPlayerActivity.VideoPagerAdapter pagerAdapter;
     private ViewPager viewPager;
 
@@ -67,6 +67,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOnPageChangeListener(new MyPageListerner(pagerAdapter, position));
         viewPager.setCurrentItem(position);
+        viewPager.setOffscreenPageLimit(3);
         pagerAdapter.getItem(position).setPlayOnCreate(true);
     }
 
@@ -83,6 +84,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
         int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;
         winParams.flags |=  bits;
         win.setAttributes(winParams);
+       
     }
 
     private class VideoPagerAdapter extends FragmentPagerAdapter {

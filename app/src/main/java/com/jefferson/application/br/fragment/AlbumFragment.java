@@ -1,26 +1,37 @@
 package com.jefferson.application.br.fragment;
 
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import android.preference.*;
-import android.support.v4.app.*;
-import android.support.v7.widget.*;
-import android.view.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.activity.*;
-import com.jefferson.application.br.adapter.*;
-import com.jefferson.application.br.database.*;
-import com.jefferson.application.br.util.*;
-import java.io.*;
-import java.util.*;
-import com.jefferson.application.br.util.Debug;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Bundle;
+import android.os.Environment;
+import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import com.jefferson.application.br.task.*;
-import com.jefferson.application.br.database.PathsData.Folder;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.support.design.widget.Snackbar;
+import com.jefferson.application.br.App;
+import com.jefferson.application.br.FileModel;
+import com.jefferson.application.br.FolderModel;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.activity.MainActivity;
+import com.jefferson.application.br.adapter.AlbumAdapter;
+import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.task.DeleteFilesTask;
+import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.RandomString;
+import com.jefferson.application.br.util.Storage;
+import java.io.File;
+import java.util.ArrayList;
+import com.jefferson.application.br.util.DialogUtils;
 
 public class AlbumFragment extends Fragment {
 
@@ -131,15 +142,22 @@ public class AlbumFragment extends Fragment {
         View contentView = getActivity().getLayoutInflater().
             inflate(R.layout.dialog_edit_text, null);
         final EditText editText = contentView.findViewById(R.id.editTextInput);
-        String title = action == ACTION_RENAME_FOLDER ? "Renomear pasta" : "Criar pasta";
-
-        if (model != null)
-            editText.setText(model.getName());
-
-        new AlertDialog.Builder(context)
+        editText.requestFocus();
+        String title = null; 
+        
+        if (action == ACTION_RENAME_FOLDER) {
+            String name = model.getName();
+            title = getString(R.string.renomear_pasta);
+            editText.setText(name);
+            editText.setSelection(name.length());
+        } else {
+            title = getString(R.string.criar_pasta);
+        }
+        
+        AlertDialog dialog = new AlertDialog.Builder(context, R.style.CustomAlertDialog)
             .setTitle(title)
             .setView(contentView)
-            .setPositiveButton(context.getString(R.string.renomear), new DialogInterface.OnClickListener() {
+            .setPositiveButton(context.getString(R.string.concluir), new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dInterface, int p) {
                     String text = editText.getText().toString();
@@ -153,8 +171,9 @@ public class AlbumFragment extends Fragment {
                     }
                 }
             }
-        ).show();
-    }
+        ).setNegativeButton(getString(R.string.cancelar), null).show();
+        DialogUtils.configureRoudedDialog(dialog);
+     }
 
     public void renameFolder(FolderModel model, String newName) {
 
@@ -205,11 +224,11 @@ public class AlbumFragment extends Fragment {
     }
     public void deleteAlbum(final FolderModel model) {
 
-		String name = model.getName();
+		String name = "\"" + model.getName() + "\"";
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(getString(R.string.apagar));
-		builder.setMessage("Tem certeza que deseja apagar a pasta \"" + name + "\" e todo o seu conteudo permanentimente?");
-		builder.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+		builder.setMessage(String.format(getString(R.string.apagar_pasta_aviso), name));
+		builder.setPositiveButton(getString(R.string.sim), new DialogInterface.OnClickListener() {
 
 				@Override
 				public void onClick(DialogInterface inter, int p2) {
@@ -217,8 +236,8 @@ public class AlbumFragment extends Fragment {
 					new DeleteAlbumTask(getContext(), model.getItems(), position, root).execute();
 				}
             });
-		builder.setNegativeButton("Não", null);
-		builder.create().show();
+		builder.setNegativeButton(getString(R.string.nao), null);
+        DialogUtils.configureRoudedDialog(builder.show());
 	}
 
 	public void update() {

@@ -2,28 +2,28 @@
 	
     <group android:checkableBehavior="single">
 		<item
-			android:icon="@drawable/ic_imagem"
+			android:icon="@drawable/ic_from_gallery"
 			android:id="@+id/main_item1"
-			android:title="Galeria privada"/>
+			android:title="@string/galeria"/>
 		<item
 			android:icon="@drawable/ic_lock"
 			android:id="@+id/main_item2"
 			android:title="@string/bloquear_apps"/>
-		<item 
+		<item
 			android:icon="@drawable/ic_config"
 			android:id="@+id/item3"
 			android:title="@string/configuracoes"/>
     </group>
-	<item android:title="Comunicar">
+	<item android:title="@string/comunicar">
 		<menu>
-			<item 
+			<item
 				android:id="@+id/item_4"
 				android:icon="@drawable/ic_share"
-				android:title="Compartilhar" />
+				android:title="@string/compartilhar" />
 			<item 
 				android:id="@+id/item_5"
-				android:icon="@drawable/ic_bug"
-				android:title="Relatar bug"/>
+				android:icon="@drawable/ic_email"
+				android:title="@string/entre_em_contato"/>
 		</menu>
 	</item>
 </menu>

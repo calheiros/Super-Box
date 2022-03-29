@@ -46,7 +46,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 			holder.play_view.setVisibility(View.VISIBLE);
             holder.play_view.setImageResource(R.drawable.ic_play);
         }
-        
+
 		if (f_model.getItems().size() != 0) {
 			Glide.with(fragment).load("file://" + f_model.getItems().get(0))
 				.skipMemoryCache(true)
@@ -55,7 +55,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
             holder.iv_image.setImageResource(0);
             holder.play_view.setImageResource(R.drawable.ic_file_image);
         }
-        
+
 		holder.cd_layout.setOnClickListener(new OnClickListener(){
 
 				@Override
@@ -74,7 +74,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
 				@Override
 				public boolean onLongClick(final View view) {
-					final String[] options = {"Apagar", "Renomear"};
+                    Context context = view.getContext();
+					final String[] options = {context.getString(R.string.apagar), context.getString(R.string.renomear)};
 					AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 					builder.setItems(options, new DialogInterface.OnClickListener(){
 
@@ -89,7 +90,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 							}
 						}
                     );
-					builder.show();
+                    DialogUtils.configureRoudedDialog(builder.show());
+
 					return false;
 				}
 			}
@@ -103,7 +105,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 	}
 
 	public class viewHolder extends RecyclerView.ViewHolder {
-		
+
         TextView tv_foldern, tv_foldersize;
         ImageView iv_image;
 		CardView cd_layout;

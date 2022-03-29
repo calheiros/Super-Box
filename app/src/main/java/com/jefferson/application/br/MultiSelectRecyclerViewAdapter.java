@@ -63,9 +63,9 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gridview_item, null);
         ViewHolder viewHolder = new ViewHolder(itemLayoutView, clickListener);
 		
-        if (mediaType == 1)
+        if (mediaType == 1) {
 			viewHolder.playView.setVisibility(View.VISIBLE);
-		
+		}
         return viewHolder;
     }
 
@@ -78,10 +78,9 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         String result = map.get(mListItemsPath.get(position));
         
         if (result != null) {
-            viewHolder.textView.setVisibility(View.VISIBLE);
+            viewHolder.timeView.setVisibility(View.VISIBLE);
             viewHolder.textView.setText(result);
-            
-            Debug.toast("Result => " + result);
+            //Debug.toast("Result => " + result);
         } else {
             
         }
@@ -100,6 +99,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         private final View selectedOverlay;
         public TextView textView;
 		public ImageView playView;
+        private View timeView;
 	
         public ViewHolder(View rootView, ClickListener listener) {
             super(rootView);
@@ -109,7 +109,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 			playView = (ImageView) rootView.findViewById(R.id.play_view);
             textView = rootView.findViewById(R.id.gridview_itemTextView);
             selectedOverlay = itemView.findViewById(R.id.selected_overlay);
-		
+		    timeView = rootView.findViewById(R.id.timeViewLayout);
             rootView.setOnClickListener(this);
             rootView.setOnLongClickListener(this);
         }

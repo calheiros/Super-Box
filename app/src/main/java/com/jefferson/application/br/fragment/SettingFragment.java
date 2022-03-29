@@ -32,8 +32,16 @@ import android.view.View.OnLongClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Adapter;
 import com.jefferson.application.br.util.Debug;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.Color;
+import android.widget.TextView;
+import com.jefferson.application.br.util.ASCIIArt;
+import java.net.URI;
+import android.net.Uri;
+import android.content.ActivityNotFoundException;
+import android.view.View.OnClickListener;
 
-public class SettingFragment extends Fragment implements OnItemClickListener, OnItemLongClickListener {
+public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
 	public String[] storages;
 	public String version;
@@ -52,7 +60,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
         View view = inflater.inflate(R.layout.config, null);
 		mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-		storages = new String[]{getString(R.string.armaz_interno),getString(R.string.armaz_externo)};
+		storages = new String[]{ getString(R.string.armaz_interno), getString(R.string.armaz_externo) };
 
 		((MainActivity)getActivity()).setupToolbar(mToolbar, getString(R.string.configuracoes));
 
@@ -133,6 +141,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 		}
         return items;
     }
+
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
 
@@ -147,6 +156,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         }
         return false;
     }
+
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
 		switch (position) {
@@ -161,10 +171,10 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 				break;
 			case 5:
 				Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
-				boolean isChecked = !mySwitch.isChecked();
+				boolean checked = !mySwitch.isChecked();
 
-				changeIconVisibility(isChecked);
-				mySwitch.setChecked(isChecked);
+				changeIconVisibility(checked);
+				mySwitch.setChecked(checked);
 				break;
 			case 4:
 				showDialogChoose();
@@ -177,6 +187,26 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 				break;
 		}
 	}
+    @Override
+    public void onClick(View view) {
+        openGithub();
+    }
+
+    
+    public void configureRoundedDialog(AlertDialog dialog) {
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_background);
+    }
+
+    public void openGithub() {
+
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.github.com/calheiros"));
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException err) {
+            Toast.makeText(getContext(), "Can't open URL", Toast.LENGTH_LONG).show();
+        }
+    }
 
     public void showDialogChoose() {
 
@@ -186,7 +216,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         if (Storage.getExternalStorage() == null)
             options = new String[]{getString(R.string.armaz_interno)};
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.CustomAlertDialog);
         builder.setTitle(getString(R.string.armazenamento));
         builder.setSingleChoiceItems(options, Storage.getStoragePosition(), new DialogInterface.OnClickListener(){
 
@@ -196,6 +226,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 }
             }
         );
+
         builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener(){
 
                 @Override
@@ -210,7 +241,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             }
         );
         builder.setNegativeButton(getString(R.string.cancelar), null);
-        builder.create().show();
+        configureRoundedDialog(builder.show());
+
 	}
 
 	private void changeIconVisibility(boolean isChecked) {
@@ -224,7 +256,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 		final EditText editText = (EditText) view.findViewById(R.id.editTextDialogUserInput);
 		editText.append(getDialerCode());
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+		AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.CustomAlertDialog);
 		builder.setTitle("Novo código");
 		builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener(){
 
@@ -248,11 +280,11 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
 		builder.setNegativeButton(getString(R.string.cancelar), null);
 		builder.setView(view);
-		builder.show();
+        configureRoundedDialog(builder.show());
 	}
 
 	public int getComponentEnabledSetting() {
-		return getActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(getContext(), "com.jefferson.application.br.LuancherAlias"));
+		return getActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(getContext(), getActivity().getPackageName() + ".LuancherAlias"));
 	}
 
 	private String getStorageName() {
@@ -265,8 +297,10 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	}
 
     private String getLanguage() {
-		String locale = LocaleManager.getLanguage(getContext());
-		if (locale == null)
+
+        String locale = LocaleManager.getLanguage(getContext());
+
+        if (locale == null)
 			return "Padr\u00e3o do sistema";
 
 		switch (locale) {
@@ -282,17 +316,24 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
 	private void showAbout() {
 
-        AlertDialog.Builder build = new AlertDialog.Builder(getContext());
-		build.setView(LayoutInflater.from(getContext()).inflate(R.layout.about, null, false));
-		build.setPositiveButton("fechar", null);
-		build.create().show();
+        AlertDialog.Builder build = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
+		View view = LayoutInflater.from(getContext()).inflate(R.layout.credits_layout, null, false);
+        TextView asciiView = view.findViewById(R.id.ascii_text_view);
+        
+        view.findViewById(R.id.githubTextView).setOnClickListener(this);
+        
+        asciiView.setText(ASCIIArt.CHIKA_ART);
+		build.setView(view);
+        build.setPositiveButton("fechar", null);
+        configureRoundedDialog(build.show());
+		//build.show().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 	}
 
 	private void showWarning() {
 
         View view = getLayoutInflater(null).inflate(R.layout.dialog_check_box_view, null);
 		final CheckBox mCheckBox = (CheckBox) view.findViewById(R.id.dialogcheckbox);
-		new AlertDialog.Builder(getContext())
+		new AlertDialog.Builder(getActivity())
             .setTitle("Informação")
             .setIcon(R.drawable.ic_information)
             .setMessage(String.format("Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", getDialerCode()))
@@ -305,7 +346,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 					if (mCheckBox.isChecked()) {
 						mEdit.putBoolean("dont_show_info_on_hidden", true);
 					}
-
 				}
             }
         );
@@ -315,7 +355,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
         final CharSequence[] itens = {"Português(Brasil)","English","Español"};
 
-        AlertDialog.Builder b = new AlertDialog.Builder(getContext())
+        AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog)
 			.setTitle(R.string.escolha_idioma)
 			.setItems(itens, new DialogInterface.OnClickListener(){
 
@@ -335,10 +375,12 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 					}
 					LocaleManager.setNewLocale(getContext(), locale);
 					Intent intent = new Intent(getContext(), MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
 					intent.setAction(MainActivity.ACTION_INIT_WITH_PREFERENCES);
 					startActivity(intent);
-					getActivity().finish();
-				}});
-		b.create().show();
+				}
+            }
+        );
+		configureRoundedDialog(b.show());
 	}
 }

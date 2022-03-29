@@ -4,35 +4,29 @@
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
 	android:orientation="vertical"
-   android:background="@color/colorPrimary"
+    android:background="@color/colorPrimary"
 	android:gravity="center">
 
-	<RelativeLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:layout_marginBottom="15dp">
+    <ImageView
+        android:layout_margin="80dp"
+        android:layout_width="65dp"
+        android:layout_height="65dp"
+        android:src="@drawable/ic_super"/>
 
-		<EditText
-			android:layout_height="wrap_content"
-			android:inputType="numberDecimal|numberPassword"
-			android:layout_width="wrap_content"
-			android:ems="7"
-			android:focusable="false"
-			android:textSize="25sp"
-			android:clickable="false"
-			android:textColor="#FFFFFF"
-			android:gravity="center"
-			android:id="@+id/pinActivityEditText"
-			android:layout_centerHorizontal="true"/>
 
-		<ImageView
-			android:layout_height="32dp"
-			android:layout_width="35dp"
-			android:layout_toRightOf="@id/pinActivityEditText"
-			android:layout_centerVertical="true"/>
-
-	</RelativeLayout>
+    <EditText
+        android:layout_height="wrap_content"
+        android:inputType="numberDecimal|numberPassword"
+        android:layout_width="wrap_content"
+        android:ems="7"
+        android:focusable="false"
+        android:textSize="25sp"
+        android:clickable="false"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:layout_marginBottom="15dp"
+        android:id="@+id/pinActivityEditText"
+        android:layout_centerHorizontal="true"/>
 
 	<GridLayout
 		android:layout_width="wrap_content"
@@ -49,7 +43,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
@@ -59,7 +53,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
@@ -69,7 +63,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
@@ -79,7 +73,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
@@ -89,7 +83,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="110dp"
 			android:textColor="#FCFCFC"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
@@ -99,7 +93,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
@@ -109,7 +103,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
@@ -119,7 +113,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
@@ -129,7 +123,7 @@
 			android:layout_height="wrap_content"
 			android:layout_width="110dp"
 			android:textColor="#FFFFFF"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
 
 		<Button
 			style="?android:attr/buttonBarButtonStyle"
@@ -141,7 +135,8 @@
 			android:layout_row="3"
 			android:layout_column="1"
 			android:textColor="#FFFFFF"
-			android:textSize="30sp"/>
+			android:textSize="30dp"/>
+        
         <ImageButton
             style="?android:attr/buttonBarButtonStyle"
             android:onClick="backspace"
@@ -152,7 +147,7 @@
             android:layout_row="3"
             android:src="@drawable/ic_backspace_outline"
             android:layout_column="2"/>
-        
+
 	</GridLayout>
 
 </LinearLayout>

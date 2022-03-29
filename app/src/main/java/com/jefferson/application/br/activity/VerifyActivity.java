@@ -105,8 +105,8 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 				// Show an explanation to the user *asynchronously* -- don't block
 				// this thread waiting for the user's response! After the user
 				// sees the explanation, try again to request the permission.
-                Intent inten = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
-                startActivity(inten);
+                Intent intent = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
+                startActivity(intent);
 
 			} else {
 				// No explanation needed, we can request the permission.

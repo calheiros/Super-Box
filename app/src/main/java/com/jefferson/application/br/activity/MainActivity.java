@@ -42,6 +42,10 @@ import com.jefferson.application.br.util.Utils;
 import java.io.File;
 import java.util.ArrayList;
 import android.content.pm.ActivityInfo;
+import com.jefferson.application.br.util.DialogUtils;
+import android.app.AlertDialog;
+import com.jefferson.application.br.widget.MyAlertDialog;
+import com.jefferson.application.br.widget.MyAlertDialog.Builder;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -157,7 +161,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		}
 		return super.onOptionsItemSelected(item);
 	}
-    
+
     public boolean requestPermission() { 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
@@ -166,7 +170,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                 return true; } 
         } return false;
     }
-    
+
 	private void initialize() {
 
         this.mainFragment = new MainFragment();
@@ -274,9 +278,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (Settings.canDrawOverlays(this)) { 
-             
+
             }
-               
+
         } 
 		if (resultCode == MyCompatActivity.RESULT_OK) {
 
@@ -360,19 +364,18 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	private void showExitDialog() {
 
-		new SimpleDialog(this, SimpleDialog.ALERT_STYLE)
-			.setContentTitle(getString(R.string.confirmacao))
-			.setContentText(getString(R.string.quer_realmente_sair))
-			.setPositiveButton(getString(R.string.nao), null)
-			.setNegativeButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener(){
+	    MyAlertDialog.Builder builder = new MyAlertDialog.Builder(this, R.style.CustomAlertDialog);
+        builder.setTitle(getString(R.string.confirmacao));
+        builder.setMessage(getString(R.string.quer_realmente_sair));
+        builder.setPositiveButton(getString(R.string.sim), new DialogInterface.OnClickListener(){
 
-				@Override
-				public boolean onClick(SimpleDialog dialog) {
-					finish();
-					return true;
-				}
-			})
-			.show();
+                @Override
+                public void onClick(DialogInterface face, int i) {
+                    finish();
+                }
+            }
+        );
+        builder.setNegativeButton(getString(R.string.nao), null).show();
 	}
 
     @Override

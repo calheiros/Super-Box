@@ -8,7 +8,7 @@ import android.widget.*;
 import com.jefferson.application.br.adapter.*;
 import com.jefferson.application.br.database.*;
 import java.util.*;
-import com.jefferson.application.br.util.*;
+import com.jefferson.application.br.util.Debug;
 
 public class AppLockService extends Service {
 
@@ -18,7 +18,7 @@ public class AppLockService extends Service {
 	private WindowLockApps lockScreen;
 	private ScreenOnOff mybroadcast;
 	private AppsDatabase mDabase;
-	//public static ArrayList<String> mLockedApps = new ArrayList<>();
+
 	public static Handler toastHandler;
 	public static AppLockService self;
 	public static boolean toast = false;
@@ -41,7 +41,8 @@ public class AppLockService extends Service {
         registerReceiver(mybroadcast, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 		super.onCreate();
 	}
-	@Override
+	
+    @Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		return START_STICKY;
 	}
@@ -77,14 +78,18 @@ public class AppLockService extends Service {
 			toastHandler.sendEmptyMessage(0);
         }
     }    
-	class ToastHandler extends Handler {
+	public class ToastHandler extends Handler {
 
 		@Override
 		public void handleMessage(Message msg) {
-			String ActivityOnTop = com.jefferson.application.br.util.Utils.getTopActivityApplication();
-			if (!ActivityOnTop.equals(pActivity)) {
-				pActivity = ActivityOnTop;
-				if (mDabase.getLockedApps().contains(ActivityOnTop) && !mDabase.isAppUnlocked(ActivityOnTop)) {
+			
+            String ActivityOnTop = com.jefferson.application.br.util.Utils.getTopActivityApplication();
+			
+            if (!ActivityOnTop.equals(pActivity)) {
+				
+                pActivity = ActivityOnTop;
+				
+                if (mDabase.getLockedApps().contains(ActivityOnTop) && !mDabase.isAppUnlocked(ActivityOnTop)) {
 
 					if (lockScreen.isLocked()) {
 						lockScreen.unlock();
@@ -92,14 +97,17 @@ public class AppLockService extends Service {
 					lockScreen.lockApp(ActivityOnTop);
 
 				} else {
-					if (lockScreen.isLocked()) {
+					if (lockScreen.isLocked() && !"com.android.systemui".equals(ActivityOnTop)) {
 						lockScreen.unlock();
+                        Debug.toast(ActivityOnTop, Toast.LENGTH_LONG);
 					}
 				}
 			}
 		}
 	}
-	private void showMessage(String m) {
+	
+    private void showMessage(String m) {
+        
 		Toast.makeText(this, m, Toast.LENGTH_LONG).show();
 	}
 	

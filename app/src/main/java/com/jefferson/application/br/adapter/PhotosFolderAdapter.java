@@ -18,14 +18,14 @@ import java.util.ArrayList;
 import android.os.Build;
 import android.util.Log;
 
-public class Adapter_PhotosFolder extends ArrayAdapter<FolderModel> {
+public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
 	
     private GalleryAlbum mGalleryAlbum;
     private ViewHolder mViewHolder;
     private ArrayList<FolderModel> al_menu = new ArrayList<>();
     private int option;
 
-    public Adapter_PhotosFolder(GalleryAlbum galleryAlbum, ArrayList<FolderModel> al_menu, int option) {
+    public PhotosFolderAdapter(GalleryAlbum galleryAlbum, ArrayList<FolderModel> al_menu, int option) {
         super(galleryAlbum, R.layout.adapter_photosfolder, al_menu);
         this.al_menu = al_menu;
         this.mGalleryAlbum = galleryAlbum;

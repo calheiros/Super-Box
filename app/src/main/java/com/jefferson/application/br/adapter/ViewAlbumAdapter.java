@@ -8,12 +8,12 @@ import com.jefferson.application.br.*;
 import java.util.*;
 import com.jefferson.application.br.widget.*;
 
-public class Adapter_ViewAlbum extends  RecyclerView.Adapter<Adapter_ViewAlbum.ListItemViewHolder> {
+public class ViewAlbumAdapter extends  RecyclerView.Adapter<ViewAlbumAdapter.ListItemViewHolder> {
 
     private List<String> items;
     private SparseBooleanArray selectedItems;
 
-	public Adapter_ViewAlbum(List<String> modelData) {
+	public ViewAlbumAdapter(List<String> modelData) {
         if (modelData == null) {
             throw new IllegalArgumentException("modelData must not be null");
         }

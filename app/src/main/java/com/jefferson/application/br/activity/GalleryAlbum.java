@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
@@ -18,13 +19,14 @@ import android.widget.Toast;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.FolderModel;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.adapter.Adapter_PhotosFolder;
+import com.jefferson.application.br.adapter.PhotosFolderAdapter;
 import java.util.ArrayList;
+import com.jefferson.application.br.util.Debug;
 
 public class GalleryAlbum extends MyCompatActivity {
 
     private boolean boolean_folder;
-    private Adapter_PhotosFolder obj_adapter;
+    private PhotosFolderAdapter obj_adapter;
 	private int position;
 	private Toolbar toolbar;
     private GridView gv_folder;
@@ -76,12 +78,13 @@ public class GalleryAlbum extends MyCompatActivity {
 
     public ArrayList<FolderModel> fn_imagespath() {
 	    ArrayList<FolderModel> al_images = new ArrayList<FolderModel>();
-        
+
         Uri uri = null;
         Cursor cursor;
 		String orderBy = null;
 		String index_fname = null;
 		String Bucket = null;
+
         int column_index_data, column_index_folder_name;
 
 		if (position == 0) {
@@ -103,10 +106,11 @@ public class GalleryAlbum extends MyCompatActivity {
         cursor = getApplicationContext().getContentResolver().query(uri, projection, null, null, orderBy + " DESC");
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
         column_index_folder_name = cursor.getColumnIndexOrThrow(index_fname);
+        
         while (cursor.moveToNext()) {
             absolutePathOfImage = cursor.getString(column_index_data);
             String folderName = cursor.getString(column_index_folder_name);
-            int folderPosition = folderPosition(al_images, folderName);
+            int folderPosition = getFolderIndex(al_images, folderName);
 
             if (folderPosition == -1) {
                 FolderModel model = new FolderModel();
@@ -121,10 +125,11 @@ public class GalleryAlbum extends MyCompatActivity {
 
         return al_images;
     }
-    private int folderPosition(ArrayList<FolderModel> list, String name) {
-        
-        if ( name == null ) name = FolderModel.NO_FOLDER_NAME;
-            
+
+    private int getFolderIndex(ArrayList<FolderModel> list, String name) {
+
+        if (name == null) name = FolderModel.NO_FOLDER_NAME;
+
         for (int i = 0; i < list.size(); i++) {
             String folderName = list.get(i).getName();
             if (name.equals(folderName)) 
@@ -132,8 +137,9 @@ public class GalleryAlbum extends MyCompatActivity {
         }
         return -1;
     }
+
     private void setAdapter(ArrayList<FolderModel> list) {
-		obj_adapter = new Adapter_PhotosFolder(GalleryAlbum.this, list, position);
+		obj_adapter = new PhotosFolderAdapter(GalleryAlbum.this, list, position);
 		gv_folder.setAdapter(obj_adapter);
 	}
 
