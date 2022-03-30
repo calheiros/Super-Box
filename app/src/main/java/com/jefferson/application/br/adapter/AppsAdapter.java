@@ -17,12 +17,10 @@ public class AppsAdapter extends BaseAdapter {
 	private LayoutInflater inflater = null;
     public ArrayList<AppModel> models;
     public AppsDatabase database;
-
-	public static AppLockService service;
+    public static AppLockService service;
 
 	public AppsAdapter(Activity mActivity, ArrayList<AppModel> models) {
-
-		this.mActivity = mActivity;
+        this.mActivity = mActivity;
 		this.models = models; 
 		this.database = new AppsDatabase(mActivity);
         this.selection = database.getLockedApps();
@@ -31,9 +29,9 @@ public class AppsAdapter extends BaseAdapter {
 	}
 
 	public View getView(int position, View convertView, ViewGroup parent) {
-
-		View view = convertView;
-		if (convertView == null) 
+        View view = convertView;
+		
+        if (convertView == null) 
 			view = inflater.inflate(R.layout.list_item, null);
 
 	    AppModel info = models.get(position);
@@ -49,8 +47,7 @@ public class AppsAdapter extends BaseAdapter {
     }
 
 	public void toogleSelection(int position) {
-
-		//AppLockService appLockService = ((App)mActivity.getApplication()).appLockService;
+        //AppLockService appLockService = ((App)mActivity.getApplication()).appLockService;
 		String pname = models.get(position).pname;
 		if (selection.contains(pname)) {
 			selection.remove(pname);

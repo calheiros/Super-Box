@@ -113,7 +113,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
                 animateCheckView(lastClickedCheckView);
             }
         } else {
-            AlertDialog.Builder alert = new AlertDialog.Builder(getContext());
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext(), R.style.CustomAlertDialog);
             alert.setMessage("Você precisa ativar a permisão \"Acessar dados de uso\" para esta função funcionar corretamente.");
             alert.setPositiveButton("conceder", new DialogInterface.OnClickListener(){
 

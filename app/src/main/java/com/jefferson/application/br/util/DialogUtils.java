@@ -11,12 +11,12 @@ public class DialogUtils {
 
     public static void configureRoudedDialog(android.support.v7.app.AlertDialog dialog) {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_background);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_bg_inset);
     }
 
     public static void configureRoudedDialog(AlertDialog dialog) {
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_background);
+        dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_bg_inset);
     }
 
     public static AlertDialog createRoundedDialog(Context context) {

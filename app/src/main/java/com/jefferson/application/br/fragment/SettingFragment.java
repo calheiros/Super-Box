@@ -40,6 +40,7 @@ import java.net.URI;
 import android.net.Uri;
 import android.content.ActivityNotFoundException;
 import android.view.View.OnClickListener;
+import com.jefferson.application.br.util.DialogUtils;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
@@ -53,11 +54,10 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	SharedPreferences.Editor mEdit;
 	int count;
 
-    private int storageChoiceIndex;
+    private int storageChoicePosition;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.config, null);
 		mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
 		storages = new String[]{ getString(R.string.armaz_interno), getString(R.string.armaz_externo) };
@@ -144,7 +144,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-
         if (position == 8) {
 
             boolean debug = Debug.isDebugOn();
@@ -172,8 +171,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 			case 5:
 				Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
 				boolean checked = !mySwitch.isChecked();
-
-				changeIconVisibility(checked);
+                changeIconVisibility(checked);
 				mySwitch.setChecked(checked);
 				break;
 			case 4:
@@ -194,13 +192,12 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
     
     public void configureRoundedDialog(AlertDialog dialog) {
-        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        dialog.getWindow().setBackgroundDrawableResource(R.drawable.alert_background);
+        DialogUtils.configureRoudedDialog(dialog);
     }
 
     public void openGithub() {
-
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.github.com/calheiros"));
+        
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException err) {
@@ -209,31 +206,34 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     public void showDialogChoose() {
-
-        storageChoiceIndex = 0;
-
+        final int storagePosition = Storage.getStoragePosition();
+        storageChoicePosition = storagePosition;
+            
         String[] options = new String[]{getString(R.string.armaz_interno), getString(R.string.armaz_externo)};
         if (Storage.getExternalStorage() == null)
             options = new String[]{getString(R.string.armaz_interno)};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.CustomAlertDialog);
         builder.setTitle(getString(R.string.armazenamento));
-        builder.setSingleChoiceItems(options, Storage.getStoragePosition(), new DialogInterface.OnClickListener(){
+        builder.setSingleChoiceItems(options, storagePosition, new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialog, int position) {
-                    storageChoiceIndex = position;
+                    storageChoicePosition = position;
                 }
             }
         );
 
-        builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener(){
+        builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialog, int p2) {
-
-                    Storage.setNewLocalStorage(storageChoiceIndex);
-
+                    
+                    if (storageChoicePosition == storagePosition ) {
+                        return;
+                    }
+                    Storage.setNewLocalStorage(storageChoicePosition);
+                    
                     ((MainActivity) getActivity()).
                         mainFragment.update(MainFragment.ID.BOTH);
                     updateItem(4);
@@ -251,8 +251,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	}
 
 	public void changeCodeDialog() {
-
-		final View view = getLayoutInflater(null).inflate(R.layout.dialog_call, null);
+        final View view = getLayoutInflater(null).inflate(R.layout.dialog_call, null);
 		final EditText editText = (EditText) view.findViewById(R.id.editTextDialogUserInput);
 		editText.append(getDialerCode());
 
@@ -315,13 +314,11 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
 	private void showAbout() {
-
         AlertDialog.Builder build = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
 		View view = LayoutInflater.from(getContext()).inflate(R.layout.credits_layout, null, false);
         TextView asciiView = view.findViewById(R.id.ascii_text_view);
         
         view.findViewById(R.id.githubTextView).setOnClickListener(this);
-        
         asciiView.setText(ASCIIArt.CHIKA_ART);
 		build.setView(view);
         build.setPositiveButton("fechar", null);
@@ -330,7 +327,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	}
 
 	private void showWarning() {
-
         View view = getLayoutInflater(null).inflate(R.layout.dialog_check_box_view, null);
 		final CheckBox mCheckBox = (CheckBox) view.findViewById(R.id.dialogcheckbox);
 		new AlertDialog.Builder(getActivity())

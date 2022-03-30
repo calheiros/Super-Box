@@ -66,9 +66,7 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
-
-		
-       if (convertView == null) {
+        if (convertView == null) {
             mViewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.adapter_photosfolder, parent, false);
             mViewHolder.tv_foldern = (TextView) convertView.findViewById(R.id.tv_folder);
@@ -81,7 +79,8 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
                 mViewHolder.iv_image.setClipToOutline(true);
                 Log.i(getClass().getName(), "setClipToOutline => true");
             }
-			if (option == 1)
+			
+            if (option == 1)
 				mViewHolder.play_view.setVisibility(View.VISIBLE);
 			
 			mViewHolder.cd_layout.setOnClickListener(new OnClickListener(){

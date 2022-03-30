@@ -13,7 +13,6 @@
         android:layout_height="65dp"
         android:src="@drawable/ic_super"/>
 
-
     <EditText
         android:layout_height="wrap_content"
         android:inputType="numberDecimal|numberPassword"

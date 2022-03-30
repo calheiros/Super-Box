@@ -17,14 +17,12 @@ public class FilePickerAdapter extends BaseAdapter {
     private int selectedItem = -1;
 
     public FilePickerAdapter(List<PickerModel> list, Context context) {
-
         this.context = context;
         this.models = list;
         this.mLayoutInflater = (LayoutInflater) context.getSystemService("layout_inflater");
     }
 
     public void update(List<PickerModel> list) {
-
         this.models = list;
         notifyDataSetChanged();
     }
@@ -35,35 +33,31 @@ public class FilePickerAdapter extends BaseAdapter {
     }
 
     public void setSelectedItem(int i) {
-
         this.selectedItem = i;
         notifyDataSetChanged();
     }
 
     @Override
     public int getCount() {
-
         return this.models.size();
     }
 
     @Override
     public Object getItem(int i) {
-
         return i;
     }
 
     @Override
     public long getItemId(int i) {
-
         return (long) i;
     }
 
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-
         if (view == null) {
             view = mLayoutInflater.inflate(R.layout.file_picker_item, (ViewGroup) null);
         }
+        
         ImageView imageView = (ImageView) view.findViewById(R.id.tumbView);
         TextView textView = (TextView) view.findViewById(R.id.item_name);
         TextView textView2 = (TextView) view.findViewById(R.id.item_size);

@@ -36,14 +36,12 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
         ProgressDialog progress;
 
         public MoveFiles(FilePicker filePicker, String str) {
-
             this.mMovedArray = new ArrayList<>();
             this.folder = str;
         }
 
         @Override
         protected void onPreExecute() {
-
             this.progress = new ProgressDialog(FilePicker.this);
 			this.progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             this.progress.setMax(paths.size());
@@ -55,14 +53,12 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
 
         @Override
         protected void onProgressUpdate(Object[] objArr) {
-
             this.progress.setProgress(((Integer) objArr[0]).intValue());
             super.onProgressUpdate(objArr);
         }
 
         @Override
         protected void onPostExecute(Object obj) {
-
             this.progress.dismiss();
 			Intent intent = new Intent();
 			intent.putExtra("moved_files", mMovedArray);
@@ -91,7 +87,6 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
 
     @Override
     protected void onCreate(Bundle bundle) {
-
         super.onCreate(bundle);
         setContentView(R.layout.list_view_layout);
 
@@ -114,8 +109,8 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
     }
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long j) {
-
         int selectedItem = this.filePickerAdapter.getSelectedItem();
+        
         if (selectedItem == -1) {
             invalidateOptionsMenu();
         }
@@ -137,7 +132,6 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
     
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-
         int itemId = menuItem.getItemId();
         
         if (itemId == R.id.confirm) {
@@ -152,7 +146,6 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
     }
 
     public List<PickerModel> getModels(int i) {
-
         ArrayList<PickerModel> arrayList = new ArrayList<>();
         File storageAndFolder = Storage.getFolder(i == 0 ? Storage.IMAGE : Storage.VIDEO);
         PathsData.Folder instance = PathsData.Folder.getInstance(this);

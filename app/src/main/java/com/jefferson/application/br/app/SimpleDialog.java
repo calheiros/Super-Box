@@ -11,7 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-import com.jefferson.application.br.Library.NumberProgressBar;
+import com.jefferson.application.br.library.NumberProgressBar;
 import com.jefferson.application.br.R;
 
 public class SimpleDialog extends AlertDialog {
