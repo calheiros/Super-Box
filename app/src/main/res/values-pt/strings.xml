@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
-    <string name="pasta_mesmo_nome">O novo nome da pasta não pode ser o mesmo ಠ_ಠ</string>
+    <string name="pasta_mesmo_nome">O nome não pode ser o mesmo ಠ_ಠ</string>
     <string name="pasta_existe">Já existe uma pasta com esse nome</string>
     <string name="sem_espaco_aviso">Pode não haver espaço livre no dispositivo para completar a tranfêrencia, quer tentar continuar mesmo assim?</string>
     <string name="canceledo_usuario">Cancelado pelo usuário!</string>

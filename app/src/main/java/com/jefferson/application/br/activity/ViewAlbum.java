@@ -49,9 +49,29 @@ import com.jefferson.application.br.util.Debug;
 import android.support.design.widget.Snackbar;
 import com.jefferson.application.br.util.DocumentUtil;
 import android.support.design.widget.FloatingActionButton;
+import com.jefferson.application.br.task.ImportTask;
 
-public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener {
+public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.TaskListener {
 
+    @Override
+    public void onPostExecute() {
+        updateRecyclerView();
+        synchronizeData();
+    }
+
+    @Override
+    public void onPreExecute() {
+        
+    }
+
+    @Override
+    public void onDialogDismiss() {
+    }
+
+    @Override
+    public void OnCancelled() {
+    }
+    
 	private PathsData database;
 	private boolean selectionMode;
 	private LinearLayout mainLayout;
@@ -160,8 +180,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
     private void updateDatabase(final ArrayList<String> list, final MultiSelectRecyclerViewAdapter adapter) {
 
-        final Handler handler = new Handler(Looper.getMainLooper());
-
         new Thread() {
 
             @Override
@@ -196,16 +214,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         }
                     );
                 }
-
-                handler.post(new Runnable(){
-
-                        @Override
-                        public void run() {
-                            //adapter.setMediaDuration(map);
-                            Debug.toast("database update finished!");
-                        }
-                    }
-                );
             }
         }.start();
     }
@@ -350,12 +358,11 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 for (String path : paths) {
                     FileModel model = new FileModel();
                     model.setResource(path);
-                    
-                    model.setDestination(Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
+                    model.setParentPath(folder.getAbsolutePath());
                     model.setType(data.getStringExtra("type"));
                     models.add(model);
                 }
-                
+                new ImportTask(this, models, this).execute();
                 /*
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 
@@ -369,7 +376,16 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-
+    public void updateRecyclerView () {
+        ArrayList<String> mListItemsPath = new ArrayList<String>();
+        
+        for (File file : folder.listFiles()){
+            mListItemsPath.add(file.getAbsolutePath());
+        }
+        
+        mAdapter.mListItemsPath = mListItemsPath;
+        mAdapter.notifyDataSetChanged();
+    }
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (selectionMode) {

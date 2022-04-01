@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="pasta_mesmo_nome">The new folder name cannot be the same ಠ_ಠ</string>
-    <string name="pasta_existe">There is already a folder with that name</string>
+    <string name="pasta_mesmo_nome">The name cannot be the same ಠ_ಠ</string>
+    <string name="pasta_existe">There is already a folder with that name!</string>
     <string name="sem_espaco_aviso">There may not be free space on the device to complete the transfer, do you want to try to continue anyway?</string>
     <string name="canceledo_usuario">Canceled by the user!</string>
     <string name="transferencia_sucesso">Transfer completed successfully.</string>

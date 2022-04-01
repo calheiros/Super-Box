@@ -59,7 +59,8 @@ public class ImportTask extends AsyncTask {
         if (listener != null) {
             listener.onPreExecute();
         }
-		myAlertDialog = new SimpleDialog(context, SimpleDialog.PROGRESS_STYLE);
+		
+        myAlertDialog = new SimpleDialog(context, SimpleDialog.PROGRESS_STYLE);
 		myAlertDialog.setCancelable(false);
 		myAlertDialog.setTitle(context.getString(R.string.movendo))
 			.setNegativeButton(context.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
@@ -81,6 +82,7 @@ public class ImportTask extends AsyncTask {
         if (listener != null) {
             listener.onPostExecute();
         }
+        
         synchronize();
 		String message = err_count > 0 ? "Transferencia completada com " + err_count + " " + (err_count > 1 ? "erros": "erro") + ":\n"  + err_message.toString() : context.getString(R.string.transferencia_sucesso);
 		myAlertDialog.setStyle(SimpleDialog.ALERT_STYLE);
@@ -96,7 +98,8 @@ public class ImportTask extends AsyncTask {
 				}
 			}
         );
-		folderDatabase.close();
+		
+        folderDatabase.close();
 		db.close();
 	}
 
@@ -116,7 +119,8 @@ public class ImportTask extends AsyncTask {
         if (listener != null) {
             listener.OnCancelled();
         }
-		synchronize();
+		
+        synchronize();
 		Toast.makeText(context, context.getString(R.string.canceledo_usuario), 1).show();
 	}
 
@@ -132,8 +136,8 @@ public class ImportTask extends AsyncTask {
 
     @Override
 	protected Boolean doInBackground(Object[] v) {
-
 		long max = 0;
+        
         for (FileModel resource : models) {
             File file = new File(resource.getResource());
             max += file.length();
@@ -172,10 +176,12 @@ public class ImportTask extends AsyncTask {
 				} else {
 					randomString2 = str;
 				}
-
-				File destFile = new File(model.getDestination() + File.separator + randomString2 + File.separator + randomString);
+                
+                String parentPath = model.getParentPath();
+                String root = parentPath == null ?  model.getDestination() + File.separator + randomString2 : parentPath;
+				File destFile = new File(root, randomString);
 				destFile.getParentFile().mkdirs();
-
+                
                 if (file.renameTo(destFile)) {
                     db.insertData(randomString, model.getResource());
                     importedFilesPath.add(file.getAbsolutePath());

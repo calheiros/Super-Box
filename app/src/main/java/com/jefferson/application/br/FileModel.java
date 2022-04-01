@@ -7,7 +7,16 @@ public class FileModel {
     private String dest_path;
     private String source_path;
     private String type;
+    private String parentPath = null;
+    
+    public String getParentPath() {
+        return parentPath;
+    }
 
+    public void setParentPath(String path){
+        this.parentPath = path;
+    }
+    
     public String getDestination() {
         return this.dest_path;
     }
