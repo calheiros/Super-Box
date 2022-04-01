@@ -25,7 +25,6 @@ import com.jefferson.application.br.util.Debug;
 
 public class GalleryAlbum extends MyCompatActivity {
 
-    private boolean boolean_folder;
     private PhotosFolderAdapter obj_adapter;
 	private int position;
 	private Toolbar toolbar;
@@ -39,7 +38,7 @@ public class GalleryAlbum extends MyCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gallery_album);
-
+            
         gv_folder = (GridView)findViewById(R.id.gv_folder);
 		sharedPrefrs = PreferenceManager.getDefaultSharedPreferences(this);
 	    position = getIntent().getExtras().getInt("position");
@@ -93,7 +92,8 @@ public class GalleryAlbum extends MyCompatActivity {
 			index_fname = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
 			orderBy = MediaStore.Images.Media.DATE_TAKEN;
 		}
-		if (position == 1) {
+		
+        if (position == 1) {
 			Bucket = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
 			uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 			index_fname = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
@@ -139,6 +139,11 @@ public class GalleryAlbum extends MyCompatActivity {
     }
 
     private void setAdapter(ArrayList<FolderModel> list) {
+       
+        if (list.isEmpty()) {
+            findViewById(R.id.gallery_album_empty_layout).setVisibility(View.VISIBLE);
+        }
+        
 		obj_adapter = new PhotosFolderAdapter(GalleryAlbum.this, list, position);
 		gv_folder.setAdapter(obj_adapter);
 	}

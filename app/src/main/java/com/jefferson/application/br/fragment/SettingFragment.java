@@ -41,12 +41,12 @@ import android.net.Uri;
 import android.content.ActivityNotFoundException;
 import android.view.View.OnClickListener;
 import com.jefferson.application.br.util.DialogUtils;
+import com.jefferson.application.br.activity.DeveloperActivity;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
 	public String[] storages;
 	public String version;
-	public final static String dev_mode = "modo_desenvolvedor";
 
     SettingAdapter mAdapter;
 	Toolbar mToolbar;
@@ -145,12 +145,14 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
         if (position == 8) {
-
-            boolean debug = Debug.isDebugOn();
-            Debug.setDebug(!debug);
-            String msg = debug ? "Debug mode disabled!": "Debug mode enabled!";
-            Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-
+            Intent intent = new Intent(getContext(), DeveloperActivity.class);
+            getActivity().startActivity(intent);
+            /*
+             boolean debug = Debug.isDebugOn();
+             Debug.setDebug(!debug);
+             String msg = debug ? "Debug mode disabled!": "Debug mode enabled!";
+             Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
+             */
             return true;
         }
         return false;
@@ -185,11 +187,11 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 				break;
 		}
 	}
+
     @Override
     public void onClick(View view) {
         openGithub();
     }
-
     
     public void configureRoundedDialog(AlertDialog dialog) {
         DialogUtils.configureRoudedDialog(dialog);
@@ -197,7 +199,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
     public void openGithub() {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.github.com/calheiros"));
-        
+
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException err) {
@@ -208,7 +210,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     public void showDialogChoose() {
         final int storagePosition = Storage.getStoragePosition();
         storageChoicePosition = storagePosition;
-            
+
         String[] options = new String[]{getString(R.string.armaz_interno), getString(R.string.armaz_externo)};
         if (Storage.getExternalStorage() == null)
             options = new String[]{getString(R.string.armaz_interno)};
@@ -228,14 +230,14 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
                 @Override
                 public void onClick(DialogInterface dialog, int p2) {
-                    
-                    if (storageChoicePosition == storagePosition ) {
+
+                    if (storageChoicePosition == storagePosition) {
                         return;
                     }
                     Storage.setNewLocalStorage(storageChoicePosition);
-                    
+
                     ((MainActivity) getActivity()).
-                        mainFragment.update(MainFragment.ID.BOTH);
+                        mainFragment.updateAll();
                     updateItem(4);
                 }
             }
@@ -317,7 +319,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         AlertDialog.Builder build = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
 		View view = LayoutInflater.from(getContext()).inflate(R.layout.credits_layout, null, false);
         TextView asciiView = view.findViewById(R.id.ascii_text_view);
-        
+
         view.findViewById(R.id.githubTextView).setOnClickListener(this);
         asciiView.setText(ASCIIArt.CHIKA_ART);
 		build.setView(view);

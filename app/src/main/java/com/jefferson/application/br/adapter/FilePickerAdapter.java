@@ -8,6 +8,7 @@ import com.bumptech.glide.*;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.model.*;
 import java.util.*;
+import android.support.v4.content.ContextCompat;
 
 public class FilePickerAdapter extends BaseAdapter {
 
@@ -28,7 +29,6 @@ public class FilePickerAdapter extends BaseAdapter {
     }
 
     public int getSelectedItem() {
-
         return this.selectedItem;
     }
 
@@ -53,18 +53,20 @@ public class FilePickerAdapter extends BaseAdapter {
     }
 
     @Override
-    public View getView(int i, View view, ViewGroup viewGroup) {
+    public View getView(int position, View view, ViewGroup viewGroup) {
         if (view == null) {
             view = mLayoutInflater.inflate(R.layout.file_picker_item, (ViewGroup) null);
         }
-        
+    
         ImageView imageView = (ImageView) view.findViewById(R.id.tumbView);
         TextView textView = (TextView) view.findViewById(R.id.item_name);
         TextView textView2 = (TextView) view.findViewById(R.id.item_size);
         View overlay = view.findViewById(R.id.layoutOverlay);
-        PickerModel pickerModel = models.get(i);
+        PickerModel pickerModel = models.get(position);
+        int color = position == getSelectedItem()? R.color.colorAccent : R.color.item_normal;
         
-        overlay.setVisibility(i == selectedItem ? View.VISIBLE : View.GONE);
+        textView.setTextColor(ContextCompat.getColor(context, color));
+        overlay.setVisibility(position == selectedItem ? View.VISIBLE : View.GONE);
         textView.setText(pickerModel.getName());
         textView2.setText(String.valueOf(pickerModel.getSize()));
         Glide.with(context).load("file://" + pickerModel.getTumbPath()).centerCrop().into(imageView);

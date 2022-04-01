@@ -75,7 +75,6 @@ public class PinActivity extends Activity implements OnLongClickListener {
     }
 
     private void checkPasswordVality() {
-        
         String password = editText.getText().toString();
         
         if ( password.length() < 4 ) {
@@ -89,7 +88,6 @@ public class PinActivity extends Activity implements OnLongClickListener {
     }
     
     public void backspace(View v) {
-
         String text = editText.getText().toString();
         int size = text.length();
 

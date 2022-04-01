@@ -1,254 +1,337 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version='1.0' encoding='utf-8'?>
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jefferson.application.br">
 
-	<uses-permission
-		android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-	<uses-permission
-		android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-	<uses-permission
-		android:name="android.permission.VIBRATE"/>
-	<uses-permission
-		android:name="android.permission.GET_ACCOUNTS"/>
-	<uses-permission 
-		android:name="android.permission.CALL_PHONE" />
-	<uses-permission 
-		android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
-	<uses-permission 
-		android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-	<uses-permission
-		android:name="android.permission.GET_TASKS"/>
-	<uses-permission
-		android:name="android.permission.PACKAGE_USAGE_STATS"/>
-	<uses-permission 
-		android:name="android.permission.INTERNET"/>	
-	<uses-permission
-		android:name="android.permission.ACCESS_NETWORK_STATE"/>
-	<uses-permission
-		android:name="android.permission.READ_CONTACTS"/>
+    <!-- alterar ou excluir conteúdo do armaz. compartilhado -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <!-- ler conteúdo do armaz. comp. -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <!-- controlar vibração -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <!-- encontrar contas no dispositivo -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+
+    <!-- ligar diretamente para números de telefone -->
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+
+    <!-- Este app pode se sobrepor visualmente a outros apps -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+
+    <!-- executar na inicialização -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <!-- recuperar apps em execução -->
+    <uses-permission android:name="android.permission.GET_TASKS"/>
+
+    <!-- PACKAGE_USAGE_STATS -->
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"/>
+
+    <!-- ter acesso total à rede -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <!-- ver conexões de rede -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
+    <!-- ler seus contatos -->
+    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+
+    <!-- WRITE_CONTATCS -->
+    <uses-permission android:name="android.permission.WRITE_CONTATCS"/>
+
+    <!-- READ_PHONE_NUMBERS -->
+    <uses-permission android:name="READ_PHONE_NUMBERS"/>
+
+    <!-- redirecionar as chamadas efetuadas -->
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+
+    <!-- tirar fotos e gravar vídeos -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
     <uses-permission
-		android:name="android.permission.WRITE_CONTATCS"/>
-    <uses-permission 
         android:name="READ_PHONE_STATE"
         android:maxSdkVersion="29"/>
-    <uses-permission
-        android:name="READ_PHONE_NUMBERS"/>
-    
-	<uses-permission 
-		android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
 
-	<!--android:manageSpaceActivity=".activity.VerifyActivity"-->
+    <uses-permission android:name="READ_PHONE_NUMBERS"/>
+
+    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+
     <application
-		android:name=".App"
-		android:resizeableActivity="false"
+        android:name=".App"
+        android:resizeableActivity="false"
         android:allowBackup="true"
-		android:icon="@drawable/ic_launcher"
-		android:hardwareAccelerated="true"
+        android:icon="@drawable/ic_launcher"
+        android:hardwareAccelerated="true"
         android:label="@string/app_name"
         android:theme="@style/MainTheme">
-        
-		<meta-data android:name="com.google.android.gms.version"
-			android:value="@integer/google_play_services_version"/>
-		<meta-data
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version"/>
+
+        <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3062666120925607~3930477089"/>
-		
-		<receiver android:name=".SmsReceiver"
-			android:permission="android.permission.BROADCAST_SMS">
+
+        <receiver
+            android:name=".SmsReceiver"
+            android:permission="android.permission.BROADCAST_SMS">
+
             <intent-filter>
-                <action android:name="android.provider.Telephony.SMS_DELIVER" />
+
+                <action android:name="android.provider.Telephony.SMS_DELIVER"/>
+
             </intent-filter>
+
         </receiver>
-		
-		<activity
+
+        <activity
             android:name="com.chartboost.sdk.CBImpressionActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:excludeFromRecents="true"
             android:hardwareAccelerated="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
-		
-		<activity android:name="com.applovin.adview.AppLovinInterstitialActivity" android:configChanges="orientation|screenSize"/>
-		<activity android:name="com.applovin.adview.AppLovinConfirmationActivity" android:configChanges="orientation|screenSize"/>
-		
-		<activity
-			android:name=".activity.MainActivity"
-			android:label="Galeria"
-			android:screenOrientation="portrait"
-			android:excludeFromRecents="true"
-			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-			android:theme="@style/DefaultTheme"/>
-		<activity
-			android:excludeFromRecents="true"
-			android:name=".activity.VerifyActivity">
-			<intent-filter>
-				
-				<action android:name="android.intent.action.MAIN" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
 
-			</intent-filter>
-		</activity>
-		<activity
-			android:name=".Intruder_fragment"
-			android:label="Possiveis intrusos"/>
-        <receiver android:name=".BootCompletedReceiver" >
-			<intent-filter>
-				<action android:name="android.intent.action.BOOT_COMPLETED" />
-				<action android:name="android.intent.action.QUICKBOOT_POWERON" />
-			</intent-filter>
-		</receiver>
-		
         <activity
-            android:name=".activity.Launcher">
+            android:name="com.applovin.adview.AppLovinInterstitialActivity"
+            android:configChanges="orientation|screenSize"/>
+
+        <activity
+            android:name="com.applovin.adview.AppLovinConfirmationActivity"
+            android:configChanges="orientation|screenSize"/>
+
+        <activity
+            android:name=".activity.MainActivity"
+            android:label="Galeria"
+            android:screenOrientation="portrait"
+            android:excludeFromRecents="true"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:theme="@style/DefaultTheme"/>
+
+        <activity
+            android:excludeFromRecents="true"
+            android:name=".activity.VerifyActivity">
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.MAIN"/>
+
+            </intent-filter>
+
         </activity>
-		<activity-alias
+
+        <activity
+            android:name=".Intruder_fragment"
+            android:label="Possiveis intrusos"/>
+
+        <receiver android:name=".BootCompletedReceiver">
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+
+                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
+
+            </intent-filter>
+
+        </receiver>
+
+        <activity android:name=".activity.Launcher">
+
+        </activity>
+
+        <activity-alias
             android:name=".LuancherAlias"
             android:targetActivity=".activity.VerifyActivity">
+
             <intent-filter>
+
                 <action android:name="android.intent.action.MAIN"/>
-				<category 
-					android:name="android.intent.category.LAUNCHER" />
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+
             </intent-filter>
+
         </activity-alias>
-		<activity
-			android:name=".activity.Camera2"/>
-		<activity
-			android:name=".activity.FilePicker"/>
-		<activity
-			android:name=".activity.CreatePattern"
-			android:excludeFromRecents="true"
-			android:configChanges="orientation|screenSize"
-			android:theme="@style/MainTheme"/>
-        
-		<activity
-			android:name="com.google.android.gms.ads.AdActivity"
-			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
-        
-		<activity
-			android:name=".activity.LockActivity"
-			android:theme="@style/MainTheme"/>
-        
-		<activity
-			android:name=".activity.GalleryAlbum"
-			android:excludeFromRecents="true"
-			android:configChanges="orientation|screenSize"
-			android:label="Galeria"
-			android:screenOrientation="portrait"
-			android:theme="@style/MainTheme"/>
-        
+
+        <activity 
+            android:name=".activity.Camera"/>
+
+        <activity 
+            android:name=".activity.FilePicker"/>
+
+        <activity
+            android:name=".activity.CreatePattern"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/MainTheme"/>
+
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+
+        <activity
+            android:name=".activity.LockActivity"
+            android:theme="@style/MainTheme"/>
+
+        <activity
+            android:name=".activity.GalleryAlbum"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize"
+            android:label="Galeria"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainTheme"/>
+
         <activity
             android:name=".activity.PinActivity"
             android:excludeFromRecents="true"
-			android:screenOrientation="portrait"/>
-        
-		<activity
-			android:name=".activity.SelectionActivity"
-			android:excludeFromRecents="true"
-			android:configChanges="orientation|screenSize"
-			android:theme="@style/MainTheme"/>
-        
-		<activity
-			android:name=".ContatosActvity"
-			android:screenOrientation="portrait"/>
-        
-		<activity
-			android:name=".activity.ViewAlbum"
-			android:excludeFromRecents="true"
-			android:theme="@style/MainTheme"
-			android:screenOrientation="portrait"/>
-		
-		<!--<receiver android:name=".receiver.WifiReceiver" >
-			<intent-filter android:priority="100">
-				<action android:name="android.net.wifi.STATE_CHANGE" />
-			</intent-filter>
-		</receiver>-->
-		<receiver android:name=".PhoneStatReceiver">  
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activity.SelectionActivity"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/MainTheme"/>
+
+        <activity
+            android:name=".ContatosActvity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".activity.ViewAlbum"
+            android:excludeFromRecents="true"
+            android:theme="@style/MainTheme"
+            android:screenOrientation="portrait"/>
+
+        <receiver android:name=".PhoneStatReceiver">
 
             <intent-filter>
-				<action android:name="android.intent.action.PHONE_STATE"/>           
-				<action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
+
+                <action android:name="android.intent.action.PHONE_STATE"/>
+
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
 
             </intent-filter>
-		</receiver>
-		
-		<receiver
-			android:name=".receber_adm"
-			android:description="@string/descricao"      
-			android:permission="android.permission.BIND_DEVICE_ADMIN">  
-			<meta-data
-				android:name="android.app.device_admin"        
-				android:resource="@xml/adm_permisao"/>   
-			<intent-filter>     
-				<action 
-					android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
-				<action 
-					android:name="android.app.action.ACTION_DEVICE_ADMIN_DISABLED"/>
-				<action 
-					android:name="android.app.action.ACTION_PASSWORD_FAILED"/>
-				<action 
-					android:name="android.app.action.ACTION_PASSWORD_SUCCEEDED"/>
-			</intent-filter>
-		</receiver>
-		<receiver 
-			android:name=".ScreenOnOff">
-			<intent-filter>
-				<action android:name="android.intent.action.SCREEN_OFF"/>
-				<action android:name="android.intent.action.SCREEN_ON"/>
-			</intent-filter>
-		</receiver>
 
-		<receiver android:name=".OnUpgradeReceiver">
-			<intent-filter>
-				<action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-			</intent-filter>
-		</receiver>
-		
-		<receiver
-			android:name=".ReceiverRestartService">
-			<intent-filter>
-				<action android:name="RestartBlockService"/>
-			</intent-filter>
-		</receiver>
-		<service android:name=".AppLockAccessibilityService"
+        </receiver>
+
+        <receiver
+            android:name=".receber_adm"
+            android:description="@string/descricao"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/adm_permisao"/>
+
+            <intent-filter>
+
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
+
+                <action android:name="android.app.action.ACTION_DEVICE_ADMIN_DISABLED"/>
+
+                <action android:name="android.app.action.ACTION_PASSWORD_FAILED"/>
+
+                <action android:name="android.app.action.ACTION_PASSWORD_SUCCEEDED"/>
+
+            </intent-filter>
+
+        </receiver>
+
+        <receiver android:name=".ScreenOnOff">
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.SCREEN_OFF"/>
+
+                <action android:name="android.intent.action.SCREEN_ON"/>
+
+            </intent-filter>
+
+        </receiver>
+
+        <receiver android:name=".OnUpgradeReceiver">
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
+
+            </intent-filter>
+
+        </receiver>
+
+        <receiver android:name=".ReceiverRestartService">
+
+            <intent-filter>
+
+                <action android:name="RestartBlockService"/>
+
+            </intent-filter>
+
+        </receiver>
+
+        <service
+            android:name=".AppLockAccessibilityService"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:label="@string/app_name">
-			<intent-filter>
-				<action android:name="android.accessibilityservice.AccessibilityService" />
-			</intent-filter>
-			<meta-data
-				android:name="android.accessibilityservice"
-				android:resource="@xml/accessibility_service_config"/>
+
+            <intent-filter>
+
+                <action android:name="android.accessibilityservice.AccessibilityService"/>
+
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config"/>
+
         </service>
-		<service
-			android:name=".AppLockService"
-			android:exported="false"
-			android:process=":AppLock"/>
 
-		<activity
-			android:name=".activity.Gallery_selection"
-			android:excludeFromRecents="true"
-			android:screenOrientation="portrait"
-			android:theme="@style/MainTheme"/>
-  
-		<activity
-			android:name=".activity.VideoPlayerActivity"
-			android:excludeFromRecents="true"
-			android:configChanges="orientation|screenSize"/>
+        <service
+            android:name=".AppLockService"
+            android:exported="false"
+            android:process=":AppLock"/>
 
-		<activity
-			android:name=".ReceiverMedia"
-			android:theme="@style/Theme.Transparent"
-			android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-			android:excludeFromRecents="true">
-			<intent-filter>
-				<action android:name="android.intent.action.SEND_MULTIPLE" />
-				<action android:name="android.intent.action.SEND" /> 
-				<category android:name="android.intent.category.DEFAULT" />
-				<data android:mimeType="image/*"/>
-				<data android:mimeType="video/*"/>
+        <activity
+            android:label="Atividade de testes"
+            android:name=".activity.DeveloperActivity"/>
 
-			</intent-filter>
+        <activity
+            android:name=".activity.Gallery_selection"
+            android:excludeFromRecents="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainTheme"/>
 
-		</activity>
+        <activity
+            android:name=".activity.VideoPlayerActivity"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize"/>
 
-	</application>
+        <activity
+            android:name=".ReceiverMedia"
+            android:theme="@style/Theme.Transparent"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:excludeFromRecents="true">
+
+            <intent-filter>
+
+                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+
+                <action android:name="android.intent.action.SEND"/>
+
+                <category android:name="android.intent.category.DEFAULT"/>
+
+                <data android:mimeType="image/*"/>
+
+                <data android:mimeType="video/*"/>
+
+            </intent-filter>
+
+        </activity>
+
+    </application>
 
 </manifest>

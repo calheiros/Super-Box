@@ -19,10 +19,9 @@ public class DeleteFilesTask extends AsyncTask {
 	private int position;
 	private File rootFile;
 	private PathsData mData;
-    PathsData.Folder folderDatabase;
-    
-	public DeleteFilesTask(Context context, ArrayList<String> items, int position, File rootFile) {
+    private PathsData.Folder folderDatabase;
 
+	public DeleteFilesTask(Context context, ArrayList<String> items, int position, File rootFile) {
 		this.items = items;
 		this.position = position;
 		this.rootFile = rootFile;
@@ -30,17 +29,14 @@ public class DeleteFilesTask extends AsyncTask {
 		File file = new File(Storage.getDefaultStorage());
 		this.mData = PathsData.getInstance(context, file.getAbsolutePath());
         folderDatabase = PathsData.Folder.getInstance(context);
-		
-
 	}
 
 	@Override
 	protected void onPreExecute() {
-        
 		super.onPreExecute();
 		dialog = new SimpleDialog(context);
 		dialog.showProgressBar(!items.isEmpty())
-			.setContentTitle("Excluindo")
+			.setTitle("Excluindo")
 			.setMax(items.size())
 			.setProgress(0)
 			.showPositiveButton(false)
@@ -50,7 +46,8 @@ public class DeleteFilesTask extends AsyncTask {
 					cancel(true);
 					return true;
 				}
-			});
+			}
+        );
 		dialog.show();
 	}
 
@@ -73,10 +70,9 @@ public class DeleteFilesTask extends AsyncTask {
 
 	@Override
 	protected void onProgressUpdate(Object[] values) {
-
 		super.onProgressUpdate(values);
 		dialog.setProgress(progress);
-		dialog.setContentText((String)values[1]);
+		dialog.setMessage((String)values[1]);
 		//mAdapter.removeItem(values[0]);
 	}
 
@@ -104,7 +100,7 @@ public class DeleteFilesTask extends AsyncTask {
 	}
 
 	private void deleteFolder(File file) {
-		
+
         if (file.delete()) {
 			folderDatabase.delete(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
 		}

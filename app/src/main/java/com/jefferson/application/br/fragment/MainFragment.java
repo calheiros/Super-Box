@@ -29,12 +29,10 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	public static final String UNIT_ID="ca-app-pub-3062666120925607/7395488498";
 	public static final int GET_FILE = 35;
 
-	public static final enum ID {
-		FIRST,
-		SECOND,
-		BOTH
-		}
-	
+    public int getPagerPosition() {
+        return viewPager.getCurrentItem();
+    }
+    
 	public MainFragment() {
 
 	}
@@ -59,27 +57,29 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 			tabLayout.setupWithViewPager(viewPager);
 
 			//fabMenu = (FloatingActionsMenu) view.findViewById(R.id.mFloatingActionsMenu);
-			View fab = view.findViewById(R.id.fab);
+		    View fab = view.findViewById(R.id.fab);
             fab.setOnClickListener(this);
             fab.setOnLongClickListener(this);
+            
 			//view.findViewById(R.id.fab_create).setOnClickListener(this);
 			toogleTabIcon(0);
 		}
+        
 		main.setupToolbar(toolbar, getToolbarName(viewPager.getCurrentItem()));
 		return view;
 	}
 
 	@Override
 	public void onClick(View v) {
-
 		switch (v.getId()) {
 			case R.id.fab:
 				Intent intent = new Intent(getContext(), GalleryAlbum.class);
 				getActivity().startActivityForResult(intent.putExtra("position", viewPager.getCurrentItem()), 23);
 				break;
 			case R.id.ad_view: // R.id.fab_create:
-                int position = viewPager.getCurrentItem();
-				try {
+                int position = getPagerPosition();
+				
+                try {
 					startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).addCategory(Intent.CATEGORY_DEFAULT).setType(position == 0 ? "image/*" : "video/*"), GET_FILE);
 				} catch (ActivityNotFoundException e) {
 					Toast.makeText(getContext(), "Sem padrão", 1).show();
@@ -88,15 +88,15 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 				break;
 		} 
 	}
+    
     @Override
     public boolean onLongClick(View view) {
-        
         AlbumFragment fragment = (AlbumFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
         fragment.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER);
         return true;
     }
+    
 	public void importFromGallery() {
-        
 		Intent intent = new Intent(getContext(), GalleryAlbum.class);
 		intent.putExtra("position", viewPager.getCurrentItem());
 		getActivity().startActivityForResult(intent, 23);
@@ -104,25 +104,26 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     
 	private void toogleTabIcon(int position) {
         MainFragment mainFragment = this;
-
         int id = position == 0 ? R.drawable.ic_videos : R.drawable.ic_pictures;
         mainFragment.tabLayout.getTabAt(position).setIcon(position == 0 ? R.drawable.ic_pictures_selected : R.drawable.ic_videos_selected);
         tabLayout.getTabAt(position == 0 ? 1 : 0).setIcon(id);
     }
 
-	public void update(MainFragment.ID id) {
-
-        if (id == ID.BOTH) {
-            update(ID.FIRST);
-            update(ID.SECOND);
-        } else if (id == ID.FIRST || id == ID.SECOND) {
-			int position = id == ID.FIRST ? 0: 1;
-            if (pagerAdapter != null) {
-                pagerAdapter.update(position);
-            }
+	public void update(int id) {
+        int mx = pagerAdapter.getCount();
+        
+        if ( id >= 0 && id < mx ) {
+            pagerAdapter.update(id);
+        }
+        
+    }
+    
+    public void updateAll() {
+        for (int i = 0; i < pagerAdapter.getCount(); i++) {
+            pagerAdapter.update(i);
         }
     }
-
+    
 	@Override
 	public void onPageScrolled(int p1, float p2, int p3) {
 
@@ -154,7 +155,6 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	}
 
 	private class pagerAdapter extends FragmentPagerAdapter {
-
 	    public static final int SIZE = 2;
 		private Fragment[] fragments = new Fragment[SIZE];
 
@@ -165,17 +165,16 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 
 		@Override
 		public Fragment getItem(int position) {
-            
             if (fragments[position] == null) {
 			    fragments[position] = AlbumFragment.newInstance(position);
             }
             return fragments[position];
 		}
         public void update(int position) {
-
 			((AlbumFragment)fragments[position]).update();
 			notifyDataSetChanged();
 		}
+        
 		@Override
 		public int getCount() {
 

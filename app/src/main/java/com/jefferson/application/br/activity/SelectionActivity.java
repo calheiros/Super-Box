@@ -91,12 +91,6 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 	}
 
 	@Override
-	protected void onRestart() {
-		app.stopCount();
-		super.onRestart();
-	}
-
-	@Override
 	public void onItemClicked(int position) {
 		mAdapter.toggleSelection(position);
 		updateIcon();

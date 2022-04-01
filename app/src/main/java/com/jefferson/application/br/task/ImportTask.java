@@ -21,6 +21,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import android.content.Context;
 
 public class ImportTask extends AsyncTask {
 
@@ -32,39 +33,36 @@ public class ImportTask extends AsyncTask {
 	private PathsData db;
     private ArrayList<FileModel> models;
 	private SimpleDialog myAlertDialog;
-	private Activity myActivity;
-	private int mode;
 	private PathsData.Folder folderDatabase;
 	private StringBuilder err_message = new StringBuilder();
 	private int err_count = 0;
 	private FileTransfer mTransfer;
 	private ProgressThreadUpdate mUpdate;
 	private boolean waiting = false;
+    private TaskListener listener;
 	private String WARNING_ALERT = "warning_alert";
 	private String no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n";
+    private Context context;
 
-	public ImportTask(ArrayList<FileModel> models, Activity activity, int mode) {
-
-		this.myActivity = activity;
+	public ImportTask(Context context, ArrayList<FileModel> models, TaskListener listener) {
+        this.context = context;
+		this.listener = listener;
 		this.maxProgress = models.size();
-		this.mode = mode;
 		this.models = models;
-		this.folderDatabase = PathsData.Folder.getInstance(activity);
-        this.db = PathsData.getInstance(activity, Storage.getDefaultStorage());
+		this.folderDatabase = PathsData.Folder.getInstance(context);
+        this.db = PathsData.getInstance(context, Storage.getDefaultStorage());
 		this.mTransfer = new FileTransfer();
-
 	}
 
 	@Override
 	protected void onPreExecute() {
-
-	    if (SESSION_INSIDE_APP == mode) {
-			((MainActivity)myActivity).prepareAd();
-		}
-		myAlertDialog = new SimpleDialog(myActivity, SimpleDialog.PROGRESS_STYLE);
+        if (listener != null) {
+            listener.onPreExecute();
+        }
+		myAlertDialog = new SimpleDialog(context, SimpleDialog.PROGRESS_STYLE);
 		myAlertDialog.setCancelable(false);
-		myAlertDialog.setContentTitle(myActivity.getString(R.string.movendo))
-			.setNegativeButton(myActivity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
+		myAlertDialog.setTitle(context.getString(R.string.movendo))
+			.setNegativeButton(context.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
 
 				@Override
 				public boolean onClick(SimpleDialog dialog) {
@@ -80,54 +78,46 @@ public class ImportTask extends AsyncTask {
 
     @Override
 	protected void onPostExecute(Object result) {
-
-		synchronize();
-		String message = err_count > 0 ? "Transferencia completada com " + err_count + " " + (err_count > 1 ? "erros": "erro") + ":\n"  + err_message.toString() : "Transferência concluída com sucesso.";
+        if (listener != null) {
+            listener.onPostExecute();
+        }
+        synchronize();
+		String message = err_count > 0 ? "Transferencia completada com " + err_count + " " + (err_count > 1 ? "erros": "erro") + ":\n"  + err_message.toString() : context.getString(R.string.transferencia_sucesso);
 		myAlertDialog.setStyle(SimpleDialog.ALERT_STYLE);
-		myAlertDialog.setContentTitle("Resultado");
-		myAlertDialog.setContentText(message);
-		myAlertDialog.setPositiveButton("Ok", new SimpleDialog.OnDialogClickListener(){
-
-				@Override
-				public boolean onClick(SimpleDialog progress) {
-					if (mode == SESSION_OUTSIDE_APP)
-						myActivity.finish();
-					return true;
-				}
-			}).show();
+		myAlertDialog.setTitle(context.getString(R.string.resultado));
+		myAlertDialog.setMessage(message);
+		myAlertDialog.setPositiveButton("Ok", null).show();
 		myAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
 
 				@Override
 				public void onDismiss(DialogInterface dialog) {
-					if (mode == SESSION_INSIDE_APP) {
-						((MainActivity)myActivity).showAd();
-					}
+					if (listener != null)
+                        listener.onDialogDismiss();
 				}
-			});
+			}
+        );
 		folderDatabase.close();
 		db.close();
 	}
 
 	private void synchronize() {
-
 		mUpdate.die();
 		myAlertDialog.dismiss();
 		Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]));
-
-        if (mode == SESSION_INSIDE_APP) {
-		    ((MainActivity)myActivity)
-				.update(MainFragment.ID.BOTH);
-		} 
+        /*
+         if (mode == SESSION_INSIDE_APP) {
+         ((MainActivity)context)
+         .update(MainFragment.ID.BOTH);
+         }*/
 	}
 
     @Override
 	protected void onCancelled(Object result) { 
-
+        if (listener != null) {
+            listener.OnCancelled();
+        }
 		synchronize();
-		if (mode == SESSION_OUTSIDE_APP) {
-			myActivity.finish();
-		}
-		Toast.makeText(myActivity, "Cancelado pelo usuario!", 1).show();
+		Toast.makeText(context, context.getString(R.string.canceledo_usuario), 1).show();
 	}
 
 	@Override
@@ -136,7 +126,7 @@ public class ImportTask extends AsyncTask {
 			warningAlert((String)values[1]);
 		} else {
 			String name = (String)values[1];
-			myAlertDialog.setContentText(name);
+			myAlertDialog.setMessage(name);
 		}
 	}
 
@@ -151,9 +141,10 @@ public class ImportTask extends AsyncTask {
 		File target = new File(Storage.getDefaultStorage());
 
 		if ((target.getFreeSpace() < max)) {
-			publishProgress(WARNING_ALERT, "Pode não haver espaço no dispositivo para completar a tranfêrencia, quer tentar continuar mesmo assim?");
+			publishProgress(WARNING_ALERT, context.getString(R.string.sem_espaco_aviso));
 			waitForResponse();
 		}
+
 		max /= 1024;
 		mUpdate.setMax(max);
 		mUpdate.start();
@@ -165,7 +156,7 @@ public class ImportTask extends AsyncTask {
 				File file = new File(model.getResource());
 				if (!file.exists()) {
 					err_count++;
-					err_message.append("\n" + myActivity.getString(R.string.erro) + " " + err_count + ": O arquivo \"" + file.getName() + "\" não existe!\n");
+					err_message.append("\n" + context.getString(R.string.erro) + " " + err_count + ": O arquivo \"" + file.getName() + "\" não existe!\n");
 					continue;
 				}
 				publishProgress(null, file.getName());
@@ -186,13 +177,10 @@ public class ImportTask extends AsyncTask {
 				destFile.getParentFile().mkdirs();
 
                 if (file.renameTo(destFile)) {
-                    
                     db.insertData(randomString, model.getResource());
                     importedFilesPath.add(file.getAbsolutePath());
                     mTransfer.increment(destFile.length() / 1024);
-
                 } else {
-
                     InputStream inputStream = new FileInputStream(file);
                     OutputStream outputStream = new FileOutputStream(destFile);
                     String response = mTransfer.transferStream(inputStream, outputStream);
@@ -211,15 +199,15 @@ public class ImportTask extends AsyncTask {
                             err_message.append(no_left_space_error_message);
                             break;
                         } else {
-                            err_message.append("\n" + myActivity.getString(R.string.erro) + err_count + ": " + response + " when moving: " + file.getName() + "\n");
+                            err_message.append("\n" + context.getString(R.string.erro) + err_count + ": " + response + " when moving: " + file.getName() + "\n");
                         }
                     }
                 }
 			}
 		} catch (Exception e) {
+            e.printStackTrace();
 			err_message.append("Erro inesperado ocorrido!");
 		}
-
 		return true;
 	}
 
@@ -234,12 +222,11 @@ public class ImportTask extends AsyncTask {
 	}
 
     private void warningAlert(String msg) {
-
-		SimpleDialog mDialog = new SimpleDialog(myActivity, SimpleDialog.ALERT_STYLE);
-		mDialog.setContentTitle("Aviso");
-		mDialog.setContentText(msg);
-		mDialog.setCancelable(false);
-		mDialog.setPositiveButton("Continuar", new SimpleDialog.OnDialogClickListener() {
+		SimpleDialog dialog = new SimpleDialog(context, SimpleDialog.ALERT_STYLE);
+		dialog.setTitle("Aviso");
+		dialog.setMessage(msg);
+		dialog.setCancelable(false);
+		dialog.setPositiveButton("Continuar", new SimpleDialog.OnDialogClickListener() {
 
 				@Override
 				public boolean onClick(SimpleDialog dialog) {
@@ -248,7 +235,7 @@ public class ImportTask extends AsyncTask {
 				}
 			});
 
-		mDialog.setNegativeButton(myActivity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
+		dialog.setNegativeButton(context.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
 
 				@Override
 				public boolean onClick(SimpleDialog dialog) {
@@ -257,6 +244,13 @@ public class ImportTask extends AsyncTask {
 					return true;
 				}
 			});
-		mDialog.show();
+		dialog.show();
 	}
+
+    public static interface TaskListener {
+        abstract void onPostExecute();
+        abstract void onPreExecute();
+        abstract void onDialogDismiss();
+        abstract void OnCancelled();
+    }
 }

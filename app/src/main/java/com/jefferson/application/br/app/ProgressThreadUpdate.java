@@ -20,7 +20,7 @@ public class ProgressThreadUpdate extends Thread {
 		@Override
 		public void run() {
 	
-			dialog.setContentTitle(title);
+			dialog.setTitle(title);
 			if(suffix++ < 3) {
 				title += ".";
 			} else {

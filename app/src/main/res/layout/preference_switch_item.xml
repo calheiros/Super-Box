@@ -29,7 +29,7 @@
 
 		<TextView
 			android:textAppearance="?android:attr/textAppearanceSmall"
-			android:textColor="#767d86"
+			android:textColor="@color/item_normal"
 			android:id="@+id/description_text_view"
 			android:visibility="visible"
 			android:layout_width="wrap_content"

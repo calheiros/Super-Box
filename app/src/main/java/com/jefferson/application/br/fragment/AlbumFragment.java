@@ -43,18 +43,16 @@ public class AlbumFragment extends Fragment {
 
     public final static int ACTION_CREATE_FOLDER = 122;
     public final static int ACTION_RENAME_FOLDER = 54;
-    
+
 	public AlbumFragment() {
 
 	}
 
 	public static Fragment newInstance(int position) {
-
         AlbumFragment frament = new AlbumFragment();
 		Bundle bundle = new Bundle();
 		bundle.putInt("position", position);
 		frament.setArguments(bundle);
-
 		return frament;
 	}
 
@@ -64,30 +62,27 @@ public class AlbumFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         view = inflater.inflate(R.layout.main_gallery, container, false);
 		sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		root = Environment.getExternalStorageDirectory().getAbsolutePath();
 		position = getArguments() != null ? getArguments().getInt("position", 0): 0;
 
-        RecyclerView mRecyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
 	    GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
-
-		mRecyclerView.setLayoutManager(layoutManager);
+		recyclerView.setLayoutManager(layoutManager);
 		mAdapter = new AlbumAdapter(this, getLocalList());
-        mRecyclerView.setAdapter(mAdapter);
+        recyclerView.setAdapter(mAdapter);
+
 		return view;
 	}
 
 	private ArrayList<FolderModel> getLocalList() {
-
 		ArrayList<FolderModel> models = new ArrayList<FolderModel>();
         File root = Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO);
 		root.mkdirs();
 		PathsData.Folder sqldb = PathsData.Folder.getInstance(getContext());
 
         if (root.exists()) {
-
 			String Files[] = root.list();
 			for (int i = 0;i < Files.length;i++) {
 				File file = new File(root, Files[i]);
@@ -125,14 +120,14 @@ public class AlbumFragment extends Fragment {
 
         @Override
 		protected void onPreExecute() {
-           
+
 			super.onPreExecute();
 		}
 
 		@Override
 		protected void onPostExecute(Object result) {
 			super.onPostExecute(result);
-			((MainActivity)getActivity()).update(getPagerPosition() == 0 ? MainFragment.ID.FIRST: MainFragment.ID.SECOND);
+			((MainActivity)getActivity()).updateFragment(getPagerPosition());
 		}
 	}
 
@@ -144,7 +139,7 @@ public class AlbumFragment extends Fragment {
         final EditText editText = contentView.findViewById(R.id.editTextInput);
         editText.requestFocus();
         String title = null; 
-        
+
         if (action == ACTION_RENAME_FOLDER) {
             String name = model.getName();
             title = getString(R.string.renomear_pasta);
@@ -153,7 +148,7 @@ public class AlbumFragment extends Fragment {
         } else {
             title = getString(R.string.criar_pasta);
         }
-        
+
         AlertDialog dialog = new AlertDialog.Builder(context, R.style.CustomAlertDialog)
             .setTitle(title)
             .setView(contentView)
@@ -173,10 +168,9 @@ public class AlbumFragment extends Fragment {
             }
         ).setNegativeButton(getString(R.string.cancelar), null).show();
         DialogUtils.configureRoudedDialog(dialog);
-     }
+    }
 
     public void renameFolder(FolderModel model, String newName) {
-
         Context activity = App.getAppContext();
         String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(activity);
@@ -184,46 +178,55 @@ public class AlbumFragment extends Fragment {
         String id = file.getName();
         String folderName = folderDatabase.getFolderName(id, folderType);
         Debug.toast("ID => " + folderName + "\n NAME => " + model.getName());
+        String newFolderId = folderDatabase.getFolderId(newName, folderType);
+        
+        if (folderName.equals(newName)) {
+            Toast.makeText(getContext(), getString(R.string.pasta_mesmo_nome), Toast.LENGTH_LONG).show();
+            folderDatabase.close();
+            return;
+        }
+        
+        if (newFolderId != null) {
+            Toast.makeText(getContext(), getString(R.string.pasta_existe), 1).show();
+            folderDatabase.close();
+            return;
+        }
 
         if (folderName == null) {
             folderDatabase.addName(id, newName, folderType);
-        } else if (folderName.equals(newName)) {
-            Toast.makeText(getContext(), "The new name can not be the same!", Toast.LENGTH_LONG).show();
-            folderDatabase.close();
-            return;
         } else {
             folderDatabase.updateName(id, newName, folderType);
         }
+
         Snackbar.make(view, "Folder renamed to \"" + newName + "\"", Snackbar.LENGTH_SHORT).show();
         folderDatabase.close();
         update();
+        
     }
-
     public void createFolder(String name) {
 
+        if (name.isEmpty()) name = getString(R.string.sem_nome);
         String type = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(getContext());
         String id = folderDatabase.getFolderId(name, type);
         String randomStr = RandomString.getRandomString(24);
 
         if (id == null) {
-            
             id = randomStr;
             int strType = position == 0 ? Storage.IMAGE: Storage.VIDEO;
             File file = new File(Storage.getFolder(strType), randomStr);
-            
+
             if (file.mkdirs()) {
                 folderDatabase.addName(id, name, type);
                 Snackbar.make(view, "Created folder \"" + name + "\"", Snackbar.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(getContext(), "Folder alreay exists!", 1).show();
+            Toast.makeText(getContext(), getString(R.string.pasta_ja_existe), 1).show();
         }
         folderDatabase.close();
         update();
     }
     public void deleteAlbum(final FolderModel model) {
-
 		String name = "\"" + model.getName() + "\"";
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(getString(R.string.apagar));

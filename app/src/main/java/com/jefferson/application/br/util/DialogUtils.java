@@ -19,10 +19,9 @@ public class DialogUtils {
         dialog.getWindow().setBackgroundDrawableResource(R.drawable.dialog_bg_inset);
     }
 
-    public static AlertDialog createRoundedDialog(Context context) {
+    public static AlertDialog.Builder createDialog(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomAlertDialog);
-        AlertDialog dialog = builder.create();
-        configureRoudedDialog(dialog);
-        return dialog;
+        configureRoudedDialog(builder.create());
+        return builder;
     }
 }

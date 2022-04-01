@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
+    <string name="pasta_mesmo_nome">O novo nome da pasta não pode ser o mesmo ಠ_ಠ</string>
+    <string name="pasta_existe">Já existe uma pasta com esse nome</string>
+    <string name="sem_espaco_aviso">Pode não haver espaço livre no dispositivo para completar a tranfêrencia, quer tentar continuar mesmo assim?</string>
+    <string name="canceledo_usuario">Cancelado pelo usuário!</string>
+    <string name="transferencia_falha"></string>
+    <string name="transferencia_sucesso">Transferência concluída com sucesso.</string>
+    <string name="resultado">Resultado</string>
+    <string name="galeria_vazia">Parece bem vazio...</string>
+    <string name="pasta_ja_existe">Pasta já existe!</string>
+    <string name="sem_nome">Sem nome</string>
     <string name="apagar_pasta_aviso">Tem certeza que deseja apagar a pasta %s e todo o seu conteúdo permanentimente?</string>
     <string name="criar_pasta">Criar pasta</string>
     <string name="renomear_pasta">Renomear pasta</string>

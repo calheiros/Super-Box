@@ -17,7 +17,7 @@
             
             <FrameLayout
                 android:id="@+id/tumbViewLayout"
-                android:background= "#00f0f0f0"
+                android:background= "@color/colorBackground"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
@@ -45,8 +45,8 @@
 
                 <TextView
                     android:textAppearance="?android:attr/textAppearanceSmall"
-                    android:textColor="#a8a8a8"
                     android:id="@+id/item_size"
+                    android:textColor="@color/item_normalDark"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
 
@@ -58,11 +58,11 @@
             android:id="@+id/layoutOverlay"
             android:orientation="horizontal"
             android:padding="5dp"
-            android:layout_width="match_parent"
+            android:layout_gravity="start"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent">
             
             <ImageView
-                android:layout_gravity="start"
                 android:src="@drawable/item_checked"
                 android:layout_width="55dp"
                 android:layout_height="55dp"/>

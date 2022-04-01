@@ -25,12 +25,13 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 	}
     @Override
     protected void onResume() {
-		
         super.onResume();
+        
         if (this.app.isTiming()) {
             app.stopCount();
         }
-		allowQuit = false;
+		
+        allowQuit = false;
 		running = true;
     }
 
@@ -42,14 +43,12 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
     
     @Override
     public void startActivity(Intent intent) {
-
         this.allowQuit = true;
         super.startActivity(intent);
     }
 
     @Override
     public void startActivityForResult(Intent intent, int i) {
-
         this.allowQuit = true;
         super.startActivityForResult(intent, i);
     }
@@ -74,8 +73,8 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-	
         super.onDestroy();
+        
         if (this.initialized) {
 			app.remove(this);
         }
@@ -84,8 +83,8 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        
 		running = false;
+        
         if (!pm.isScreenOn()) {
             app.startCount(5000);
         } else if (!allowQuit) {

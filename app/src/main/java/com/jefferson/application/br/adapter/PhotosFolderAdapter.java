@@ -19,7 +19,7 @@ import android.os.Build;
 import android.util.Log;
 
 public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
-	
+
     private GalleryAlbum mGalleryAlbum;
     private ViewHolder mViewHolder;
     private ArrayList<FolderModel> al_menu = new ArrayList<>();
@@ -74,43 +74,40 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
             mViewHolder.iv_image = (ImageView) convertView.findViewById(R.id.iv_image);
 			mViewHolder.cd_layout = (CardView) convertView.findViewById(R.id.card_view);
 			mViewHolder.play_view = (ImageView) convertView.findViewById(R.id.play_view);
-            
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                mViewHolder.iv_image.setClipToOutline(true);
-                Log.i(getClass().getName(), "setClipToOutline => true");
-            }
-			
-            if (option == 1)
-				mViewHolder.play_view.setVisibility(View.VISIBLE);
-			
-			mViewHolder.cd_layout.setOnClickListener(new OnClickListener(){
+            mViewHolder.cd_layout.setOnClickListener(new OnClickListener(){
 
 					@Override
 					public void onClick(View v) {
-						
-							Intent intent = new Intent(mGalleryAlbum, SelectionActivity.class);
-							intent.putExtra("name", al_menu.get(position).getName());
-							intent.putExtra("data", al_menu.get(position).getItems());
-							intent.putExtra("type", mGalleryAlbum.getType());
-							intent.putExtra("position", option);
-							
-							mGalleryAlbum.startActivityForResult(intent, GalleryAlbum.GET_CODE);
+                        Intent intent = new Intent(mGalleryAlbum, SelectionActivity.class);
+                        intent.putExtra("name", al_menu.get(position).getName());
+                        intent.putExtra("data", al_menu.get(position).getItems());
+                        intent.putExtra("type", mGalleryAlbum.getType());
+                        intent.putExtra("position", option);
 
-						}
-				});
+                        mGalleryAlbum.startActivityForResult(intent, GalleryAlbum.GET_CODE);
+
+                    }
+				}
+            );
             convertView.setTag(mViewHolder);
         } else {
             mViewHolder = (ViewHolder) convertView.getTag();
         }
+
 		FolderModel f_model = al_menu.get(position);
 		mViewHolder.tv_foldern.setText(f_model.getName());
 		mViewHolder.tv_foldersize.setText(String.valueOf(f_model.getItems().size()));
-
+        
 		if (f_model.getItems().size() != 0) {
 			Glide.with(mGalleryAlbum).load("file://" + f_model.getItems().get(0))
 				.skipMemoryCache(true)
 				.into(mViewHolder.iv_image);
-        } 
+        }
+
+        if  (option == 1) {
+            mViewHolder.play_view.setVisibility(View.VISIBLE);
+            mViewHolder.play_view.setImageResource(R.drawable.ic_play_circle);
+        }
         return convertView;
     }
 

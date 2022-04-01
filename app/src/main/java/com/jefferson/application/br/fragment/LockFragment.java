@@ -62,9 +62,9 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 	private Task mTask;
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
 		MainActivity mActivity = ((MainActivity)getActivity());
-		if (view == null) {
+		
+        if (view == null) {
 			view = inflater.inflate(R.layout.list_view_app, container, false);
 			mProgressBar = (ProgressBar)view.findViewById(R.id.progressApps);            
 			mTextView = (TextView) view.findViewById(R.id.porcent);
@@ -130,6 +130,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
             alertDialog.show();
         }
     }
+    
     public void animateCheckView(View vi) {
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
         vi.startAnimation(animation);

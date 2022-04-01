@@ -47,12 +47,35 @@ import android.app.AlertDialog;
 import com.jefferson.application.br.widget.MyAlertDialog;
 import com.jefferson.application.br.widget.MyAlertDialog.Builder;
 
-public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.TaskListener {
 
+    @Override
+    public void onPostExecute() {
+        int pagerPosition =  mainFragment.getPagerPosition();
+        updateFragment(pagerPosition);
+    }
+
+    @Override
+    public void onPreExecute() {
+     
+    }
+
+    @Override
+    public void onDialogDismiss() {
+        
+    }
+
+    @Override
+    public void OnCancelled() {
+        
+    }
+    
 	public static final String admob_key="ca-app-pub-3062666120925607/8250392170";
     public static final String ACTION_INIT_WITH_PREFERENCES = "preferences_init_action";
-
-	private final int GET_URI_CODE = 98;
+    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 0;
+    private static final int GET_URI_CODE_TASK = 54;
+	private static final int GET_URI_CODE = 98;
+   
     public MainFragment mainFragment;
 	private LockFragment lockFragment;
 	private DrawerLayout drawerLayout;
@@ -64,24 +87,14 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	private int position;
 	private static MainActivity instante;
 	private ArrayList<FileModel> models;
-	private static final int GET_URI_CODE_TASK = 54;
 	private AdView adview;
 	private InterstitialAd interstitial;
 
-    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 0;
-
-	public static MainActivity getInstance() {
+    public static MainActivity getInstance() {
 		return instante;
 	}
 
-	public void update(MainFragment.ID id) {
-
-		if (mainFragment != null)
-			mainFragment.update(id);
-	}
-
 	public void setupToolbar(Toolbar toolbar, CharSequence title) {
-
 		setSupportActionBar(toolbar);
 		getSupportActionBar().setTitle(title);
 		getSupportActionBar().setDisplayShowHomeEnabled(false);
@@ -96,9 +109,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         this.instante = this;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
-
 		MobileAds.initialize(this);
-
 		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -110,13 +121,11 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         initialize();
 		initGoogleAdView();
 		createInterstitial();
-
         //test only
         //startActivity(new Intent(this, ContatosActvity.class));
 	}
 
 	private void initGoogleAdView() {
-
         adview = (AdView)findViewById(R.id.ad_view);
 		adview.loadAd(new AdRequest.Builder().build());
 	}
@@ -128,7 +137,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 
 	public void createInterstitial() {
-
         interstitial = new InterstitialAd(this);
 		interstitial.setAdUnitId("ca-app-pub-3062666120925607/8580168530");
 		interstitial.setAdListener(new AdListener() {
@@ -141,23 +149,28 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 
     public void prepareAd() {
-
         if (interstitial.isLoading() == false && interstitial.isLoaded() == false) {
 			interstitial.loadAd(new AdRequest.Builder().build());
 		}
 	}
 
     public void showAd() {
-
         if (interstitial.isLoaded()) {
 			interstitial.show();
 		} 
 	}
-	@Override
+    
+    public void updateFragment(int position) {
+        mainFragment.update(position);
+    }
+    
+	public void updateAllFragments() {
+        mainFragment.updateAll();
+    }
+    
+    @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
         if (item.getItemId() == R.id.ads_item_menu) {
-
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -172,7 +185,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     }
 
 	private void initialize() {
-
         this.mainFragment = new MainFragment();
 	    this.lockFragment = new LockFragment();
         this.settingFragment = new SettingFragment();
@@ -184,12 +196,10 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 
     private void sorryAlert() {
-
 		View view = getLayoutInflater().inflate(R.layout.dialog_check_box_view, null);
-
         SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.ALERT_STYLE);
-		dialog.setContentTitle("Erro detectado!");
-		dialog.setContentText("Lamento pelo erro ocorrido anteriormente. Por favor, relate o erro ocorrido para que ele seja corrigido o mais rápido possível.");
+		dialog.setTitle("Erro detectado!");
+		dialog.setMessage("Lamento pelo erro ocorrido anteriormente. Por favor, relate o erro ocorrido para que ele seja corrigido o mais rápido possível.");
 		dialog.setCanceledOnTouchOutside(false);
 		dialog.addContentView(view);
 		dialog.setPositiveButton("Relatar", new SimpleDialog.OnDialogClickListener(){
@@ -201,7 +211,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 					else 
 						Toast.makeText(getApplicationContext(), "obrigado! relatório de será enviado quando estiver conectado.", 1).show();
 					return true;
-				}});
+				}
+            }
+        );
 		dialog.setNegativeButton(getString(R.string.cancelar), null);
 		dialog.show();
 		dialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
@@ -211,7 +223,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 					sharedPreferences.edit().putBoolean(app.EXCEPTION_FOUND, false).commit();
 
 				}
-			});
+			}
+        );
 	}
 
 	private void changeFragment(Fragment fragment) {
@@ -230,7 +243,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	@Override
 	public boolean onNavigationItemSelected(MenuItem item) {
-
         int id = item.getItemId();
 
         switch (id) {
@@ -280,10 +292,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             if (Settings.canDrawOverlays(this)) { 
 
             }
-
-        } 
+        }
+        
 		if (resultCode == MyCompatActivity.RESULT_OK) {
-
             if (requestCode == MainFragment.GET_FILE) {
 
                 Uri uri = null;
@@ -328,7 +339,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 			} 
 
             if (requestCode != GET_URI_CODE) {
-				ImportTask mTask = new ImportTask(models, this, ImportTask.SESSION_INSIDE_APP);
+				ImportTask mTask = new ImportTask(this, models, MainActivity.this);
 				mTask.execute();
 			}
 		}
@@ -336,14 +347,12 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 
 	private void getSdCardUri(int code) {
-
 		Toast.makeText(this, getString(R.string.selecionar_sdcard), 1).show();
 		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
 		startActivityForResult(intent, code);
 	}
 
     private boolean hasExternalFile(ArrayList<String> paths) {
-
         for (String file:paths) {
 			if (Environment.isExternalStorageRemovable(new File(file)))
 				return true;
@@ -353,17 +362,14 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
     @Override
 	public void onBackPressed() {
-
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             showExitDialog();
         } else {
             drawerLayout.openDrawer(GravityCompat.START);
         }
-
 	}
 
 	private void showExitDialog() {
-
 	    MyAlertDialog.Builder builder = new MyAlertDialog.Builder(this, R.style.CustomAlertDialog);
         builder.setTitle(getString(R.string.confirmacao));
         builder.setMessage(getString(R.string.quer_realmente_sair));
@@ -405,5 +411,4 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         super.onDestroy();
 		adview.destroy();
     }
-
 }

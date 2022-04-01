@@ -78,8 +78,9 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
                 if (file.renameTo(newFile)) {
 					mMovedArray.add(str);
                 }
-				publishProgress(progress.getProgress() + 1);
-				
+
+                publishProgress(progress.getProgress() + 1);
+
             }
             return "Ok";
         }
@@ -89,11 +90,9 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
         setContentView(R.layout.list_view_layout);
-
         this.mListView = (ListView) findViewById(R.id.androidList);
         this.mToolbar = (Toolbar) findViewById(R.id.toolbar);
         this.myOverlay = findViewById(R.id.myOverlayLayout);
-
         this.position = getIntent().getIntExtra("position", -1);
         this.paths = getIntent().getStringArrayListExtra("selection");
         this.currentPath = getIntent().getStringExtra("current_path");
@@ -101,7 +100,7 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
         this.filePickerAdapter = new FilePickerAdapter(getModels(this.position), this);
         this.mListView.setAdapter(this.filePickerAdapter);
         this.mListView.setOnItemClickListener(this);
-        
+
         setSupportActionBar(this.mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Move to");
@@ -110,7 +109,7 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long j) {
         int selectedItem = this.filePickerAdapter.getSelectedItem();
-        
+
         if (selectedItem == -1) {
             invalidateOptionsMenu();
         }
@@ -123,17 +122,17 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        
+
         if (filePickerAdapter.getSelectedItem() != -1) {
             getMenuInflater().inflate(R.menu.menu_confirm, menu);
         }
         return super.onCreateOptionsMenu(menu);
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
-        
+
         if (itemId == R.id.confirm) {
             new MoveFiles(this, (filePickerAdapter.models.get(filePickerAdapter.getSelectedItem())).getPath()).execute();
         } else if (itemId == 2131231044) {
@@ -141,7 +140,7 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
         } else {
             finish();
         }
-        
+
         return super.onOptionsItemSelected(menuItem);
     }
 
@@ -154,17 +153,20 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
         for (File file : listFiles) {
 
             if (file.isDirectory() && !file.getAbsolutePath().equals(currentPath)) {
-
                 PickerModel pickerModel = new PickerModel();
                 File[] listFiles2 = file.listFiles();
                 String folderName = instance.getFolderName(file.getName(), position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
+
                 if (folderName == null) {
                     folderName = file.getName();
                 }
+
                 int length = listFiles2.length;
+
                 if (length > 0) {
                     pickerModel.setTumbPath(listFiles2[0].getAbsolutePath());
                 }
+
                 pickerModel.setPath(file.getAbsolutePath());
                 pickerModel.setName(folderName);
                 pickerModel.setSize(length);

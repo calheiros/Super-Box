@@ -41,21 +41,25 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
         FolderModel f_model = items.get(position);
 	    holder.tv_foldern.setText(f_model.getName());
 		holder.tv_foldersize.setText(String.valueOf(f_model.getItems().size()));
-
-		if (fragment.getPagerPosition() == 1) {
+        boolean isEmpty = f_model.getItems().size() == 0;
+        int pagerPosition = fragment.getPagerPosition();
+		
+        if (pagerPosition == 1) {
 			holder.play_view.setVisibility(View.VISIBLE);
-            holder.play_view.setImageResource(R.drawable.ic_play);
+            holder.play_view.setImageResource(R.drawable.ic_play_circle);
         }
 
-		if (f_model.getItems().size() != 0) {
+		if (!isEmpty) {
 			Glide.with(fragment).load("file://" + f_model.getItems().get(0))
 				.skipMemoryCache(true)
 				.into(holder.iv_image);
         } else {
             holder.iv_image.setImageResource(0);
-            holder.play_view.setImageResource(R.drawable.ic_file_image);
+            holder.play_view.setImageResource(R.drawable.ic_image_broken_variant);
         }
-
+        
+        int visibility = ( isEmpty || pagerPosition == 1 ) ? View.VISIBLE : View.GONE;
+        holder.play_view.setVisibility(visibility);
 		holder.cd_layout.setOnClickListener(new OnClickListener(){
 
 				@Override
@@ -100,7 +104,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
 	@Override
 	public int getItemCount() {
-
 		return items.size();
 	}
 

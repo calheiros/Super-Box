@@ -39,7 +39,6 @@
 					android:layout_gravity="center"
 					android:layout_height="40dp"
 					android:id="@+id/play_view"
-					android:src="@drawable/ic_play"
 					android:visibility="gone"
 					android:scaleType="centerCrop"/>
 
@@ -56,7 +55,7 @@
 				android:layout_height="wrap_content"
 				android:id="@+id/tv_folder"
 				android:textStyle="bold"
-				android:textColor="#FFE0E7EE"
+				android:textColor="@color/item_normalLight"
 				android:textSize="15dp"
 				android:singleLine="true"/>
 
@@ -64,7 +63,7 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
 				android:id="@+id/tv_folder2"
-				android:textColor="@color/item_normal"
+				android:textColor="@color/item_normalLight"
 				android:textSize="13dp"/>
             </LinearLayout>
 		</LinearLayout>

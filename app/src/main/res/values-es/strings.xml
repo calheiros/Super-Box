@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
-	<string name="importar_galeria">Importación de galería</string>
+    <string name="importar_galeria">Importación de galería</string>
 	<string name="escolha_idioma">Elija su idioma</string>
 	<string name="mudar_senha_descricao">indica tu idioma</string>
 	<string name="idioma">Idioma</string>

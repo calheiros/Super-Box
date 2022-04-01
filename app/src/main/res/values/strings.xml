@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-    
 <resources>
+    <string name="pasta_mesmo_nome">The new folder name cannot be the same ಠ_ಠ</string>
+    <string name="pasta_existe">There is already a folder with that name</string>
+    <string name="sem_espaco_aviso">There may not be free space on the device to complete the transfer, do you want to try to continue anyway?</string>
+    <string name="canceledo_usuario">Canceled by the user!</string>
+    <string name="transferencia_sucesso">Transfer completed successfully.</string>
+    <string name="resultado">Result</string>
+    <string name="pasta_ja_existe">Folder already exists!</string>
+    <string name="sem_nome">Unnamed</string>
     <string name="apagar_pasta_aviso">Are you sure you want to delete the %s folder and all your content permanently?</string>
     <string name="criar_pasta">Create folder</string>
     <string name="renomear_pasta">Rename folder</string>
     <string name="concluir">Confirm</string>
+    <string name="galeria_vazia">It looks pretty empty...</string>
+    <string name="ascii_look_of_disapproval">ಠ_ಠ</string>
     <string name="ascii_dead_face">(×_×)</string>
-    <string name="ascii_shrug">¯\_(ツ)_/¯</string>
+    <string name="ascii_shrug">¯\\_(ツ)_/¯</string>
     <string name="galeria">Gallery</string>
     <string name="modo_secreto">Stealth mode</string>
     <string name="codigo_discador">Dialer code</string>

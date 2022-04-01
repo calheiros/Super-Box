@@ -64,7 +64,6 @@ public class CodeManager {
 		FileOutputStream decfos = new FileOutputStream(decfile);
 
 		Cipher decipher = Cipher.getInstance("ARC4");
-
 		decipher.init(Cipher.DECRYPT_MODE, skey);
 		CipherOutputStream cos = new CipherOutputStream(decfos, decipher);
 
