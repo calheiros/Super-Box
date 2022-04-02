@@ -16,6 +16,7 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.fragment.VideoPlayFragment;
 import java.util.ArrayList;
 import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.model.MediaModel;
 
 public class VideoPlayerActivity extends MyCompatActivity {
 
@@ -40,7 +41,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
             VideoPlayFragment fragment = pagerAdapter.getItem(position);
             VideoPlayFragment lastFragment = adpter.getItem(lastFragmentIndex);
             lastFragment.stop();
-            fragment.start();
+            fragment.showVideoOverlay();
             lastFragmentIndex = position;
         }
 
@@ -61,7 +62,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
         Intent intent = getIntent();
         int position = intent.getExtras().getInt("position");
         ArrayList<String> filesPath = intent.getStringArrayListExtra("filepath");
-
+        
         pagerAdapter = new VideoPagerAdapter(getSupportFragmentManager(), filesPath);
         viewPager = findViewById(R.id.video_view_pager);
         viewPager.setAdapter(pagerAdapter);
@@ -72,13 +73,11 @@ public class VideoPlayerActivity extends MyCompatActivity {
     }
 
     private void requestOrientation(int width, int height) {
-
         int orientation = width > height ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
         setRequestedOrientation(orientation);
     }
 
     public void window() {
-
         Window win = getWindow();
         WindowManager.LayoutParams winParams = win.getAttributes();
         int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;

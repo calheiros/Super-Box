@@ -71,6 +71,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 
 	@Override
 	public void onClick(View v) {
+        
 		switch (v.getId()) {
 			case R.id.fab:
 				Intent intent = new Intent(getContext(), GalleryAlbum.class);
@@ -110,6 +111,8 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     }
 
 	public void update(int id) {
+        
+        if (pagerAdapter == null) return;
         int mx = pagerAdapter.getCount();
         
         if ( id >= 0 && id < mx ) {
@@ -119,6 +122,11 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     }
     
     public void updateAll() {
+        
+        if (pagerAdapter == null) {
+            return;
+        }
+        
         for (int i = 0; i < pagerAdapter.getCount(); i++) {
             pagerAdapter.update(i);
         }
@@ -170,9 +178,14 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             }
             return fragments[position];
 		}
+        
         public void update(int position) {
-			((AlbumFragment)fragments[position]).update();
-			notifyDataSetChanged();
+			AlbumFragment fragment = (AlbumFragment)fragments[position];
+            
+            if (fragment != null) {
+                fragment.update();
+			    //notifyDataSetChanged();
+            }
 		}
         
 		@Override

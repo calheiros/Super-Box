@@ -11,13 +11,14 @@ import java.util.*;
 
 import android.support.v7.widget.Toolbar;
 import com.jefferson.application.br.*;
+import com.jefferson.application.br.model.MediaModel;
 
 public class SelectionActivity extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener {
 	
 	private String name;
 	private Toolbar toolbar;
 	private ImageView ic_select;
-	private ArrayList<String> data;
+	private ArrayList<MediaModel> data;
     private RecyclerView mRecyclerView;
 	private MultiSelectRecyclerViewAdapter  mAdapter;
 
@@ -34,7 +35,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 
 		Intent intent = getIntent();
 		name = intent.getStringExtra("name");
-		data = intent.getStringArrayListExtra("data");
+		data = (ArrayList<MediaModel>)intent.getSerializableExtra("data");
 		int position = intent.getIntExtra("position", 0);
 
 		getSupportActionBar().setTitle(name + "(0)");
@@ -119,7 +120,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 		ArrayList<String> selectedItens = new ArrayList<String>();
 
 		for (int i : selectedItensPosition()) {
-			selectedItens.add(data.get(i));
+			selectedItens.add(data.get(i).getPath());
 		}
 		return selectedItens;
 	}

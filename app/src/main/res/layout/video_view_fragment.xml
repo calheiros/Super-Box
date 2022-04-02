@@ -1,18 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent"
-    android:gravity="center"
-    android:background="@android:color/black"
 	android:orientation="vertical">
-    
+
 	<VideoView
+        android:layout_centerInParent="true"
 		android:id="@+id/video_view"
-        android:keepScreenOn="true"
-        android:layout_weight="1.0"
+		android:keepScreenOn="true"
+		android:layout_weight="1.0"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
-    
-</LinearLayout>
+
+	<FrameLayout
+        android:layout_centerInParent="true"
+		android:id="@+id/video_view_overlay"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent">
+
+		<ImageView
+			android:scaleType="fitCenter"
+			android:id="@+id/video_view_fragment_thumb_view"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"/>
+
+		<ImageView
+            android:id="@+id/video_view_play_button"
+			android:layout_gravity="center"
+			android:layout_centerInParent="true"
+			android:layout_width="65dp"
+			android:layout_height="65dp"
+			android:src="@drawable/ic_video_play"/>
+
+	</FrameLayout>
+
+</RelativeLayout>
 

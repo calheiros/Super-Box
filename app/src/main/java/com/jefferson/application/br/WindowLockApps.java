@@ -13,7 +13,7 @@ import java.util.*;
 import com.jefferson.application.br.util.*;
 
 public class WindowLockApps {
-	
+
 	private Context context;
 	private WindowManager windowManager;
 	private View view;
@@ -26,46 +26,66 @@ public class WindowLockApps {
 	private ImageView image_icon;
 	private View lastView;
 
-    
-	
 	public WindowLockApps(final Context context, final AppsDatabase db) {
         // orientation.enable();
 	    this.context = context;
         this.db = db;
-        
+
         int layoutParamsType = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? 
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY:
             WindowManager.LayoutParams.TYPE_PHONE; 
-  
+
 		params = new WindowManager.LayoutParams(
 			WindowManager.LayoutParams.MATCH_PARENT,
 			WindowManager.LayoutParams.MATCH_PARENT,
             layoutParamsType,
-			WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+			WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
 			PixelFormat.RGBX_8888);
 
 		params.windowAnimations = android.R.style.Animation_Dialog;
 		windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
 		createView();
 	}
 
 	private View getView(FrameLayout mLayout) {
-		return LayoutInflater.from(context).inflate(R.layout.pattern, mLayout);
+        RelativeLayout layout = new RelativeLayout(context) {
+          
+            @Override
+            public void onAttachedToWindow() {
+                super.onAttachedToWindow();
+            }
+            
+            @Override 
+            public boolean onKeyDown(int k, KeyEvent event) { 
+                Toast.makeText(context,"KEY CODE: " + event.getKeyCode(),1).show();
+                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    // < your action > 
+                    
+                    return true; 
+                } 
+                return super.dispatchKeyEvent(event); 
+            }
+        };
+        
+		View v = LayoutInflater.from(context).inflate(R.layout.pattern, mLayout);
+        layout.addView(v);
+        return layout;
 	}
-	
-	public void refreshView() { 
 
+	public void refreshView() { 
 		createView();
+
 		if (isLocked()) {
 			windowManager.removeViewImmediate(lastView);
 			addView(view);
 		}
 	}
-	
+
 	private void createView() {
-		
+
 		view = getView(getLayout());
-		if(lastView == null) {
+		if (lastView == null) {
 			lastView = view;
 		}
 	    image_icon = (ImageView)view.findViewById(R.id.iconApp);
@@ -77,12 +97,13 @@ public class WindowLockApps {
 		materialLockView.setTactileFeedbackEnabled(false);
 		materialLockView.setOnPatternListener(new PatternListener(context));
 	}
+
     private FrameLayout getLayout() {
 		FrameLayout layout = new FrameLayout(context){
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent event) {
 				if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-					
+
 					Intent intent = new Intent(Intent.ACTION_MAIN);
 					intent.addCategory(Intent.CATEGORY_HOME);
 					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -97,6 +118,7 @@ public class WindowLockApps {
 
 		return layout;
 	}
+
 	public boolean isLocked() {
 		return isLocked;
 	}
@@ -107,10 +129,12 @@ public class WindowLockApps {
 		image_icon.setImageDrawable(getIcon(AppName));
 		addView(view);
 	}
-	public void addView(View view){
+
+	public void addView(View view) {
 		windowManager.addView(view, params);
 		lastView = view;
 	}
+
 	public void unlock() {
 		windowManager.removeView(view);
 		isLocked = false;
@@ -123,22 +147,25 @@ public class WindowLockApps {
 		}
 		return null;
 	}
+
 	public class PatternListener extends MaterialLockView.OnPatternListener {
-		
+
 		private Context context;
         private PasswordManager passManager;
-		
+
 		public PatternListener(Context context) {
 			this.context = context;
 			this.passManager = new PasswordManager(context);
         }
-		final Runnable Runnable = new Runnable()
-		{
+
+		final Runnable Runnable = new Runnable(){
+
 			@Override
 			public void run() {
 				materialLockView.clearPattern();
 			}
 		};
+
 		public void onPatternStart() {
 			if (Handler != null && Runnable != null) {
 				Handler.removeCallbacks(Runnable);

@@ -22,6 +22,8 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.adapter.PhotosFolderAdapter;
 import java.util.ArrayList;
 import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.model.MediaModel;
+import java.util.concurrent.TimeUnit;
 
 public class GalleryAlbum extends MyCompatActivity {
 
@@ -34,11 +36,13 @@ public class GalleryAlbum extends MyCompatActivity {
 	public static final int GET_CODE = 5658;
 	private String title;
 
+    private static final String TAG = "GALERY ALBUM";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.gallery_album);
-            
+
         gv_folder = (GridView)findViewById(R.id.gv_folder);
 		sharedPrefrs = PreferenceManager.getDefaultSharedPreferences(this);
 	    position = getIntent().getExtras().getInt("position");
@@ -91,41 +95,80 @@ public class GalleryAlbum extends MyCompatActivity {
 			uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
 			index_fname = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
 			orderBy = MediaStore.Images.Media.DATE_TAKEN;
-		}
-		
-        if (position == 1) {
+		} else if (position == 1) {
 			Bucket = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
 			uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
 			index_fname = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
 			orderBy = MediaStore.Video.Media.DATE_TAKEN;
-		}
+		} else {
+            return null;
+        }
 
         String absolutePathOfImage = "";
-        String[] projection = {MediaStore.MediaColumns.DATA, Bucket};
+        String[] projection = { MediaStore.MediaColumns.DATA, Bucket };
+
+        if (position == 1) {
+            projection = new String[] {MediaStore.Video.VideoColumns.DURATION, MediaStore.MediaColumns.DATA, Bucket};
+        }
 
         cursor = getApplicationContext().getContentResolver().query(uri, projection, null, null, orderBy + " DESC");
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
         column_index_folder_name = cursor.getColumnIndexOrThrow(index_fname);
-        
+        int column_index_duration  = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
+
         while (cursor.moveToNext()) {
+
+            String duration = null;
+
+            if (position == 1) {
+                duration = cursor.getString(column_index_duration);
+            }
+
             absolutePathOfImage = cursor.getString(column_index_data);
             String folderName = cursor.getString(column_index_folder_name);
             int folderPosition = getFolderIndex(al_images, folderName);
 
             if (folderPosition == -1) {
                 FolderModel model = new FolderModel();
+                MediaModel mm = new MediaModel(absolutePathOfImage);
+
+                if (position == 1)
+                    mm.setDuration(getFormatedTime(duration));
+
                 model.setName(cursor.getString(column_index_folder_name));
-                model.addItem(absolutePathOfImage);
+                model.addItem(mm);
                 al_images.add(model);
             } else {
-                al_images.get(folderPosition).addItem(absolutePathOfImage);
+                MediaModel mm = new MediaModel(absolutePathOfImage);
+
+                if (position == 1) {
+                    String formatedTime = getFormatedTime(duration);
+                    mm.setDuration(formatedTime);
+                }
+                
+                al_images.get(folderPosition).addItem(mm);
             }
         }
         cursor.close();
 
         return al_images;
     }
+    
+    public String getFormatedTime(String duration) {
+        int millis = 0;
 
+        try {
+            millis = Integer.valueOf(duration);
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+        }
+
+        long secunds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
+        final String time = String.format("%d:%02d", TimeUnit.MILLISECONDS.toMinutes(millis), secunds);
+
+        return time;
+    }
+    
     private int getFolderIndex(ArrayList<FolderModel> list, String name) {
 
         if (name == null) name = FolderModel.NO_FOLDER_NAME;
@@ -139,11 +182,11 @@ public class GalleryAlbum extends MyCompatActivity {
     }
 
     private void setAdapter(ArrayList<FolderModel> list) {
-       
+
         if (list.isEmpty()) {
             findViewById(R.id.gallery_album_empty_layout).setVisibility(View.VISIBLE);
         }
-        
+
 		obj_adapter = new PhotosFolderAdapter(GalleryAlbum.this, list, position);
 		gv_folder.setAdapter(obj_adapter);
 	}

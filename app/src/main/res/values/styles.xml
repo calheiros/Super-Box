@@ -51,7 +51,17 @@
 	<style name="drawer_theme" parent="Theme.AppCompat.NoActionBar">
 		<item name="colorControlHighlight">@color/highLightColor</item> 
 	</style>
-
+    
+    <style name="VideoPlayerTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">#000</item> 
+        
+	</style>
+    
 	<style name="Theme.Transparent" parent="Theme.AppCompat"> 
 		<item name="android:windowIsTranslucent">true</item> 
 		<item name="android:windowBackground">@android:color/transparent</item> 

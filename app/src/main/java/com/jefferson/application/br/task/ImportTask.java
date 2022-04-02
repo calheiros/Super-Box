@@ -44,6 +44,8 @@ public class ImportTask extends AsyncTask {
 	private String no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n";
     private Context context;
 
+    private static final String TAG = "ImportTask";
+
 	public ImportTask(Context context, ArrayList<FileModel> models, TaskListener listener) {
         this.context = context;
 		this.listener = listener;
@@ -142,6 +144,7 @@ public class ImportTask extends AsyncTask {
             File file = new File(resource.getResource());
             max += file.length();
         }
+        
 		File target = new File(Storage.getDefaultStorage());
 
 		if ((target.getFreeSpace() < max)) {
@@ -186,6 +189,7 @@ public class ImportTask extends AsyncTask {
                     db.insertData(randomString, model.getResource());
                     importedFilesPath.add(file.getAbsolutePath());
                     mTransfer.increment(destFile.length() / 1024);
+                    Log.i(TAG, "Succesfully moved to: " + destFile);
                 } else {
                     InputStream inputStream = new FileInputStream(file);
                     OutputStream outputStream = new FileOutputStream(destFile);

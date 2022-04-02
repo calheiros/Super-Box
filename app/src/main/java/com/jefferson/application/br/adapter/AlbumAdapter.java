@@ -50,7 +50,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
         }
 
 		if (!isEmpty) {
-			Glide.with(fragment).load("file://" + f_model.getItems().get(0))
+			Glide.with(fragment).load("file://" + f_model.getItems().get(0).getPath())
 				.skipMemoryCache(true)
 				.into(holder.iv_image);
         } else {

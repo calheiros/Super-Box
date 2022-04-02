@@ -50,18 +50,19 @@ import android.support.design.widget.Snackbar;
 import com.jefferson.application.br.util.DocumentUtil;
 import android.support.design.widget.FloatingActionButton;
 import com.jefferson.application.br.task.ImportTask;
+import com.jefferson.application.br.model.MediaModel;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.TaskListener {
 
     @Override
     public void onPostExecute() {
         updateRecyclerView();
-        synchronizeData();
+        synchronizeMainActivity();
     }
 
     @Override
     public void onPreExecute() {
-        
+
     }
 
     @Override
@@ -71,7 +72,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     @Override
     public void OnCancelled() {
     }
-    
+
 	private PathsData database;
 	private boolean selectionMode;
 	private LinearLayout mainLayout;
@@ -86,7 +87,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private View emptyView;
     private FloatingActionButton fab;
     private static final int VIDEO_PLAY_CODE = 7;
-
+    private Thread thread;
     private static final int CHANGE_DIRECTORY_CODE = 3;
 
     private static final int IMPORT_FROM_GALLLERY_CODE = 6;
@@ -102,7 +103,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		position = intent.getIntExtra("position", -1);
 	    title = intent.getStringExtra("name");
 		folder = new File(intent.getStringExtra("folder"));
-		ArrayList<String> mListItemsPath = intent.getStringArrayListExtra("data");
+		ArrayList<MediaModel> mListItemsPath = (ArrayList<MediaModel>) intent.getParcelableArrayListExtra("data");
 	    mRecyclerView = findViewById(R.id.my_recycler_view);
 		mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new GridLayoutManager(this, 3);
@@ -121,7 +122,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		mViewMove.setOnClickListener(this);
 		mViewSelect.setOnClickListener(this);
         fab.setOnClickListener(this);
-        
+
         initToolbar();
 
         if (mListItemsPath.isEmpty()) {
@@ -178,20 +179,19 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         startActivityForResult(intent, IMPORT_FROM_GALLLERY_CODE);
     }
 
-    private void updateDatabase(final ArrayList<String> list, final MultiSelectRecyclerViewAdapter adapter) {
-
-        new Thread() {
+    private void updateDatabase(final ArrayList<MediaModel> list, final MultiSelectRecyclerViewAdapter adapter) throws RuntimeException {
+        thread =  new Thread() {
 
             @Override
             public void run() {
-                final HashMap<String, String> map = new HashMap<String, String>();
-                for (final String path: list) {
 
-                    File file = new File(path);
+                for (final MediaModel model: list) {
+
+                    File file = new File(model.getPath());
                     int duration = database.getDuration(file.getName());
 
                     if (duration == 0) {
-                        Uri uri = Uri.parse(path); 
+                        Uri uri = Uri.parse(model.getPath()); 
                         MediaMetadataRetriever mmr = new MediaMetadataRetriever(); 
                         mmr.setDataSource(App.getAppContext(), uri); 
                         String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); 
@@ -200,30 +200,28 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     }
 
                     long secunds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
-
                     final String time = String.format("%d:%02d", TimeUnit.MILLISECONDS.toMinutes(duration), secunds);
-                    // Debug.toast("updateDatabase", "duration => " + time, Toast.LENGTH_SHORT);
-                    map.put(path, time);
 
-                    runOnUiThread(new Runnable(){
+                    runOnUiThread(new Runnable() {
 
                             @Override
                             public void run() {
-                                adapter.updateItemDuration(path, time);
+                                adapter.updateItemDuration(model.getPath(), time);
                             }
                         }
                     );
                 }
             }
-        }.start();
+        };
+        thread.start();
     }
 
     private void toggleSelection() {
 
-        if (mAdapter.getSelectedItemCount() == mAdapter.mListItemsPath.size()) {
+        if (mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size()) {
             mAdapter.clearSelection();
         } else {
-            for (int i = 0; i < mAdapter.mListItemsPath.size();i++) {
+            for (int i = 0; i < mAdapter.mListItemsModels.size();i++) {
                 if (!mAdapter.isSelected(i)) {
                     mAdapter.toggleSelection(i);
                 }
@@ -265,7 +263,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
     private void deleteFilesDialog() {
         int count = mAdapter.getSelectedItemCount();
-       
+
         if (count == 0) {
             Toast.makeText(ViewAlbum.this, getString(R.string.selecionar_um), 1).show();
             return;
@@ -319,7 +317,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		}
 	}
 
-	private void synchronizeData() {
+	private void synchronizeMainActivity() {
+
         int visibility = (mAdapter.getItemCount() == 0) ? View.VISIBLE: View.GONE;
 		MainActivity mActivity = MainActivity.getInstance();
         emptyView.setVisibility(visibility);
@@ -327,7 +326,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		if (mActivity != null) {
 			mActivity.updateFragment(position);
 		} else {
-            Toast.makeText(this, "Can't synchronize data!", 1).show();
+            Toast.makeText(this, "Can't synchronize MainActivity!", 1).show();
         }
 	}
 
@@ -339,7 +338,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 ArrayList<String> list = data.getStringArrayListExtra("moved_files");
                 Snackbar.make(mRecyclerView, list.size() + " file(s) moved", Snackbar.LENGTH_SHORT).show();
                 mAdapter.removeAll(list);
-                synchronizeData();
+                synchronizeMainActivity();
             } else if (requestCode == VIDEO_PLAY_CODE) {
 
                 final int index = data.getIntExtra("index", 0);
@@ -351,7 +350,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         }
                     }
                 );
-            } else if ( requestCode == IMPORT_FROM_GALLLERY_CODE) {
+            } else if (requestCode == IMPORT_FROM_GALLLERY_CODE) {
                 ArrayList<FileModel> models = new ArrayList<>();
                 ArrayList<String> paths = data.getStringArrayListExtra("selection");
 
@@ -364,28 +363,38 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 }
                 new ImportTask(this, models, this).execute();
                 /*
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 
-                    if(hasExternalFile(paths) && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty())) {
-                        getSdCardUri(GET_URI_CODE_TASK);
-                        return;
-					}
-                */
+                 if(hasExternalFile(paths) && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty())) {
+                 getSdCardUri(GET_URI_CODE_TASK);
+                 return;
+                 }
+                 */
             }
         }
-        
+
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-    public void updateRecyclerView () {
-        ArrayList<String> mListItemsPath = new ArrayList<String>();
-        
-        for (File file : folder.listFiles()){
-            mListItemsPath.add(file.getAbsolutePath());
+
+    public void updateRecyclerView() {
+        ArrayList<MediaModel> mListItemsPath = new ArrayList<MediaModel>();
+
+        for (File file : folder.listFiles()) {
+            mListItemsPath.add(new MediaModel(file.getAbsolutePath()));
         }
-        
-        mAdapter.mListItemsPath = mListItemsPath;
+
+        mAdapter.mListItemsModels = mListItemsPath;
         mAdapter.notifyDataSetChanged();
+        
+        if (position == 1) {
+            try {
+                updateDatabase(mListItemsPath, mAdapter);
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+            }
+        }
     }
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (selectionMode) {
@@ -411,7 +420,11 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 			switch (position) {
 				case 0:
-					new ImageViewer.Builder(this, Storage.toArrayString(mAdapter.mListItemsPath, true))
+                    ArrayList<String> path = new ArrayList<>();
+                    for (MediaModel model : mAdapter.mListItemsModels) {
+                        path.add(model.getPath());
+                    }
+					new ImageViewer.Builder(this, Storage.toArrayString(path, true))
 						.setStartPosition(item_position)
 						.show();
 					break;
@@ -419,7 +432,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 					mClass = VideoPlayerActivity.class;
 					Intent intent = new Intent(getApplicationContext(), mClass);
 					intent.putExtra("position", item_position);
-					intent.putExtra("filepath", mAdapter.mListItemsPath);
+					intent.putExtra("filepath", mAdapter.getArrayListPath());
 					startActivityForResult(intent, VIDEO_PLAY_CODE);
 					break;
 			}
@@ -449,7 +462,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		ArrayList<String> selectedItens = new ArrayList<String>();
 
 		for (int i : mAdapter.getSelectedItems()) {
-			selectedItens.add(mAdapter.mListItemsPath.get(i));
+			selectedItens.add(mAdapter.mListItemsModels.get(i).getPath());
 		}
 		return selectedItens;
 	}
@@ -459,13 +472,13 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	}
 
 	private void switchIcon() {
-		((ImageView)mViewSelect).setImageResource(mAdapter.getSelectedItemCount() == mAdapter.mListItemsPath.size() ? R.drawable.ic_unselect_all : R.drawable.ic_select_all);
+		((ImageView)mViewSelect).setImageResource(mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size() ? R.drawable.ic_unselect_all : R.drawable.ic_select_all);
 	}
 
 	public void exitSelectionMode() {
 		selectionMode = false;
 
-        if (!mAdapter.mListItemsPath.isEmpty())
+        if (!mAdapter.mListItemsModels.isEmpty())
 			mAdapter.clearSelection();
 		lockButton.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fade_out));
 		lockButton.setVisibility(View.GONE);
@@ -505,23 +518,23 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		@Override
 		protected void onCancelled(Object result) {
 			super.onCancelled(result);
-			synchronizeData();
+			synchronizeMainActivity();
 		}
 
 		@Override
 		protected void onPostExecute(Object result) {
 			super.onPostExecute(result);
 
-            if (mAdapter.mListItemsPath.isEmpty()) {
+            if (mAdapter.mListItemsModels.isEmpty()) {
 				finish();
 			}
-			synchronizeData();
+			synchronizeMainActivity();
 		}
 
 		@Override
 		protected void onProgressUpdate(Object[] values) {
 			super.onProgressUpdate(values);
-			mAdapter.removeItem(values[0]);
+			mAdapter.removeItem((String)values[0]);
 		}
 
 		@Override
@@ -567,35 +580,40 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 		@Override
 		protected void onPostExecute(Object result) {
-			onFinish();
+			die();
 
 		}
 
-		private void onFinish() {
+		private void die() {
+
 			MainActivity.getInstance().showAd();
 			Storage.scanMediaFiles(mArrayPath.toArray(new String[mArrayPath.size()]));
 
 			mySimpleDialog.dismiss();
 			mUpdate.die();
 
-			if (mAdapter.mListItemsPath.isEmpty()) {
+			if (mAdapter.mListItemsModels.isEmpty()) {
 				deleteFolder();
 				finish();
 			}
-			synchronizeData();
+
+			synchronizeMainActivity();
 		}
 
 		public void deleteFolder() {
 			PathsData.Folder folderDatabase = PathsData.Folder.getInstance(App.getInstance());
-			if (folder.delete()) {
+
+            if (folder.delete()) {
 				folderDatabase.delete(folder.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
 			}
+
 			folderDatabase.close();
 		}
 
 		@Override
 		protected void onCancelled(Object result) {
-			onFinish();
+            updateRecyclerView();
+			die();
 		}
 
 		@Override
@@ -614,7 +632,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 		@Override
 		protected Void doInBackground(Object[] p1) {
-			try {
+
+            try {
 				long max = 0;
 				for (String item : selectedItens) {
 					File file = new File(item);
@@ -626,10 +645,12 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 				long start = System.currentTimeMillis();
 				for (String item :selectedItens) {
-					if (isCancelled()) {
+
+                    if (isCancelled()) {
 						break;
 					}
-					File file = new File(item);
+
+                    File file = new File(item);
 					String path = database.getPath(file.getName());
 					if (path == null) {
 						continue;
@@ -642,14 +663,12 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 					publishProgress(null, fileOut.getName());
 
                     if (file.renameTo(fileOut)) {
-
                         mArrayPath.add(fileOut.getAbsolutePath());
                         database.deleteData(file.getName());
                         mListTemp.add(item);
                         mTransfer.increment(fileOut.length() / 1024);
 
                     } else {
-
                         OutputStream output = getOutputStream(fileOut);
                         InputStream input = new FileInputStream(file);
                         String response = mTransfer.transferStream(input, output);
@@ -677,6 +696,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 				if (mListTemp.size() > 0) {
 					publishProgress(ACTION_UPDATE);
 				}
+
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

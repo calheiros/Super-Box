@@ -97,18 +97,17 @@ public class AppLockService extends Service {
 					lockScreen.lockApp(ActivityOnTop);
 
 				} else {
+                    /*
 					if (lockScreen.isLocked() && !"com.android.systemui".equals(ActivityOnTop)) {
 						lockScreen.unlock();
                         Debug.toast(ActivityOnTop, Toast.LENGTH_LONG);
-					}
+					}*/
 				}
 			}
 		}
 	}
 	
     private void showMessage(String m) {
-        
 		Toast.makeText(this, m, Toast.LENGTH_LONG).show();
 	}
-	
 }

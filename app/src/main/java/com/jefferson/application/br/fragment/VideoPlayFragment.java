@@ -1,26 +1,28 @@
 package com.jefferson.application.br.fragment;
 
-import android.content.Context;
+import android.graphics.Bitmap;
 import android.media.MediaPlayer;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.Toast;
 import android.widget.VideoView;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.util.Debug;
 import java.io.File;
-import android.view.TouchDelegate;
-import android.graphics.Rect;
 
-public class VideoPlayFragment extends Fragment implements OnTouchListener {
+public class VideoPlayFragment extends Fragment implements OnTouchListener, OnClickListener {
 
     private View parentView;
     private VideoView mVideoView;
@@ -29,8 +31,19 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
 
     private boolean playOnCreate;
 
+    private ImageView mThumbView;
+    private View overlayView;
+    private View playButton;
+
     public VideoPlayFragment(String videoPath) {
         this.videoPath = videoPath;
+    }
+
+    public void showVideoOverlay() {
+
+        if (overlayView != null) {
+            overlayView.setVisibility(View.VISIBLE);
+        }
     }
 
     public void setPlayOnCreate(boolean autoplay) {
@@ -43,13 +56,18 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
         if (parentView == null) {
             parentView = inflater.inflate(R.layout.video_view_fragment, null);
             mVideoView = parentView.findViewById(R.id.video_view);
-
+            mThumbView = parentView.findViewById((R.id.video_view_fragment_thumb_view));
+            overlayView = parentView.findViewById(R.id.video_view_overlay);
+            playButton = parentView.findViewById(R.id.video_view_play_button);
             File file = new File(videoPath);
+
             if (!file.exists()) {
                 Toast.makeText(getContext(), "File does not exists " + videoPath, 1).show();
                 return parentView;
             }
-
+            
+            loadThumbnail(videoPath);
+            overlayView.setOnClickListener(this);
             mediaController = new MediaController(getActivity());
             mediaController.setAnchorView(parentView);
             mVideoView.setMediaController(mediaController);
@@ -70,27 +88,50 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
 
                     @Override
                     public boolean onError(MediaPlayer mp, int p2, int p3) {
-
                         Toast.makeText(getContext(), "This video can not be played on this device using android API!", Toast.LENGTH_LONG).show();
                         mp.release();
-
                         return true;
                     }
                 }
             );
-            
+
             if (playOnCreate) {
-                start();
+                startVideoReproduction();
             }
-            
-            Rect delegateArea = new Rect();
-            parentView.getHitRect(delegateArea);
-            Debug.toast("top " + delegateArea.top + "\nbottom " + delegateArea.bottom);
-            TouchDelegate touchDelegate = new TouchDelegate(delegateArea, mVideoView);
-            mVideoView.setTouchDelegate(touchDelegate);
         }
 
         return parentView;
+    }
+
+    Bitmap bmp;
+
+    private void loadThumbnail(final String path) {
+
+        final Handler handler = new Handler() {
+            public void 
+            dispatchMessage(Message msf) {
+                mThumbView.setImageBitmap(bmp);
+            }
+        };
+        
+        new Thread(){
+            @Override
+            public void run() {
+                bmp = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.FULL_SCREEN_KIND);
+                handler.sendEmptyMessage(0);
+            }
+        }.start();
+    }
+
+    @Override
+    public void onClick(View view) {
+        startVideoReproduction();
+    }
+
+    private void hideVideoOverlay() {
+        if (overlayView != null && overlayView.getVisibility() != View.GONE) {
+            overlayView.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -107,31 +148,27 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
         return false;
     }
 
+    public void startVideoReproduction() {
+        hideVideoOverlay();
 
-    public void start() {
-        new Handler().postDelayed(new Runnable(){
+        if (mVideoView != null) {
+            mVideoView.setVideoURI(Uri.parse(videoPath));
+            mVideoView.start();
+            mVideoView.requestFocus();
 
-                @Override
-                public void run() {
-                    if (mVideoView != null) {
-                        mVideoView.setVideoURI(Uri.parse(videoPath));
-                        mVideoView.start();
-                        //mVideoView.requestFocus();
-                    }
-                }
-            }, 100);
-
+        }
     }
 
     public void stop() {
 
-        if (mVideoView != null) {
+        if (mVideoView != null && mVideoView.isPlaying()) {
             mVideoView.stopPlayback();
         }
-        if (mediaController != null) {
-            mediaController.hide();
 
+        if (mediaController != null && mediaController.isShowing()) {
+            mediaController.hide();
         }
+
     }
 
     public void resume() {
@@ -147,13 +184,9 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener {
         if (mVideoView != null) {
             mVideoView.pause();
         }
-        /*
-         if (mediaController != null) {
-         mediaController.hide();
-         }
-         */
-    }
 
-    
-    
+        if (mediaController != null) {
+            mediaController.hide();
+        }
+    }
 }

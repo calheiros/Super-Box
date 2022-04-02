@@ -11,14 +11,18 @@ import com.jefferson.application.br.task.*;
 import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
+import com.jefferson.application.br.util.Debug;
 import com.jefferson.application.br.task.*;
 import android.support.v7.app.AlertDialog;
+import com.jefferson.application.br.activity.MainActivity;
 
 public class ReceiverMedia extends Activity implements ImportTask.TaskListener {
 
     @Override
     public void onPostExecute() {
-
+        Intent intent = new Intent(MainActivity.ACTION_UPDATE);
+        sendBroadcast(intent);
+        Debug.toast("send receiver!");
     }
 
     @Override
@@ -93,7 +97,6 @@ public class ReceiverMedia extends Activity implements ImportTask.TaskListener {
 
 	private class BuildModelsTast extends AsyncTask<Void, Integer, ArrayList<FileModel>> {
 
-
 		private ArrayList<Uri> mediaUris;
 		private Activity activity;
 		private ProgressDialog mProgressDialog;
@@ -112,7 +115,6 @@ public class ReceiverMedia extends Activity implements ImportTask.TaskListener {
 			mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 			mProgressDialog.setCancelable(false);
 			mProgressDialog.show();
-
 		}
 
 		@Override
@@ -145,7 +147,8 @@ public class ReceiverMedia extends Activity implements ImportTask.TaskListener {
 				publishProgress(++index);
 				String path = Storage.getPathFromMediaUri(uri, App.getInstance());
 				FileModel model = getModel(path);
-				if (model != null)
+				
+                if (model != null)
 					models.add(model);
 			}
 			return models;

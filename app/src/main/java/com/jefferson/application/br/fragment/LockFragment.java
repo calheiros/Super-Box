@@ -123,7 +123,8 @@ public class LockFragment extends Fragment implements OnItemClickListener {
                     }
                 }
             );
-            alert.setNegativeButton("Ignorar", null);
+            
+            alert.setNegativeButton(getString(R.string.cancelar), null);
             AlertDialog alertDialog = alert.create();
             DialogUtils.configureRoudedDialog(alertDialog);
             alertDialog.setCanceledOnTouchOutside(false);
@@ -135,6 +136,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
         vi.startAnimation(animation);
     }
+    
 	public void initTask() {
 		mTask = new Task(App.getAppContext());
 		mTask.execute();
