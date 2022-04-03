@@ -31,11 +31,11 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
     public ArrayList getArrayListPath() {
         ArrayList<String> arrayListPath = new ArrayList<>();
-        
-        for (MediaModel mm : mListItemsModels){
+
+        for (MediaModel mm : mListItemsModels) {
             arrayListPath.add(mm.getPath());
         }
-        
+
         return arrayListPath;
     }
 
@@ -56,14 +56,18 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
             return;
         }
         
-        ArrayList<MediaModel> removeList = new ArrayList<>();
-        for (MediaModel mm: mListItemsModels) {
-            if (paths.contains(mm.getPath())) {
-                 removeList.add(mm);
-            }
+        ArrayList <MediaModel > deletetionList = new ArrayList<>();
+        Iterator<MediaModel> iterator = mListItemsModels.iterator();
+        
+        while (iterator.hasNext()) { 
+            MediaModel item = iterator.next(); 
+
+            if (paths.contains(item.getPath())) { 
+                deletetionList.add(item);
+            } 
         }
         
-        mListItemsModels.removeAll(removeList);
+        mListItemsModels.removeAll(deletetionList);
 		notifyDataSetChanged();
 	}
 
@@ -73,25 +77,26 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
             return;
         }
         
-        MediaModel model = null;
-        int i;
+        Iterator<MediaModel> iterator = mListItemsModels.iterator();
+        MediaModel item = null;
         
-        for ( i = (mListItemsModels.size() - 1); i >= 0; i--) {
-           
-            if (path.equals(mListItemsModels.get(i).getPath())) {
-                model = mListItemsModels.get(i);
-                Log.i("MultSelectRecyclerView", "REMOVED " + i);
+        while (iterator.hasNext()) { 
+            item = iterator.next(); 
+            
+            if (item.getPath().equals(path)) { 
                 break;
             }
         }
         
-        if (model != null) {
-            mListItemsModels.remove(model);
-            notifyItemRemoved(i);
-        }
+        removeItem(item);
     }
 
-	public void removeItem(FileModel item) {
+	public void removeItem(MediaModel item) {
+        
+        if (item == null) {
+            return;
+        }
+        
 		int index = mListItemsModels.indexOf(item);
 
         if (index != -1) {
@@ -174,7 +179,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         }
 
         public interface ClickListener {
-            
+
             public void onItemClicked(int position);
 
             public boolean onItemLongClicked(int position);

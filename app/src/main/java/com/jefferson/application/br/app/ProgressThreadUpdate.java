@@ -21,7 +21,7 @@ public class ProgressThreadUpdate extends Thread {
 		public void run() {
 	
 			dialog.setTitle(title);
-			if(suffix++ < 3) {
+			if(suffix++ < 6) {
 				title += ".";
 			} else {
 				title = base;
@@ -30,6 +30,7 @@ public class ProgressThreadUpdate extends Thread {
 			mHandler.postDelayed(mRunnable, 250);
 		}
 	};
+    
 	public ProgressThreadUpdate(FileTransfer mTransfer, SimpleDialog dialog) {
 		this.dialog = dialog;
 		this.mTransfer = mTransfer;
@@ -40,12 +41,16 @@ public class ProgressThreadUpdate extends Thread {
 	public void setMax(long max) {
 		this.max = max;
 	}
+    
 	public void die() {
 		mHandler.removeCallbacks(mRunnable);
 		running = false;
-		try {
+		
+        try {
 			join();
-		} catch (InterruptedException e) {}
+		} catch (InterruptedException e) {
+            
+        }
 	}
 	@Override
 	public void start() {
@@ -57,11 +62,13 @@ public class ProgressThreadUpdate extends Thread {
 			mHandler.postDelayed(mRunnable, 250);
 		}
 	}
+    
 	public void Tsleep(int millis){
 		try {
 			this.sleep(millis);
 		} catch (InterruptedException e) {}
 	}
+    
 	@Override
 	public void run() {
 		while (running) {

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 import com.jefferson.application.br.R;
 import java.io.File;
+import com.jefferson.application.br.util.Debug;
 
 public class VideoPlayFragment extends Fragment implements OnTouchListener, OnClickListener {
 
@@ -28,20 +29,19 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
     private VideoView mVideoView;
     private String videoPath;
     private MediaController mediaController;
-
     private boolean playOnCreate;
-
     private ImageView mThumbView;
     private View overlayView;
     private View playButton;
-
+    private Bitmap bmp;
+    
     public VideoPlayFragment(String videoPath) {
         this.videoPath = videoPath;
     }
 
     public void showVideoOverlay() {
 
-        if (overlayView != null) {
+        if (overlayView != null && overlayView.getVisibility() != View.VISIBLE) {
             overlayView.setVisibility(View.VISIBLE);
         }
     }
@@ -65,7 +65,7 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
                 Toast.makeText(getContext(), "File does not exists " + videoPath, 1).show();
                 return parentView;
             }
-            
+
             loadThumbnail(videoPath);
             overlayView.setOnClickListener(this);
             mediaController = new MediaController(getActivity());
@@ -88,8 +88,7 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
 
                     @Override
                     public boolean onError(MediaPlayer mp, int p2, int p3) {
-                        Toast.makeText(getContext(), "This video can not be played on this device using android API!", Toast.LENGTH_LONG).show();
-                        mp.release();
+                        Toast.makeText(getContext(), getString(R.string.falha_video), Toast.LENGTH_LONG).show();
                         return true;
                     }
                 }
@@ -103,7 +102,15 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
         return parentView;
     }
 
-    Bitmap bmp;
+    @Override 
+    public void setUserVisibleHint(boolean isVisibleToUser) { 
+        super.setUserVisibleHint(isVisibleToUser); 
+
+        if (!isVisibleToUser) {
+            showVideoOverlay();
+            stop();
+        }
+    }
 
     private void loadThumbnail(final String path) {
 
@@ -113,7 +120,7 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
                 mThumbView.setImageBitmap(bmp);
             }
         };
-        
+
         new Thread(){
             @Override
             public void run() {
@@ -157,6 +164,19 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
             mVideoView.requestFocus();
 
         }
+    }
+
+    @Override
+    public void onPause() {
+
+        if (mVideoView != null) {
+            if (mVideoView.isPlaying()) {
+                stop();
+            } 
+            showVideoOverlay();
+        }
+
+        super.onPause();
     }
 
     public void stop() {

@@ -17,17 +17,18 @@ import com.jefferson.application.br.fragment.VideoPlayFragment;
 import java.util.ArrayList;
 import com.jefferson.application.br.util.Debug;
 import com.jefferson.application.br.model.MediaModel;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 public class VideoPlayerActivity extends MyCompatActivity {
 
     public class MyPageListerner implements ViewPager.OnPageChangeListener {
 
         private VideoPagerAdapter adpter;
-        private int lastFragmentIndex;
+        private int lastFragmentPosition;
 
         public MyPageListerner(VideoPagerAdapter adapter, int position) {
             this.adpter = adapter;
-            lastFragmentIndex = position;
+            lastFragmentPosition = position;
         }
 
         @Override
@@ -38,11 +39,15 @@ public class VideoPlayerActivity extends MyCompatActivity {
         @Override
         public void onPageSelected(int position) {
 
-            VideoPlayFragment fragment = pagerAdapter.getItem(position);
-            VideoPlayFragment lastFragment = adpter.getItem(lastFragmentIndex);
-            lastFragment.stop();
-            fragment.showVideoOverlay();
-            lastFragmentIndex = position;
+//            VideoPlayFragment fragment = pagerAdapter.getItem(position);
+//            VideoPlayFragment lastFragment = pagerAdapter.getItem(position);
+//            fragment.showVideoOverlay();
+//      
+//            if (lastFragment != null) {
+//                lastFragment.stop();
+//            }
+//            
+//            lastFragmentPosition = position;
         }
 
         @Override
@@ -86,26 +91,19 @@ public class VideoPlayerActivity extends MyCompatActivity {
        
     }
 
-    private class VideoPagerAdapter extends FragmentPagerAdapter {
+    private class VideoPagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> filesPath;
-        private VideoPlayFragment fragments[];
-
+        
         public VideoPagerAdapter(FragmentManager fm, ArrayList<String> paths) {
-
             super(fm);
             this.filesPath = paths;
-            this.fragments = new VideoPlayFragment[paths.size()];
         }
 
         @Override
         public VideoPlayFragment getItem(int position) {
-
-            if (fragments[position] == null) {
-                fragments[position] = new VideoPlayFragment(filesPath.get(position));
-                Log.i("VideoPlayerActivy", "fragment created => " + position);
-            }
-            return fragments[position];
+            
+            return new VideoPlayFragment(filesPath.get(position));
         }
 
         @Override
