@@ -49,7 +49,7 @@ import com.jefferson.application.br.widget.MyAlertDialog.Builder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.TaskListener {
 
@@ -127,7 +127,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
+        
 		if (savedInstanceState != null) {
 			startActivity(new Intent(this, VerifyActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
@@ -210,7 +210,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             if (!Settings.canDrawOverlays(this)) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE); 
-                return true; } 
+                return true; 
+            } 
         } return false;
     }
 

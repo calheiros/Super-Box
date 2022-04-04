@@ -21,7 +21,7 @@ import android.widget.Toast;
 import android.widget.VideoView;
 import com.jefferson.application.br.R;
 import java.io.File;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import com.bumptech.glide.Glide;
 
 public class VideoPlayFragment extends Fragment implements OnTouchListener, OnClickListener {
@@ -97,7 +97,7 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
             );
 
             if (playOnCreate) {
-                Debug.toast("play on create!");
+                JDebug.toast("play on create!");
                 startVideo();
             }
         }

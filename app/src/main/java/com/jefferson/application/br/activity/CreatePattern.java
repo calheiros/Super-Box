@@ -17,7 +17,7 @@ import com.jefferson.application.br.util.PasswordManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MyCompatActivity;
 import java.util.List;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import android.provider.Settings;
 
 public class CreatePattern extends MyCompatActivity {
@@ -40,7 +40,7 @@ public class CreatePattern extends MyCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_pattern);
-        passwordManager = new PasswordManager(this);
+        passwordManager = new PasswordManager();
         action = getIntent().getAction();
 		defaultText = getString(R.string.desenhe_seu_padrao);
 
@@ -115,7 +115,7 @@ public class CreatePattern extends MyCompatActivity {
 					} else if (action == ENTER_RECREATE) {
 						finish();
 				    } else {
-                        Debug.toast("AÇÃO DESCONHECIDA!");
+                        JDebug.toast("AÇÃO DESCONHECIDA!");
                     }
 				}
             }

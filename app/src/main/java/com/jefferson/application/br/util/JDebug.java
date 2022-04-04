@@ -5,8 +5,9 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.os.Handler;
 import android.os.Looper;
+import android.content.Context;
 
-public class Debug {
+public class JDebug {
 
     private static String PREFERENCE_NAME = "Debug";
 
@@ -19,7 +20,7 @@ public class Debug {
     }
 
     public static boolean isDebugOn() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+        SharedPreferences prefs = MyPreferences.getSharedPreferences();
         boolean debugOn = prefs.getBoolean(PREFERENCE_NAME, false);
         return debugOn;
     }
@@ -39,7 +40,7 @@ public class Debug {
     }
 
     public static void setDebug(boolean on) {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(App.getAppContext());
+        SharedPreferences prefs =  MyPreferences.getSharedPreferences();
         prefs.edit().putBoolean(PREFERENCE_NAME, on).commit();
     }
 }

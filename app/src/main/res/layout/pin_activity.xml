@@ -13,8 +13,8 @@
         android:layout_width="match_parent"
         android:gravity="center">
         <ImageView
-            android:layout_width="65dp"
-            android:layout_height="65dp"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_centerInParent="true"
             android:src="@drawable/ic_super"/>
     </RelativeLayout>
@@ -139,6 +139,7 @@
             <Button
                 style="?android:attr/buttonBarButtonStyle"
                 android:text="0"
+                android:onClick="zero"
                 android:gravity="center"
                 android:padding="10dp"
                 android:layout_height="75dp"

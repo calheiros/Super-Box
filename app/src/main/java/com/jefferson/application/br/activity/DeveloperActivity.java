@@ -9,7 +9,7 @@ import android.content.Intent;
 import android.widget.Switch;
 import android.widget.CompoundButton;
 import android.widget.Toast;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 
 public class DeveloperActivity extends MyCompatActivity {
     
@@ -18,12 +18,12 @@ public class DeveloperActivity extends MyCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.developer_layout);
         Switch switchView = findViewById(R.id.developerlayoutSwitch);
-        switchView.setChecked(Debug.isDebugOn());
+        switchView.setChecked(JDebug.isDebugOn());
         switchView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
 
                 @Override
                 public void onCheckedChanged(CompoundButton compButton, boolean checked) {
-                    Debug.setDebug(checked);
+                    JDebug.setDebug(checked);
                     String msg = checked ? "Debug mode: ENABLED!" : "Debug mode: DISABLED!";
                     Toast.makeText(DeveloperActivity.this, msg, Toast.LENGTH_LONG).show();
                 }

@@ -10,7 +10,7 @@ import android.widget.*;
 import com.bumptech.glide.*;
 import java.io.*;
 import java.util.*;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.model.MediaModel;
 
 public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelectRecyclerViewAdapter.ViewHolder> {
@@ -19,7 +19,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
     private static Context context;
     private ViewHolder.ClickListener clickListener;
 	private int mediaType;
-
+    
     public MultiSelectRecyclerViewAdapter(Context context, ArrayList<MediaModel> arrayList, ViewHolder.ClickListener clickListener, int mediaType) {
 
         this.mListItemsModels = arrayList;
@@ -29,7 +29,17 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
     }
 
-    public ArrayList getArrayListPath() {
+    public ArrayList<String> getSelectedItemsPath() {
+        ArrayList<String> selectedItemsPath = new ArrayList<>();
+    
+        for (int position : getSelectedItems()) {
+           selectedItemsPath.add(mListItemsModels.get(position).getPath());
+        }
+        
+        return selectedItemsPath; 
+    }
+   
+    public ArrayList getListItemsPath() {
         ArrayList<String> arrayListPath = new ArrayList<>();
 
         for (MediaModel mm : mListItemsModels) {
@@ -41,11 +51,12 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
     public void updateItemDuration(String path, String time) {
 
-        for (MediaModel model: mListItemsModels) {
+        for (int i = 0; i < mListItemsModels.size(); i++) {
+            MediaModel model = mListItemsModels.get(i);
             if (model.getPath().equals(path)) {
-                int index = mListItemsModels.indexOf(model);
                 model.setDuration(time);
-                notifyItemChanged(index);
+                notifyItemChanged(i);
+                break;
             }
         }
     }

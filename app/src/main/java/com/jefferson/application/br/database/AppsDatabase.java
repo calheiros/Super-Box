@@ -8,8 +8,9 @@ import java.util.*;
 public class AppsDatabase extends SQLiteOpenHelper {
 
     public static final  String DATABASE_NAME = "PACKAGES_DB";
+    
     public AppsDatabase(Context context) {
-		
+
         super(context, DATABASE_NAME, null, 1);
     }
 
@@ -31,7 +32,7 @@ public class AppsDatabase extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS UNLOCKED_APP_TABLE");
     }
 
-    public ArrayList<String> getLockedApps() {
+    public ArrayList<String> getLockedPackages() {
         SQLiteDatabase db = this.getWritableDatabase();
 		ArrayList<String> list = new ArrayList<String>();
         Cursor res = db.rawQuery("Select * from LOCKED_APP_TABLE", null);
@@ -43,24 +44,24 @@ public class AppsDatabase extends SQLiteOpenHelper {
 		db.close();
         return  list;
     }
-	public boolean isAppUnlocked(String pack)
-	{
+    
+	public boolean isAppUnlocked(String pack) {
 		SQLiteDatabase db = getReadableDatabase();
 		Cursor cursor = db.rawQuery("Select * From UNLOCKED_APP_TABLE" , null);
-		while (cursor.moveToNext())
-		{
+		while (cursor.moveToNext()) {
 			if (pack.equals(cursor.getString(1)))
 				return true;
 		}
 		db.close();
 		return false;
 	}
+    
 	public void removeLockedApp(String appName) {
-		
+
 		getWritableDatabase().execSQL("DELETE FROM LOCKED_APP_TABLE WHERE PACKAGE = '" + appName + "'");
 	}
-	public void addUnlockedApp(String pack)
-	{
+    
+	public void addUnlockedApp(String pack) {
 		SQLiteDatabase database = this.getWritableDatabase();
 
 		ContentValues values = new ContentValues();
@@ -68,8 +69,9 @@ public class AppsDatabase extends SQLiteOpenHelper {
 		database.insert("UNLOCKED_APP_TABLE", null, values);
 		database.close();
 	}
+    
 	public boolean addLockedApp(String name) {
-		
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("PACKAGE", name);

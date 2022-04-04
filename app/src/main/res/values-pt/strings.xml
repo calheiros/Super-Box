@@ -22,8 +22,8 @@
     <string name="preferecias_gerais">Preferecias gerais</string>
     <string name="preferecias_sobre">Sobre</string>
     <string name="preferecias_avancadas">Avançado</string>
-	<string name="importar_imagem">Importar Imagens</string>
-	<string name="importar_video">Importar Vídeos</string>
+	<string name="importar_imagem">Importar imagens</string>
+	<string name="importar_video">Importar vídeos</string>
 	<string name="selecionar_sdcard">Vocé precisa selecionar a pasta raiz do seu Cartão SD para continuar a tarefa.</string>
 	<string name="selecionar_um">Você deve selecionar pelo menos um.</string>
 	<string name="imagem">imagem</string>

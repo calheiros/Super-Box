@@ -14,12 +14,14 @@ import android.widget.Toast;
 import com.jefferson.application.br.adapter.AppsAdapter;
 import com.jefferson.application.br.database.AppsDatabase;
 import com.jefferson.application.br.receiver.KeyWatcher;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import java.util.Timer;
 import java.util.TimerTask;
 import android.os.Build;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.Notification.Builder;
+import com.jefferson.application.br.activity.VerifyActivity;
 
 public class AppLockService extends Service {
 
@@ -28,7 +30,7 @@ public class AppLockService extends Service {
 	public static final String ACTION_RESTART_SERVICE ="RestartBlockService";
 	private AppLockWindow appLockWindow;
 	private ScreenOnOff mybroadcast;
-	private AppsDatabase mDabase;
+	private AppsDatabase database;
 
 	public static Handler toastHandler;
 	public static AppLockService self;
@@ -44,8 +46,8 @@ public class AppLockService extends Service {
 	public void onCreate() {
         startForeground();
 		AppsAdapter.service = this;
-		mDabase = new AppsDatabase(this);
-		appLockWindow = new AppLockWindow(getApplicationContext(), mDabase);
+		database = new AppsDatabase(this);
+		appLockWindow = new AppLockWindow(getApplicationContext(), database);
 		//mLockedApps = mDabase.getLockedApps();
 		startService();
 
@@ -76,17 +78,21 @@ public class AppLockService extends Service {
 	}
 
     private void startForeground() {
+
         String ChannelId = "";
+        Notification.Builder builder = null;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             ChannelId = getNotificationChannelId("Super Box", "AppLock Service");
+            builder = new Notification.Builder(this, ChannelId);
+        } else {
+            builder = new Notification.Builder(this);
         }
-        
-        Notification notification = new Notification.Builder(this, ChannelId)
-            .setContentTitle(getResources().getString(R.string.app_name))
+
+        Notification notification = builder.setContentTitle(getResources().getString(R.string.app_name))
             .setTicker(getResources().getString(R.string.app_name))
             .setContentText("Running")
-            .setSmallIcon(R.drawable.ic_launcher)
+            .setSmallIcon(R.drawable.ic_super)
             .setContentIntent(null)
             .setOngoing(true)
             .build();
@@ -97,7 +103,7 @@ public class AppLockService extends Service {
         NotificationChannel chan = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_NONE);
         chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         chan.setLightColor(R.color.colorAccent);
-        NotificationManager service =(NotificationManager)  getSystemService(NOTIFICATION_SERVICE);
+        NotificationManager service = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         service.createNotificationChannel(chan);
         return id;
     }
@@ -145,7 +151,7 @@ public class AppLockService extends Service {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Debug.toast(e.getMessage());
+            JDebug.toast(e.getMessage());
         }
     }
 
@@ -172,14 +178,16 @@ public class AppLockService extends Service {
 
                 pActivity = ActivityOnTop;
 
-                if (mDabase.getLockedApps().contains(ActivityOnTop) && !mDabase.isAppUnlocked(ActivityOnTop)) {
+                if (database.getLockedPackages().contains(ActivityOnTop) && !database.isAppUnlocked(ActivityOnTop)) {
 
 					if (appLockWindow.isLocked()) {
 						appLockWindow.unlock();
 					}
 
 					appLockWindow.lockApp(ActivityOnTop);
-
+                   /* Intent intent = new Intent(App.getAppContext(), VerifyActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    
+                    startActivity(intent);*/
 				} else {
                     /*
                      if (lockScreen.isLocked()) {

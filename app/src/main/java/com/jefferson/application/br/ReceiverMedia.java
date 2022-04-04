@@ -11,7 +11,7 @@ import com.jefferson.application.br.task.*;
 import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.task.*;
 import android.support.v7.app.AlertDialog;
 import com.jefferson.application.br.activity.MainActivity;
@@ -22,7 +22,7 @@ public class ReceiverMedia extends Activity implements ImportTask.TaskListener {
     public void onPostExecute() {
         Intent intent = new Intent(MainActivity.ACTION_UPDATE);
         sendBroadcast(intent);
-        Debug.toast("send receiver!");
+        JDebug.toast("send receiver!");
     }
 
     @Override

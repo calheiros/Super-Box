@@ -26,7 +26,7 @@ import com.jefferson.application.br.activity.MainActivity;
 import com.jefferson.application.br.adapter.AlbumAdapter;
 import com.jefferson.application.br.database.PathsData;
 import com.jefferson.application.br.task.DeleteFilesTask;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.RandomString;
 import com.jefferson.application.br.util.Storage;
 import java.io.File;
@@ -233,7 +233,7 @@ public class AlbumFragment extends Fragment {
         File file = new File(model.getPath());
         String id = file.getName();
         String folderName = folderDatabase.getFolderName(id, folderType);
-        Debug.toast("ID => " + folderName + "\n NAME => " + model.getName());
+        JDebug.toast("ID => " + folderName + "\n NAME => " + model.getName());
         String newFolderId = folderDatabase.getFolderId(newName, folderType);
 
         if (folderName != null && folderName.equals(newName)) {

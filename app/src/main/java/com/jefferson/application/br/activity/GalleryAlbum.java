@@ -21,7 +21,7 @@ import com.jefferson.application.br.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.adapter.PhotosFolderAdapter;
 import java.util.ArrayList;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.model.MediaModel;
 import java.util.concurrent.TimeUnit;
 

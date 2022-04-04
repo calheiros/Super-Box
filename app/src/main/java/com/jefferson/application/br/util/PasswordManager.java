@@ -12,17 +12,14 @@ import java.util.Scanner;
 public class PasswordManager {
 
     public File file;
-    public Context context;
     private SharedPreferences sharedPrefers;
-
     private static final String PIN_KEY = "pin_key";
-
     private static String PATTERN_KEY = "pattern";
 
-    public PasswordManager(Context context) {
-        this.context = context;
+    public PasswordManager() {
+        
         this.file = new File(Storage.getInternalStorage(), ".SECRETY_KEY");
-        this.sharedPrefers = context.getSharedPreferences(context.getPackageName() + "_preferences", context.MODE_PRIVATE);
+        this.sharedPrefers = MyPreferences.getSharedPreferences();
     }
 
     public void setPasswordToFile(String password) {

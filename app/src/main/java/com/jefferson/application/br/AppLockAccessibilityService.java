@@ -39,7 +39,7 @@ public class AppLockAccessibilityService extends android.accessibilityservice.Ac
         if (activityOnTop.equals(Utils.getTopActivityApplication()) && !activityOnTop.equals(pActivity)) {
 			pActivity = activityOnTop;
 			
-			if (appsDb.getLockedApps().contains(activityOnTop) && !appsDb.isAppUnlocked(activityOnTop)) {
+			if (appsDb.getLockedPackages().contains(activityOnTop) && !appsDb.isAppUnlocked(activityOnTop)) {
 				if (window.isLocked()) {
 					window.unlock();
 				}
@@ -47,8 +47,8 @@ public class AppLockAccessibilityService extends android.accessibilityservice.Ac
 			} else {
 				
 				if (window.isLocked()) {
-					Debug.toast(event.getClassName().toString());
-                    Debug.toast(event.eventTypeToString(event.getEventType()));
+					JDebug.toast(event.getClassName().toString());
+                    JDebug.toast(event.eventTypeToString(event.getEventType()));
 
                     
 					window.unlock();

@@ -3,24 +3,14 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:paddingLeft="20dp"
-	android:paddingRight="20dp"
-	android:paddingTop="20dp"
 	android:orientation="vertical"
 	android:background="@color/colorPrimary">
 
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:orientation="vertical"
-		android:layout_weight="1">
-
 		<LinearLayout
-			android:layout_height="160dp"
+			android:layout_height="wrap_content"
+            android:layout_weight="1.0"
 			android:layout_width="match_parent"
-			android:orientation="horizontal"
-			android:gravity="center"
-			android:minHeight="50dp">
+			android:gravity="center">
 
 			<TextView
 				android:id="@+id/pattern_text"
@@ -31,36 +21,42 @@
 				android:gravity="center"/>
 
 		</LinearLayout>
+        
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:gravity="bottom">
 
-		<com.jefferson.application.br.MaterialLockView
-			xmlns:lockview="http://schemas.android.com/apk/res-auto"
-			android:id="@+id/pattern"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:layout_alignParentBottom="true"
-			lockview:LOCK_COLOR="#fff"
-			lockview:WRONG_COLOR="#ff0000"
-			lockview:CORRECT_COLOR="#11DD61"
-			android:layout_gravity="bottom|center_horizontal"/>
+            <com.jefferson.application.br.MaterialLockView
+                xmlns:lockview="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/pattern"
+                android:padding="25dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_alignParentBottom="true"
+                lockview:LOCK_COLOR="#fff"
+                lockview:WRONG_COLOR="#ff0000"
+                lockview:CORRECT_COLOR="#11DD61"
+                android:layout_gravity="bottom|center_horizontal"/>
+        </LinearLayout>
+   
+    <LinearLayout
+        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_gravity="bottom"
+        android:gravity="right">
 
-	</LinearLayout>
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_height="50dp"
+            android:layout_width="wrap_content"
+            android:text="@string/concluir"
+            android:layout_gravity="center"
+            android:id="@+id/bt_pattern"/>
 
-	<LinearLayout
-		android:layout_height="50dp"
-		android:layout_width="match_parent"
-		android:orientation="horizontal"
-		android:layout_gravity="bottom"
-		android:gravity="right">
-
-		<Button
-			style="?android:attr/buttonBarButtonStyle"
-			android:layout_height="50dp"
-			android:layout_width="100dp"
-			android:text="@string/concluir"
-			android:layout_gravity="center"
-			android:id="@+id/bt_pattern"/>
-
-	</LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>
 

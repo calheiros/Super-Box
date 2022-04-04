@@ -17,6 +17,7 @@ import com.jefferson.application.br.activity.SelectionActivity;
 import java.util.ArrayList;
 import android.os.Build;
 import android.util.Log;
+import android.widget.RelativeLayout;
 
 public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
 
@@ -72,7 +73,7 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
             mViewHolder.tv_foldern = (TextView) convertView.findViewById(R.id.tv_folder);
             mViewHolder.tv_foldersize = (TextView) convertView.findViewById(R.id.tv_folder2);
             mViewHolder.iv_image = (ImageView) convertView.findViewById(R.id.iv_image);
-			mViewHolder.cd_layout = (CardView) convertView.findViewById(R.id.card_view);
+			mViewHolder.cd_layout = (RelativeLayout) convertView.findViewById(R.id.adapter_photosfolderParentView);
 			mViewHolder.play_view = (ImageView) convertView.findViewById(R.id.play_view);
             mViewHolder.cd_layout.setOnClickListener(new OnClickListener(){
 
@@ -114,7 +115,7 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
     private static class ViewHolder {
         TextView tv_foldern, tv_foldersize;
         ImageView iv_image;
-		CardView cd_layout;
+		RelativeLayout cd_layout;
 		ImageView play_view;
     }
 }

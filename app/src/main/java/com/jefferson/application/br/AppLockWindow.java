@@ -24,10 +24,9 @@ public class AppLockWindow {
     private boolean isLocked;
 	private AppsDatabase database;
 	private ImageView image_icon;
-	private View lastView;
 
 	public AppLockWindow(final Context context, final AppsDatabase db) {
-      
+
 	    this.context = context;
         this.database = db;
 
@@ -39,7 +38,7 @@ public class AppLockWindow {
 			WindowManager.LayoutParams.MATCH_PARENT,
 			WindowManager.LayoutParams.MATCH_PARENT,
             layoutParamsType,
-			(WindowManager.LayoutParams.FLAG_FULLSCREEN | 
+			(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | 
             WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON	|
             WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD) ,
@@ -51,32 +50,57 @@ public class AppLockWindow {
 		createView();
 	}
 
-	private View getView(FrameLayout mLayout) {
+	private View createParentView() {
+
         RelativeLayout layout = new RelativeLayout(context) {
-          
+
             @Override
             public void onAttachedToWindow() {
                 super.onAttachedToWindow();
             }
-            
+
             @Override 
             public boolean onKeyDown(int k, KeyEvent event) { 
-                Toast.makeText(context,"KEY CODE: " + event.getKeyCode(),1).show();
+                Toast.makeText(context, "KEY CODE: " + event.getKeyCode(), 1).show();
                 if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
                     // < your action > 
-                    
+                    if (startDefaultLauncher()) {
+                        unlock();
+                    }
+                    JDebug.toast("Back pressed!");
                     return true; 
                 } 
                 return super.dispatchKeyEvent(event); 
             }
+
+            private boolean startDefaultLauncher() {
+
+                try {
+                    Intent intent = new Intent(Intent.ACTION_MAIN);
+                    intent.addCategory(Intent.CATEGORY_HOME);
+                    String name = context.getPackageManager().queryIntentActivities(
+                        new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME),
+                        PackageManager.MATCH_DEFAULT_ONLY).get(0).activityInfo.packageName; 
+                    intent.setPackage(name);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    context.startActivity(intent);
+                } catch (Exception e) {
+                    JDebug.toast(e.getMessage());
+                    return false;
+                }
+
+                return true;
+            }
         };
-        
-		View v = LayoutInflater.from(context).inflate(R.layout.pattern, mLayout);
-        layout.addView(v);
+
+        layout.setFocusable(true);
+		View view = LayoutInflater.from(context).inflate(R.layout.pattern, null);
+        layout.addView(view);
         return layout;
 	}
 
-	public void refreshView() { 
+	public void refreshView() {
+        View lastView = view;
 		createView();
 
 		if (isLocked()) {
@@ -87,13 +111,8 @@ public class AppLockWindow {
 
 	private void createView() {
 
-		view = getView(getLayout());
-        
-		if (lastView == null) {
-			lastView = view;
-		}
-        
-	    image_icon = (ImageView)view.findViewById(R.id.iconApp);
+		view = createParentView();
+	    image_icon = (ImageView) view.findViewById(R.id.iconApp);
 
 		if (currentApp != null)
 			image_icon.setImageDrawable(getIcon(currentApp));
@@ -137,7 +156,6 @@ public class AppLockWindow {
 
 	public void addView(View view) {
 		windowManager.addView(view, params);
-		lastView = view;
 	}
 
 	public void unlock() {
@@ -160,7 +178,7 @@ public class AppLockWindow {
 
 		public PatternListener(Context context) {
 			this.context = context;
-			this.passManager = new PasswordManager(context);
+			this.passManager = new PasswordManager();
         }
 
 		final Runnable Runnable = new Runnable(){
@@ -192,7 +210,7 @@ public class AppLockWindow {
 			}
 			super.onPatternDetected(pattern, SimplePattern);
 		}
-        
+
 		private Object correctPass() {
 			return passManager.getInternalPassword();
 		}

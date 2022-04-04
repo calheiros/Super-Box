@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import android.widget.RelativeLayout;
 import android.animation.Animator;
 import android.view.animation.Animation;
@@ -88,6 +88,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private MyThread myThread;
     private static final int CHANGE_DIRECTORY_CODE = 3;
     private static final int IMPORT_FROM_GALLLERY_CODE = 6;
+    private String baseNameDirectory = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -376,25 +377,36 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
+
 		if (selectionMode) {
-			getMenuInflater().inflate(R.menu.menu_ok, menu);
-			menu.getItem(0).setTitle(String.valueOf(mAdapter.getSelectedItemCount()));
+
+            if (baseNameDirectory == null) {
+                baseNameDirectory = (title.length() <= 20) ? title + " ( %s )" : title.substring(0, 20) + "... ( %s )";
+            }
+
+			String count = String.valueOf(mAdapter.getSelectedItemCount());
+            mToolbar.setTitle(String.format(baseNameDirectory, count));
 		}
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		if (item.getItemId() != R.id.count_show) {
-			finish();
-			return true;
-		}
+        
+        if (item.getItemId() == android.R.id.home) {
+            if (selectionMode) {
+                exitSelectionMode();
+            } else {
+                finish();
+            }
+        }
 		return false;
 	}
 
 	@Override
 	public void onItemClicked(int item_position) {
-		if (!selectionMode) {
+		
+        if (!selectionMode) {
 			Class<?> mClass = null;
 
 			switch (position) {
@@ -411,12 +423,13 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 					mClass = VideoPlayerActivity.class;
 					Intent intent = new Intent(getApplicationContext(), mClass);
 					intent.putExtra("position", item_position);
-					intent.putExtra("filepath", mAdapter.getArrayListPath());
+					intent.putExtra("filepath", mAdapter.getListItemsPath());
 					startActivityForResult(intent, VIDEO_PLAY_CODE);
 					break;
 			}
 			return;
 		}
+
 		toggleSelection(item_position);
 		invalidateOptionsMenu();
 		switchIcon();
@@ -476,7 +489,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         );
 
         menuLayout.setAnimation(anim);
-        invalidateOptionsMenu();
         fab.hide();
     }
 
@@ -491,7 +503,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		menuLayout.setVisibility(View.GONE);
         int dimen = (int)getResources().getDimension(R.dimen.recycler_view_padding);
         mRecyclerView.setPadding(dimen, dimen, dimen, dimen);
-		invalidateOptionsMenu();
+		mToolbar.setTitle(title);
         fab.show();
     }
 
@@ -616,7 +628,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     e.printStackTrace();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Debug.toast(e.getMessage());
+                    JDebug.toast(e.getMessage());
                 }
 
             } 

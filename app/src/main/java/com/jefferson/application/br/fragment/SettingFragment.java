@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import android.view.View.OnLongClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Adapter;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.Color;
 import android.widget.TextView;

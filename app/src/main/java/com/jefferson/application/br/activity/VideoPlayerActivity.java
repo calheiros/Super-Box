@@ -15,7 +15,7 @@ import com.jefferson.application.br.App;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.fragment.VideoPlayFragment;
 import java.util.ArrayList;
-import com.jefferson.application.br.util.Debug;
+import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.model.MediaModel;
 import android.support.v4.app.FragmentStatePagerAdapter;
 

@@ -111,7 +111,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
         TextView tv_foldern, tv_foldersize;
         ImageView iv_image;
-		CardView cd_layout;
+		RelativeLayout cd_layout;
 		ImageView play_view;
 
 		public viewHolder(View view) {
@@ -120,7 +120,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 		    tv_foldern = view.findViewById(R.id.tv_folder);
             tv_foldersize = view.findViewById(R.id.tv_folder2);
             iv_image = view.findViewById(R.id.iv_image);
-			cd_layout = view.findViewById(R.id.card_view);
+			cd_layout = view.findViewById(R.id.adapter_photosfolderParentView);
 			play_view = view.findViewById(R.id.play_view);
 
 		}

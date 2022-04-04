@@ -6,7 +6,6 @@
 	android:id="@+id/main_linear_layout"
 	android:layout_height="match_parent">
 
-
     <android.support.design.widget.AppBarLayout
         android:id="@+id/tabanim_appbar"
         android:layout_width="match_parent"
@@ -48,7 +47,6 @@
                 android:textColor="@color/item_normal"
                 android:id="@+id/emptyTextView"
                 android:layout_marginTop="14dp"/>
-
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
@@ -75,8 +73,8 @@
             android:background="?attr/selectableItemBackground"
             android:layout_height="40dp"
             android:layout_width="0dp"
-            android:padding="5dp"
-            android:src="@drawable/ic_unluck_item"/>
+            android:padding="6dp"
+            android:src="@drawable/ic_lock_open_variant"/>
 
         <ImageView
             android:tint="@color/item_normal"

@@ -23,7 +23,7 @@ public class AppsAdapter extends BaseAdapter {
         this.mActivity = mActivity;
 		this.models = models; 
 		this.database = new AppsDatabase(mActivity);
-        this.selection = database.getLockedApps();
+        this.selection = database.getLockedPackages();
 		inflater = (LayoutInflater) mActivity
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}

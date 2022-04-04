@@ -37,8 +37,8 @@
 			android:gravity="center">
 
 			<ImageView
-				android:layout_height="65dp"
-				android:layout_width="65dp"
+				android:layout_height="50dp"
+				android:layout_width="50dp"
 				android:id="@+id/iconApp"
 				android:src="@drawable/ic_super"
 				android:layout_centerHorizontal="true"
