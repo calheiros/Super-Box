@@ -33,6 +33,7 @@ public class Camera extends MyCompatActivity implements SurfaceHolder.Callback {
 
 		}
 	};
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,6 +70,7 @@ public class Camera extends MyCompatActivity implements SurfaceHolder.Callback {
 			mCamera = null;
 		}
 	}
+    
 	private void initRecorder() {
 		mRecorder = new MediaRecorder();
 		mCamera.unlock();

@@ -22,6 +22,7 @@ import android.widget.VideoView;
 import com.jefferson.application.br.R;
 import java.io.File;
 import com.jefferson.application.br.util.Debug;
+import com.bumptech.glide.Glide;
 
 public class VideoPlayFragment extends Fragment implements OnTouchListener, OnClickListener {
 
@@ -34,7 +35,7 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
     private View overlayView;
     private View playButton;
     private Bitmap bmp;
-    
+
     public VideoPlayFragment(String videoPath) {
         this.videoPath = videoPath;
     }
@@ -65,8 +66,9 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
                 Toast.makeText(getContext(), "File does not exists " + videoPath, 1).show();
                 return parentView;
             }
+            //loadThumbnail(videoPath);
+            Glide.with(this).load(file).into(mThumbView);
 
-            loadThumbnail(videoPath);
             overlayView.setOnClickListener(this);
             mediaController = new MediaController(getActivity());
             mediaController.setAnchorView(parentView);
@@ -95,47 +97,39 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
             );
 
             if (playOnCreate) {
-                startVideoReproduction();
+                Debug.toast("play on create!");
+                startVideo();
             }
         }
-
+        
+        Glide.with(this).load("file://" + videoPath).into(mThumbView);
+        
         return parentView;
     }
 
-    @Override 
-    public void setUserVisibleHint(boolean isVisibleToUser) { 
-        super.setUserVisibleHint(isVisibleToUser); 
-
-        if (!isVisibleToUser) {
-            showVideoOverlay();
-            stop();
-        }
-    }
-
-    private void loadThumbnail(final String path) {
-
-        final Handler handler = new Handler() {
-            public void 
-            dispatchMessage(Message msf) {
-                mThumbView.setImageBitmap(bmp);
-            }
-        };
-
-        new Thread(){
-            @Override
-            public void run() {
-                bmp = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.FULL_SCREEN_KIND);
-                handler.sendEmptyMessage(0);
-            }
-        }.start();
-    }
+//    @Override 
+//    public void setUserVisibleHint(boolean isVisibleToUser) { 
+//        super.setUserVisibleHint(isVisibleToUser); 
+//        
+//        if(parentView == null) {
+//            return;
+//        }
+//        
+//        if (!isVisibleToUser && isResumed()) {
+//
+//           showVideoOverlay();
+//           stop();
+//        }
+//    }
+//
 
     @Override
     public void onClick(View view) {
-        startVideoReproduction();
+        startVideo();
     }
 
     private void hideVideoOverlay() {
+
         if (overlayView != null && overlayView.getVisibility() != View.GONE) {
             overlayView.setVisibility(View.GONE);
         }
@@ -155,14 +149,12 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
         return false;
     }
 
-    public void startVideoReproduction() {
+    public void startVideo() {
         hideVideoOverlay();
 
         if (mVideoView != null) {
             mVideoView.setVideoURI(Uri.parse(videoPath));
             mVideoView.start();
-            mVideoView.requestFocus();
-
         }
     }
 
@@ -170,16 +162,14 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
     public void onPause() {
 
         if (mVideoView != null) {
-            if (mVideoView.isPlaying()) {
-                stop();
-            } 
-            showVideoOverlay();
+            stop();
         }
 
         super.onPause();
     }
 
     public void stop() {
+        showVideoOverlay();
 
         if (mVideoView != null && mVideoView.isPlaying()) {
             mVideoView.stopPlayback();

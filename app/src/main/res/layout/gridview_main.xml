@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:orientation="vertical"
 	android:id="@+id/main_linear_layout"
 	android:layout_height="match_parent">
 
-	<android.support.design.widget.AppBarLayout
-		android:id="@+id/tabanim_appbar"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-		<include
-			layout="@layout/toolbar"/>
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/tabanim_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-	</android.support.design.widget.AppBarLayout>
+        <include
+            layout="@layout/toolbar"/>
 
-	<RelativeLayout
-		android:layout_height="match_parent"
-		android:layout_weight="1"
-		android:layout_width="match_parent">
-        
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/tabanim_appbar"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_width="match_parent">
+
         <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="match_parent"
@@ -30,7 +32,7 @@
             android:gravity="center_horizontal"
             android:id="@+id/view_album_empty_view"
             android:layout_height="match_parent">
-            
+
             <TextView
                 android:layout_marginTop="35dp"
                 android:text="@string/ascii_dead_face"
@@ -46,74 +48,75 @@
                 android:textColor="@color/item_normal"
                 android:id="@+id/emptyTextView"
                 android:layout_marginTop="14dp"/>
-            
+
         </LinearLayout>
-        
-		<android.support.v7.widget.RecyclerView
-			android:id="@+id/my_recycler_view"
-			android:scrollbars="vertical"
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			android:padding="1dp"/>
-        
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/view_album_fab_button"
-            android:layout_alignParentBottom="true"
-			android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_plus"
-            android:layout_margin="16dp" />
-	</RelativeLayout>
 
-	<LinearLayout
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/my_recycler_view"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="1dp"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
         android:background="#FF0F0E0E"
-		android:id="@+id/lock_layout"
-		android:visibility="gone"
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent">
+        android:id="@+id/lock_layout"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
 
-		<ImageView
+        <ImageView
             android:tint="@color/item_normal"
-			android:layout_weight="1.0"
-			android:id="@+id/unlockView"
-			android:background="?attr/selectableItemBackground"
-			android:layout_height="40dp"
-			android:layout_width="0dp"
-			android:padding="5dp"
-			android:src="@drawable/ic_unluck_item"/>
+            android:layout_weight="1.0"
+            android:id="@+id/unlockView"
+            android:background="?attr/selectableItemBackground"
+            android:layout_height="40dp"
+            android:layout_width="0dp"
+            android:padding="5dp"
+            android:src="@drawable/ic_unluck_item"/>
 
-		<ImageView
+        <ImageView
             android:tint="@color/item_normal"
-			android:layout_weight="1.0"
-			android:background="?attr/selectableItemBackground"
-			android:layout_height="40dp"
-			android:layout_width="0dp"
-			android:padding="6dp"
-			android:id="@+id/deleteView"
-			android:src="@drawable/ic_delete_all"/>
+            android:layout_weight="1.0"
+            android:background="?attr/selectableItemBackground"
+            android:layout_height="40dp"
+            android:layout_width="0dp"
+            android:padding="6dp"
+            android:id="@+id/deleteView"
+            android:src="@drawable/ic_delete_all"/>
 
-		<ImageView
+        <ImageView
             android:tint="@color/item_normal"
-			android:layout_weight="1.0"
-			android:background="?attr/selectableItemBackground"
-			android:layout_height="40dp"
-			android:layout_width="0dp"
-			android:id="@+id/moveView"
-			android:padding="5dp"
-			android:src="@drawable/ic_move_item"/>
+            android:layout_weight="1.0"
+            android:background="?attr/selectableItemBackground"
+            android:layout_height="40dp"
+            android:layout_width="0dp"
+            android:id="@+id/moveView"
+            android:padding="5dp"
+            android:src="@drawable/ic_move_item"/>
 
-		<ImageView
+        <ImageView
             android:tint="@color/item_normal"
-			android:layout_weight="1.0"
-			android:background="?attr/selectableItemBackground"
-			android:layout_height="40dp"
-			android:layout_width="0dp"
-			android:id="@+id/selectView"
-			android:padding="5dp"
-			android:src="@drawable/ic_select_all"/>
+            android:layout_weight="1.0"
+            android:background="?attr/selectableItemBackground"
+            android:layout_height="40dp"
+            android:layout_width="0dp"
+            android:id="@+id/selectView"
+            android:padding="5dp"
+            android:src="@drawable/ic_select_all"/>
 
-	</LinearLayout>
+    </LinearLayout>
 
-</LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/view_album_fab_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_plus"
+        android:layout_margin="16dp" />
+</RelativeLayout>
 

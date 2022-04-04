@@ -58,7 +58,8 @@ public class HardwareKeyWatcher
                         } else if (reason.equals(SYSTEM_DIALOG_REASON_RECENT_APPS)) {
                             mListener.onRecentAppsPressed();
                         }
-                    }}
+                    }
+               }
             }
         }}
 	}

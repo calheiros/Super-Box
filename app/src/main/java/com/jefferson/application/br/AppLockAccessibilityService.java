@@ -15,7 +15,7 @@ public class AppLockAccessibilityService extends android.accessibilityservice.Ac
 	private String activityOnTop;
 	public static String pActivity="";
 	AppsDatabase appsDb;
-	private WindowLockApps window;
+	private AppLockWindow window;
 
 	private ScreenOnOff mybroadcast;
 
@@ -24,7 +24,7 @@ public class AppLockAccessibilityService extends android.accessibilityservice.Ac
 		super.onCreate();
 		
 		appsDb = new AppsDatabase(this);
-		window = new WindowLockApps(this, appsDb);
+		window = new AppLockWindow(this, appsDb);
 		mybroadcast = new ScreenOnOff();
 
 		registerReceiver(mybroadcast, new IntentFilter(Intent.ACTION_SCREEN_ON));

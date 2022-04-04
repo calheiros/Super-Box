@@ -12,7 +12,7 @@ import com.jefferson.application.br.widget.*;
 import java.util.*;
 import com.jefferson.application.br.util.*;
 
-public class WindowLockApps {
+public class AppLockWindow {
 
 	private Context context;
 	private WindowManager windowManager;
@@ -22,14 +22,14 @@ public class WindowLockApps {
 	private String currentApp;
 	private MaterialLockView materialLockView;
     private boolean isLocked;
-	private AppsDatabase db;
+	private AppsDatabase database;
 	private ImageView image_icon;
 	private View lastView;
 
-	public WindowLockApps(final Context context, final AppsDatabase db) {
-        // orientation.enable();
+	public AppLockWindow(final Context context, final AppsDatabase db) {
+      
 	    this.context = context;
-        this.db = db;
+        this.database = db;
 
         int layoutParamsType = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? 
             WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY:
@@ -39,7 +39,10 @@ public class WindowLockApps {
 			WindowManager.LayoutParams.MATCH_PARENT,
 			WindowManager.LayoutParams.MATCH_PARENT,
             layoutParamsType,
-			WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+			(WindowManager.LayoutParams.FLAG_FULLSCREEN | 
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | 
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON	|
+            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD) ,
 			PixelFormat.RGBX_8888);
 
 		params.windowAnimations = android.R.style.Animation_Dialog;
@@ -85,9 +88,11 @@ public class WindowLockApps {
 	private void createView() {
 
 		view = getView(getLayout());
+        
 		if (lastView == null) {
 			lastView = view;
 		}
+        
 	    image_icon = (ImageView)view.findViewById(R.id.iconApp);
 
 		if (currentApp != null)
@@ -181,15 +186,15 @@ public class WindowLockApps {
 			} else {
 				unlock();
 				materialLockView.clearPattern();
-				db.addUnlockedApp(currentApp);
+				database.addUnlockedApp(currentApp);
                 Toast.makeText(context, "A aplicação continuará desbloqueada até que a tela seja desligada!", Toast.LENGTH_LONG).show();
 
 			}
 			super.onPatternDetected(pattern, SimplePattern);
 		}
-
+        
 		private Object correctPass() {
-			return passManager.getPassword();
+			return passManager.getInternalPassword();
 		}
 	}
 }

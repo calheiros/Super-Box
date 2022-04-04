@@ -114,7 +114,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     break;
                 case 5:
                     item.item_name = getString(R.string.modo_secreto);
-                    item.icon_id = R.drawable.ic_android;
+                    item.icon_id = R.drawable.ic_drama_masks;
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE;
                     item.description = getString(R.string.ocultar_descricao);
                     break;
@@ -147,12 +147,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         if (position == 8) {
             Intent intent = new Intent(getContext(), DeveloperActivity.class);
             getActivity().startActivity(intent);
-            /*
-             boolean debug = Debug.isDebugOn();
-             Debug.setDebug(!debug);
-             String msg = debug ? "Debug mode disabled!": "Debug mode enabled!";
-             Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
-             */
             return true;
         }
         return false;

@@ -30,18 +30,19 @@ public class AppsAdapter extends BaseAdapter {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
-		
-        if (convertView == null) 
+
+        if (convertView == null) {
 			view = inflater.inflate(R.layout.list_item, null);
-
+        }
+        
 	    AppModel info = models.get(position);
-		ImageView mImageView = (ImageView) view.findViewById(R.id.iconeApps);
-		TextView mTextView = (TextView) view.findViewById(R.id.app_name);
-		CheckWidget mCheckView = (CheckWidget) view.findViewById(R.id.check1);
+		ImageView imageView = (ImageView) view.findViewById(R.id.iconeApps);
+		TextView textView = (TextView) view.findViewById(R.id.app_name);
+		CheckWidget checkView = (CheckWidget) view.findViewById(R.id.check1);
 
-		mImageView.setImageDrawable(info.icon);
-		mTextView.setText(info.appname);
-		mCheckView.setChecked(selection.contains(info.pname));
+		imageView.setImageDrawable(info.icon);
+		textView.setText(info.appname);
+		checkView.setChecked(selection.contains(info.pname));
 
 		return view;
     }

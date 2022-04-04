@@ -51,6 +51,9 @@
     <!-- tirar fotos e gravar vídeos -->
     <uses-permission android:name="android.permission.CAMERA"/>
 
+    <!-- executar serviço em primeiro plano -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
     <uses-permission
         android:name="READ_PHONE_STATE"
         android:maxSdkVersion="29"/>
@@ -157,11 +160,9 @@
 
         </activity-alias>
 
-        <activity 
-            android:name=".activity.Camera"/>
+        <activity android:name=".activity.Camera"/>
 
-        <activity 
-            android:name=".activity.FilePicker"/>
+        <activity android:name=".activity.FilePicker"/>
 
         <activity
             android:name=".activity.CreatePattern"

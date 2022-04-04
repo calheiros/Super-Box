@@ -16,10 +16,10 @@ import java.io.*;
 import java.util.*;
 
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.util.PasswordManager;
 
 public class VerifyActivity extends android.support.v7.app.AppCompatActivity {  
 
-	private SharedPreferences settings;
 	private Runnable Runnable;
 	private Handler Handler;
 	private MaterialLockView materialLockView;
@@ -30,13 +30,9 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pattern);
 	    LocaleManager.configureLocale(this);
-
-		settings = getSharedPreferences("config", MODE_PRIVATE);
-        password = settings.getString("pattern", "");
-
+        password = new PasswordManager(this).getInternalPassword();
 		checkPassword();
-		getWindow().addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        
+		
         if (com.jefferson.application.br.util.Debug.isDebugOn()) {
             Intent intent = new Intent(this, PinActivity.class);
             startActivity(intent);

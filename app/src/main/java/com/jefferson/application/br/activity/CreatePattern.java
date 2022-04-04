@@ -13,22 +13,22 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
 import com.jefferson.application.br.MaterialLockView;
-import com.jefferson.application.br.PasswordManager;
+import com.jefferson.application.br.util.PasswordManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MyCompatActivity;
 import java.util.List;
+import com.jefferson.application.br.util.Debug;
+import android.provider.Settings;
 
 public class CreatePattern extends MyCompatActivity {
 
-	private SharedPreferences settings;
-	private SharedPreferences.Editor editor;
 	private String password = null;
 	public static final String ENTER_FIST_CREATE = "fist_create";
 	public static final String ENTER_RECREATE = "recreate";
 	private Handler handler;
 	private Runnable runnable;
-	private Handler handlerC;
-	private Runnable runnableC;
+	private Runnable clearRunnable;
+    private Handler clearHandler;
 	private String action;
 	private MaterialLockView materialLockView;
     private PasswordManager passwordManager;
@@ -51,13 +51,11 @@ public class CreatePattern extends MyCompatActivity {
 
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
-        settings = getSharedPreferences("config", MODE_PRIVATE);
-		editor = settings.edit();
-
+        
 		materialLockView.setOnPatternListener( new MaterialLockView.OnPatternListener() {
                 public void onPatternStart() {
-					if (runnableC != null && handlerC != null) {
-						handlerC.removeCallbacks(runnableC);
+					if (clearRunnable != null && clearHandler != null) {
+						clearHandler.removeCallbacks(clearRunnable);
 					}
 					text.setText(getString(R.string.solte_para_terminar));
                 }
@@ -109,19 +107,21 @@ public class CreatePattern extends MyCompatActivity {
 
 				@Override
 				public void onClick(View v) {
-
-					editor.putString("pattern", password).commit();
+                    
 					passwordManager.setPassword(password);
 
 					if (action == ENTER_FIST_CREATE) { 
 						requestPermission();
-					} else if (action == ENTER_RECREATE)
+					} else if (action == ENTER_RECREATE) {
 						finish();
-				    else throw new NullPointerException("Action desconhecida");
+				    } else {
+                        Debug.toast("AÇÃO DESCONHECIDA!");
+                    }
 				}
             }
         );
 	}
+    
     public void requestPermission() {
 
         if (ContextCompat.checkSelfPermission(this,
@@ -134,7 +134,8 @@ public class CreatePattern extends MyCompatActivity {
                 // Show an explanation to the user *asynchronously* -- don't block
                 // this thread waiting for the user's response! After the user
                 // sees the explanation, try again to request the permission.
-                Intent intent = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.putExtra("package", getPackageName());
                 startActivity(intent);
 
             } else {
@@ -150,16 +151,17 @@ public class CreatePattern extends MyCompatActivity {
             finish();
         }
 	}
+    
     private void clearPattern() {
-		handlerC = new Handler();
-		runnableC = new Runnable(){
+		clearHandler = new Handler();
+		clearRunnable = new Runnable(){
 
 			@Override
 			public void run() {
 				materialLockView.clearPattern();
 			}
 		};
-		handlerC.postDelayed(runnableC, 1500);
+		clearHandler.postDelayed(clearRunnable, 1500);
 	}
 
 	@Override

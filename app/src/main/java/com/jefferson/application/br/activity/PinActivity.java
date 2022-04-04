@@ -74,17 +74,19 @@ public class PinActivity extends Activity implements OnLongClickListener {
         return true;
     }
 
-    private void checkPasswordVality() {
-        String password = editText.getText().toString();
+    private boolean isValidePassword(String password) {
         
         if ( password.length() < 4 ) {
-            
+            Toast.makeText(this, "", Toast.LENGTH_LONG).show();
+            return false;
         }
         
         if ( password.length() > 20 ) {
-            
+            Toast.makeText(this, "", Toast.LENGTH_LONG).show();
+            return false;
         }
-       
+        
+       return true;
     }
     
     public void backspace(View v) {
@@ -93,6 +95,7 @@ public class PinActivity extends Activity implements OnLongClickListener {
 
         if (size > 0) {
             editText.setText(text.substring(0, size - 1));
+            editText.setSelection(size -1);
         }
     }
 }
