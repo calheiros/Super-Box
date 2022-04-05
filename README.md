@@ -1,3 +1,3 @@
 # Super-Box
 
-Cofre para proteger conteúdo sensível.
+Hide what you want!
