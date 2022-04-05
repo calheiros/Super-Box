@@ -120,6 +120,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.DefaultTheme);
         this.instante = this;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
@@ -131,8 +132,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		if (savedInstanceState != null) {
 			startActivity(new Intent(this, VerifyActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
+        
         createFragments();
-		initGoogleAdView();
+		createAdView();
 		createInterstitial();
         createReceiver();
 	}
@@ -150,7 +152,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         registerReceiver(receiver, filter);
     }
 
-	private void initGoogleAdView() {
+	private void createAdView() {
         MobileAds.initialize(this);
         adview = (AdView)findViewById(R.id.ad_view);
 		adview.loadAd(new AdRequest.Builder().build());
@@ -300,6 +302,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                     activityNotFound();
                 }
 		}
+        
 		drawerLayout.closeDrawer(GravityCompat.START);
 		return true;
 	}

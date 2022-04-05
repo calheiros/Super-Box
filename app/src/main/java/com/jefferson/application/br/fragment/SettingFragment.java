@@ -162,7 +162,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 				getActivity().startActivity(intent);
 				break;
 			case 2:
-				showDialog();
+				showLanguageDialog();
 				break;
 			case 5:
 				Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
@@ -343,7 +343,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         );
 	}
 
-	private void showDialog() {
+	private void showLanguageDialog() {
 
         final CharSequence[] itens = {"Português(Brasil)","English","Español"};
 
@@ -365,11 +365,13 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 							locale = "es";
 							break;
 					}
+                    
 					LocaleManager.setNewLocale(getContext(), locale);
 					Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
 					intent.setAction(MainActivity.ACTION_INIT_WITH_PREFERENCES);
 					startActivity(intent);
+                    getActivity().overridePendingTransition(0, 0);
 				}
             }
         );

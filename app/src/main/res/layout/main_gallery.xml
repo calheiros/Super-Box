@@ -23,7 +23,7 @@
 		android:layout_width="match_parent"
 		android:orientation="vertical"
         android:visibility="gone"
-		android:gravity="center_horizontal">
+        android:gravity="center_horizontal">
         
         <!--
 		<ImageView
@@ -35,10 +35,10 @@
 			android:alpha="0.6"/>
         -->
         <TextView
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="35dp"
             android:text="¯\\_(ツ)_/¯"
-            android:textSize="18pt"
-            android:textColor="@color/item_normal"
+            android:textSize="40dp"
+            android:textColor="@color/item_normalDark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
   
@@ -47,9 +47,9 @@
 			android:textAppearance="?android:attr/textAppearanceMedium"
 			android:layout_width="wrap_content"
 			android:text="@string/vazio"
-			android:textColor="@color/item_normal"
+			android:textColor="@color/item_normalDark"
 			android:id="@+id/emptyTextView"
-			android:layout_marginTop="15dp"/>
+			android:layout_marginTop="14dp"/>
 
 	</LinearLayout>
 

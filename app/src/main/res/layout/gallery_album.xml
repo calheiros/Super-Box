@@ -44,8 +44,8 @@
 
         <TextView
             android:text="@string/ascii_look_of_disapproval"
-            android:textSize="18pt"
-            android:textColor="@color/item_normal"
+            android:textSize="40dp"
+            android:textColor="@color/item_normalDark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -54,7 +54,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:layout_width="wrap_content"
             android:text="@string/galeria_vazia"
-            android:textColor="@color/item_normal"
+            android:textColor="@color/item_normalDark"
             android:id="@+id/emptyTextView"
             android:layout_marginTop="14dp"/>
         

@@ -121,7 +121,7 @@ public class PrivateContacts extends AppCompatActivity
         switch (item.getItemId())
 		{
             case 0:
-				Intent intent = new Intent(this, ContatosActvity.class);
+				Intent intent = new Intent(this, ContactsActivity.class);
                 startActivityForResult(intent, 0);
                 return true;
             default:

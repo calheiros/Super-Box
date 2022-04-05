@@ -35,8 +35,8 @@
             <TextView
                 android:layout_marginTop="35dp"
                 android:text="@string/ascii_dead_face"
-                android:textSize="18pt"
-                android:textColor="@color/item_normal"
+                android:textSize="40dp"
+                android:textColor="@color/item_normalDark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
             <TextView
@@ -44,7 +44,7 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:layout_width="wrap_content"
                 android:text="@string/vazio"
-                android:textColor="@color/item_normal"
+                android:textColor="@color/item_normalDark"
                 android:id="@+id/emptyTextView"
                 android:layout_marginTop="14dp"/>
         </LinearLayout>

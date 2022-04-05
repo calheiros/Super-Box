@@ -10,6 +10,7 @@ import android.widget.Switch;
 import android.widget.CompoundButton;
 import android.widget.Toast;
 import com.jefferson.application.br.util.JDebug;
+import com.jefferson.application.br.ContactsActivity;
 
 public class DeveloperActivity extends MyCompatActivity {
     
@@ -47,6 +48,15 @@ public class DeveloperActivity extends MyCompatActivity {
         simple.setPositiveButton("ok", null);
         simple.setNegativeButton("cancelar", null);
         simple.show();
+    }
+    
+    public void contacts(View v){      
+        startActivity(new Intent(this, ContactsActivity.class));
+    }
+    
+    public void notification(View v) {
+        Intent inten = new Intent(this, NotificationActivity.class);
+        startActivity(inten);
     }
     
     public void camera (View v){

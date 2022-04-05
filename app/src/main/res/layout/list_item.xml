@@ -37,6 +37,7 @@
 			android:layout_height="34dp"
 			android:focusable="false"
 			android:clickable="false"
+            android:scaleType="fitCenter"
 			android:focusableInTouchMode="false"
 			android:button="@null"
 			android:id="@+id/check1"

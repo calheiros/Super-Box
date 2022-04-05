@@ -26,29 +26,33 @@
 		android:text="Progress Dialog"
 		android:onClick="showProgressDialog"/>
 
-	<Button
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="quit"
-		android:onClick="quit"/>
-
+	
 	<Button
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:text="camera"
 		android:onClick="camera"/>
 
-	<RelativeLayout
-		android:layout_width="match_parent"
-		android:layout_height="match_parent">
+	<Button
+		android:layout_width="wrap_content"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_height="wrap_content"
+		android:text="Contacts"
+		android:onClick="contacts"/>
 
-		<ImageView
-			android:layout_width="60dp"
-			android:layout_height="60dp"
-			android:layout_alignParentBottom="true"
-			android:layout_alignParentRight="true"/>
+	<Button
+		android:layout_width="wrap_content"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_height="wrap_content"
+		android:text="Notification"
+		android:onClick="notification"/>
 
-	</RelativeLayout>
-
+    <Button
+        android:layout_marginTop="15dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="quit"
+        android:onClick="quit"/>
+    
 </LinearLayout>
 

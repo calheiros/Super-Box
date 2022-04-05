@@ -54,6 +54,9 @@
     <!-- executar serviço em primeiro plano -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
+    <!-- BIND_NOTIFICATION_LISTENER_SERVICE -->
+    <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"/>
+
     <uses-permission
         android:name="READ_PHONE_STATE"
         android:maxSdkVersion="29"/>
@@ -91,35 +94,20 @@
 
         </receiver>
 
-        <activity
-            android:name="com.chartboost.sdk.CBImpressionActivity"
-            android:configChanges="keyboardHidden|orientation|screenSize"
-            android:excludeFromRecents="true"
-            android:hardwareAccelerated="true"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"/>
-
-        <activity
-            android:name="com.applovin.adview.AppLovinInterstitialActivity"
-            android:configChanges="orientation|screenSize"/>
-
-        <activity
-            android:name="com.applovin.adview.AppLovinConfirmationActivity"
-            android:configChanges="orientation|screenSize"/>
-
-        <activity
+      <activity
             android:name=".activity.MainActivity"
-            android:label="Galeria"
             android:screenOrientation="portrait"
             android:excludeFromRecents="true"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@style/DefaultTheme"/>
+            android:theme="@style/SplashTheme"/>
 
         <activity
             android:excludeFromRecents="true"
+            android:theme="@style/LauncherTheme"
             android:name=".activity.VerifyActivity">
 
             <intent-filter>
-
+                
                 <action android:name="android.intent.action.MAIN"/>
 
             </intent-filter>
@@ -168,7 +156,7 @@
             android:name=".activity.CreatePattern"
             android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/MainTheme"/>
+            android:theme="@style/LauncherTheme"/>
 
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
@@ -198,7 +186,11 @@
             android:theme="@style/MainTheme"/>
 
         <activity
-            android:name=".ContatosActvity"
+            android:name=".activity.NotificationActivity"
+            android:screenOrientation="portrait"/>
+
+        <activity
+            android:name=".ContactsActivity"
             android:screenOrientation="portrait"/>
 
         <activity
@@ -288,6 +280,19 @@
             <meta-data
                 android:name="android.accessibilityservice"
                 android:resource="@xml/accessibility_service_config"/>
+
+        </service>
+
+        <service
+            android:name=".service.NotificationListener"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+
+            <intent-filter>
+
+                <action android:name="android.service.notification.NotificationListenerService"/>
+
+            </intent-filter>
 
         </service>
 

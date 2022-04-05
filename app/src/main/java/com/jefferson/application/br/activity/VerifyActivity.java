@@ -24,27 +24,27 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 	private Handler Handler;
 	private MaterialLockView materialLockView;
 	private String password;
-
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+        checkPassword();
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pattern);
 	    LocaleManager.configureLocale(this);
-        password = new PasswordManager().getInternalPassword();
-		checkPassword();
-		
+        
         if (com.jefferson.application.br.util.JDebug.isDebugOn()) {
             Intent intent = new Intent(this, PinActivity.class);
             startActivity(intent);
         }
+        
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
-		
+
 	    requestPermission();
 
 		Handler = new Handler();
 		Runnable = new Runnable() {
-            
+
 			@Override
 			public void run() {
 				materialLockView.clearPattern();
@@ -65,9 +65,11 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 						Handler.postDelayed(Runnable, 2000);
 					} else {
 						materialLockView.setDisplayMode(MaterialLockView.DisplayMode.Correct);
+                        getWindow().setBackgroundDrawableResource(R.drawable.ic_super);
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
 	                    startActivity(intent);
+                        overridePendingTransition(0,0);
                     }
 					super.onPatternDetected(pattern, SimplePattern);
 
@@ -117,9 +119,12 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 	}
 
 	public void checkPassword() {
+        password = new PasswordManager().getInternalPassword();
+
 		if (password.isEmpty()) {
-			startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-		}
+			startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+            overridePendingTransition(0,0);
+		} 
 	}
 
 	@Override
