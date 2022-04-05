@@ -1,3 +1,3 @@
 # Super-Box
 
-Hide what you want!
+Application to hide sensitive content.
