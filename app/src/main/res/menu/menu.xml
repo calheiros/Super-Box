@@ -1,9 +1,0 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/item1"
-        android:title="scan extSdCard"/>
-	<item
-        android:id="@+id/item2"
-        android:title="scan sdcard"/>
-</menu>

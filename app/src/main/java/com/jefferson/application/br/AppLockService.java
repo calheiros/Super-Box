@@ -22,6 +22,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Notification.Builder;
 import com.jefferson.application.br.activity.VerifyActivity;
+import java.util.ArrayList;
 
 public class AppLockService extends Service {
 
@@ -36,7 +37,8 @@ public class AppLockService extends Service {
 	public static AppLockService self;
 	public static boolean toast = false;
 	public KeyWatcher mHomeWatcher;
-
+    public ArrayList<String> lockedApps;
+    String passedApp = "";
 	@Override
 	public IBinder onBind(Intent intent) {
 		throw new UnsupportedOperationException("operação não implementada");
@@ -49,6 +51,7 @@ public class AppLockService extends Service {
 		database = new AppsDatabase(this);
 		appLockWindow = new AppLockWindow(getApplicationContext(), database);
 		//mLockedApps = mDabase.getLockedApps();
+
 		startService();
 
         mybroadcast = new ScreenOnOff();
@@ -68,7 +71,7 @@ public class AppLockService extends Service {
                 }
             }
         );
-        mHomeWatcher.startWatch();
+        // mHomeWatcher.startWatch();
 		super.onCreate();
 	}
 
@@ -172,29 +175,43 @@ public class AppLockService extends Service {
 		@Override
 		public void handleMessage(Message msg) {
 
-            String ActivityOnTop = com.jefferson.application.br.util.Utils.getTopActivityApplication();
+            lockedApps = database.getLockedPackages();
+            String activityOnTop = com.jefferson.application.br.util.Utils.getRunningPackage();
 
-            if (!ActivityOnTop.equals(pActivity)) {
+            /*if (!appLockWindow.getPassedApp().equals(activityOnTop) && lockedApps.contains(activityOnTop)) {
+             if (appLockWindow.isLocked()) {
+             String name = appLockWindow.getLockePackageName();
+             if (!activityOnTop.equals(name)) {
+             appLockWindow.unlock();
+             appLockWindow.lockApp(activityOnTop);
+             }
+             } else {
+             appLockWindow.lockApp(activityOnTop);
+             }
+             } else if (appLockWindow.isLocked()) {
+             appLockWindow.unlock();
+             }*/
 
-                pActivity = ActivityOnTop;
+            if (!activityOnTop.equals(pActivity)) {
 
-                if (database.getLockedPackages().contains(ActivityOnTop) && !database.isAppUnlocked(ActivityOnTop)) {
+                pActivity = activityOnTop;
+
+                if (database.getLockedPackages().contains(activityOnTop) && !database.isAppUnlocked(activityOnTop)) {
 
 					if (appLockWindow.isLocked()) {
 						appLockWindow.unlock();
 					}
 
-					appLockWindow.lockApp(ActivityOnTop);
-                   /* Intent intent = new Intent(App.getAppContext(), VerifyActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    
-                    startActivity(intent);*/
+					appLockWindow.lockApp(activityOnTop);
+                    /*Intent intent = new Intent(App.getAppContext(), VerifyActivity.class);
+                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    
+                     startActivity(intent);*/
 				} else {
-                    /*
-                     if (lockScreen.isLocked()) {
-                     lockScreen.unlock();
-                     allowRemove = false;
-                     Debug.toast(ActivityOnTop, Toast.LENGTH_LONG);
-                     }*/
+
+                    if (appLockWindow.isLocked() && !activityOnTop.isEmpty()) {
+                        appLockWindow.unlock();
+                        JDebug.toast(activityOnTop, Toast.LENGTH_LONG);
+                    }
 				}
 			}
 		}

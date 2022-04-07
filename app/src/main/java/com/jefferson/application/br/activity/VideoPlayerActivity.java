@@ -38,13 +38,19 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
         @Override
         public void onPageSelected(int position) {
+//            VideoPlayFragment cachedFragment = adpter.getCachedFragment();
+//            
+//            if (cachedFragment != null){
+//                cachedFragment.stop();
+//            }
             VideoPlayFragment lastFragment = pagerAdapter.getItem(lastFragmentPosition);
-           
+
             if (lastFragment != null) {
                 lastFragment.stop();            
             }
 
             lastFragmentPosition = position;
+
         }
 
         @Override
@@ -67,7 +73,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
         ArrayList<String> filesPath = intent.getStringArrayListExtra("filepath");
 
         pagerAdapter = new VideoPagerAdapter(getSupportFragmentManager(), filesPath);
-        viewPager = findViewById(R.id.video_view_pager);
+        viewPager = (ViewPager) findViewById(R.id.video_view_pager);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOnPageChangeListener(new MyPageListerner(pagerAdapter, choice));
         viewPager.setCurrentItem(choice);
@@ -93,6 +99,8 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
         private ArrayList<String> filesPath;
         private VideoPlayFragment[] fragments;
+        private VideoPlayFragment cachedFragment;
+        private VideoPlayFragment currentFragment;
 
         public VideoPagerAdapter(FragmentManager fm, ArrayList<String> paths) {
             super(fm);
@@ -102,15 +110,27 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
         @Override
         public VideoPlayFragment getItem(int position) {
+
+//            VideoPlayFragment fragment = new VideoPlayFragment(filesPath.get(position));
+//            
+//            if (currentFragment == null) {
+//                cachedFragment = fragment;
+//            } else {
+//                cachedFragment = currentFragment;
+//            }
+//            currentFragment = fragment;
             VideoPlayFragment fragment = fragments[position];
 
             if (fragment == null) {
-               return fragments[position] = new VideoPlayFragment(filesPath.get(position));
-               
-             }
-             
+                return fragments[position] = new VideoPlayFragment(filesPath.get(position));
+            }
+
             return fragment;
         }
+
+//        public VideoPlayFragment getCachedFragment() {
+//            return cachedFragment;
+//        }
 
         @Override
         public int getCount() {

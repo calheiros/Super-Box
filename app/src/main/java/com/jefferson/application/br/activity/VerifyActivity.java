@@ -7,16 +7,15 @@ import android.media.*;
 import android.os.*;
 import android.support.v4.app.*;
 import android.support.v4.content.*;
-import android.util.*;
+import android.util.*; 
 import android.view.*;
 import android.widget.*;
 import com.jefferson.application.br.*;
-
 import java.io.*;
 import java.util.*;
-
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.PasswordManager;
+import com.jefferson.application.br.task.JTask;
 
 public class VerifyActivity extends android.support.v7.app.AppCompatActivity {  
 
@@ -24,7 +23,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 	private Handler Handler;
 	private MaterialLockView materialLockView;
 	private String password;
-    
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         checkPassword();
@@ -36,7 +35,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
             Intent intent = new Intent(this, PinActivity.class);
             startActivity(intent);
         }
-        
+
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
 
@@ -69,7 +68,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
 	                    startActivity(intent);
-                        overridePendingTransition(0,0);
+                        overridePendingTransition(0, 0);
                     }
 					super.onPatternDetected(pattern, SimplePattern);
 
@@ -77,6 +76,25 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
             }
         );
 	}
+
+    private boolean canProceed() {
+        String action = getIntent().getAction();
+
+        if (action == null) return false;
+
+        switch (action) {
+            case Intent.ACTION_MAIN:
+                return true;
+            case App.ACTION_OPEN_FROM_DIALER:
+                return true;
+            case App.ACTION_REPORT_CRASH:
+                startActivity(new Intent(this, CrashActivity.class).
+                              addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).
+                              putExtra("message", getIntent().getStringExtra("message")));
+                return false;
+        }
+        return false;
+    }
 
 	private void startPopupMenu(View view) {
 		PopupMenu popMenu = new PopupMenu(this, view);
@@ -123,7 +141,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 
 		if (password.isEmpty()) {
 			startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-            overridePendingTransition(0,0);
+            overridePendingTransition(0, 0);
 		} 
 	}
 

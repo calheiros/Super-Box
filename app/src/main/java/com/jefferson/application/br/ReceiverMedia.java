@@ -16,29 +16,31 @@ import com.jefferson.application.br.task.*;
 import android.support.v7.app.AlertDialog;
 import com.jefferson.application.br.activity.MainActivity;
 
-public class ReceiverMedia extends Activity implements ImportTask.TaskListener {
+public class ReceiverMedia extends Activity implements ImportTask.ImportTaskListener {
 
     @Override
-    public void onPostExecute() {
-        Intent intent = new Intent(MainActivity.ACTION_UPDATE);
-        sendBroadcast(intent);
-        JDebug.toast("send receiver!");
-    }
-
-    @Override
-    public void onPreExecute() {
-
-    }
-
-    @Override
-    public void onDialogDismiss() {
+    public void onInterrupted() {
         finish();
     }
 
     @Override
-    public void OnCancelled() {
+    public void onFinished() {
+        Intent intent = new Intent(MainActivity.ACTION_UPDATE);
+        sendBroadcast(intent);
+        JDebug.toast("send receiver!");
+    }
+   
+    @Override
+    public void onBeingStarted() {
+        
     }
 
+    @Override
+    public void onUserInteration() {
+        finish();
+    }
+
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -66,7 +68,7 @@ public class ReceiverMedia extends Activity implements ImportTask.TaskListener {
 			
             if (model != null) {
 				models.add(model);
-				new ImportTask(this, models, ReceiverMedia.this).execute();
+				new ImportTask(this, models, ReceiverMedia.this).start();
 			} else {
 				finish();
 			}
@@ -130,7 +132,7 @@ public class ReceiverMedia extends Activity implements ImportTask.TaskListener {
 			mProgressDialog.dismiss();
 
 			if (result.size() > 0) {
-				new ImportTask(activity, result, ReceiverMedia.this).execute();
+				new ImportTask(activity, result, ReceiverMedia.this).start();
 			} else {
 				Toast.makeText(activity, "Arquivo(s) não suportado(s)", Toast.LENGTH_LONG).show();
 				finish();

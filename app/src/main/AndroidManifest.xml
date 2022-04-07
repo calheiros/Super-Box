@@ -94,7 +94,7 @@
 
         </receiver>
 
-      <activity
+        <activity
             android:name=".activity.MainActivity"
             android:screenOrientation="portrait"
             android:excludeFromRecents="true"
@@ -107,11 +107,20 @@
             android:name=".activity.VerifyActivity">
 
             <intent-filter>
-                
+
                 <action android:name="android.intent.action.MAIN"/>
 
             </intent-filter>
 
+        </activity>
+       
+        <activity
+            android:screenOrientation="portrait"
+            android:taskAffinity=""
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:name=".activity.CrashActivity">
+            
         </activity>
 
         <activity
@@ -268,6 +277,7 @@
 
         <service
             android:name=".AppLockAccessibilityService"
+            android:theme="@style/MainTheme"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             android:label="@string/app_name">
 
@@ -297,6 +307,7 @@
         </service>
 
         <service
+            android:theme="@style/MainTheme"
             android:name=".AppLockService"
             android:exported="false"
             android:process=":AppLock"/>

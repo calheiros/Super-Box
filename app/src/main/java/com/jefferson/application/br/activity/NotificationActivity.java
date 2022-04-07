@@ -23,6 +23,7 @@ public class NotificationActivity extends MyCompatActivity {
             startActivityForResult(intent, NOTIFICATION_REQUEST_CODE); 
         } else { //Your own logic 
             Log.d(TAG, "You have Notification Access"); 
+            
         }
     }
 

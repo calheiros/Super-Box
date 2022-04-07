@@ -22,8 +22,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import android.content.Context;
+import java.io.FileNotFoundException;
+import com.jefferson.application.br.util.JDebug;
 
-public class ImportTask extends AsyncTask {
+public class ImportTask extends JTask {
+
+    @Override
+    public void onException(Exception e) {
+        JDebug.writeLog(e.getCause());
+        err_message.append("Erro inesperado ocorrido!");
+        synchronize();
+    }
 
     public static final int SESSION_OUTSIDE_APP = 1;
 	public static final int SESSION_INSIDE_APP = 2;
@@ -39,14 +48,14 @@ public class ImportTask extends AsyncTask {
 	private FileTransfer mTransfer;
 	private ProgressThreadUpdate mUpdate;
 	private boolean waiting = false;
-    private TaskListener listener;
+    private ImportTaskListener listener;
 	private String WARNING_ALERT = "warning_alert";
 	private String no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n";
     private Context context;
 
     private static final String TAG = "ImportTask";
 
-	public ImportTask(Context context, ArrayList<FileModel> models, TaskListener listener) {
+	public ImportTask(Context context, ArrayList<FileModel> models, ImportTaskListener listener) {
         this.context = context;
 		this.listener = listener;
 		this.maxProgress = models.size();
@@ -57,11 +66,11 @@ public class ImportTask extends AsyncTask {
 	}
 
 	@Override
-	protected void onPreExecute() {
+	public void onBeingStarted() {
         if (listener != null) {
-            listener.onPreExecute();
+            listener.onBeingStarted();
         }
-		
+
         myAlertDialog = new SimpleDialog(context, SimpleDialog.PROGRESS_STYLE);
 		myAlertDialog.setCancelable(false);
 		myAlertDialog.setTitle(context.getString(R.string.movendo))
@@ -70,64 +79,68 @@ public class ImportTask extends AsyncTask {
 				@Override
 				public boolean onClick(SimpleDialog dialog) {
 					mTransfer.cancel();
-					cancel(true);
+					interrupt();
+
+                    if (listener != null) {
+                        listener.onInterrupted();
+                    }
+
 					return true;
 				}
-			})
-			.show();
+			}
+        ).show();
 
 		mUpdate = new ProgressThreadUpdate(mTransfer, myAlertDialog);
 	}
 
     @Override
-	protected void onPostExecute(Object result) {
-        if (listener != null) {
-            listener.onPostExecute();
-        }
-        
+	public void onFinished() {
         synchronize();
+
+        if (listener != null) {
+            listener.onFinished();
+        }
+
+        if (isInterrupted()) {
+            return;
+        }
+
 		String message = err_count > 0 ? "Transferencia completada com " + err_count + " " + (err_count > 1 ? "erros": "erro") + ":\n"  + err_message.toString() : context.getString(R.string.transferencia_sucesso);
 		myAlertDialog.setStyle(SimpleDialog.ALERT_STYLE);
 		myAlertDialog.setTitle(context.getString(R.string.resultado));
 		myAlertDialog.setMessage(message);
 		myAlertDialog.setPositiveButton("Ok", null).show();
-		myAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
+		myAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
 				@Override
 				public void onDismiss(DialogInterface dialog) {
-					if (listener != null)
-                        listener.onDialogDismiss();
+                    listener.onUserInteration();
 				}
 			}
         );
-		
-        folderDatabase.close();
-		db.close();
 	}
 
 	private void synchronize() {
 		mUpdate.die();
 		myAlertDialog.dismiss();
 		Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]));
-        /*
-         if (mode == SESSION_INSIDE_APP) {
-         ((MainActivity)context)
-         .update(MainFragment.ID.BOTH);
-         }*/
+        folderDatabase.close();
+		db.close();
 	}
 
     @Override
-	protected void onCancelled(Object result) { 
+    public void onInterrupted() {
+
         if (listener != null) {
-            listener.OnCancelled();
+            listener.onInterrupted();
         }
-		
-        synchronize();
+
 		Toast.makeText(context, context.getString(R.string.canceledo_usuario), 1).show();
 	}
 
 	@Override
-	protected void onProgressUpdate(Object[] values) { 
+	public void onUpdated(Object[] values) { 
+
 		if (WARNING_ALERT.equals(values[0])) {
 			warningAlert((String)values[1]);
 		} else {
@@ -137,18 +150,18 @@ public class ImportTask extends AsyncTask {
 	}
 
     @Override
-	protected Boolean doInBackground(Object[] v) {
+	public void workingThread() {
 		long max = 0;
-        
+
         for (FileModel resource : models) {
             File file = new File(resource.getResource());
             max += file.length();
         }
-        
+
 		File target = new File(Storage.getDefaultStorage());
 
 		if ((target.getFreeSpace() < max)) {
-			publishProgress(WARNING_ALERT, context.getString(R.string.sem_espaco_aviso));
+			sendUpdate(WARNING_ALERT, context.getString(R.string.sem_espaco_aviso));
 			waitForResponse();
 		}
 
@@ -156,69 +169,69 @@ public class ImportTask extends AsyncTask {
 		mUpdate.setMax(max);
 		mUpdate.start();
 
-		try {
-			for (FileModel model: models) {
-				if (isCancelled()) return null;
+        for (FileModel model: models) {
+            if (isInterrupted()) return;
 
-				File file = new File(model.getResource());
-				if (!file.exists()) {
-					err_count++;
-					err_message.append("\n" + context.getString(R.string.erro) + " " + err_count + ": O arquivo \"" + file.getName() + "\" não existe!\n");
-					continue;
-				}
-				publishProgress(null, file.getName());
+            File file = new File(model.getResource());
+            if (!file.exists()) {
+                err_count++;
+                err_message.append("\n" + context.getString(R.string.erro) + " " + err_count + ": O arquivo \"" + file.getName() + "\" não existe!\n");
+                continue;
+            }
+            sendUpdate(null, file.getName());
 
-				String folderName = file.getParentFile().getName();
-				String randomString = RandomString.getRandomString(24);
-				String randomString2 = RandomString.getRandomString(24);
-                String folderId = folderDatabase.getFolderId(folderName, model.getType());
-				String str = folderId;
+            String folderName = file.getParentFile().getName();
+            String randomString = RandomString.getRandomString(24);
+            String randomString2 = RandomString.getRandomString(24);
+            String folderId = folderDatabase.getFolderId(folderName, model.getType());
+            String str = folderId;
 
-				if (folderId == null) {
-					folderDatabase.addName(randomString2, folderName, model.getType());
-				} else {
-					randomString2 = str;
-				}
-                
-                String parentPath = model.getParentPath();
-                String root = parentPath == null ?  model.getDestination() + File.separator + randomString2 : parentPath;
-				File destFile = new File(root, randomString);
-				destFile.getParentFile().mkdirs();
-                
-                if (file.renameTo(destFile)) {
-                    db.insertData(randomString, model.getResource());
-                    importedFilesPath.add(file.getAbsolutePath());
-                    mTransfer.increment(destFile.length() / 1024);
-                    Log.i(TAG, "Succesfully moved to: " + destFile);
-                } else {
-                    InputStream inputStream = new FileInputStream(file);
-                    OutputStream outputStream = new FileOutputStream(destFile);
-                    String response = mTransfer.transferStream(inputStream, outputStream);
+            if (folderId == null) {
+                folderDatabase.addName(randomString2, folderName, model.getType());
+            } else {
+                randomString2 = str;
+            }
 
-                    if (FileTransfer.OK.equals(response)) {
-                        if (Storage.deleteFile(file)) {
-                            db.insertData(randomString, model.getResource());
-                            importedFilesPath.add(file.getAbsolutePath());
-                        } else {
-                            destFile.delete();
-                        }
+            String parentPath = model.getParentPath();
+            String root = parentPath == null ?  model.getDestination() + File.separator + randomString2 : parentPath;
+            File destFile = new File(root, randomString);
+            destFile.getParentFile().mkdirs();
+
+            if (file.renameTo(destFile)) {
+                db.insertData(randomString, model.getResource());
+                importedFilesPath.add(file.getAbsolutePath());
+                mTransfer.increment(destFile.length() / 1024);
+                Log.i(TAG, "Succesfully moved to: " + destFile);
+            } else {
+                InputStream inputStream = null;
+                FileOutputStream outputStream = null;
+                try {
+                    inputStream = new FileInputStream(file);
+                    outputStream = new FileOutputStream(destFile);
+                } catch (FileNotFoundException e) {
+                    continue;
+                }
+                String response = mTransfer.transferStream(inputStream, outputStream);
+
+                if (FileTransfer.OK.equals(response)) {
+                    if (Storage.deleteFile(file)) {
+                        db.insertData(randomString, model.getResource());
+                        importedFilesPath.add(file.getAbsolutePath());
                     } else {
                         destFile.delete();
-                        err_count++;
-                        if (FileTransfer.Error.NO_LEFT_SPACE.equals(response)) {
-                            err_message.append(no_left_space_error_message);
-                            break;
-                        } else {
-                            err_message.append("\n" + context.getString(R.string.erro) + err_count + ": " + response + " when moving: " + file.getName() + "\n");
-                        }
+                    }
+                } else {
+                    destFile.delete();
+                    err_count++;
+                    if (FileTransfer.Error.NO_LEFT_SPACE.equals(response)) {
+                        err_message.append(no_left_space_error_message);
+                        break;
+                    } else {
+                        err_message.append("\n" + context.getString(R.string.erro) + err_count + ": " + response + " when moving: " + file.getName() + "\n");
                     }
                 }
-			}
-		} catch (Exception e) {
-            e.printStackTrace();
-			err_message.append("Erro inesperado ocorrido!");
-		}
-		return true;
+            }
+        }
 	}
 
     public void waitForResponse() {
@@ -249,7 +262,7 @@ public class ImportTask extends AsyncTask {
 
 				@Override
 				public boolean onClick(SimpleDialog dialog) {
-					cancel(true);
+					interrupt();
 					waiting = false;
 					return true;
 				}
@@ -257,10 +270,10 @@ public class ImportTask extends AsyncTask {
 		dialog.show();
 	}
 
-    public static interface TaskListener {
-        abstract void onPostExecute();
-        abstract void onPreExecute();
-        abstract void onDialogDismiss();
-        abstract void OnCancelled();
+    public interface ImportTaskListener {
+        void onBeingStarted()
+        void onUserInteration()
+        void onInterrupted()
+        void onFinished();
     }
 }

@@ -22,14 +22,16 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     private static App application;
 	public static final String INTERSTICAL_ID = "ca-app-pub-3062666120925607/8580168530";
 	public static final String INTERSTICAL_TEST_ID = "ca-app-pub-3940256099942544/1033173712";
-
+    public static final String ACTION_REPORT_CRASH = "com.jefferson.application.action.REPORT_CRASH";
+    
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
     private Handler mHandler = new Handler();;
     private SharedPreferences mSharedPrefs;
     public static boolean localeConfigured = false;
     private ArrayList<MyCompatActivity> activities = new ArrayList<>();
 	private boolean timing = false;
-	private Runnable mRunnable = new Runnable(){
+    public AppLockService appLockService;
+	private Runnable mRunnable = new Runnable() {
 
 		@Override
 		public void run() {
@@ -39,59 +41,51 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
 			App.this.timing = false;
         }
     };
-    
+
+    public static final String ACTION_OPEN_FROM_DIALER = "com.jefferson.application.action.ACTION_OPEN_FROM_DIALER";
+
     private boolean isAnyNotRunning() {
         for (MyCompatActivity activity : activities) {
             if (activity.isAlive()) return false;
         }
         return true;
     }
-    
-    public AppLockService appLockService;
 
-    public void remove(MyCompatActivity p0) {
-        // TODO: Implement this method
-        activities.remove(p0);
+    public void remove(MyCompatActivity activity) {
+        activities.remove(activity);
     }
 
     public boolean isTiming() {
-        // TODO: Implement this method
         return timing;
     }
 
     @Override
-    public void uncaughtException(Thread Thre, Throwable Thow) {
-        mSharedPrefs.edit().putBoolean(EXCEPTION_FOUND, true).commit();
-        //startActivity(new Intent(this, MainActivity.class));
-        writeLog(Thow);
-        mDefaultExceptionHandler.uncaughtException(Thre, Thow);
+    public void uncaughtException(Thread thread, Throwable thow) {
+        try {
+            String error = JDebug.getStackeTrace(thow);
+            JDebug.writeLog(error);
+            startCrashActivity(error);
+            destroyActivities();
+            System.exit(2);
+            //android.os.Process.killProcess(android.os.Process.myPid());
+        } catch (Exception e) {
+            JDebug.writeLog(e.getCause());
+        }
+        mDefaultExceptionHandler.uncaughtException(thread, thow);
     }
 
-    private void writeLog(Throwable throwable) {
-        
-        try {
-            File file = new File(Environment.getExternalStorageDirectory() + 
-                                 File.separator + "." + getApplicationInfo().packageName + File.separator + "logs", "log.txt");
-            file.getParentFile().mkdirs();
-            String stackTrace = Log.getStackTraceString(throwable);
-            FileWriter output = new FileWriter(file);
-
-            output.write(stackTrace);
-            output.flush();
-            output.close();
-        } catch (FileNotFoundException e) {
-            
-        } catch (IOException e) {
-            
-        }
-  
+    private void startCrashActivity(String error) {
+        Intent intent = new Intent(this, CrashActivity.class);
+        intent.putExtra("message", error);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent pending = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
+        AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
+        am.set(am.ELAPSED_REALTIME_WAKEUP, 200, pending);
     }
 
     public void onCreate() {
-
-        this.application = this;
+        application = this;
         super.onCreate();
-
         mSharedPrefs = getSharedPreferences(EXCEPTION_LOG, MODE_PRIVATE);
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
@@ -103,7 +97,20 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
             .setDownsampleEnabled(true)
             .build();
         Fresco.initialize(this, config);
-        //createInterstitial();
+        startServiceNotRunning();
+    }
+
+    private void startServiceNotRunning() {
+        if (!Utils.isMyServiceRunning(AppLockService.class)) {
+            Intent intent = new Intent(this, AppLockService.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                startForegroundService(intent);
+            } else {
+                startService(intent);
+            }
+        }
     }
 
     public static Context getAppContext() {
@@ -114,27 +121,15 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         this.activities.add(activity);
     }
 
-
-    public void finishActivities() {
-
-        for (Activity activity : this.activities) {
-
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
-                activity.finishAndRemoveTask();
-            } else {
-                activity.finish();
-            }
-        }
-        activities.clear();
-    }
-    
     public static App getInstance() {
         return application;
     }
 
     public void destroyActivities() {
         for (Activity activity : activities) {
-            activity.finish();
+            if (!activity.isDestroyed()) {
+                activity.finish();
+            }
         }
         activities.clear();
     }

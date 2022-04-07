@@ -49,26 +49,27 @@ import android.widget.RelativeLayout;
 import android.animation.Animator;
 import android.view.animation.Animation;
 
-public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.TaskListener {
+public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.ImportTaskListener {
 
     @Override
-    public void onPostExecute() {
+    public void onBeingStarted() {
+        
+    }
+
+    @Override
+    public void onUserInteration() {
+        
+    }
+
+    @Override
+    public void onInterrupted() {
+        
+    }
+
+    @Override
+    public void onFinished() {
         updateRecyclerView();
         synchronizeMainActivity();
-    }
-
-    @Override
-    public void onPreExecute() {
-
-    }
-
-    @Override
-    public void onDialogDismiss() {
-    }
-
-    @Override
-    public void OnCancelled() {
-
     }
 
 	private PathsData database;
@@ -96,19 +97,19 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		setContentView(R.layout.gridview_main);
         File file = new File(Storage.getDefaultStorage());
 		database = PathsData.getInstance(this, file.getAbsolutePath());
-		mainLayout = findViewById(R.id.main_linear_layout);
+		mainLayout = (RelativeLayout) findViewById(R.id.main_linear_layout);
 	    Intent intent = getIntent();
 		position = intent.getIntExtra("position", -1);
 	    title = intent.getStringExtra("name");
 		folder = new File(intent.getStringExtra("folder"));
 		ArrayList<MediaModel> mListItemsPath = (ArrayList<MediaModel>) intent.getParcelableArrayListExtra("data");
-	    mRecyclerView = findViewById(R.id.my_recycler_view);
+	    mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 		mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new GridLayoutManager(this, 3);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, mListItemsPath, this, position);
         mRecyclerView.setAdapter(mAdapter);
-        fab = findViewById(R.id.view_album_fab_button);
+        fab = (FloatingActionButton) findViewById(R.id.view_album_fab_button);
 		menuLayout = findViewById(R.id.lock_layout);
 		mViewUnlock = findViewById(R.id.unlockView);
 		mViewDelete = findViewById(R.id.deleteView);
@@ -345,7 +346,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     model.setType(data.getStringExtra("type"));
                     models.add(model);
                 }
-                new ImportTask(this, models, this).execute();
+                new ImportTask(this, models, this).start();
                 /*
                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 
@@ -585,7 +586,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
         private boolean running;
         private ArrayList<MediaModel> list;
-        //private PathsData data;
         private MultiSelectRecyclerViewAdapter adapter;
 
         public MyThread(ArrayList<MediaModel> list, MultiSelectRecyclerViewAdapter adapter) {
@@ -674,6 +674,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 			mySimpleDialog.setStyle(SimpleDialog.PROGRESS_STYLE);
 			mySimpleDialog.setTitle(getString(R.string.mover));
             mySimpleDialog.setMessage("");
+            mySimpleDialog.setSingleLineMessage(true);
 			mySimpleDialog.setCancelable(false);
 			mySimpleDialog.setNegativeButton(getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
 					@Override

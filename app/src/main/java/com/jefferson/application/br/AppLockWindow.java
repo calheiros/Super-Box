@@ -24,6 +24,9 @@ public class AppLockWindow {
     private boolean isLocked;
 	private AppsDatabase database;
 	private ImageView image_icon;
+    private String passedApp = "";
+
+    private View lastView;
 
 	public AppLockWindow(final Context context, final AppsDatabase db) {
 
@@ -38,27 +41,42 @@ public class AppLockWindow {
 			WindowManager.LayoutParams.MATCH_PARENT,
 			WindowManager.LayoutParams.MATCH_PARENT,
             layoutParamsType,
-			(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | 
-            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON	|
+			(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
             WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD) ,
 			PixelFormat.RGBX_8888);
 
 		params.windowAnimations = android.R.style.Animation_Dialog;
 		windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-
 		createView();
 	}
 
-	private View createParentView() {
+    public void revokePassed() {
+        passedApp = "";
+    }
 
-        RelativeLayout layout = new RelativeLayout(context) {
+    public String getLockePackageName() {
+        return currentApp;
+    }
+
+    public String getPassedApp() {
+        return passedApp;
+    }
+
+	private View createParentView() {
+        FrameLayout layout = new FrameLayout(context) {
 
             @Override
             public void onAttachedToWindow() {
                 super.onAttachedToWindow();
             }
-
+            
+            @Override 
+            public boolean dispatchKeyEvent(KeyEvent e) {
+                Toast.makeText(context, "KEY " + e.getKeyCode(), 1).show();
+                return true;
+            }
+            
             @Override 
             public boolean onKeyDown(int k, KeyEvent event) { 
                 Toast.makeText(context, "KEY CODE: " + event.getKeyCode(), 1).show();
@@ -94,32 +112,31 @@ public class AppLockWindow {
         };
 
         layout.setFocusable(true);
-		View view = LayoutInflater.from(context).inflate(R.layout.pattern, null);
-        layout.addView(view);
-        return layout;
+		return LayoutInflater.from(context).inflate(R.layout.pattern, layout);
 	}
 
 	public void refreshView() {
-        View lastView = view;
 		createView();
 
 		if (isLocked()) {
 			windowManager.removeViewImmediate(lastView);
-			addView(view);
+            windowManager.addView(view, params);
 		}
 	}
 
 	private void createView() {
-
+        lastView = view;
 		view = createParentView();
 	    image_icon = (ImageView) view.findViewById(R.id.iconApp);
+        materialLockView = (MaterialLockView) view.findViewById(R.id.pattern);
 
-		if (currentApp != null)
+		if (currentApp != null) 
 			image_icon.setImageDrawable(getIcon(currentApp));
 
-		materialLockView = (MaterialLockView) view.findViewById(R.id.pattern);
-		materialLockView.setTactileFeedbackEnabled(false);
-		materialLockView.setOnPatternListener(new PatternListener(context));
+        if (materialLockView != null) {
+            materialLockView.setTactileFeedbackEnabled(false);
+            materialLockView.setOnPatternListener(new PatternListener(context));
+        }
 	}
 
     private FrameLayout getLayout() {
@@ -151,10 +168,6 @@ public class AppLockWindow {
 		isLocked = true;
 		currentApp = AppName;
 		image_icon.setImageDrawable(getIcon(AppName));
-		addView(view);
-	}
-
-	public void addView(View view) {
 		windowManager.addView(view, params);
 	}
 
@@ -166,8 +179,7 @@ public class AppLockWindow {
 	private Drawable getIcon(String packageName) {
 		try {
 			return context.getPackageManager().getApplicationIcon(packageName);
-		} catch (PackageManager.NameNotFoundException e) {	
-		}
+		} catch (PackageManager.NameNotFoundException e) {}
 		return null;
 	}
 
@@ -205,13 +217,14 @@ public class AppLockWindow {
 				unlock();
 				materialLockView.clearPattern();
 				database.addUnlockedApp(currentApp);
+                passedApp = currentApp;
                 Toast.makeText(context, "A aplicação continuará desbloqueada até que a tela seja desligada!", Toast.LENGTH_LONG).show();
 
 			}
 			super.onPatternDetected(pattern, SimplePattern);
 		}
 
-		private Object correctPass() {
+		private String correctPass() {
 			return passManager.getInternalPassword();
 		}
 	}

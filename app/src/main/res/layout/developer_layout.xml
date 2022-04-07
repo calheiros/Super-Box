@@ -26,7 +26,6 @@
 		android:text="Progress Dialog"
 		android:onClick="showProgressDialog"/>
 
-	
 	<Button
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
@@ -47,12 +46,26 @@
 		android:text="Notification"
 		android:onClick="notification"/>
 
+	<Button
+		android:layout_width="wrap_content"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_height="wrap_content"
+		android:text="Test Tread"
+		android:onClick="testThread"/>
+
+	<Button
+		android:layout_width="wrap_content"
+		style="?android:attr/buttonStyleSmall"
+		android:layout_height="wrap_content"
+        android:onClick="trowException"
+		android:text="Thows Exception"/>
+    
     <Button
         android:layout_marginTop="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="quit"
-        android:onClick="quit"/>
+		android:onClick="quit"/>
     
 </LinearLayout>
 

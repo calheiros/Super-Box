@@ -21,7 +21,7 @@ public class SimpleDialog extends AlertDialog {
 
 	public static final int PROGRESS_STYLE = 123;
 	public static final int ALERT_STYLE = 321;
-    
+
     private View contentView;
 	private NumberProgressBar progressBar;
 	private TextView contentText;
@@ -41,19 +41,15 @@ public class SimpleDialog extends AlertDialog {
 			progressBar.setProgress(msg.what);
 		}
 	};
-    
+
 	public SimpleDialog(Context context, int style) {
 		super(context);
 	    create(style);
 	}
-	
+
     public SimpleDialog(Context context) {
 		super(context);
 	    create(0);
-	}
-
-	public void setStyle(int style) {
-		configure(style);
 	}
 
 	public long getCurrentBytes() {
@@ -76,6 +72,11 @@ public class SimpleDialog extends AlertDialog {
 		return progressBar.getMax();
 	}
     
+    public SimpleDialog setSingleLineMessage(boolean single) {
+        contentText.setSingleLine(single);
+        return this;
+    }
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -91,7 +92,7 @@ public class SimpleDialog extends AlertDialog {
 		contentText = contentView.findViewById(R.id.message_text_view);
 		positiveButton = contentView.findViewById(R.id.dialogPositiveButton);
 		negativeButton = contentView.findViewById(R.id.dialogNegativebutton);
-        
+
         Window window = getWindow();
         window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         window.setBackgroundDrawableResource(R.drawable.dialog_bg_inset);
@@ -99,16 +100,17 @@ public class SimpleDialog extends AlertDialog {
         progressBar.setMax(100);
         progressBar.setReachedBarColor(color);
         progressBar.setProgressTextColor(color);
-		configure(style);
+		setStyle(style);
     }
 
-	private void configure(int style) {
+	public void setStyle(int style) {
         boolean show = style == PROGRESS_STYLE ? true: false;
 		showNegativeButton(false);
 		showPositiveButton(false);
+        setSingleLineMessage(false);
         showProgressBar(show);
 	}
-   
+
 	public SimpleDialog setProgress(int progress) {
         mHandler.sendEmptyMessage(progress);
 		this.progress = progress;
@@ -146,16 +148,16 @@ public class SimpleDialog extends AlertDialog {
 	}
 
     public void setTitle(int titleId) {
-      setTitle(getContext().getString(titleId));
+        setTitle(getContext().getString(titleId));
     }
-  
+
 	public SimpleDialog setTitle(String title) {
         if (contentTitle.getVisibility() != View.VISIBLE)
 		    contentTitle.setVisibility(View.VISIBLE);
 		contentTitle.setText(title);
 		return this;
 	}
-   
+
 	public SimpleDialog setMessage(String text) {
         if (contentText.getVisibility() != View.VISIBLE)
 		    contentText.setVisibility(View.VISIBLE);
@@ -170,7 +172,7 @@ public class SimpleDialog extends AlertDialog {
     public void setTitle(CharSequence title) {
         setTitle(String.valueOf(title));
     }
-    
+
 	public SimpleDialog setPositiveButton(String buttonText, OnDialogClickListener listener) {
         if (positiveButton.getVisibility() != View.VISIBLE)
             positiveButton.setVisibility(View.VISIBLE);
@@ -193,7 +195,7 @@ public class SimpleDialog extends AlertDialog {
         public OnClickListener(OnDialogClickListener listener) {
 			this.listener = listener;
 		}
-		
+
         @Override
 		public void onClick(View view) {
             if (listener != null) {
@@ -202,7 +204,7 @@ public class SimpleDialog extends AlertDialog {
             dismiss();
 		}
 	}
-    
+
 	abstract public static class OnDialogClickListener {
 	    public abstract boolean onClick(SimpleDialog dialog);
 	}

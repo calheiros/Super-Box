@@ -51,29 +51,28 @@ import android.content.Context;
 import android.content.IntentFilter;
 import com.jefferson.application.br.util.JDebug;
 
-public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.TaskListener {
+public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.ImportTaskListener {
 
+    @Override
+    public void onBeingStarted() {
+    }
+
+    @Override
+    public void onUserInteration() {
+    }
+
+    @Override
+    public void onInterrupted() {
+        updateCurrentFragment();
+    }
+
+    @Override
+    public void onFinished() {
+        updateCurrentFragment();
+        
+    }
+    
     BroadcastReceiver receiver;
-
-    @Override
-    public void onPostExecute() {
-        updateCurrentFragment();
-    }
-
-    @Override
-    public void onPreExecute() {
-
-    }
-
-    @Override
-    public void onDialogDismiss() {
-
-    }
-
-    @Override
-    public void OnCancelled() {
-        updateCurrentFragment();
-    }
 
     private void updateCurrentFragment() {
         if (mainFragment != null) {
@@ -374,7 +373,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
             if (requestCode != GET_URI_CODE) {
 				ImportTask mTask = new ImportTask(this, models, MainActivity.this);
-				mTask.execute();
+				mTask.start();
 			}
 		}
 		super.onActivityResult(requestCode, resultCode, data);

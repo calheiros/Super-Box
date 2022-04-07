@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.model.MediaModel;
 import java.util.concurrent.TimeUnit;
+import android.view.Menu;
 
 public class GalleryAlbum extends MyCompatActivity {
 
@@ -73,11 +74,31 @@ public class GalleryAlbum extends MyCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_import, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		finish();
+        switch(item.getItemId()){
+            case R.id.item_from_gallery:
+                notImplemented();
+                break;
+            case R.id.item_from_camera:
+                notImplemented();
+                break;
+            case android.R.id.home:
+                finish();
+                break;
+        }
 		return super.onOptionsItemSelected(item);
 	}
+
+    private void notImplemented() {
+        Toast.makeText(this, "Not implemented!", 1).show();
+    }
 
     public ArrayList<FolderModel> fn_imagespath() {
 	    ArrayList<FolderModel> al_images = new ArrayList<FolderModel>();
@@ -190,7 +211,7 @@ public class GalleryAlbum extends MyCompatActivity {
 		obj_adapter = new PhotosFolderAdapter(GalleryAlbum.this, list, position);
 		gv_folder.setAdapter(obj_adapter);
 	}
-
+    
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
