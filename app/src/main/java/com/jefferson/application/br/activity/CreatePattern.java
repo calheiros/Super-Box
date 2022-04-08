@@ -19,6 +19,14 @@ import com.jefferson.application.br.activity.MyCompatActivity;
 import java.util.List;
 import com.jefferson.application.br.util.JDebug;
 import android.provider.Settings;
+import android.content.IntentFilter;
+import com.jefferson.application.br.App;
+import com.jefferson.application.br.util.EncrytionUtil;
+import com.jefferson.application.br.AppLockWindow;
+import java.io.File;
+import com.jefferson.application.br.util.Storage;
+import com.jefferson.application.br.util.StringUtils;
+import javax.crypto.SecretKey;
 
 public class CreatePattern extends MyCompatActivity {
 
@@ -35,12 +43,34 @@ public class CreatePattern extends MyCompatActivity {
 	private String defaultText;
 	private Button button;
 	private TextView text;
+    private String oldPass;
+
+    public void sendBroadcast(String pass) {
+     
+        File token = new File(getCacheDir(), "token");
+        SecretKey key = null;
+        
+        if (token.exists()) {
+           key = EncrytionUtil.getStoredKey(token);
+        } else {
+            Storage.writeFile(key.getEncoded(), token);
+        }
+        
+        if (key != null) {
+            String protectedPassword = EncrytionUtil.getEncryptedString(key, pass);
+            Intent intent = new Intent(App.ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD);
+            intent.putExtra("password", protectedPassword);
+            sendBroadcast(intent);
+            JDebug.toast("ECRYPTED PASSWORD: " + protectedPassword);
+        }
+    }
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_pattern);
         passwordManager = new PasswordManager();
+        oldPass = passwordManager.getInternalPassword();
         action = getIntent().getAction();
 		defaultText = getString(R.string.desenhe_seu_padrao);
 
@@ -51,8 +81,8 @@ public class CreatePattern extends MyCompatActivity {
 
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
-        
-		materialLockView.setOnPatternListener( new MaterialLockView.OnPatternListener() {
+
+		materialLockView.setOnPatternListener(new MaterialLockView.OnPatternListener() {
                 public void onPatternStart() {
 					if (clearRunnable != null && clearHandler != null) {
 						clearHandler.removeCallbacks(clearRunnable);
@@ -103,25 +133,27 @@ public class CreatePattern extends MyCompatActivity {
             }
         );
 
-		button.setOnClickListener( new OnClickListener() {
+		button.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
-                    
-					passwordManager.setPassword(password);
+                    passwordManager.setPassword(password);
+                    sendBroadcast(password);
 
-					if (action == ENTER_FIST_CREATE) { 
+					if (action.equals(ENTER_FIST_CREATE)) { 
 						requestPermission();
-					} else if (action == ENTER_RECREATE) {
+					} else if (action.equals(ENTER_RECREATE)) {
 						finish();
 				    } else {
                         JDebug.toast("AÇÃO DESCONHECIDA!");
                     }
+
+
 				}
             }
         );
 	}
-    
+
     public void requestPermission() {
 
         if (ContextCompat.checkSelfPermission(this,
@@ -151,7 +183,7 @@ public class CreatePattern extends MyCompatActivity {
             finish();
         }
 	}
-    
+
     private void clearPattern() {
 		clearHandler = new Handler();
 		clearRunnable = new Runnable(){

@@ -30,12 +30,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pattern);
 	    LocaleManager.configureLocale(this);
-        
-        if (com.jefferson.application.br.util.JDebug.isDebugOn()) {
-            Intent intent = new Intent(this, PinActivity.class);
-            startActivity(intent);
-        }
-
+   
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
 

@@ -56,6 +56,11 @@ public class DeveloperActivity extends MyCompatActivity {
         simple.show();
     }
 
+    public void openPin(View v) {
+        Intent intent = new Intent(this, PinActivity.class);
+        startActivity(intent);
+    }
+
     public void contacts(View v) {      
         startActivity(new Intent(this, ContactsActivity.class));
     }

@@ -4,11 +4,15 @@ import android.content.Context;
 import com.jefferson.application.br.App;
 
 public class MyPreferences {
+
+    public static SharedPreferences getSharedPreferences(Context context) {
+        SharedPreferences prefs = context.getSharedPreferences(context.getPackageName() +"_preferences", context.MODE_PRIVATE);
+        return prefs;
+    } 
    
     public static SharedPreferences getSharedPreferences() {
         Context context = App.getAppContext();
-        SharedPreferences prefs = context.getSharedPreferences(context.getPackageName() +"_preferences", context.MODE_PRIVATE);
-        return prefs;
+        return getSharedPreferences(context);
     }
     
     public static SharedPreferences.Editor getSharedPreferencesEditor() {

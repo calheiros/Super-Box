@@ -1,18 +1,21 @@
 package com.jefferson.application.br.util;
 
 import android.app.ActivityManager;
+import android.app.usage.UsageEvents;
 import android.app.usage.UsageStats;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.util.Log;
 import com.jefferson.application.br.App;
 import java.util.List;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import android.content.Intent;
 
-public class Utils {
+public class ServiceUtils {
 
 	public static String getTopActivityApplication() {
 
@@ -47,29 +50,7 @@ public class Utils {
 		}
 		return false;
 	}
-    public static String getRunningPackage() {
-        String topPackageName = "";
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { 
-            UsageStatsManager mUsageStatsManager = (UsageStatsManager)App.getAppContext().getSystemService("usagestats");
-            long time = System.currentTimeMillis();
-            // We get usage stats for the last 1 second 
-            List<UsageStats> stats = mUsageStatsManager.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 10, time);
-            // Sort the stats by the last time used 
-            if (stats != null) { 
-                SortedMap<Long,UsageStats> mySortedMap = new TreeMap<Long,UsageStats>();
-                for (UsageStats usageStats : stats) {
-                    mySortedMap.put(usageStats.getLastTimeUsed(), usageStats); 
-                } 
-                
-                if (!mySortedMap.isEmpty()) { 
-                    topPackageName = mySortedMap.get(mySortedMap.lastKey()).getPackageName(); 
-                }
-            }
-        }
-        return topPackageName;
-    }
-    
+
 	public static boolean isConnected(Context context) {
 
 		ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -77,11 +58,45 @@ public class Utils {
 
 		return netInfo != null && netInfo.isConnected();
 	}
-    
+
     public static String formatMillisecunds(long milliseconds) {
 
         String formated = null;
 
         return formated;
+    }
+
+    public static String getForegroundPackage(UsageStatsManager usageStatsManager) {
+        String packageName = null;
+        final long INTERVAL = 1000 * 10;
+        final long end = System.currentTimeMillis(); 
+        final long begin = end - INTERVAL; 
+        final UsageEvents usageEvents = usageStatsManager.queryEvents(begin, end);
+        while (usageEvents.hasNextEvent()) {
+            UsageEvents.Event event = new UsageEvents.Event();
+            usageEvents.getNextEvent(event);
+            switch (event.getEventType()) { 
+                case UsageEvents.Event.MOVE_TO_FOREGROUND: 
+                    packageName = event.getPackageName();
+                    break;
+                case UsageEvents.Event.MOVE_TO_BACKGROUND:
+                    if (event.getPackageName().equals(packageName)) {
+                        packageName = null; 
+                    }
+            }
+        } 
+        return packageName;
+    }
+    
+    public static void startForegroundService(Class<?> service) {
+        Context context = App.getAppContext();
+        Intent intent = new Intent(context, service);
+        intent.addFlags(intent.FLAG_ACTIVITY_NEW_TASK);
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
     }
 }

@@ -13,7 +13,7 @@ import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsData;
 import com.jefferson.application.br.fragment.MainFragment;
 import com.jefferson.application.br.util.FileTransfer;
-import com.jefferson.application.br.util.RandomString;
+import com.jefferson.application.br.util.StringUtils;
 import com.jefferson.application.br.util.Storage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -181,8 +181,8 @@ public class ImportTask extends JTask {
             sendUpdate(null, file.getName());
 
             String folderName = file.getParentFile().getName();
-            String randomString = RandomString.getRandomString(24);
-            String randomString2 = RandomString.getRandomString(24);
+            String randomString = StringUtils.getRandomString(24);
+            String randomString2 = StringUtils.getRandomString(24);
             String folderId = folderDatabase.getFolderId(folderName, model.getType());
             String str = folderId;
 

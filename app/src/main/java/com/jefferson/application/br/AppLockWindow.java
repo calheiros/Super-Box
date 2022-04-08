@@ -23,11 +23,11 @@ public class AppLockWindow {
 	private MaterialLockView materialLockView;
     private boolean isLocked;
 	private AppsDatabase database;
-	private ImageView image_icon;
+	private ImageView iconImageView;
     private String passedApp = "";
-
+    private String password;
     private View lastView;
-
+    
 	public AppLockWindow(final Context context, final AppsDatabase db) {
 
 	    this.context = context;
@@ -51,6 +51,10 @@ public class AppLockWindow {
 		createView();
 	}
 
+    public void setPassword(String realPassword) {
+        this.password = realPassword;
+    }
+
     public void revokePassed() {
         passedApp = "";
     }
@@ -70,13 +74,14 @@ public class AppLockWindow {
             public void onAttachedToWindow() {
                 super.onAttachedToWindow();
             }
-            
+
             @Override 
             public boolean dispatchKeyEvent(KeyEvent e) {
-                Toast.makeText(context, "KEY " + e.getKeyCode(), 1).show();
+                startDefaultLauncher();
+                //Toast.makeText(context, "KEY " + e.getKeyCode(), 1).show();
                 return true;
             }
-            
+
             @Override 
             public boolean onKeyDown(int k, KeyEvent event) { 
                 Toast.makeText(context, "KEY CODE: " + event.getKeyCode(), 1).show();
@@ -102,6 +107,7 @@ public class AppLockWindow {
                     intent.setPackage(name);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
+                  
                 } catch (Exception e) {
                     JDebug.toast(e.getMessage());
                     return false;
@@ -112,7 +118,7 @@ public class AppLockWindow {
         };
 
         layout.setFocusable(true);
-		return LayoutInflater.from(context).inflate(R.layout.pattern, layout);
+		return LayoutInflater.from(context).inflate(R.layout.pattern, null);
 	}
 
 	public void refreshView() {
@@ -127,11 +133,11 @@ public class AppLockWindow {
 	private void createView() {
         lastView = view;
 		view = createParentView();
-	    image_icon = (ImageView) view.findViewById(R.id.iconApp);
+	    iconImageView = (ImageView) view.findViewById(R.id.iconApp);
         materialLockView = (MaterialLockView) view.findViewById(R.id.pattern);
 
 		if (currentApp != null) 
-			image_icon.setImageDrawable(getIcon(currentApp));
+			iconImageView.setImageDrawable(getIcon(currentApp));
 
         if (materialLockView != null) {
             materialLockView.setTactileFeedbackEnabled(false);
@@ -139,35 +145,14 @@ public class AppLockWindow {
         }
 	}
 
-    private FrameLayout getLayout() {
-		FrameLayout layout = new FrameLayout(context){
-			@Override
-			public boolean dispatchKeyEvent(KeyEvent event) {
-				if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-
-					Intent intent = new Intent(Intent.ACTION_MAIN);
-					intent.addCategory(Intent.CATEGORY_HOME);
-					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-					context.startActivity(intent);
-
-					return true;
-				}
-				return super.dispatchKeyEvent(event);
-			}
-		};
-		layout.setSystemUiVisibility(5122);
-
-		return layout;
-	}
-
 	public boolean isLocked() {
 		return isLocked;
 	}
 
-	public void lockApp(String AppName) {
+	public void lock(String appName) {
 		isLocked = true;
-		currentApp = AppName;
-		image_icon.setImageDrawable(getIcon(AppName));
+		currentApp = appName;
+		iconImageView.setImageDrawable(getIcon(appName));
 		windowManager.addView(view, params);
 	}
 
@@ -218,14 +203,19 @@ public class AppLockWindow {
 				materialLockView.clearPattern();
 				database.addUnlockedApp(currentApp);
                 passedApp = currentApp;
-                Toast.makeText(context, "A aplicação continuará desbloqueada até que a tela seja desligada!", Toast.LENGTH_LONG).show();
-
+                //Toast.makeText(context, "A aplicação continuará desbloqueada até que a tela seja desligada!", Toast.LENGTH_LONG).show();
 			}
+            
 			super.onPatternDetected(pattern, SimplePattern);
 		}
 
 		private String correctPass() {
-			return passManager.getInternalPassword();
+            if (password != null) {
+                return password;
+            } else {
+                SharedPreferences prefs = MyPreferences.getSharedPreferences(context);
+                return prefs.getString(PasswordManager.PATTERN_KEY, "1234");
+            }
 		}
 	}
 }

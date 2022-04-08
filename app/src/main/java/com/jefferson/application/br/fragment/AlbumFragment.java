@@ -27,7 +27,7 @@ import com.jefferson.application.br.adapter.AlbumAdapter;
 import com.jefferson.application.br.database.PathsData;
 import com.jefferson.application.br.task.DeleteFilesTask;
 import com.jefferson.application.br.util.JDebug;
-import com.jefferson.application.br.util.RandomString;
+import com.jefferson.application.br.util.StringUtils;
 import com.jefferson.application.br.util.Storage;
 import java.io.File;
 import java.util.ArrayList;
@@ -266,7 +266,7 @@ public class AlbumFragment extends Fragment {
         String type = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(getContext());
         String id = folderDatabase.getFolderId(name, type);
-        String randomStr = RandomString.getRandomString(24);
+        String randomStr = StringUtils.getRandomString(24);
 
         if (id == null) {
             id = randomStr;

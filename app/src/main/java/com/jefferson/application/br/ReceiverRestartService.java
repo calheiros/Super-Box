@@ -2,13 +2,15 @@ package com.jefferson.application.br;
 import android.content.*;
 import android.util.*;
 import java.util.*;
+import com.jefferson.application.br.util.ServiceUtils;
 
-public class ReceiverRestartService extends BroadcastReceiver
-{
+public class ReceiverRestartService extends BroadcastReceiver {
+
 	@Override
-	public void onReceive(Context context, Intent intent)
-	{
-		context.startService(new Intent(context,AppLockService.class).addFlags(intent.FLAG_ACTIVITY_NEW_TASK));
+	public void onReceive(Context context, Intent intent) {
+        if (ServiceUtils.isMyServiceRunning(AppLockService.class)) {
+            ServiceUtils.startForegroundService(AppLockService.class);
+        }
 	}
 }
 

@@ -13,7 +13,7 @@ import android.view.WindowManager;
 import android.widget.Toast;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.fragment.VideoPlayFragment;
+import com.jefferson.application.br.fragment.VideoPlayerFragment;
 import java.util.ArrayList;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.model.MediaModel;
@@ -43,7 +43,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
 //            if (cachedFragment != null){
 //                cachedFragment.stop();
 //            }
-            VideoPlayFragment lastFragment = pagerAdapter.getItem(lastFragmentPosition);
+            VideoPlayerFragment lastFragment = pagerAdapter.getItem(lastFragmentPosition);
 
             if (lastFragment != null) {
                 lastFragment.stop();            
@@ -92,24 +92,23 @@ public class VideoPlayerActivity extends MyCompatActivity {
         int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;
         winParams.flags |=  bits;
         win.setAttributes(winParams);
-
     }
 
     private class VideoPagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> filesPath;
-        private VideoPlayFragment[] fragments;
-        private VideoPlayFragment cachedFragment;
-        private VideoPlayFragment currentFragment;
+        private VideoPlayerFragment[] fragments;
+        private VideoPlayerFragment cachedFragment;
+        private VideoPlayerFragment currentFragment;
 
         public VideoPagerAdapter(FragmentManager fm, ArrayList<String> paths) {
             super(fm);
             this.filesPath = paths;
-            this.fragments = new VideoPlayFragment[paths.size()];
+            this.fragments = new VideoPlayerFragment[paths.size()];
         }
 
         @Override
-        public VideoPlayFragment getItem(int position) {
+        public VideoPlayerFragment getItem(int position) {
 
 //            VideoPlayFragment fragment = new VideoPlayFragment(filesPath.get(position));
 //            
@@ -119,10 +118,10 @@ public class VideoPlayerActivity extends MyCompatActivity {
 //                cachedFragment = currentFragment;
 //            }
 //            currentFragment = fragment;
-            VideoPlayFragment fragment = fragments[position];
+            VideoPlayerFragment fragment = fragments[position];
 
             if (fragment == null) {
-                return fragments[position] = new VideoPlayFragment(filesPath.get(position));
+                return fragments[position] = new VideoPlayerFragment(filesPath.get(position));
             }
 
             return fragment;
@@ -140,11 +139,9 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
     @Override
     public void onBackPressed() {
-
         Intent intent = new Intent();
         intent.putExtra("index", viewPager.getCurrentItem());
         setResult(RESULT_OK, intent);
-
         super.onBackPressed();
 
     }

@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import com.jefferson.application.br.util.DialogUtils;
+import android.content.IntentFilter;
 
 public class LockFragment extends Fragment implements OnItemClickListener {
 
@@ -50,7 +51,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 	public LockFragment() {
 		initTask();
 	}
-
+    boolean mutable;
 	private ProgressBar mProgressBar;
 	private TextView mTextView;
 	private ArrayList<AppModel> models = new ArrayList<>();
@@ -80,7 +81,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 					mTextView.setVisibility(View.VISIBLE);
 				} 
 			}
-
+           
 			intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
 			mListView.setOnItemClickListener(this);
 		}
@@ -93,7 +94,6 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 	}
     @Override
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-
         lastClickedItemPosition = position;
         lastClickedCheckView = view.findViewById(R.id.check1);
         boolean noNeedOverlayPermission = false;
@@ -133,8 +133,19 @@ public class LockFragment extends Fragment implements OnItemClickListener {
     }
     
     public void animateCheckView(View vi) {
+        mutable = true;
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
         vi.startAnimation(animation);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        
+        if (mutable) {
+            getContext().sendBroadcast(new Intent(App.ACTION_APPLOCK_SERVICE_UPDATE_DATA));
+            mutable = false;
+        }
     }
     
 	public void initTask() {
@@ -210,7 +221,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
                 mProgressBar.setProgress((int)progress);
             }
 		}
-
+        
         @Override
         protected Void doInBackground(Object... params) {
 

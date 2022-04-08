@@ -70,6 +70,7 @@ public class FileTransfer {
 		}
 		return true;
 	}
+    
 	public static class encrypetion {
 
 		public boolean encryptFile(File res, File dest) {

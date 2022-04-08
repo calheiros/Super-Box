@@ -3,7 +3,6 @@ package com.jefferson.application.br;
 import android.app.*;
 import android.content.*;
 import android.os.*;
-
 import com.facebook.drawee.backends.pipeline.*;
 import com.facebook.imagepipeline.core.*;
 import com.facebook.imagepipeline.decoder.*;
@@ -15,18 +14,15 @@ import android.widget.*;
 import android.util.Log;
 
 public class App extends Application implements Thread.UncaughtExceptionHandler {
-
-	public static final String EXCEPTION_FOUND = "_exception_found";
-    public static final String EXCEPTION_LOG = "_exception_log";
+  
     public static String TAG;
     private static App application;
 	public static final String INTERSTICAL_ID = "ca-app-pub-3062666120925607/8580168530";
 	public static final String INTERSTICAL_TEST_ID = "ca-app-pub-3940256099942544/1033173712";
     public static final String ACTION_REPORT_CRASH = "com.jefferson.application.action.REPORT_CRASH";
-    
+    public static String PERMISSION_RECEIVE_BUS_DATA = "com.jefferson.application.RECEIVE_UPDATED_DATA";
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
     private Handler mHandler = new Handler();;
-    private SharedPreferences mSharedPrefs;
     public static boolean localeConfigured = false;
     private ArrayList<MyCompatActivity> activities = new ArrayList<>();
 	private boolean timing = false;
@@ -43,7 +39,9 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     };
 
     public static final String ACTION_OPEN_FROM_DIALER = "com.jefferson.application.action.ACTION_OPEN_FROM_DIALER";
-
+    public static final String ACTION_APPLOCK_SERVICE_UPDATE_DATA = "com.jefferson.application.action.UPDATA";
+    public static final String ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD = "com.jefferson.applicatiom.action.APPLOCK_SERVICE_UPDATE_PASSWORD";
+    
     private boolean isAnyNotRunning() {
         for (MyCompatActivity activity : activities) {
             if (activity.isAlive()) return false;
@@ -86,7 +84,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     public void onCreate() {
         application = this;
         super.onCreate();
-        mSharedPrefs = getSharedPreferences(EXCEPTION_LOG, MODE_PRIVATE);
+       // mSharedPrefs = getSharedPreferences(EXCEPTION_LOG, MODE_PRIVATE);
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
 
@@ -101,7 +99,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     }
 
     private void startServiceNotRunning() {
-        if (!Utils.isMyServiceRunning(AppLockService.class)) {
+        if (!ServiceUtils.isMyServiceRunning(AppLockService.class)) {
             Intent intent = new Intent(this, AppLockService.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

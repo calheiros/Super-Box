@@ -6,12 +6,13 @@
 	android:layout_height="match_parent">
 
 	<TextView
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:id="@+id/ascii_text_view"
 		android:layout_centerHorizontal="true"
-		android:textSize="12dp"
+		android:textSize="3.4pt"
 		android:layout_gravity="center"/>
 
 	<TextView
@@ -24,12 +25,15 @@
 		android:layout_alignParentBottom="true"
 		android:layout_centerHorizontal="true"
 		android:id="@+id/creditslayoutTextView1"
-		android:layout_marginBottom="10dp"
-		android:layout_marginTop="40dp"/>
+        android:layout_marginTop="10dp"
+		android:layout_marginBottom="10dp"/>
 
 	<LinearLayout
 		android:orientation="horizontal"
-		android:padding="10dp"
+		android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
         android:gravity="center_vertical"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content">

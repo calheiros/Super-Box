@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorBackground">#FF151414</color>
+    <!--<color name="colorBackground">#FF151414</color>-->
+    <color name="colorBackground">#FF141515</color>
     <color name="darkTransparent">#4E000000</color>
 	<color name="verdana">#875443</color>
 	<color name="yellow">#FFDB00</color>

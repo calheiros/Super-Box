@@ -66,7 +66,7 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 
         pm = (PowerManager) getSystemService("power");
         app = (App) getApplication();
-        KEY = RandomString.getRandomString(8);
+        KEY = StringUtils.getRandomString(8);
         app.putActivity(this, KEY);
         initialized = true;
     }

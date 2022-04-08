@@ -23,8 +23,9 @@ import com.jefferson.application.br.R;
 import java.io.File;
 import com.jefferson.application.br.util.JDebug;
 import com.bumptech.glide.Glide;
+import com.jefferson.application.br.ui.JVideoController;
 
-public class VideoPlayFragment extends Fragment implements OnTouchListener, OnClickListener {
+public class VideoPlayerFragment extends Fragment implements OnTouchListener, OnClickListener {
 
     private View parentView;
     private VideoView mVideoView;
@@ -35,8 +36,9 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
     private View overlayView;
     private View playButton;
     private Bitmap bmp;
+    private JVideoController jController;
 
-    public VideoPlayFragment(String videoPath) {
+    public VideoPlayerFragment(String videoPath) {
         this.videoPath = videoPath;
     }
 
@@ -67,25 +69,17 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
                 return parentView;
             }
             //loadThumbnail(videoPath);
-            Glide.with(this).load(file).into(mThumbView);
+            //Glide.with(this).load(file).into(mThumbView);
 
             overlayView.setOnClickListener(this);
-            mediaController = new MediaController(getActivity());
-            mediaController.setAnchorView(parentView);
-            mVideoView.setMediaController(mediaController);
-            mVideoView.setOnPreparedListener(
-
-                new MediaPlayer.OnPreparedListener() {
-
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mp.setLooping(true);
-                    }
-                }
-            );
-
+            jController = new JVideoController(mVideoView);
+            jController.setAnchor((ViewGroup)parentView);
+            jController.prepare();
+            //mediaController = new MediaController(getActivity());
+            //mediaController.setAnchorView(parentView);
+            //mVideoView.setMediaController(mediaController);
+           
             mVideoView.setOnErrorListener(
-
                 new MediaPlayer.OnErrorListener(){
 
                     @Override
@@ -99,11 +93,12 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
             if (playOnCreate) {
                 JDebug.toast("play on create!");
                 startVideo();
+
             }
         }
-        
+
         Glide.with(this).load("file://" + videoPath).into(mThumbView);
-        
+
         return parentView;
     }
 
@@ -155,6 +150,7 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
         if (mVideoView != null) {
             mVideoView.setVideoURI(Uri.parse(videoPath));
             mVideoView.start();
+
         }
     }
 
@@ -180,7 +176,7 @@ public class VideoPlayFragment extends Fragment implements OnTouchListener, OnCl
         }
 
     }
-
+    
     public void resume() {
 
         if (mVideoView != null) {

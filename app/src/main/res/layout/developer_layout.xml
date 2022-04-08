@@ -1,71 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<ScrollView
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="center"
-	android:padding="10dp">
+	android:layout_height="match_parent">
 
-	<Switch
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="Debug"
-		android:layout_margin="10dp"
-		android:id="@+id/developerlayoutSwitch"/>
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:gravity="center"
+		android:padding="10dp">
 
-	<Button
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="Alert Dialog"
-		android:onClick="showAlertDialog"/>
+		<Switch
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Debug"
+			android:layout_margin="10dp"
+			android:id="@+id/developerlayoutSwitch"/>
 
-	<Button
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="Progress Dialog"
-		android:onClick="showProgressDialog"/>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Alert Dialog"
+			android:onClick="showAlertDialog"/>
 
-	<Button
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="camera"
-		android:onClick="camera"/>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Progress Dialog"
+			android:onClick="showProgressDialog"/>
 
-	<Button
-		android:layout_width="wrap_content"
-		style="?android:attr/buttonStyleSmall"
-		android:layout_height="wrap_content"
-		android:text="Contacts"
-		android:onClick="contacts"/>
+		<Button
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="camera"
+			android:onClick="camera"/>
 
-	<Button
-		android:layout_width="wrap_content"
-		style="?android:attr/buttonStyleSmall"
-		android:layout_height="wrap_content"
-		android:text="Notification"
-		android:onClick="notification"/>
+		<Button
+			android:layout_width="wrap_content"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="wrap_content"
+			android:text="Contacts"
+			android:onClick="contacts"/>
 
-	<Button
-		android:layout_width="wrap_content"
-		style="?android:attr/buttonStyleSmall"
-		android:layout_height="wrap_content"
-		android:text="Test Tread"
-		android:onClick="testThread"/>
+		<Button
+			android:layout_width="wrap_content"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="wrap_content"
+			android:text="Notification"
+			android:onClick="notification"/>
 
-	<Button
-		android:layout_width="wrap_content"
-		style="?android:attr/buttonStyleSmall"
-		android:layout_height="wrap_content"
-        android:onClick="trowException"
-		android:text="Thows Exception"/>
-    
-    <Button
-        android:layout_marginTop="15dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="quit"
-		android:onClick="quit"/>
-    
-</LinearLayout>
+		<Button
+			android:layout_width="wrap_content"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="wrap_content"
+			android:text="Test Tread"
+			android:onClick="testThread"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="wrap_content"
+			android:onClick="trowException"
+			android:text="Thows Exception"/>
+
+		<Button
+			android:layout_marginTop="15dp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="quit"
+			android:onClick="quit"/>
+
+		<Button
+			android:layout_width="wrap_content"
+			style="?android:attr/buttonStyleSmall"
+			android:layout_height="wrap_content"
+            android:onClick="openPin"
+			android:text="pin activity"
+			android:id="@+id/openPin"/>
+
+	</LinearLayout>
+
+</ScrollView>
 

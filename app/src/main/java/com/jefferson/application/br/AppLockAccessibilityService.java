@@ -75,11 +75,8 @@ public class AppLockAccessibilityService extends android.accessibilityservice.Ac
                     } 
                     appLockWindow.unlock();
                 }
-                appLockWindow.lockApp(activityOnTop);
+                appLockWindow.lock(activityOnTop);
 
-                /* Intent intent = new Intent(App.getAppContext(), VerifyActivity.class);
-                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    
-                 startActivity(intent);*/
             } else {
                 if (appLockWindow.isLocked()) {
                     Log.i(getClass().getSimpleName(), "UNLOCKED on: " + activityOnTop);
@@ -100,10 +97,10 @@ public class AppLockAccessibilityService extends android.accessibilityservice.Ac
                 String name = appLockWindow.getLockePackageName();
                 if (!activityOnTop.equals(name)) {
                     appLockWindow.unlock();
-                    appLockWindow.lockApp(activityOnTop);
+                    appLockWindow.lock(activityOnTop);
                 }
             } else {
-                appLockWindow.lockApp(activityOnTop);
+                appLockWindow.lock(activityOnTop);
             }
         } else if (appLockWindow.isLocked()) {
             appLockWindow.unlock();
@@ -140,7 +137,7 @@ public class AppLockAccessibilityService extends android.accessibilityservice.Ac
 
 	@Override
 	protected boolean onKeyEvent(KeyEvent event) {
-		Toast.makeText(this, "key", Toast.LENGTH_LONG).show();
+		JDebug.toast("key", Toast.LENGTH_LONG);
 		return super.onKeyEvent(event);
 
 	}

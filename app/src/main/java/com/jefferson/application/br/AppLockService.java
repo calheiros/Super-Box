@@ -1,28 +1,33 @@
 package com.jefferson.application.br;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
+import android.app.usage.UsageStatsManager;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
+import com.jefferson.application.br.AppLockService;
 import com.jefferson.application.br.adapter.AppsAdapter;
 import com.jefferson.application.br.database.AppsDatabase;
 import com.jefferson.application.br.receiver.KeyWatcher;
+import com.jefferson.application.br.util.EncrytionUtil;
 import com.jefferson.application.br.util.JDebug;
+import com.jefferson.application.br.util.Storage;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import android.os.Build;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.Notification.Builder;
-import com.jefferson.application.br.activity.VerifyActivity;
-import java.util.ArrayList;
+import javax.crypto.SecretKey;
 
 public class AppLockService extends Service {
 
@@ -32,13 +37,14 @@ public class AppLockService extends Service {
 	private AppLockWindow appLockWindow;
 	private ScreenOnOff mybroadcast;
 	private AppsDatabase database;
-
 	public static Handler toastHandler;
 	public static AppLockService self;
 	public static boolean toast = false;
 	public KeyWatcher mHomeWatcher;
     public ArrayList<String> lockedApps;
-    String passedApp = "";
+    private UsageStatsManager usageStats;
+    private BroadcastReceiver dataBusReceiver;
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		throw new UnsupportedOperationException("operação não implementada");
@@ -50,8 +56,9 @@ public class AppLockService extends Service {
 		AppsAdapter.service = this;
 		database = new AppsDatabase(this);
 		appLockWindow = new AppLockWindow(getApplicationContext(), database);
-		//mLockedApps = mDabase.getLockedApps();
-
+        usageStats = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+        lockedApps = database.getLockedPackages();
+        createDataBusReceiver();
 		startService();
 
         mybroadcast = new ScreenOnOff();
@@ -67,7 +74,7 @@ public class AppLockService extends Service {
                 }
 
                 @Override public void onHomePressed() {
-                    homePressed();
+
                 }
             }
         );
@@ -79,6 +86,42 @@ public class AppLockService extends Service {
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		return START_STICKY;
 	}
+
+    private void createDataBusReceiver() {
+        dataBusReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                JDebug.toast(action);
+
+                if (App.ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD.equals(action)) {
+                    File token = new File(getCacheDir(), "token");
+                    SecretKey key = EncrytionUtil.getStoredKey(token);
+                    if (key == null) {
+                        JDebug.toast("Can not read key");
+                        return;
+                    }
+                    String encryptedPass = intent.getStringExtra("password");
+                    String realPassword = EncrytionUtil.getDecryptedString(key, encryptedPass);
+
+                    if (realPassword != null) {
+                        JDebug.toast("DECRYPTED PASSWORD" + realPassword);
+                        try {
+                            Integer.parseInt(realPassword);
+                        } catch ( NumberFormatException e) {
+                            JDebug.toast(e.getMessage());
+                        }
+                        appLockWindow.setPassword(realPassword);
+                    } 
+                } else if (App.ACTION_APPLOCK_SERVICE_UPDATE_DATA.equals(action)) {
+                    lockedApps = database.getLockedPackages();
+                }
+            }
+        };
+        registerReceiver(dataBusReceiver, new IntentFilter(App.ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD));
+        registerReceiver(dataBusReceiver, new IntentFilter(App.ACTION_APPLOCK_SERVICE_UPDATE_DATA));
+    }
 
     private void startForeground() {
 
@@ -119,13 +162,6 @@ public class AppLockService extends Service {
 		super.onConfigurationChanged(newConfig);
 	}
 
-    private void homePressed() {
-
-        if (appLockWindow.isLocked()) {
-            appLockWindow.unlock();
-        }
-    }
-
 	@Override
 	public void onStart(Intent intent, int startId) {
 		super.onStart(intent, startId);
@@ -133,6 +169,10 @@ public class AppLockService extends Service {
 
 	@Override
 	public void onDestroy() {
+
+        if (dataBusReceiver != null) {
+            unregisterReceiver(dataBusReceiver);
+        }
         mHomeWatcher.stopWatch();
 		unregisterReceiver(mybroadcast);
 		sendBroadcast(new Intent(ACTION_RESTART_SERVICE));
@@ -175,34 +215,27 @@ public class AppLockService extends Service {
 		@Override
 		public void handleMessage(Message msg) {
 
-            lockedApps = database.getLockedPackages();
-            String activityOnTop = com.jefferson.application.br.util.Utils.getRunningPackage();
+            String activityOnTop = com.jefferson.application.br.util.ServiceUtils.getForegroundPackage(usageStats);
 
-            /*if (!appLockWindow.getPassedApp().equals(activityOnTop) && lockedApps.contains(activityOnTop)) {
-             if (appLockWindow.isLocked()) {
-             String name = appLockWindow.getLockePackageName();
-             if (!activityOnTop.equals(name)) {
-             appLockWindow.unlock();
-             appLockWindow.lockApp(activityOnTop);
-             }
-             } else {
-             appLockWindow.lockApp(activityOnTop);
-             }
-             } else if (appLockWindow.isLocked()) {
-             appLockWindow.unlock();
-             }*/
+            if (activityOnTop == null) {
+                return;
+            }
+
+            if (lockedApps == null) {
+                lockedApps = database.getLockedPackages();
+            }
 
             if (!activityOnTop.equals(pActivity)) {
 
                 pActivity = activityOnTop;
 
-                if (database.getLockedPackages().contains(activityOnTop) && !database.isAppUnlocked(activityOnTop)) {
+                if (lockedApps.contains(activityOnTop) && !onWhitelist(activityOnTop)) {
 
 					if (appLockWindow.isLocked()) {
 						appLockWindow.unlock();
 					}
 
-					appLockWindow.lockApp(activityOnTop);
+					appLockWindow.lock(activityOnTop);
                     /*Intent intent = new Intent(App.getAppContext(), VerifyActivity.class);
                      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    
                      startActivity(intent);*/
@@ -216,6 +249,10 @@ public class AppLockService extends Service {
 			}
 		}
 	}
+
+    private boolean onWhitelist(String name) {
+        return false;
+    }
 
     private void showMessage(String m) {
 		Toast.makeText(this, m, Toast.LENGTH_LONG).show();

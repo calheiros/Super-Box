@@ -38,7 +38,7 @@ import com.jefferson.application.br.fragment.SettingFragment;
 import com.jefferson.application.br.task.ImportTask;
 import com.jefferson.application.br.util.IntentUtils;
 import com.jefferson.application.br.util.Storage;
-import com.jefferson.application.br.util.Utils;
+import com.jefferson.application.br.util.ServiceUtils;
 import java.io.File;
 import java.util.ArrayList;
 import android.content.pm.ActivityInfo;
@@ -82,7 +82,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     }
 
 	public static final String admob_key="ca-app-pub-3062666120925607/8250392170";
-    public static final String ACTION_INIT_WITH_PREFERENCES = "preferences_init_action";
+    public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 0;
     private static final int GET_URI_CODE_TASK = 54;
 	private static final int GET_URI_CODE = 98;
@@ -92,17 +92,16 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	private DrawerLayout drawerLayout;
 	private SettingFragment settingFragment;
 	private NavigationView navigationView;
-	private App app;
 	private Fragment oldFrag;
     private SharedPreferences sharedPreferences;
 	private int position;
-	private static MainActivity instante;
+	private static MainActivity instance;
 	private ArrayList<FileModel> models;
 	private AdView adview;
 	private InterstitialAd interstitial;
 
     public static MainActivity getInstance() {
-		return instante;
+		return instance;
 	}
 
     public static final String ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS";
@@ -120,7 +119,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.DefaultTheme);
-        this.instante = this;
+        this.instance = this;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
 		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
@@ -142,7 +141,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_UPDATE);
 
-        receiver = new BroadcastReceiver(){
+        receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 updateAllFragments();
@@ -221,7 +220,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	    this.lockFragment = new LockFragment();
         this.settingFragment = new SettingFragment();
 
-		boolean toSetting = ACTION_INIT_WITH_PREFERENCES.equals(getIntent().getAction());
+		boolean toSetting = ACTION_START_IN_PREFERENCES.equals(getIntent().getAction());
 		changeFragment(toSetting ? settingFragment: mainFragment);
 		navigationView.getMenu().getItem(toSetting ? 2 : 0).setChecked(true);
 	}
@@ -237,7 +236,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 				@Override
 				public boolean onClick(SimpleDialog dialog) {
 
-					if (Utils.isConnected(MainActivity.this))
+					if (ServiceUtils.isConnected(MainActivity.this))
 						Toast.makeText(getApplicationContext(), "obrigado! relatório de erro enviado.", 1).show();
 					else 
 						Toast.makeText(getApplicationContext(), "obrigado! relatório de será enviado quando estiver conectado.", 1).show();
@@ -252,7 +251,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 				@Override
 				public void onDismiss(DialogInterface dInterface) {
-					sharedPreferences.edit().putBoolean(app.EXCEPTION_FOUND, false).commit();
+					//sharedPreferences.edit().putBoolean(app.EXCEPTION_FOUND, false).commit();
 
 				}
 			}
@@ -314,7 +313,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
-        if (!Utils.isMyServiceRunning(AppLockService.class)) {
+        if (!ServiceUtils.isMyServiceRunning(AppLockService.class)) {
 			startService(new Intent(this, AppLockService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
 	}

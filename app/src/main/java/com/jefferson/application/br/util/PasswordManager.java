@@ -14,14 +14,14 @@ public class PasswordManager {
     public File file;
     private SharedPreferences sharedPrefers;
     private static final String PIN_KEY = "pin_key";
-    private static String PATTERN_KEY = "pattern";
+    public static String PATTERN_KEY = "pattern";
 
     public PasswordManager() {
         
         this.file = new File(Storage.getInternalStorage(), ".SECRETY_KEY");
         this.sharedPrefers = MyPreferences.getSharedPreferences();
     }
-
+    
     public void setPasswordToFile(String password) {
 
         try {
