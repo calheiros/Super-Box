@@ -1,4 +1,4 @@
-package com.jefferson.application.br;
+package com.jefferson.application.br.service;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -16,13 +16,16 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.widget.Toast;
-import com.jefferson.application.br.AppLockService;
-import com.jefferson.application.br.adapter.AppsAdapter;
+import com.jefferson.application.br.App;
+import com.jefferson.application.br.AppLockWindow;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.ScreenOnOff;
+import com.jefferson.application.br.adapter.AppLockAdapter;
 import com.jefferson.application.br.database.AppsDatabase;
 import com.jefferson.application.br.receiver.KeyWatcher;
+import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.util.EncrytionUtil;
 import com.jefferson.application.br.util.JDebug;
-import com.jefferson.application.br.util.Storage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -53,7 +56,7 @@ public class AppLockService extends Service {
 	@Override
 	public void onCreate() {
         startForeground();
-		AppsAdapter.service = this;
+		AppLockAdapter.service = this;
 		database = new AppsDatabase(this);
 		appLockWindow = new AppLockWindow(getApplicationContext(), database);
         usageStats = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);

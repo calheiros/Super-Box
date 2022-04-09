@@ -42,18 +42,18 @@ import android.content.ActivityNotFoundException;
 import android.view.View.OnClickListener;
 import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.activity.DeveloperActivity;
+import com.jefferson.application.br.util.MyPreferences;
+import android.widget.AutoCompleteTextView.OnDismissListener;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
 	public String[] storages;
 	public String version;
-
-    SettingAdapter mAdapter;
-	Toolbar mToolbar;
-	SharedPreferences mShared;
-	SharedPreferences.Editor mEdit;
-	int count;
-
+    private SettingAdapter mAdapter;
+	private Toolbar mToolbar;
+	private SharedPreferences mShared;
+	private SharedPreferences.Editor mEdit;
+	private int egg;
     private int storageChoicePosition;
 
 	@Override
@@ -142,11 +142,22 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         return items;
     }
 
+    private void setAllEggsfound() {
+        MyPreferences.getSharedPreferencesEditor().putBoolean("eggs_found", true).commit();
+    }
+
+    private boolean allEggsFound() {
+        return MyPreferences.getSharedPreferences().getBoolean("eggs_found", false);
+    }
+
+    private void enterDebugActivitu() {
+        Intent intent = new Intent(getContext(), DeveloperActivity.class);
+        getActivity().startActivity(intent);
+    }
+
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
         if (position == 8) {
-            Intent intent = new Intent(getContext(), DeveloperActivity.class);
-            getActivity().startActivity(intent);
             return true;
         }
         return false;
@@ -185,6 +196,12 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     @Override
     public void onClick(View view) {
         openGithub();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        egg = 0;
     }
     
     public void configureRoundedDialog(AlertDialog dialog) {
@@ -292,7 +309,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	}
 
     private String getLanguage() {
-
         String locale = LocaleManager.getLanguage(getContext());
 
         if (locale == null)
@@ -317,12 +333,46 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         view.findViewById(R.id.githubTextView).setOnClickListener(this);
         asciiView.setText(ASCIIArt.CHIKA_ART);
 		build.setView(view);
-        build.setPositiveButton("fechar", null);
-        configureRoundedDialog(build.show());
-		//build.show().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-	}
+        build.setPositiveButton("fechar", new DialogInterface.OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialogInterface, int id) {
+                    dialogInterface.cancel();
+                    egg = 0;
+                }
+            }
+        );
+
+        if (!allEggsFound()) {
+            build.setOnDismissListener(new DialogInterface.OnDismissListener() {
+
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if (++egg == 7) {
+                            setAllEggsfound();
+                        }
+                    }
+                }
+            );
+        }
+
+        if (allEggsFound()) {
+            build.setNegativeButton("DEV", new DialogInterface.OnClickListener() {
+
+                    @Override 
+                    public void onClick(DialogInterface dialog, int id) {
+                        enterDebugActivitu();
+                    }
+                }
+            );
+        }
+        AlertDialog alert = build.show();
+        alert.setCanceledOnTouchOutside(true);
+        configureRoundedDialog(alert);
+    }
 
 	private void showWarning() {
+
         View view = getLayoutInflater(null).inflate(R.layout.dialog_check_box_view, null);
 		final CheckBox mCheckBox = (CheckBox) view.findViewById(R.id.dialogcheckbox);
 		new AlertDialog.Builder(getActivity())
@@ -365,7 +415,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 							locale = "es";
 							break;
 					}
-                    
+
 					LocaleManager.setNewLocale(getContext(), locale);
 					Intent intent = new Intent(getContext(), MainActivity.class);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);

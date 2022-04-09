@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 abstract public class JTask implements JTaskListener {
 
-    private Thread mainThread;
+    
     private static final int STATE_FINISHED = 3;
     private static final int STATE_INTERRUPTED = -1;
     private static final int STATE_BEING_STARTED = 1;
@@ -18,72 +18,83 @@ abstract public class JTask implements JTaskListener {
     private static Exception exception = null;
 
     private  Handler mainHandler;
-
+    private Thread workThread;
+    
+    public static enum Status {
+        FINISHED,
+        STARTED,
+        INTERRUPTED
+    }
+    
+    public Status status;
+    
     public JTask() {
-        this.mainThread = createThread();
-        this.mainHandler = creataHandler();
+        this.workThread = new WorkThread();
+        this.mainHandler = new MainHandler(Looper.getMainLooper());
     }
+    
+    private class MainHandler extends Handler {
 
-    private Handler creataHandler() {
-        return new Handler(Looper.getMainLooper()) {
+        public MainHandler(Looper looper) {
+            super(looper);
+        }
 
-            @Override
-            public void dispatchMessage(Message msg) {
-                int state = msg.getData().getInt("state");
+        @Override
+        public void dispatchMessage(Message msg) {
+            int state = msg.getData().getInt("state");
 
-                switch (state) {
-                    case STATE_FINISHED:
-                        mainThread.interrupt();
-                        onFinished();
-                        break;
-                    case STATE_BEING_STARTED:
-                        onBeingStarted();
-                        mainThread.start();
-                        break;
-                    case STATE_INTERRUPTED:
-                        if (!isInterrupted()) {
-                            mainThread.interrupt();
-                            onInterrupted();
-                        }
-                        break;
-                    case STATE_UPDATED:
-                        Object[] data = (Object[]) msg.getData().getSerializable("data");
-                        onUpdated(data);
-                        break;
-                    case STATE_EXCEPTION_CAUGHT:
-                        onException(exception);
-                        break;
-                }
+            switch (state) {
+                case STATE_FINISHED:
+                    status = Status.FINISHED;
+                    workThread.interrupt();
+                    onFinished();
+                    break;
+                case STATE_BEING_STARTED:
+                    status = Status.STARTED;
+                    onBeingStarted();
+                    workThread.start();
+                    break;
+                case STATE_INTERRUPTED:
+                    status = Status.INTERRUPTED;
+                    if (!isInterrupted()) {
+                        workThread.interrupt();
+                        onInterrupted();
+                    }
+                    break;
+                case STATE_UPDATED:
+                    Object[] data = (Object[]) msg.getData().getSerializable("data");
+                    onUpdated(data);
+                    break;
+                case STATE_EXCEPTION_CAUGHT:
+                    onException(exception);
+                    break;
             }
-        };
+        }
     }
 
+    private class WorkThread extends Thread {
+
+        @Override
+        public void run() {
+            try {
+                workingThread();
+            } catch (Exception e) {
+                exception = e;
+                sendState(STATE_EXCEPTION_CAUGHT);
+                return;
+            }
+            sendState(STATE_FINISHED);
+        }
+    }
+    
     public void setThreadPriority(int priority) {
-        mainThread.setPriority(priority);
+        workThread.setPriority(priority);
     }
 
     private void sendState(final int state) {
         sendState(state, null);
     }
-
-    private Thread createThread() {
-        Thread workThread = new Thread() {
-
-            @Override
-            public void run() {
-                try {
-                    workingThread();
-                } catch (Exception e) {
-                    exception = e;
-                    sendState(STATE_EXCEPTION_CAUGHT);
-                    return;
-                }
-                sendState(STATE_FINISHED);
-            }
-        };
-        return workThread;
-    }
-
+    
     public void start() {
         sendState(STATE_BEING_STARTED);
     }
@@ -93,7 +104,7 @@ abstract public class JTask implements JTaskListener {
     }
 
     public boolean isInterrupted() {
-        return mainThread.isInterrupted();
+        return workThread.isInterrupted();
     }
 
     protected void sendUpdate(Object... objs) {
@@ -110,9 +121,9 @@ abstract public class JTask implements JTaskListener {
         msg.setData(bundle);
         mainHandler.sendMessage(msg);
     }
-    
-    protected void onInterrupted(){}
-    protected void onUpdated(Object[] get){}
+
+    protected void onInterrupted() {}
+    protected void onUpdated(Object[] get) {}
 }
 
 interface JTaskListener {

@@ -5,12 +5,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.GridView;
@@ -20,13 +18,13 @@ import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.adapter.PhotosFolderAdapter;
-import java.util.ArrayList;
-import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.model.MediaModel;
-import java.util.concurrent.TimeUnit;
-import android.view.Menu;
+import com.jefferson.application.br.task.JTask;
+import com.jefferson.application.br.util.MyPreferences;
+import com.jefferson.application.br.util.StringUtils;
+import java.util.ArrayList;
 
-public class GalleryAlbum extends MyCompatActivity {
+public class ImportGalleryActivity extends MyCompatActivity {
 
     private PhotosFolderAdapter obj_adapter;
 	private int position;
@@ -36,22 +34,17 @@ public class GalleryAlbum extends MyCompatActivity {
     private static final int REQUEST_PERMISSIONS = 100;
 	public static final int GET_CODE = 5658;
 	private String title;
-
     private static final String TAG = "GALERY ALBUM";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.gallery_album);
-
+        setContentView(R.layout.import_gallery);
         gv_folder = (GridView)findViewById(R.id.gv_folder);
-		sharedPrefrs = PreferenceManager.getDefaultSharedPreferences(this);
+		sharedPrefrs = MyPreferences.getSharedPreferences(this);
 	    position = getIntent().getExtras().getInt("position");
-
-		if (position == 0 || position == 1) {
-			title = (position == 0 ? getString(R.string.importar_imagem) : getString(R.string.importar_video));
-			new LoadItems().execute();
-		}
+        title = (position == 0 ? getString(R.string.importar_imagem) : getString(R.string.importar_video));
+        new RetrieveMediaTask().start();
 		setupToolbar();
 	}
 
@@ -82,7 +75,7 @@ public class GalleryAlbum extends MyCompatActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.item_from_gallery:
                 notImplemented();
                 break;
@@ -138,7 +131,6 @@ public class GalleryAlbum extends MyCompatActivity {
         int column_index_duration  = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
 
         while (cursor.moveToNext()) {
-
             String duration = null;
 
             if (position == 1) {
@@ -154,7 +146,7 @@ public class GalleryAlbum extends MyCompatActivity {
                 MediaModel mm = new MediaModel(absolutePathOfImage);
 
                 if (position == 1)
-                    mm.setDuration(getFormatedTime(duration));
+                    mm.setDuration(StringUtils.getFormatedTime(duration));
 
                 model.setName(cursor.getString(column_index_folder_name));
                 model.addItem(mm);
@@ -163,10 +155,10 @@ public class GalleryAlbum extends MyCompatActivity {
                 MediaModel mm = new MediaModel(absolutePathOfImage);
 
                 if (position == 1) {
-                    String formatedTime = getFormatedTime(duration);
+                    String formatedTime = StringUtils.getFormatedTime(duration);
                     mm.setDuration(formatedTime);
                 }
-                
+
                 al_images.get(folderPosition).addItem(mm);
             }
         }
@@ -174,22 +166,7 @@ public class GalleryAlbum extends MyCompatActivity {
 
         return al_images;
     }
-    
-    public String getFormatedTime(String duration) {
-        int millis = 0;
 
-        try {
-            millis = Integer.valueOf(duration);
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-
-        long secunds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
-        final String time = String.format("%d:%02d", TimeUnit.MILLISECONDS.toMinutes(millis), secunds);
-
-        return time;
-    }
-    
     private int getFolderIndex(ArrayList<FolderModel> list, String name) {
 
         if (name == null) name = FolderModel.NO_FOLDER_NAME;
@@ -203,15 +180,13 @@ public class GalleryAlbum extends MyCompatActivity {
     }
 
     private void setAdapter(ArrayList<FolderModel> list) {
-
         if (list.isEmpty()) {
             findViewById(R.id.gallery_album_empty_layout).setVisibility(View.VISIBLE);
         }
-
-		obj_adapter = new PhotosFolderAdapter(GalleryAlbum.this, list, position);
+		obj_adapter = new PhotosFolderAdapter(ImportGalleryActivity.this, list, position);
 		gv_folder.setAdapter(obj_adapter);
 	}
-    
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
@@ -236,38 +211,40 @@ public class GalleryAlbum extends MyCompatActivity {
 						if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
 							fn_imagespath();
 						} else {
-							Toast.makeText(GalleryAlbum.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
+							Toast.makeText(ImportGalleryActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
 						}
 					}
 				}
 		}
 	}
 
-	private class LoadItems extends AsyncTask<Void, Void, ArrayList<FolderModel>>  {
+	private class RetrieveMediaTask extends JTask  {
 
-		private ProgressBar myProgress;
-        public LoadItems() {
-			this.myProgress = (ProgressBar) findViewById(R.id.galleryalbumProgressBar);
-		}
+        private ArrayList<FolderModel> result;
+        private ProgressBar myProgress;
 
-		@Override
-		protected void onPreExecute() {
-			myProgress.setVisibility(View.VISIBLE);
-			super.onPreExecute();
-		}
+        @Override
+        public void workingThread() {
+            result = fn_imagespath();
+        }
 
-		@Override
-		protected void onPostExecute(ArrayList<FolderModel> result) {
-			myProgress.setVisibility(View.GONE);
-	        if (result != null) {
-				setAdapter(result);
+        @Override
+        public void onBeingStarted() {
+            this.myProgress = (ProgressBar) findViewById(R.id.galleryalbumProgressBar);
+            myProgress.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        public void onFinished() {
+            myProgress.setVisibility(View.GONE);
+            if (result != null) {
+                setAdapter(result);
 			}
-			super.onPostExecute(result);
-		}
+        }
 
-		@Override
-		protected ArrayList<FolderModel> doInBackground(Void[] object) {
-			return fn_imagespath();
-		}
+        @Override
+        public void onException(Exception e) {
+
+        }
 	}
 }

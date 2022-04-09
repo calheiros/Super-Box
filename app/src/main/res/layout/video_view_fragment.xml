@@ -18,20 +18,20 @@
 		android:id="@+id/video_view_overlay"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent">
-
+        
+        <ImageView
+            android:id="@+id/video_view_play_button"
+            android:layout_gravity="center"
+            android:layout_centerInParent="true"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
+            android:src="@drawable/ic_video_play"/>
+        
 		<ImageView
 			android:scaleType="fitCenter"
 			android:id="@+id/video_view_fragment_thumb_view"
 			android:layout_width="match_parent"
 			android:layout_height="match_parent"/>
-
-		<ImageView
-            android:id="@+id/video_view_play_button"
-			android:layout_gravity="center"
-			android:layout_centerInParent="true"
-			android:layout_width="65dp"
-			android:layout_height="65dp"
-			android:src="@drawable/ic_video_play"/>
 
 	</FrameLayout>
 

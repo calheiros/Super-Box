@@ -14,21 +14,22 @@ import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Files;
+import android.support.annotation.NonNull;
 import android.support.v4.provider.DocumentFile;
 import android.util.Log;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.R;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
 import java.nio.ByteBuffer;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
+import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 
 public class Storage extends DocumentUtil {
 
@@ -111,6 +112,9 @@ public class Storage extends DocumentUtil {
             while ((c = reader.read(buff)) > 0) {
                 out.write(buff, 0, c);
             }
+            reader.close();
+            out.flush();
+            out.close();
             result = out.toByteArray();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -129,10 +133,10 @@ public class Storage extends DocumentUtil {
 	}
 
     public static Uri getExternalUri(Context context) {
-        String string = PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.EXTERNAL_URI), null);
+        String string = MyPreferences.getSharedPreferences().getString(context.getString(R.string.EXTERNAL_URI), null);
 
         if (string == null) {
-            return (Uri) null;
+            return null;
         }
 
         return Uri.parse(string);
@@ -254,6 +258,7 @@ public class Storage extends DocumentUtil {
             }
         }
     }
+
     public static void scanMediaFiles(String[] paths) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			mediaScannerConnection(paths);
@@ -265,21 +270,33 @@ public class Storage extends DocumentUtil {
 			}
 		}
 	}
-	public static String getPathFromMediaUri(Uri uri, Context context) {
+
+	/*public static String getPathFromUri(@NonNull Uri uri, Context context) {
 		String filePath = null;
 
-		if (uri != null && "content".equals(uri.getScheme())) {
-			String[] proj = { MediaStore.Video.Media.DATA };
-			Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
-			int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-			cursor.moveToFirst();
-			return cursor.getString(column_index);
+		if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+            try {
+                String[] proj = { MediaStore.Video.Media.DATA, MediaStore.Images.Media.DATA};
+                Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
+                int column_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+                boolean c = cursor.moveToFirst();
+                if (c) {
+                    return cursor.getString(column_index);
+                }
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
 		} else {
 			filePath = uri.getPath();
 		}
 		Log.d("", "Chosen path = " + filePath);
 		return filePath;
 	}
+    */
+    public static String getPath(Uri uri) {
+        return new FileUtils(App.getAppContext()).getPath(uri);
+    }
+    
     public static void mediaScannerConnection(String[] strArr) {
 
         MediaScannerConnection.scanFile(App.getAppContext(), strArr, null, new MediaScannerConnection.OnScanCompletedListener(){

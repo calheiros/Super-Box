@@ -1,17 +1,23 @@
 package com.jefferson.application.br;
 
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import com.facebook.drawee.backends.pipeline.*;
-import com.facebook.imagepipeline.core.*;
-import com.facebook.imagepipeline.decoder.*;
-import com.jefferson.application.br.activity.*;
-import java.io.*;
-import java.util.*;
-import com.jefferson.application.br.util.*;
-import android.widget.*;
-import android.util.Log;
+import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.Application;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+import android.os.Handler;
+import android.os.SystemClock;
+import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
+import com.jefferson.application.br.activity.CrashActivity;
+import com.jefferson.application.br.activity.MyCompatActivity;
+import com.jefferson.application.br.service.AppLockService;
+import com.jefferson.application.br.util.JDebug;
+import com.jefferson.application.br.util.ServiceUtils;
+import java.util.ArrayList;
 
 public class App extends Application implements Thread.UncaughtExceptionHandler {
   

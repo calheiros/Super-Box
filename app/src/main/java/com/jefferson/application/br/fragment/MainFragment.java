@@ -32,7 +32,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     public int getPagerPosition() {
         return viewPager.getCurrentItem();
     }
-    
+
 	public MainFragment() {
 
 	}
@@ -46,7 +46,6 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 			pagerAdapter = new pagerAdapter(getActivity().getSupportFragmentManager());
 			toolbar = view.findViewById(R.id.toolbar);
 			viewPager = view.findViewById(R.id.mainViewPager);
-
 			viewPager.setAdapter(pagerAdapter);
 			viewPager.setOnPageChangeListener(this);
 			tabLayout = view.findViewById(R.id.tabLayoutPedido);
@@ -60,26 +59,25 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		    View fab = view.findViewById(R.id.fab);
             fab.setOnClickListener(this);
             fab.setOnLongClickListener(this);
-            
+
 			//view.findViewById(R.id.fab_create).setOnClickListener(this);
 			toogleTabIcon(0);
 		}
-        
 		main.setupToolbar(toolbar, getToolbarName(viewPager.getCurrentItem()));
 		return view;
 	}
 
 	@Override
 	public void onClick(View v) {
-        
+
 		switch (v.getId()) {
 			case R.id.fab:
-				Intent intent = new Intent(getContext(), GalleryAlbum.class);
+				Intent intent = new Intent(getContext(), ImportGalleryActivity.class);
 				getActivity().startActivityForResult(intent.putExtra("position", viewPager.getCurrentItem()), 23);
 				break;
 			case R.id.ad_view: // R.id.fab_create:
                 int position = getPagerPosition();
-				
+
                 try {
 					startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).addCategory(Intent.CATEGORY_DEFAULT).setType(position == 0 ? "image/*" : "video/*"), GET_FILE);
 				} catch (ActivityNotFoundException e) {
@@ -89,20 +87,20 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 				break;
 		} 
 	}
-    
+
     @Override
     public boolean onLongClick(View view) {
         AlbumFragment fragment = (AlbumFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
         fragment.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER);
         return true;
     }
-    
+
 	public void importFromGallery() {
-		Intent intent = new Intent(getContext(), GalleryAlbum.class);
+		Intent intent = new Intent(getContext(), ImportGalleryActivity.class);
 		intent.putExtra("position", viewPager.getCurrentItem());
 		getActivity().startActivityForResult(intent, 23);
 	}
-    
+
 	private void toogleTabIcon(int position) {
         MainFragment mainFragment = this;
         int id = position == 0 ? R.drawable.ic_videos : R.drawable.ic_pictures;
@@ -111,27 +109,27 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     }
 
 	public void update(int id) {
-        
+
         if (pagerAdapter == null) return;
         int mx = pagerAdapter.getCount();
-        
-        if ( id >= 0 && id < mx ) {
+
+        if (id >= 0 && id < mx) {
             pagerAdapter.update(id);
         }
-        
+
     }
-    
+
     public void updateAll() {
-        
+
         if (pagerAdapter == null) {
             return;
         }
-        
+
         for (int i = 0; i < pagerAdapter.getCount(); i++) {
             pagerAdapter.update(i);
         }
     }
-    
+
 	@Override
 	public void onPageScrolled(int p1, float p2, int p3) {
 
@@ -178,16 +176,16 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             }
             return fragments[position];
 		}
-        
+
         public void update(int position) {
 			AlbumFragment fragment = (AlbumFragment)fragments[position];
-            
+
             if (fragment != null) {
                 fragment.update();
 			    //notifyDataSetChanged();
             }
 		}
-        
+
 		@Override
 		public int getCount() {
 

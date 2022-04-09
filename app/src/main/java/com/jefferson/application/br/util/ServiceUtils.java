@@ -18,8 +18,8 @@ import android.content.Intent;
 public class ServiceUtils {
 
 	public static String getTopActivityApplication() {
-
-		String currentApp = "NULL";
+		String currentApp = "";
+        
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 			UsageStatsManager usm = (UsageStatsManager)App.getInstance().getSystemService("usagestats");
 			long time = System.currentTimeMillis();
@@ -52,10 +52,8 @@ public class ServiceUtils {
 	}
 
 	public static boolean isConnected(Context context) {
-
 		ConnectivityManager connectivity = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo netInfo = connectivity.getActiveNetworkInfo();
-
 		return netInfo != null && netInfo.isConnected();
 	}
 

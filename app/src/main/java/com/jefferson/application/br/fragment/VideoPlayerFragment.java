@@ -33,7 +33,6 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
     private MediaController mediaController;
     private boolean playOnCreate;
     private ImageView mThumbView;
-    private View overlayView;
     private View playButton;
     private Bitmap bmp;
     private JVideoController jController;
@@ -42,10 +41,10 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
         this.videoPath = videoPath;
     }
 
-    public void showVideoOverlay() {
+    public void showThumbView() {
 
-        if (overlayView != null && overlayView.getVisibility() != View.VISIBLE) {
-            overlayView.setVisibility(View.VISIBLE);
+        if (mThumbView != null && mThumbView.getVisibility() != View.VISIBLE) {
+            mThumbView.setVisibility(View.VISIBLE);
         }
     }
 
@@ -60,7 +59,6 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
             parentView = inflater.inflate(R.layout.video_view_fragment, null);
             mVideoView = parentView.findViewById(R.id.video_view);
             mThumbView = parentView.findViewById((R.id.video_view_fragment_thumb_view));
-            overlayView = parentView.findViewById(R.id.video_view_overlay);
             playButton = parentView.findViewById(R.id.video_view_play_button);
             File file = new File(videoPath);
 
@@ -71,14 +69,13 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
             //loadThumbnail(videoPath);
             //Glide.with(this).load(file).into(mThumbView);
 
-            overlayView.setOnClickListener(this);
             jController = new JVideoController(mVideoView);
             jController.setAnchor((ViewGroup)parentView);
             jController.prepare();
             //mediaController = new MediaController(getActivity());
             //mediaController.setAnchorView(parentView);
             //mVideoView.setMediaController(mediaController);
-           
+      
             mVideoView.setOnErrorListener(
                 new MediaPlayer.OnErrorListener(){
 
@@ -123,10 +120,10 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
         startVideo();
     }
 
-    private void hideVideoOverlay() {
+    private void hideThumbView() {
 
-        if (overlayView != null && overlayView.getVisibility() != View.GONE) {
-            overlayView.setVisibility(View.GONE);
+        if (mThumbView != null && mThumbView.getVisibility() != View.GONE) {
+            mThumbView.setVisibility(View.GONE);
         }
     }
 
@@ -145,7 +142,7 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
     }
 
     public void startVideo() {
-        hideVideoOverlay();
+        hideThumbView();
 
         if (mVideoView != null) {
             mVideoView.setVideoURI(Uri.parse(videoPath));
@@ -165,7 +162,7 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
     }
 
     public void stop() {
-        showVideoOverlay();
+        showThumbView();
 
         if (mVideoView != null && mVideoView.isPlaying()) {
             mVideoView.stopPlayback();

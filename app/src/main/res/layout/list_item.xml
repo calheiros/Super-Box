@@ -32,7 +32,7 @@
 			android:layout_marginRight="8dp"
 			android:singleLine="true"/>
 
-		<com.jefferson.application.br.widget.CheckWidget
+		<com.jefferson.application.br.widget.LockCheck
 			android:layout_width="34dp"
 			android:layout_height="34dp"
 			android:focusable="false"

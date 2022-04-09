@@ -48,22 +48,23 @@ import com.jefferson.application.br.util.JDebug;
 import android.widget.RelativeLayout;
 import android.animation.Animator;
 import android.view.animation.Animation;
+import com.jefferson.application.br.task.JTask;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.ImportTaskListener {
 
     @Override
     public void onBeingStarted() {
-        
+
     }
 
     @Override
     public void onUserInteration() {
-        
+
     }
 
     @Override
     public void onInterrupted() {
-        
+
     }
 
     @Override
@@ -189,7 +190,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private void importFromGallery() {
-        Intent intent = new Intent(this, GalleryAlbum.class);
+        Intent intent = new Intent(this, ImportGalleryActivity.class);
         intent.putExtra("position", position);
         startActivityForResult(intent, IMPORT_FROM_GALLLERY_CODE);
     }
@@ -234,9 +235,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     @Override
                     public boolean onClick(SimpleDialog dialog) {
 
-                        ViewAlbum.ExportMedia task = new ExportMedia(getSelectedItensPath(), dialog);
+                        ViewAlbum.ExportTask task = new ExportTask(getSelectedItensPath(), dialog);
                         exitSelectionMode();
-                        task.execute();
+                        task.start();
                         return false;
                     }
                 })
@@ -268,7 +269,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     new DeleteFiles(ViewAlbum.this, getSelectedItensPath(), position, folder).execute();
                     return true;
                 }
-            });
+            }
+        );
         dialog.setNegativeButton(getString(R.string.cancelar), null);
         dialog.show();
     }
@@ -302,7 +304,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	}
 
 	private void synchronizeMainActivity() {
-
         int visibility = (mAdapter.getItemCount() == 0) ? View.VISIBLE: View.GONE;
 		MainActivity mActivity = MainActivity.getInstance();
         emptyView.setVisibility(visibility);
@@ -325,7 +326,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 mAdapter.removeAll(list);
                 synchronizeMainActivity();
             } else if (requestCode == VIDEO_PLAY_CODE) {
-
                 final int index = data.getIntExtra("index", 0);
                 mRecyclerView.post(new Runnable() { 
 
@@ -357,7 +357,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                  */
             }
         }
-
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
@@ -378,13 +377,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-
 		if (selectionMode) {
-
             if (baseNameDirectory == null) {
                 baseNameDirectory = (title.length() <= 20) ? title + " ( %s )" : title.substring(0, 20) + "... ( %s )";
             }
-
 			String count = String.valueOf(mAdapter.getSelectedItemCount());
             mToolbar.setTitle(String.format(baseNameDirectory, count));
 		}
@@ -393,7 +389,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-        
         if (item.getItemId() == android.R.id.home) {
             if (selectionMode) {
                 exitSelectionMode();
@@ -406,10 +401,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 	@Override
 	public void onItemClicked(int item_position) {
-		
         if (!selectionMode) {
 			Class<?> mClass = null;
-
 			switch (position) {
 				case 0:
                     ArrayList<String> path = new ArrayList<>();
@@ -450,7 +443,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 	private ArrayList<String> getSelectedItensPath() {
 		ArrayList<String> selectedItens = new ArrayList<String>();
-
 		for (int i : mAdapter.getSelectedItems()) {
 			selectedItens.add(mAdapter.mListItemsModels.get(i).getPath());
 		}
@@ -488,7 +480,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 }
             }
         );
-
         menuLayout.setAnimation(anim);
         fab.hide();
     }
@@ -510,7 +501,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
 	@Override
 	public void onBackPressed() {
-
 		if (selectionMode) {
 			exitSelectionMode();
 			return;
@@ -644,60 +634,153 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
     }
 
-	public class ExportMedia extends AsyncTask {
-
-        private boolean allowListModification = true;
+	public class ExportTask extends JTask {
+        //private boolean allowListModification = true;
 		private SimpleDialog mySimpleDialog;
 		private List<String> selectedItens;
 		private ArrayList<String> mArrayPath = new ArrayList<>();
 		private FileTransfer mTransfer = new FileTransfer();
 		private ProgressThreadUpdate mUpdate;
-		private ArrayList<String> list2Delete= new ArrayList<>();
+		private ArrayList<String> junkList= new ArrayList<>();
 		private String ACTION_UPDATE = "ACTION_UPDATE";
         private boolean threadInterrupted;
 
-		public ExportMedia(List<String> itens, SimpleDialog progress) {
+		public ExportTask(List<String> itens, SimpleDialog progress) {
 			this.mySimpleDialog = progress;
 			this.selectedItens = itens;
 			this.mUpdate = new ProgressThreadUpdate(mTransfer, mySimpleDialog);
 		}
 
-		@Override
-		protected void onPreExecute() {
+        @Override
+        public void workingThread() {
+            long max = 0;
 
+            for (String item : selectedItens) {
+                File file = new File(item);
+                max += file.length();
+            }
+
+            max /= 1024;
+            mUpdate.setMax(max);
+            mUpdate.start();
+
+            long start = System.currentTimeMillis();
+            for (String item :selectedItens) {
+                try {
+                    if (this.isInterrupted()) {
+                        break;
+                    }
+
+                    File file = new File(item);
+                    String path = database.getPath(file.getName());
+                    if (path == null) {
+                        continue;
+                    }
+
+                    File fileOut = new File(path);
+
+                    if (fileOut.exists())
+                        fileOut = new File(getNewFileName(fileOut));
+
+                    fileOut.getParentFile().mkdirs();
+                    sendUpdate(null, fileOut.getName());
+
+                    if (file.renameTo(fileOut)) {
+                        mArrayPath.add(fileOut.getAbsolutePath());
+                        database.deleteData(file.getName());
+                        addItemToDelete(item, Thread.currentThread());
+                        mTransfer.increment(fileOut.length() / 1024);
+
+                    } else {
+                        OutputStream output = getOutputStream(fileOut);
+                        InputStream input = new FileInputStream(file);
+                        String response = mTransfer.transferStream(input, output);
+
+                        if (FileTransfer.OK.equals(response)) {
+                            if (file.delete()) {
+                                mArrayPath.add(fileOut.getAbsolutePath());
+                                database.deleteData(file.getName());
+                                addItemToDelete(item, Thread.currentThread());
+                            }
+                        } else {
+                            Storage.deleteFile(fileOut);
+                            if (FileTransfer.Error.NO_LEFT_SPACE.equals(response))
+                                break;
+                        }
+                    }
+
+                    if (System.currentTimeMillis() - start >= 1000 && junkList.size() > 0) {
+                        sendUpdate(ACTION_UPDATE);
+                        start = System.currentTimeMillis();
+                    }
+                } catch ( Exception e) {
+
+                }
+
+                if (junkList.size() > 0) {
+                    sendUpdate(ACTION_UPDATE);
+                }
+            }
+        }
+
+        @Override
+        public void onBeingStarted() {
             if (myThread != null && myThread.isWorking()) {
                 myThread.stopWork();
                 threadInterrupted = true;
             }
 
             MainActivity.getInstance().prepareAd();
-			mySimpleDialog.setStyle(SimpleDialog.PROGRESS_STYLE);
-			mySimpleDialog.setTitle(getString(R.string.mover));
+            mySimpleDialog.setStyle(SimpleDialog.PROGRESS_STYLE);
+            mySimpleDialog.setTitle(getString(R.string.mover));
             mySimpleDialog.setMessage("");
             mySimpleDialog.setSingleLineMessage(true);
-			mySimpleDialog.setCancelable(false);
-			mySimpleDialog.setNegativeButton(getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
-					@Override
-					public boolean onClick(SimpleDialog dialog) {
-						mTransfer.cancel();
-						cancel(true);
-						return true;
-					}
+            mySimpleDialog.setCancelable(false);
+            mySimpleDialog.setNegativeButton(getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
+                    @Override
+                    public boolean onClick(SimpleDialog dialog) {
+                        mTransfer.cancel();
+                        interrupt();
+                        return true;
+                    }
 				});
-			super.onPreExecute();
-		}
+        }
 
-		@Override
-		protected void onPostExecute(Object result) {
-			kill();
+        @Override
+        protected void onUpdated(Object[] get) {
 
-            if (threadInterrupted) {
+            if (ACTION_UPDATE.equals(get[0])) {
+                List<String> workList = (ArrayList<String>)junkList.clone();
+
+                if (!workList.isEmpty()) {
+                    Iterator<String> iterator = workList.iterator();
+                    while (iterator.hasNext()) { 
+                        mAdapter.removeItem(iterator.next());
+                    }
+                    junkList.removeAll(workList);
+                }
+
+            } else {
+                String name = (String)get[1];
+                mySimpleDialog.setMessage(name);
+			}
+        }
+
+        @Override
+        public void onFinished() {
+            kill();
+
+            if (threadInterrupted || isInterrupted()) {
                 updateRecyclerView();
             }
-		}
+        }
+
+        @Override
+        public void onException(Exception e) {
+            Toast.makeText(ViewAlbum.this, "Finished with error!", 1).show();
+        }
 
 		private void kill() {
-
 			MainActivity.getInstance().showAd();
 			Storage.scanMediaFiles(mArrayPath.toArray(new String[mArrayPath.size()]));
 
@@ -722,120 +805,16 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 			folderDatabase.close();
 		}
 
-		@Override
-		protected void onCancelled(Object result) {
-            updateRecyclerView();
-			kill();
-		}
-
         private void addItemToDelete(String item, Thread t) {
-
-            while (allowListModification != true) {
-                try {
-                    t.sleep(10);
-                } catch (InterruptedException e) {
-
-                }
-            }
-            list2Delete.add(item);
+//            while (allowListModification != true) {
+//                try {
+//                    t.sleep(10);
+//                } catch (InterruptedException e) {
+//
+//                }
+//            }
+            junkList.add(item);
         }
-
-		@Override
-		protected void onProgressUpdate(Object[] values) {
-            //I love 
-			if (ACTION_UPDATE.equals(values[0])) {
-                allowListModification = false;
-
-                if (!list2Delete.isEmpty()) {
-
-                    Iterator<String> iterator = list2Delete.iterator();
-                    while (iterator.hasNext()) { 
-                        mAdapter.removeItem(iterator.next());
-                    }
-                    list2Delete.clear();
-                }
-                allowListModification = true;
-			} else {
-				String name = (String)values[1];
-				mySimpleDialog.setMessage(name);
-			}
-		}
-
-		@Override
-		protected Void doInBackground(Object[] p1) {
-
-            try {
-				long max = 0;
-				for (String item : selectedItens) {
-					File file = new File(item);
-					max += file.length();
-				}
-				max /= 1024;
-				mUpdate.setMax(max);
-				mUpdate.start();
-
-				long start = System.currentTimeMillis();
-				for (String item :selectedItens) {
-
-                    if (isCancelled()) {
-						break;
-					}
-
-                    File file = new File(item);
-					String path = database.getPath(file.getName());
-					if (path == null) {
-						continue;
-					}
-
-					File fileOut = new File(path);
-
-				    if (fileOut.exists())
-						fileOut = new File(getNewFileName(fileOut));
-
-					fileOut.getParentFile().mkdirs();
-					publishProgress(null, fileOut.getName());
-
-                    if (file.renameTo(fileOut)) {
-                        mArrayPath.add(fileOut.getAbsolutePath());
-                        database.deleteData(file.getName());
-                        addItemToDelete(item, Thread.currentThread());
-                        mTransfer.increment(fileOut.length() / 1024);
-
-                    } else {
-                        OutputStream output = getOutputStream(fileOut);
-                        InputStream input = new FileInputStream(file);
-                        String response = mTransfer.transferStream(input, output);
-
-                        if (FileTransfer.OK.equals(response)) {
-                            if (file.delete()) {
-                                mArrayPath.add(fileOut.getAbsolutePath());
-                                database.deleteData(file.getName());
-                                addItemToDelete(item, Thread.currentThread());
-                            }
-                        } else {
-                            Storage.deleteFile(fileOut);
-                            if (FileTransfer.Error.NO_LEFT_SPACE.equals(response))
-                                break;
-                        }
-
-                    }
-
-                    if (System.currentTimeMillis() - start >= 500 && list2Delete.size() > 0) {
-                        publishProgress(ACTION_UPDATE);
-                        start = System.currentTimeMillis();
-                    }
-                }
-
-				if (list2Delete.size() > 0) {
-					publishProgress(ACTION_UPDATE);
-				}
-
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			return null;
-		}
 
 		private String getNewFileName(File file) {
 			String path = file.getAbsolutePath();

@@ -12,7 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.jefferson.application.br.FolderModel;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.activity.GalleryAlbum;
+import com.jefferson.application.br.activity.ImportGalleryActivity;
 import com.jefferson.application.br.activity.SelectionActivity;
 import java.util.ArrayList;
 import android.os.Build;
@@ -21,12 +21,12 @@ import android.widget.RelativeLayout;
 
 public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
 
-    private GalleryAlbum mGalleryAlbum;
+    private ImportGalleryActivity mGalleryAlbum;
     private ViewHolder mViewHolder;
     private ArrayList<FolderModel> al_menu = new ArrayList<>();
     private int option;
 
-    public PhotosFolderAdapter(GalleryAlbum galleryAlbum, ArrayList<FolderModel> al_menu, int option) {
+    public PhotosFolderAdapter(ImportGalleryActivity galleryAlbum, ArrayList<FolderModel> al_menu, int option) {
         super(galleryAlbum, R.layout.adapter_photosfolder, al_menu);
         this.al_menu = al_menu;
         this.mGalleryAlbum = galleryAlbum;
@@ -74,7 +74,7 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
             mViewHolder.tv_foldersize = (TextView) convertView.findViewById(R.id.tv_folder2);
             mViewHolder.iv_image = (ImageView) convertView.findViewById(R.id.iv_image);
 			mViewHolder.cd_layout = (RelativeLayout) convertView.findViewById(R.id.adapter_photosfolderParentView);
-			mViewHolder.play_view = (ImageView) convertView.findViewById(R.id.play_view);
+			//mViewHolder.smallView = (ImageView) convertView.findViewById(R.id.folder_small_icon_view);
             mViewHolder.cd_layout.setOnClickListener(new OnClickListener(){
 
 					@Override
@@ -85,7 +85,7 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
                         intent.putExtra("type", mGalleryAlbum.getType());
                         intent.putExtra("position", option);
 
-                        mGalleryAlbum.startActivityForResult(intent, GalleryAlbum.GET_CODE);
+                        mGalleryAlbum.startActivityForResult(intent, ImportGalleryActivity.GET_CODE);
 
                     }
 				}
@@ -105,10 +105,10 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
 				.into(mViewHolder.iv_image);
         }
 
-        if  (option == 1) {
+        /*if  (option == 1) {
             mViewHolder.play_view.setVisibility(View.VISIBLE);
-            mViewHolder.play_view.setImageResource(R.drawable.ic_play_circle);
-        }
+            mViewHolder.play_view.setImageResource(R.drawable.ic_play_box_outline);
+        }*/
         return convertView;
     }
 
@@ -116,6 +116,6 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
         TextView tv_foldern, tv_foldersize;
         ImageView iv_image;
 		RelativeLayout cd_layout;
-		ImageView play_view;
+		//ImageView smallView;
     }
 }

@@ -5,10 +5,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
-    android:paddingTop="15dp"
-    android:paddingBottom="15dp"
-    android:paddingLeft="25dp"
-    android:paddingRight="25dp">
+    android:paddingTop="14dp"
+    android:paddingBottom="14dp"
+    android:paddingLeft="22dp"
+    android:paddingRight="22dp">
 
     <TextView
         android:layout_height="wrap_content"

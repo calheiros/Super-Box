@@ -1,16 +1,21 @@
 package com.jefferson.application.br.adapter;
 
-import android.app.*;
-import android.content.*;
-import android.view.*;
-import android.widget.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.database.*;
-import com.jefferson.application.br.model.*;
-import com.jefferson.application.br.widget.*;
-import java.util.*;
+import android.app.Activity;
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.database.AppsDatabase;
+import com.jefferson.application.br.model.AppModel;
+import com.jefferson.application.br.service.AppLockService;
+import com.jefferson.application.br.widget.LockCheck;
+import java.util.ArrayList;
 
-public class AppsAdapter extends BaseAdapter {
+public class AppLockAdapter extends BaseAdapter {
 
 	public ArrayList<String> selection;
 	private Activity mActivity;
@@ -19,7 +24,9 @@ public class AppsAdapter extends BaseAdapter {
     public AppsDatabase database;
     public static AppLockService service;
 
-	public AppsAdapter(Activity mActivity, ArrayList<AppModel> models) {
+    private boolean mutable;
+
+	public AppLockAdapter(Activity mActivity, ArrayList<AppModel> models) {
         this.mActivity = mActivity;
 		this.models = models; 
 		this.database = new AppsDatabase(mActivity);
@@ -27,6 +34,14 @@ public class AppsAdapter extends BaseAdapter {
 		inflater = (LayoutInflater) mActivity
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
+
+    public void setMutable(boolean mutable) {
+        this.mutable = mutable;
+    }
+
+    public boolean isMutable() {
+        return mutable;
+    }
 
 	public View getView(int position, View convertView, ViewGroup parent) {
         View view = convertView;
@@ -38,7 +53,7 @@ public class AppsAdapter extends BaseAdapter {
 	    AppModel info = models.get(position);
 		ImageView imageView = (ImageView) view.findViewById(R.id.iconeApps);
 		TextView textView = (TextView) view.findViewById(R.id.app_name);
-		CheckWidget checkView = (CheckWidget) view.findViewById(R.id.check1);
+		LockCheck checkView = (LockCheck) view.findViewById(R.id.check1);
 
 		imageView.setImageDrawable(info.icon);
 		textView.setText(info.appname);
@@ -48,9 +63,10 @@ public class AppsAdapter extends BaseAdapter {
     }
 
 	public void toogleSelection(int position) {
-        //AppLockService appLockService = ((App)mActivity.getApplication()).appLockService;
+        setMutable(true);
 		String pname = models.get(position).pname;
-		if (selection.contains(pname)) {
+		
+        if (selection.contains(pname)) {
 			selection.remove(pname);
 			database.removeLockedApp(pname);
 		} else {

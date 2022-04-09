@@ -28,41 +28,30 @@
 	<LinearLayout
 		android:layout_height="45dp"
 		android:layout_width="match_parent"
-		android:background="@color/colorBackground"
-		android:gravity="center">
-
-		<LinearLayout
-			android:layout_height="match_parent"
-			android:layout_width="0dp"
-			android:background="?attr/selectableItemBackground"
-			android:gravity="center"
-			android:layout_weight="1.0"
-			android:id="@+id/lock_layout">
+		android:background="@color/colorBackgroundDark"
+		android:gravity="center_vertical">
 
 			<ImageView
+                android:background="?attr/selectableItemBackground"
                 android:tint="@color/item_normal"
-				android:layout_height="32dp"
-				android:layout_width="32dp"
+				android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="6dp"
+                android:id="@+id/gallery_selection_lock_view"
+				android:layout_width="wrap_content"
+                android:layout_weight="1.0"
 				android:src="@drawable/ic_add_lock"/>
 
-		</LinearLayout>
-
-		<LinearLayout
-			android:layout_height="match_parent"
-			android:layout_width="0dp"
-			android:background="?attr/selectableItemBackground"
-			android:id="@+id/selectAll"
-			android:gravity="center"
-			android:layout_weight="1.0">
-
 			<ImageView
+                android:background="?attr/selectableItemBackground"
                 android:tint="@color/item_normal"
-				android:layout_height="32dp"
-				android:layout_width="32dp"
-				android:id="@+id/ic_selet"
+				android:layout_height="wrap_content"
+				android:layout_width="wrap_content"
+                android:layout_weight="1.0"
+                android:gravity="center"
+                android:padding="6dp"
+				android:id="@+id/ic_seletctAll"
 				android:src="@drawable/ic_select_all"/>
-
-		</LinearLayout>
 
 	</LinearLayout>
 

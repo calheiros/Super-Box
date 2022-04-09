@@ -37,17 +37,16 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
 	@Override
 	public void onBindViewHolder(final viewHolder holder, final int position) {
-
         FolderModel f_model = items.get(position);
 	    holder.tv_foldern.setText(f_model.getName());
 		holder.tv_foldersize.setText(String.valueOf(f_model.getItems().size()));
         boolean isEmpty = f_model.getItems().size() == 0;
         int pagerPosition = fragment.getPagerPosition();
 		
-        if (pagerPosition == 1) {
-			holder.play_view.setVisibility(View.VISIBLE);
-            holder.play_view.setImageResource(R.drawable.ic_play_circle);
-        }
+        /*if (pagerPosition == 1) {
+			holder.smallView.setVisibility(View.VISIBLE);
+            holder.smallView.setImageResource(R.drawable.ic_play_box_outline);
+        }*/
 
 		if (!isEmpty) {
 			Glide.with(fragment).load("file://" + f_model.getItems().get(0).getPath())
@@ -55,11 +54,11 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 				.into(holder.iv_image);
         } else {
             holder.iv_image.setImageResource(0);
-            holder.play_view.setImageResource(R.drawable.ic_image_broken_variant);
+            holder.smallView.setImageResource(R.drawable.ic_image_broken_variant);
         }
         
         int visibility = ( isEmpty || pagerPosition == 1 ) ? View.VISIBLE : View.GONE;
-        holder.play_view.setVisibility(visibility);
+        holder.smallView.setVisibility(visibility);
 		holder.cd_layout.setOnClickListener(new OnClickListener(){
 
 				@Override
@@ -112,7 +111,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
         TextView tv_foldern, tv_foldersize;
         ImageView iv_image;
 		RelativeLayout cd_layout;
-		ImageView play_view;
+		ImageView smallView;
 
 		public viewHolder(View view) {
 			super(view);
@@ -121,7 +120,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
             tv_foldersize = view.findViewById(R.id.tv_folder2);
             iv_image = view.findViewById(R.id.iv_image);
 			cd_layout = view.findViewById(R.id.adapter_photosfolderParentView);
-			play_view = view.findViewById(R.id.play_view);
+			smallView = view.findViewById(R.id.folder_small_icon_view);
 
 		}
 	}

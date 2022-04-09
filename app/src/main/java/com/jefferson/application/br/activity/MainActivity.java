@@ -1,9 +1,11 @@
 package com.jefferson.application.br.activity;
 
-import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
@@ -27,29 +29,20 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.jefferson.application.br.App;
-import com.jefferson.application.br.AppLockService;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.fragment.LockFragment;
 import com.jefferson.application.br.fragment.MainFragment;
 import com.jefferson.application.br.fragment.SettingFragment;
+import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.task.ImportTask;
 import com.jefferson.application.br.util.IntentUtils;
-import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.ServiceUtils;
+import com.jefferson.application.br.util.Storage;
+import com.jefferson.application.br.widget.MyAlertDialog;
 import java.io.File;
 import java.util.ArrayList;
-import android.content.pm.ActivityInfo;
-import com.jefferson.application.br.util.DialogUtils;
-import android.app.AlertDialog;
-import com.jefferson.application.br.widget.MyAlertDialog;
-import com.jefferson.application.br.widget.MyAlertDialog.Builder;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.IntentFilter;
-import com.jefferson.application.br.util.JDebug;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.ImportTaskListener {
 

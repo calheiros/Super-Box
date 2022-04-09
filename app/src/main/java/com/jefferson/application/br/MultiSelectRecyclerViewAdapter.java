@@ -118,12 +118,11 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
     @Override
     public MultiSelectRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-
-        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.gridview_item, null);
+        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.generic_gridview_item, null);
         ViewHolder viewHolder = new ViewHolder(itemLayoutView, clickListener);
 
         if (mediaType == 1) {
-			viewHolder.playView.setVisibility(View.VISIBLE);
+			//viewHolder.playView.setVisibility(View.VISIBLE);
 		}
         return viewHolder;
     }
@@ -156,7 +155,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         private ClickListener listener;
         private final View selectedOverlay;
         public TextView textView;
-		public ImageView playView;
+		public ImageView smallView;
         private View timeView;
 
         public ViewHolder(View rootView, ClickListener listener) {
@@ -164,7 +163,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
             this.listener = listener;
 		    imageView = (ImageView) rootView.findViewById(R.id.image);
-			playView = (ImageView) rootView.findViewById(R.id.play_view);
+			smallView = (ImageView) rootView.findViewById(R.id.folder_small_icon_view);
             textView = rootView.findViewById(R.id.gridview_itemTextView);
             selectedOverlay = itemView.findViewById(R.id.selected_overlay);
 		    timeView = rootView.findViewById(R.id.timeViewLayout);

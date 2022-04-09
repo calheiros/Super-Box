@@ -1,9 +1,9 @@
 package com.jefferson.application.br;
-import android.content.*;
-import android.widget.*;
-import com.jefferson.application.br.database.*;
-import com.jefferson.application.br.util.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
+import com.jefferson.application.br.service.AppLockService;
 
 public class OnUpgradeReceiver extends BroadcastReceiver {
 	

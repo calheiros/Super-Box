@@ -38,8 +38,9 @@ public class FolderModel implements Parcelable {
     };
     
 	public void setName(String name) {
-        if (name != null) 
+        if (name != null) {
             this.name = name; 
+         }
 	}
      
 	public void addItem(MediaModel model) {
@@ -50,7 +51,7 @@ public class FolderModel implements Parcelable {
 		return name;
 	}
 
-	public void setFolderPath(String path) {
+	public void setPath(String path) {
 		this.path = path;
 	}
 
@@ -68,6 +69,7 @@ public class FolderModel implements Parcelable {
         
         return null;
     }
+    
     public ArrayList<String> getItemsPath() {
         ArrayList<String> list = new ArrayList<>();
 

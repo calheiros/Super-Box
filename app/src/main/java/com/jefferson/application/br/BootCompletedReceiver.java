@@ -1,8 +1,11 @@
 package com.jefferson.application.br;
 
-import android.content.*;
-import android.util.*;
-import com.jefferson.application.br.database.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+import com.jefferson.application.br.database.AppsDatabase;
+import com.jefferson.application.br.service.AppLockService;
 
 public class BootCompletedReceiver extends BroadcastReceiver
  {

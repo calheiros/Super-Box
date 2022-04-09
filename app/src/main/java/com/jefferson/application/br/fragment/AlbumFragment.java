@@ -36,6 +36,7 @@ import android.os.Looper;
 import android.os.Handler;
 import android.os.Message;
 import com.jefferson.application.br.model.MediaModel;
+import com.jefferson.application.br.task.JTask;
 
 public class AlbumFragment extends Fragment {
 
@@ -91,7 +92,6 @@ public class AlbumFragment extends Fragment {
         if (emptyView != null && emptyView.getVisibility() != visibility) {
             emptyView.setVisibility(visibility);
         }
-
     }
 
     private void hideProgressBar() {
@@ -154,7 +154,7 @@ public class AlbumFragment extends Fragment {
 					FolderModel model = new FolderModel();
 
 					model.setName(folder_name == null ?  Files[i]: folder_name);
-					model.setFolderPath(file.getAbsolutePath());
+					model.setPath(file.getAbsolutePath());
 
 					for (int j = 0; j < folder_list.length; j++) {
                         MediaModel mm = new MediaModel(folder_list[j].getAbsolutePath());

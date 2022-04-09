@@ -15,6 +15,7 @@ import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.task.*;
 import android.support.v7.app.AlertDialog;
 import com.jefferson.application.br.activity.MainActivity;
+import android.support.annotation.NonNull;
 
 public class ReceiverMedia extends Activity implements ImportTask.ImportTaskListener {
 
@@ -29,10 +30,10 @@ public class ReceiverMedia extends Activity implements ImportTask.ImportTaskList
         sendBroadcast(intent);
         JDebug.toast("send receiver!");
     }
-   
+
     @Override
     public void onBeingStarted() {
-        
+
     }
 
     @Override
@@ -40,7 +41,7 @@ public class ReceiverMedia extends Activity implements ImportTask.ImportTaskList
         finish();
     }
 
-    
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,28 +56,32 @@ public class ReceiverMedia extends Activity implements ImportTask.ImportTaskList
 			finish();
 		}
 	}
-    
+
 	private void onReceive(String action, Intent intent) throws Exception {
 
 		if (action.equals(Intent.ACTION_SEND)) {
-
 			Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-			File mFile = new File(Storage.getPathFromMediaUri(uri, this));
+            String path = Storage.getPath(uri);
 
+            if (path == null) {
+                Toast.makeText(this, "Failed!", 1).show();
+            }
+
+            File mFile = new File(path);
 			ArrayList<FileModel> models = new ArrayList<>();
 			FileModel model = getModel(mFile.getPath());
-			
+
             if (model != null) {
 				models.add(model);
 				new ImportTask(this, models, ReceiverMedia.this).start();
 			} else {
 				finish();
 			}
-            
+
 		} else if (action.equals(intent.ACTION_SEND_MULTIPLE)) {
 			ArrayList<Uri> mediaUris = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 			BuildModelsTast mTask = new BuildModelsTast(mediaUris, this);	
-			mTask.execute();
+			mTask.start();
 			//task here
 		}
     }
@@ -97,65 +102,78 @@ public class ReceiverMedia extends Activity implements ImportTask.ImportTaskList
 		return model;
 	}
 
-	private class BuildModelsTast extends AsyncTask<Void, Integer, ArrayList<FileModel>> {
+	private class BuildModelsTast extends JTask {
 
 		private ArrayList<Uri> mediaUris;
 		private Activity activity;
 		private ProgressDialog mProgressDialog;
-
+        ArrayList<FileModel> models = new ArrayList<>();
+        
 		public BuildModelsTast(ArrayList<Uri> mediaUris, Activity activity) {
 			this.mediaUris = mediaUris;
 			this.activity = activity;
-
 		}
+        
+        @Override
+        public void workingThread() {
+            int index = 0;
 
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			mProgressDialog = new ProgressDialog(activity);
-			mProgressDialog.setTitle("Preparing...");
-			mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-			mProgressDialog.setCancelable(false);
-			mProgressDialog.show();
-		}
+            for (Uri uri : mediaUris) {
+                sendUpdate(++index);
+                String path = null;
+                try {
+                    path = Storage.getPath(uri);
+                } catch(Exception e){
+                    JDebug.toast("Trying uribto file " + uri.getPath());
+                }
 
-		@Override
-		protected void onProgressUpdate(Integer[] values) {
-			super.onProgressUpdate(values);
-			Integer index = values[0];
-			mProgressDialog.setMessage(index + " of " + mediaUris.size());
-		}
-
-		@Override
-		protected void onPostExecute(ArrayList<FileModel> result) {
-			super.onPostExecute(result);
-			mProgressDialog.dismiss();
-
-			if (result.size() > 0) {
-				new ImportTask(activity, result, ReceiverMedia.this).start();
-			} else {
-				Toast.makeText(activity, "Arquivo(s) não suportado(s)", Toast.LENGTH_LONG).show();
-				finish();
-			}
-		}
-
-		@Override
-		protected ArrayList<FileModel> doInBackground(Void[] p1) {
-
-			ArrayList<FileModel> models = new ArrayList<>();
-			int index = 0;
-
-			for (Uri uri : mediaUris) {
-				publishProgress(++index);
-				String path = Storage.getPathFromMediaUri(uri, App.getInstance());
-				FileModel model = getModel(path);
-				
+                if (path == null) {
+                    continue;
+                }
+                FileModel model = getModel(path);
                 if (model != null)
-					models.add(model);
+                    models.add(model);
 			}
-			return models;
-		}
+        }
+
+        @Override
+        public void onBeingStarted() {
+            mProgressDialog = new ProgressDialog(activity);
+            mProgressDialog.setTitle("Preparing...");
+            mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
+        }
+
+        @Override
+        public void onFinished() {
+            mProgressDialog.cancel();
+
+            if (models.size() > 0) {
+                new ImportTask(activity, models, ReceiverMedia.this).start();
+            } else {
+                Toast.makeText(activity, "Invalid data!", Toast.LENGTH_LONG).show();
+                finish();
+			}
+        }
+
+        @Override
+        public void onException(Exception e) {
+            mProgressDialog.cancel();
+            Toast.makeText(ReceiverMedia.this, "Error", 1).show();
+        }
+
+        @Override
+        protected void onUpdated(Object[] get) {
+            Integer index = (Integer)get[0];
+            mProgressDialog.setMessage(index + " of " + mediaUris.size());
+            
+        }
 	}
+    public String gambiarra(@NonNull Uri uri) {
+        //will not work :/
+        return null;
+     }
 }
 	
 

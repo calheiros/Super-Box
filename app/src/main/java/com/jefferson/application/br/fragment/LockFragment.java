@@ -32,7 +32,7 @@ import com.jefferson.application.br.App;
 import com.jefferson.application.br.CodeManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MainActivity;
-import com.jefferson.application.br.adapter.AppsAdapter;
+import com.jefferson.application.br.adapter.AppLockAdapter;
 import com.jefferson.application.br.model.AppModel;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,23 +42,20 @@ import android.content.IntentFilter;
 
 public class LockFragment extends Fragment implements OnItemClickListener {
 
-    
     private static final int REQUEST_OVERLAY_CODE = 9;
-
     private View lastClickedCheckView;
     private int lastClickedItemPosition;
 
 	public LockFragment() {
 		initTask();
 	}
-    boolean mutable;
+  
 	private ProgressBar mProgressBar;
 	private TextView mTextView;
 	private ArrayList<AppModel> models = new ArrayList<>();
-	private AppsAdapter mAdapter;
+	private AppLockAdapter mAdapter;
 	private ListView mListView;
 	private Intent intent;
-
 	private View view;
 	private Task mTask;
 
@@ -71,7 +68,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 			mTextView = (TextView) view.findViewById(R.id.porcent);
 			mListView = (ListView) view.findViewById(R.id.appList);
 			mListView.setItemsCanFocus(true);
-
+            
 			if (mTask != null) {
 				AsyncTask.Status status = mTask.getStatus();
 				if (status == AsyncTask.Status.FINISHED) {
@@ -133,7 +130,6 @@ public class LockFragment extends Fragment implements OnItemClickListener {
     }
     
     public void animateCheckView(View vi) {
-        mutable = true;
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
         vi.startAnimation(animation);
     }
@@ -142,10 +138,19 @@ public class LockFragment extends Fragment implements OnItemClickListener {
     public void onPause() {
         super.onPause();
         
-        if (mutable) {
+        if (mAdapter != null && mAdapter.isMutable()) {
             getContext().sendBroadcast(new Intent(App.ACTION_APPLOCK_SERVICE_UPDATE_DATA));
-            mutable = false;
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        
+        if (mAdapter != null){
+            mAdapter.setMutable(false);
+        }
+        
     }
     
 	public void initTask() {
@@ -154,7 +159,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 	}
 
     public void finalizeTask() {
-		mAdapter = new AppsAdapter(getActivity(), models);
+		mAdapter = new AppLockAdapter(getActivity(), models);
 		mListView.setAdapter(mAdapter);
 		mProgressBar.setVisibility(View.GONE);
 		mTextView.setVisibility(View.GONE);

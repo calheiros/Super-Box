@@ -12,25 +12,25 @@ import java.util.*;
 import android.support.v7.widget.Toolbar;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.model.MediaModel;
+import android.support.annotation.NonNull;
 
 public class SelectionActivity extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener {
 
 	private String name;
 	private Toolbar toolbar;
-	private ImageView ic_select;
+	private ImageView selectAllView;
 	private ArrayList<MediaModel> data;
     private RecyclerView mRecyclerView;
 	private MultiSelectRecyclerViewAdapter  mAdapter;
-
     private String baseTitle;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.gallery_grid);
+		setContentView(R.layout.gallery_selection_layout);
 		setupToolbar();
-		mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
-		LinearLayout mLayout=(LinearLayout)findViewById(R.id.lock_layout);
+		View lockView = findViewById(R.id.gallery_selection_lock_view);
+        mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
 		Intent intent = getIntent();
 		name = intent.getStringExtra("name");
 		data = (ArrayList<MediaModel>)intent.getSerializableExtra("data");
@@ -40,11 +40,10 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new MultiSelectRecyclerViewAdapter(SelectionActivity.this, data, this, position);
         mRecyclerView.setAdapter(mAdapter);
-		View selecAll = findViewById(R.id.selectAll);
-	    ic_select = (ImageView)findViewById(R.id.ic_selet);
+	    selectAllView = (ImageView)findViewById(R.id.ic_seletctAll);
         updateActionBarTitle();
-        
-		mLayout.setOnClickListener(new OnClickListener(){
+
+		lockView.setOnClickListener(new OnClickListener(){
 
 				@Override
 				public void onClick(View view) {
@@ -60,7 +59,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 				}
 			});
 
-		selecAll.setOnClickListener(new OnClickListener(){
+		selectAllView.setOnClickListener(new OnClickListener(){
 
 				@Override
 				public void onClick(View v) {
@@ -74,32 +73,34 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 						}
 					}
                     updateActionBarTitle();
-					updateIcon();
+					toogleSelectViewIcon();
 				}
 			});
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-        
-        if (item.getItemId() == android.R.id.home){
+
+        if (item.getItemId() == android.R.id.home) {
 		    finish();
         }
 		return true;
 	}
 
+    private void updateItem(int position) {
+        mAdapter.toggleSelection(position);
+        updateActionBarTitle();
+		toogleSelectViewIcon();
+    }
+    
 	@Override
 	public void onItemClicked(int position) {
-		mAdapter.toggleSelection(position);
-        updateActionBarTitle();
-		updateIcon();
+		updateItem(position);
 	}
-
+    
 	@Override
 	public boolean onItemLongClicked(int position) {
-		mAdapter.toggleSelection(position);
-        updateActionBarTitle();
-		updateIcon();
+		updateItem(position);
 		return true;
 	}
 
@@ -117,12 +118,12 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 
 	private ArrayList<String> getSelectedItems() {
         /*
-		ArrayList<String> selectedItems = new ArrayList<String>();
+         ArrayList<String> selectedItems = new ArrayList<String>();
 
-		for (int i : selectedItemsPosition()) {
-			selectedItems.add(data.get(i).getPath());
-		}
-        */
+         for (int i : selectedItemsPosition()) {
+         selectedItems.add(data.get(i).getPath());
+         }
+         */
 		return mAdapter.getSelectedItemsPath();
 	}
 
@@ -133,11 +134,8 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
         getSupportActionBar().setTitle(String.format(baseTitle, count));
 	}
 
-	private void updateIcon() {
-		if (mAdapter.getSelectedItemCount() == data.size()) {
-			ic_select.setImageResource(R.drawable.ic_unselect_all);
-		} else {
-			ic_select.setImageResource(R.drawable.ic_select_all);
-		}
+	private void toogleSelectViewIcon() {
+		int resId = (mAdapter.getSelectedItemCount() == data.size()) ? R.drawable.ic_unselect_all : R.drawable.ic_select_all;
+	    selectAllView.setImageResource(resId);
 	}
 }
