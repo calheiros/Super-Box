@@ -10,7 +10,7 @@
         app:showAsAction="always|withText"/>
     
 	<item
-        android:icon="@drawable/ic_camera_plus"
+        android:icon="@drawable/ic_camera"
         android:id="@+id/item_from_camera"
         android:title="from camera"
         app:showAsAction="always|withText"/>

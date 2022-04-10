@@ -46,6 +46,7 @@ public class JDebug {
 
     public static String getLogName() {
         Date date = new Date();
+        String fmt = date.toString();
         return date.toString() + ".txt";
     }
 

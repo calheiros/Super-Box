@@ -39,6 +39,7 @@ import java.util.Collections;
 import java.util.List;
 import com.jefferson.application.br.util.DialogUtils;
 import android.content.IntentFilter;
+import com.jefferson.application.br.service.AppLockService;
 
 public class LockFragment extends Fragment implements OnItemClickListener {
 
@@ -49,7 +50,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 	public LockFragment() {
 		initTask();
 	}
-  
+
 	private ProgressBar mProgressBar;
 	private TextView mTextView;
 	private ArrayList<AppModel> models = new ArrayList<>();
@@ -61,14 +62,14 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		MainActivity mActivity = ((MainActivity)getActivity());
-		
+
         if (view == null) {
 			view = inflater.inflate(R.layout.list_view_app, container, false);
 			mProgressBar = (ProgressBar)view.findViewById(R.id.progressApps);            
 			mTextView = (TextView) view.findViewById(R.id.porcent);
 			mListView = (ListView) view.findViewById(R.id.appList);
 			mListView.setItemsCanFocus(true);
-            
+
 			if (mTask != null) {
 				AsyncTask.Status status = mTask.getStatus();
 				if (status == AsyncTask.Status.FINISHED) {
@@ -78,7 +79,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 					mTextView.setVisibility(View.VISIBLE);
 				} 
 			}
-           
+
 			intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
 			mListView.setOnItemClickListener(this);
 		}
@@ -89,6 +90,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 
 		return view;
 	}
+
     @Override
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
         lastClickedItemPosition = position;
@@ -120,7 +122,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
                     }
                 }
             );
-            
+
             alert.setNegativeButton(getString(R.string.cancelar), null);
             AlertDialog alertDialog = alert.create();
             DialogUtils.configureRoudedDialog(alertDialog);
@@ -128,7 +130,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
             alertDialog.show();
         }
     }
-    
+
     public void animateCheckView(View vi) {
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
         vi.startAnimation(animation);
@@ -137,22 +139,23 @@ public class LockFragment extends Fragment implements OnItemClickListener {
     @Override
     public void onPause() {
         super.onPause();
-        
+
         if (mAdapter != null && mAdapter.isMutable()) {
-            getContext().sendBroadcast(new Intent(App.ACTION_APPLOCK_SERVICE_UPDATE_DATA));
+            getContext().startService(new Intent(getContext(), AppLockService.class)
+                                      .setAction(App.ACTION_APPLOCK_SERVICE_UPDATE_DATA));
         }
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        
-        if (mAdapter != null){
+
+        if (mAdapter != null) {
             mAdapter.setMutable(false);
         }
-        
+
     }
-    
+
 	public void initTask() {
 		mTask = new Task(App.getAppContext());
 		mTask.execute();
@@ -171,10 +174,8 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 
 	@Override
 	public void onDestroy() {
-
 		if (mTask.getStatus() != AsyncTask.Status.FINISHED)
 			mTask.cancel(true);
-
 		super.onDestroy();
 	}
 
@@ -226,7 +227,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
                 mProgressBar.setProgress((int)progress);
             }
 		}
-        
+
         @Override
         protected Void doInBackground(Object... params) {
 

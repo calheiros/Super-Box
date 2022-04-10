@@ -44,6 +44,7 @@ import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.activity.DeveloperActivity;
 import com.jefferson.application.br.util.MyPreferences;
 import android.widget.AutoCompleteTextView.OnDismissListener;
+import android.graphics.Typeface;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
@@ -328,10 +329,14 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	private void showAbout() {
         AlertDialog.Builder build = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
 		View view = LayoutInflater.from(getContext()).inflate(R.layout.credits_layout, null, false);
-        TextView asciiView = view.findViewById(R.id.ascii_text_view);
+        TextView asciiTextView = view.findViewById(R.id.ascii_text_view);
+        Typeface font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Raleway-Regular.ttf");
 
+        asciiTextView.setTypeface(font);
+        asciiTextView.setLetterSpacing(0);
+        asciiTextView.setText(ASCIIArt.CHIKA_ART);
         view.findViewById(R.id.githubTextView).setOnClickListener(this);
-        asciiView.setText(ASCIIArt.CHIKA_ART);
+        
 		build.setView(view);
         build.setPositiveButton("fechar", new DialogInterface.OnClickListener() {
 

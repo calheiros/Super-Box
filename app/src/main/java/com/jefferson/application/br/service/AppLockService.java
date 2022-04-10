@@ -61,32 +61,34 @@ public class AppLockService extends Service {
 		appLockWindow = new AppLockWindow(getApplicationContext(), database);
         usageStats = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
         lockedApps = database.getLockedPackages();
-        createDataBusReceiver();
+
 		startService();
 
         mybroadcast = new ScreenOnOff();
 		registerReceiver(mybroadcast, new IntentFilter(Intent.ACTION_SCREEN_ON));
         registerReceiver(mybroadcast, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 
-        mHomeWatcher = new KeyWatcher(this);
-        mHomeWatcher.setOnHomePressedListener(new KeyWatcher.OnHomePressedListener() {
-
-                @Override
-                public void onRecentsPressed() {
-                    recentsPressed();
-                }
-
-                @Override public void onHomePressed() {
-
-                }
-            }
-        );
-        // mHomeWatcher.startWatch();
 		super.onCreate();
 	}
 
     @Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            String action = intent.getAction();
+
+            if (App.ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD.equals(action)) {
+                String key = intent.getExtras().getString("key");
+
+                if (key != null && appLockWindow != null) {
+                    appLockWindow.setPassword(key);
+                }
+
+            } else if (App.ACTION_APPLOCK_SERVICE_UPDATE_DATA.equals(action)) {
+                lockedApps = database.getLockedPackages();
+            }
+        }
+
+        JDebug.toast("stat command " + intent);
 		return START_STICKY;
 	}
 
@@ -176,8 +178,10 @@ public class AppLockService extends Service {
         if (dataBusReceiver != null) {
             unregisterReceiver(dataBusReceiver);
         }
-        mHomeWatcher.stopWatch();
-		unregisterReceiver(mybroadcast);
+        //mHomeWatcher.stopWatch();
+        if (mybroadcast != null) {
+            unregisterReceiver(mybroadcast);
+        }
 		sendBroadcast(new Intent(ACTION_RESTART_SERVICE));
 		super.onDestroy();
 	}
@@ -256,8 +260,4 @@ public class AppLockService extends Service {
     private boolean onWhitelist(String name) {
         return false;
     }
-
-    private void showMessage(String m) {
-		Toast.makeText(this, m, Toast.LENGTH_LONG).show();
-	}
 }

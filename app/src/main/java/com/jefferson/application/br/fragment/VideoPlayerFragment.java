@@ -25,7 +25,16 @@ import com.jefferson.application.br.util.JDebug;
 import com.bumptech.glide.Glide;
 import com.jefferson.application.br.ui.JVideoController;
 
-public class VideoPlayerFragment extends Fragment implements OnTouchListener, OnClickListener {
+public class VideoPlayerFragment extends Fragment implements OnTouchListener, OnClickListener, JVideoController.OnPlayButtonPressedListener {
+
+    @Override
+    public void onPressed(boolean playing) {
+        
+        if (!playing) {
+            hideThumbView();
+            prepare();
+        }
+    }
 
     private View parentView;
     private VideoView mVideoView;
@@ -33,8 +42,8 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
     private MediaController mediaController;
     private boolean playOnCreate;
     private ImageView mThumbView;
-    private View playButton;
-    private Bitmap bmp;
+    //private View playButton;
+    //private Bitmap bmp;
     private JVideoController jController;
 
     public VideoPlayerFragment(String videoPath) {
@@ -59,7 +68,7 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
             parentView = inflater.inflate(R.layout.video_view_fragment, null);
             mVideoView = parentView.findViewById(R.id.video_view);
             mThumbView = parentView.findViewById((R.id.video_view_fragment_thumb_view));
-            playButton = parentView.findViewById(R.id.video_view_play_button);
+            //playButton = parentView.findViewById(R.id.video_view_play_button);
             File file = new File(videoPath);
 
             if (!file.exists()) {
@@ -71,11 +80,20 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
 
             jController = new JVideoController(mVideoView);
             jController.setAnchor((ViewGroup)parentView);
-            jController.prepare();
+            jController.setOnPlayButtonPressed(this);
+
             //mediaController = new MediaController(getActivity());
             //mediaController.setAnchorView(parentView);
             //mVideoView.setMediaController(mediaController);
-      
+            mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
+
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        jController.prepare(mp);
+                    }
+                }
+            );
+
             mVideoView.setOnErrorListener(
                 new MediaPlayer.OnErrorListener(){
 
@@ -140,6 +158,12 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
         }
         return false;
     }
+    public void prepare() {
+        if (mVideoView != null) {
+            mVideoView.setVideoURI(Uri.parse(videoPath));
+            //mVideoView.start();
+        }
+    }
 
     public void startVideo() {
         hideThumbView();
@@ -147,7 +171,6 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
         if (mVideoView != null) {
             mVideoView.setVideoURI(Uri.parse(videoPath));
             mVideoView.start();
-
         }
     }
 
@@ -171,9 +194,8 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
         if (mediaController != null && mediaController.isShowing()) {
             mediaController.hide();
         }
-
     }
-    
+
     public void resume() {
 
         if (mVideoView != null) {

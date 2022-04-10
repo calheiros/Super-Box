@@ -16,6 +16,8 @@ import com.jefferson.application.br.R;
 import android.widget.Button;
 import android.support.v4.content.ContextCompat;
 import android.view.Window;
+import android.support.v4.text.TextUtilsCompat;
+import android.text.TextUtils;
 
 public class SimpleDialog extends AlertDialog {
 
@@ -71,9 +73,18 @@ public class SimpleDialog extends AlertDialog {
 	public int getMax() {
 		return progressBar.getMax();
 	}
-    
+
     public SimpleDialog setSingleLineMessage(boolean single) {
-        contentText.setSingleLine(single);
+        //deprecated
+        //contentText.setSingleLine(single);
+        if (single) { 
+            contentText.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+            contentText.setMaxLines(1);
+        } else {
+            contentText.setMaxLines(256);
+            contentText.setEllipsize(TextUtils.TruncateAt.END);
+            
+        }
         return this;
     }
 

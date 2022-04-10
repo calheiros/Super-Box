@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -17,9 +16,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
@@ -31,7 +31,9 @@ import com.jefferson.application.br.database.PathsData;
 import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.DeleteFilesTask;
 import com.jefferson.application.br.task.ImportTask;
+import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.FileTransfer;
+import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
 import com.stfalcon.frescoimageviewer.ImageViewer;
 import java.io.File;
@@ -44,11 +46,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import com.jefferson.application.br.util.JDebug;
-import android.widget.RelativeLayout;
-import android.animation.Animator;
-import android.view.animation.Animation;
-import com.jefferson.application.br.task.JTask;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.ImportTaskListener {
 
@@ -135,6 +132,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() { 
+
                 @Override 
                 public void onScrolled(RecyclerView recyclerView, int dx, int dy) { 
                     super.onScrolled(recyclerView, dx, dy); 
@@ -144,12 +142,16 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     }
 
                     if (dy > 0) { 
+
                         // Scroll Down 
                         if (fab.isShown()) { 
+
                             fab.hide(); 
                         } 
                     } else if (dy < 0) { // Scroll Up 
+
                         if (!fab.isShown()) { 
+
                             fab.show(); 
                         } 
                     } 
@@ -644,6 +646,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		private ArrayList<String> junkList= new ArrayList<>();
 		private String ACTION_UPDATE = "ACTION_UPDATE";
         private boolean threadInterrupted;
+        private boolean allowListModification = true;
 
 		public ExportTask(List<String> itens, SimpleDialog progress) {
 			this.mySimpleDialog = progress;
@@ -716,10 +719,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 } catch ( Exception e) {
 
                 }
-
-                if (junkList.size() > 0) {
-                    sendUpdate(ACTION_UPDATE);
-                }
+            }
+            if (junkList.size() > 0) {
+                sendUpdate(ACTION_UPDATE);
             }
         }
 
@@ -743,23 +745,23 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         interrupt();
                         return true;
                     }
-				});
+				}
+            );
         }
 
         @Override
         protected void onUpdated(Object[] get) {
-
             if (ACTION_UPDATE.equals(get[0])) {
-                List<String> workList = (ArrayList<String>)junkList.clone();
+                allowListModification = false;
+                if (!junkList.isEmpty()) {
+                    Iterator<String> iterator = junkList.iterator();
 
-                if (!workList.isEmpty()) {
-                    Iterator<String> iterator = workList.iterator();
                     while (iterator.hasNext()) { 
                         mAdapter.removeItem(iterator.next());
                     }
-                    junkList.removeAll(workList);
+                    junkList.clear();
                 }
-
+                allowListModification = true;
             } else {
                 String name = (String)get[1];
                 mySimpleDialog.setMessage(name);
@@ -769,8 +771,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         @Override
         public void onFinished() {
             kill();
-
-            if (threadInterrupted || isInterrupted()) {
+            if (threadInterrupted) {
                 updateRecyclerView();
             }
         }
@@ -801,25 +802,21 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             if (folder.delete()) {
 				folderDatabase.delete(folder.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
 			}
-
 			folderDatabase.close();
 		}
 
         private void addItemToDelete(String item, Thread t) {
-//            while (allowListModification != true) {
-//                try {
-//                    t.sleep(10);
-//                } catch (InterruptedException e) {
-//
-//                }
-//            }
+            while (allowListModification != true) {
+                try {
+                    t.sleep(10);
+                } catch (InterruptedException e) {}
+            }
             junkList.add(item);
         }
 
 		private String getNewFileName(File file) {
 			String path = file.getAbsolutePath();
 			int lasIndexOf = path.lastIndexOf(".");
-
 			return lasIndexOf != -1 ? concateParts(path.substring(0, lasIndexOf), path.substring(lasIndexOf), 1) : concateParts(path, "", 1);
 		}
 
@@ -834,8 +831,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 				if (Environment.isExternalStorageRemovable(file)) {
 					return App.getAppContext().getContentResolver().openOutputStream(Storage.getDocumentFile(file, true).getUri());
 				}
-			file.getParentFile().mkdirs();
 
+			file.getParentFile().mkdirs();
             OutputStream fileOutputStream = new FileOutputStream(file);
             return fileOutputStream;
         }

@@ -27,6 +27,8 @@ import java.io.File;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
 import javax.crypto.SecretKey;
+import com.jefferson.application.br.service.AppLockService;
+import android.widget.Toast;
 
 public class CreatePattern extends MyCompatActivity {
 
@@ -44,27 +46,14 @@ public class CreatePattern extends MyCompatActivity {
 	private Button button;
 	private TextView text;
     private String oldPass;
-
-    public void sendBroadcast(String pass) {
-     
-        File token = new File(getCacheDir(), "token");
-        SecretKey key = null;
-        
-        if (token.exists()) {
-           key = EncrytionUtil.getStoredKey(token);
-        } else {
-            Storage.writeFile(key.getEncoded(), token);
-        }
-        
-        if (key != null) {
-            String protectedPassword = EncrytionUtil.getEncryptedString(key, pass);
-            Intent intent = new Intent(App.ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD);
-            intent.putExtra("password", protectedPassword);
-            sendBroadcast(intent);
-            JDebug.toast("ECRYPTED PASSWORD: " + protectedPassword);
-        }
+    
+    public void sendCommandService(String key) {
+        Intent intent = new Intent(this, AppLockService.class);
+        intent.setAction(App.ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD);
+        intent.putExtra("key", key);
+        startService(intent);
+        //stopService(intent);
     }
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -138,17 +127,18 @@ public class CreatePattern extends MyCompatActivity {
 				@Override
 				public void onClick(View v) {
                     passwordManager.setPassword(password);
-                    sendBroadcast(password);
+                    sendCommandService(password);
 
-					if (action.equals(ENTER_FIST_CREATE)) { 
-						requestPermission();
-					} else if (action.equals(ENTER_RECREATE)) {
-						finish();
-				    } else {
-                        JDebug.toast("AÇÃO DESCONHECIDA!");
+                    switch (action) {
+                        case ENTER_FIST_CREATE: 
+                            requestPermission();
+                            break;
+                        case ENTER_RECREATE:
+                            finish();
+                            break;
+                        default:
+                            Toast.makeText(CreatePattern.this, "UNKNOWN ACTION!", 1).show();
                     }
-
-
 				}
             }
         );
@@ -179,10 +169,18 @@ public class CreatePattern extends MyCompatActivity {
             }
         } else {
             Intent intent = new Intent(CreatePattern.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
             startActivity(intent);
-            finish();
+            overridePendingTransition(0,0);
+            
         }
 	}
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Toast.makeText(this, "on result " + requestCode,1).show();
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     private void clearPattern() {
 		clearHandler = new Handler();

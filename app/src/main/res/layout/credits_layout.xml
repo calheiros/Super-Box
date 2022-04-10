@@ -13,6 +13,9 @@
 		android:id="@+id/ascii_text_view"
 		android:layout_centerHorizontal="true"
 		android:textSize="3.4pt"
+        android:lineHeight="4.0pt"
+        android:textStyle="normal"
+        android:fontFamily="sans-serif"
 		android:layout_gravity="center"/>
 
 	<TextView

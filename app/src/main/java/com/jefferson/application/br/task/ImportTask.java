@@ -73,6 +73,7 @@ public class ImportTask extends JTask {
 
         myAlertDialog = new SimpleDialog(context, SimpleDialog.PROGRESS_STYLE);
 		myAlertDialog.setCancelable(false);
+        myAlertDialog.setSingleLineMessage(true);
 		myAlertDialog.setTitle(context.getString(R.string.movendo))
 			.setNegativeButton(context.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
 
