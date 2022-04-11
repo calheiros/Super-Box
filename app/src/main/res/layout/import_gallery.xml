@@ -43,7 +43,7 @@
         android:layout_centerHorizontal="true">
 
         <TextView
-            android:text="@string/ascii_look_of_disapproval"
+            android:text="@string/unicode_look_of_disapproval"
             android:textSize="40dp"
             android:textColor="@color/item_normalDark"
             android:layout_width="wrap_content"
@@ -51,7 +51,8 @@
 
         <TextView
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="15dp"
+            android:textAllCaps="true"
             android:layout_width="wrap_content"
             android:text="@string/galeria_vazia"
             android:textColor="@color/item_normalDark"

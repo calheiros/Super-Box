@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="nao_vejo_nada">I can\'t see a thing!</string>
+    <string name="poucas_fotos">Looks like you don\'t have a lot of pictures...</string>
+    <string name="alguem_viu_uma_pasta">Has anyone seen a folder?</string>
     <string name="falha_video">Failed to play video!</string>
     <string name="pasta_mesmo_nome">The name cannot be the same ಠ_ಠ</string>
     <string name="pasta_existe">There is already a folder with that name!</string>
@@ -14,9 +17,9 @@
     <string name="renomear_pasta">Rename folder</string>
     <string name="concluir">Confirm</string>
     <string name="galeria_vazia">It looks pretty empty...</string>
-    <string name="ascii_look_of_disapproval">ಠ_ಠ</string>
-    <string name="ascii_dead_face">(×_×)</string>
-    <string name="ascii_shrug">¯\\_(ツ)_/¯</string>
+    <string name="unicode_look_of_disapproval">ಠ_ಠ</string>
+    <string name="unicode_dead_face">(×_×)</string>
+    <string name="unicode_shrug">¯\\_(ツ)_/¯</string>
     <string name="galeria">Gallery</string>
     <string name="modo_secreto">Stealth mode</string>
     <string name="codigo_discador">Dialer code</string>

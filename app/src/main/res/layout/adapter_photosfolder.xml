@@ -32,6 +32,21 @@
             android:focusable="true"
             android:layout_height="match_parent">
             
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/tv_folder2"
+                android:singleLine="true"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="10dp"
+                android:shadowColor="#D3000000"
+                android:shadowRadius="4"
+                android:textColor="#f0f0f0"
+                android:layout_gravity="bottom|start"
+                android:textSize="13sp"/>
+            
             <ImageView
                 android:layout_width="15dp"
                 android:layout_height="15dp"
@@ -60,18 +75,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_folder"
-            android:textColor="@android:color/white"
-            android:textSize="15sp"
+            android:textColor="@color/item_normalLight"
+            android:textSize="16sp"
+            android:textStyle="bold"
             android:singleLine="true"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_weight="1.0"
-            android:layout_height="wrap_content"
-            android:id="@+id/tv_folder2"
-            android:singleLine="true"
-            android:textColor="@color/item_normal"
-            android:textSize="13sp"/>
         
     </LinearLayout>
 

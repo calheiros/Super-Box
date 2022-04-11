@@ -1,14 +1,19 @@
 package com.jefferson.application.br.adapter;
 
-import android.content.*;
-import android.graphics.*;
-import android.view.*;
-import android.widget.*;
-import com.bumptech.glide.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.model.*;
-import java.util.*;
+import android.content.Context;
 import android.support.v4.content.ContextCompat;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.bumptech.glide.Glide;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.model.PickerModel;
+import java.util.List;
+import android.view.animation.Animation;
 
 public class FilePickerAdapter extends BaseAdapter {
 
@@ -16,11 +21,12 @@ public class FilePickerAdapter extends BaseAdapter {
     private LayoutInflater mLayoutInflater;
     public List<PickerModel> models;
     private int selectedItem = -1;
-
+    
     public FilePickerAdapter(List<PickerModel> list, Context context) {
         this.context = context;
         this.models = list;
         this.mLayoutInflater = (LayoutInflater) context.getSystemService("layout_inflater");
+            
     }
 
     public void update(List<PickerModel> list) {
@@ -58,15 +64,22 @@ public class FilePickerAdapter extends BaseAdapter {
             view = mLayoutInflater.inflate(R.layout.file_picker_item, (ViewGroup) null);
         }
     
-        ImageView imageView = (ImageView) view.findViewById(R.id.tumbView);
-        TextView textView = (TextView) view.findViewById(R.id.item_name);
-        TextView textView2 = (TextView) view.findViewById(R.id.item_size);
+        ImageView imageView = view.findViewById(R.id.tumbView);
+        TextView textView = view.findViewById(R.id.item_name);
+        TextView textView2 = view.findViewById(R.id.item_size);
         View overlay = view.findViewById(R.id.layoutOverlay);
         PickerModel pickerModel = models.get(position);
-        int color = position == getSelectedItem()? R.color.colorAccent : R.color.item_normal;
+        boolean selected = position == getSelectedItem();
+        int color = selected ? R.color.colorAccent : R.color.item_normal;
+        overlay.setVisibility(selected ? View.VISIBLE : View.GONE);
+        
+        if (selected) {
+            Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_in);
+            anim.setDuration(250);
+            overlay.startAnimation(anim);
+        }
         
         textView.setTextColor(ContextCompat.getColor(context, color));
-        overlay.setVisibility(position == selectedItem ? View.VISIBLE : View.GONE);
         textView.setText(pickerModel.getName());
         textView2.setText(String.valueOf(pickerModel.getSize()));
         Glide.with(context).load("file://" + pickerModel.getTumbPath()).centerCrop().into(imageView);

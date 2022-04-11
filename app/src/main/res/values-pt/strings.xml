@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
+    <string name="nao_vejo_nada">Não consigo ler nada!</string>
+    <string name="poucas_fotos">Parece que vc não tem muitas fotos...</string>
+    <string name="alguem_viu_uma_pasta">Alguém viu uma pasta?</string>
     <string name="falha_video">Falha ao reproduzir vídeo!</string>
-    <string name="pasta_mesmo_nome">O nome não pode ser o mesmo ಠ_ಠ</string>
-    <string name="pasta_existe">Já existe uma pasta com esse nome</string>
+    <string name="pasta_mesmo_nome">Nada mudou.</string>
+    <string name="pasta_existe">Já existe uma pasta com este mesmo nome!</string>
     <string name="sem_espaco_aviso">Pode não haver espaço livre no dispositivo para completar a tranfêrencia, quer tentar continuar mesmo assim?</string>
     <string name="canceledo_usuario">Cancelado pelo usuário!</string>
     <string name="transferencia_falha"></string>
@@ -68,7 +71,7 @@
 	<string name="senha_definida_como">Seu padrão de desbloqueio foi definido como:</string>
 	<string name="apagar_mensagem">Tem certeza que quer apagar %s permanentimente?</string>
 	<string name="restart_to_change_linguage">Reinicie a aplicação para as mudanças terem efeito</string>
-	<string name="vazio">Por enquanto vazio...</string>
+	<string name="vazio">Por enquanto vazio.</string>
 	<string name="intruder_vazio">Tudo limpo! Nenhum intruso foi capturado.</string>
 	<string name="inserir">Insira a senha</string>
 	<string name="criar">Definir senha</string>

@@ -28,7 +28,7 @@
 			android:layout_centerInParent="true"/>
 
         <LinearLayout
-            android:background="@drawable/bg_time_video"
+            android:background="@drawable/bg_rectangle_rounded"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="4dp"

@@ -15,9 +15,10 @@ public class JDebug {
 
     private static String PREFERENCE_NAME = "Debug";
 
-    public static void writeLog(String error) {
+    public static void writeLogFile(String fname, String error) {
+        String name = fname == null ? StringUtils.getFormatedDate(): fname;
         try {
-            File logFile = new File(Storage.getInternalStorage() + "/.logs/test_log.txt");
+            File logFile = new File(Storage.getInternalStorage() + "/.logs/" + name + ".txt");
             logFile.getParentFile().mkdirs();
             FileWriter writer = new FileWriter(logFile);
             writer.write(error);
@@ -25,6 +26,14 @@ public class JDebug {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    public static void writeLog(String err) {
+        writeLogFile(null, err);
+    }
+    
+    public static void writeLog(Throwable th) {
+        writeLogFile(null, getStackeTrace(th));
     }
 
     public static String getStackeTrace(Throwable thow) {
@@ -38,16 +47,6 @@ public class JDebug {
         String result = writer.toString();
         printWriter.close();
         return result;
-    }
-
-    public static void writeLog(Throwable throwable) {
-        writeLog(getStackeTrace(throwable));
-    }
-
-    public static String getLogName() {
-        Date date = new Date();
-        String fmt = date.toString();
-        return date.toString() + ".txt";
     }
 
     public static void toast(String msg) {

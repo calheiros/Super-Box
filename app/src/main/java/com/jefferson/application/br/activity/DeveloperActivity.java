@@ -18,7 +18,7 @@ public class DeveloperActivity extends MyCompatActivity {
 
     private static final int NOTIFICATION_REQUEST_CODE = 2;
 
-    private String TAG = "Notifaction";
+    private static final String TAG = "Notifaction";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +40,7 @@ public class DeveloperActivity extends MyCompatActivity {
 
     public void showAlertDialog(View v) {
         SimpleDialog simple = new SimpleDialog(this);
-        simple.setTitle(R.string.ascii_shrug);
+        simple.setTitle(R.string.unicode_shrug);
         simple.setMessage("Mensagem de teste");
         simple.setPositiveButton("ok", null);
         simple.show();
@@ -48,7 +48,7 @@ public class DeveloperActivity extends MyCompatActivity {
 
     public void showProgressDialog(View v) {
         SimpleDialog simple = new SimpleDialog(this, SimpleDialog.PROGRESS_STYLE);
-        simple.setTitle(R.string.ascii_shrug);
+        simple.setTitle(R.string.unicode_shrug);
         simple.setMessage("Mensagem de teste");
         simple.setProgress(76);
         simple.setPositiveButton("ok", null);

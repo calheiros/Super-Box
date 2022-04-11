@@ -1,7 +1,10 @@
 package com.jefferson.application.br.util;
 import android.util.Log;
 import android.util.Patterns;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -44,6 +47,15 @@ public class StringUtils {
         final String time = String.format("%d:%02d", TimeUnit.MILLISECONDS.toMinutes(millis), secunds);
 
         return time;
+    }
+    public static String getFormatedDate() {
+        
+        Calendar calendar = Calendar.getInstance();
+        Date now = calendar.getTime(); 
+        SimpleDateFormat simpleDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss");
+        String timestamp = simpleDate.format(now);
+        
+        return timestamp;
     }
 
 }

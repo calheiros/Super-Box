@@ -41,7 +41,7 @@
     <color name="highLightColor">#11FFFFFF</color>
     <color name="item_normalDark">#FF757B85</color>
     <color name="item_normal">#FFA0A8B5</color>
-    <color name="item_normalLight">#FFE0E7EE</color>
+    <color name="item_normalLight">#FFD4DCE5</color>
     <color name="blue_bt">#4dc9f7</color>
     <color name="blue_bt_pressed">#88dcff</color>
     <color name="red_bt">#f8584d</color>

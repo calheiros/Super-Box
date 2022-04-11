@@ -109,21 +109,11 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
         @Override
         public VideoPlayerFragment getItem(int position) {
-
-//            VideoPlayFragment fragment = new VideoPlayFragment(filesPath.get(position));
-//            
-//            if (currentFragment == null) {
-//                cachedFragment = fragment;
-//            } else {
-//                cachedFragment = currentFragment;
-//            }
-//            currentFragment = fragment;
             VideoPlayerFragment fragment = fragments[position];
 
             if (fragment == null) {
                 return fragments[position] = new VideoPlayerFragment(filesPath.get(position));
             }
-
             return fragment;
         }
 

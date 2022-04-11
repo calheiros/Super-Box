@@ -25,17 +25,20 @@ import com.jefferson.application.br.util.JDebug;
 import com.bumptech.glide.Glide;
 import com.jefferson.application.br.ui.JVideoController;
 
-public class VideoPlayerFragment extends Fragment implements OnTouchListener, OnClickListener, JVideoController.OnPlayButtonPressedListener {
+public class VideoPlayerFragment extends Fragment implements OnClickListener, JVideoController.OnPlayButtonPressedListener {
 
     @Override
     public void onPressed(boolean playing) {
         
-        if (!playing) {
-            hideThumbView();
+        if (videoNotPrepared) {
+            videoNotPrepared = false;
             prepare();
         }
+        
+        hideThumbView();
     }
-
+    
+    private boolean videoNotPrepared;
     private View parentView;
     private VideoView mVideoView;
     private String videoPath;
@@ -65,6 +68,7 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         if (parentView == null) {
+            videoNotPrepared = true;
             parentView = inflater.inflate(R.layout.video_view_fragment, null);
             mVideoView = parentView.findViewById(R.id.video_view);
             mThumbView = parentView.findViewById((R.id.video_view_fragment_thumb_view));
@@ -81,15 +85,16 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
             jController = new JVideoController(mVideoView);
             jController.setAnchor((ViewGroup)parentView);
             jController.setOnPlayButtonPressed(this);
-
+            
             //mediaController = new MediaController(getActivity());
             //mediaController.setAnchorView(parentView);
             //mVideoView.setMediaController(mediaController);
+            jController.prepare(null);
             mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
 
                     @Override
                     public void onPrepared(MediaPlayer mp) {
-                        jController.prepare(mp);
+                        mp.setLooping(true);
                     }
                 }
             );
@@ -104,12 +109,7 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
                     }
                 }
             );
-
-            if (playOnCreate) {
-                JDebug.toast("play on create!");
-                startVideo();
-
-            }
+            
         }
 
         Glide.with(this).load("file://" + videoPath).into(mThumbView);
@@ -144,20 +144,7 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
             mThumbView.setVisibility(View.GONE);
         }
     }
-
-    @Override
-    public boolean onTouch(View vi, MotionEvent event) {
-
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            if (mediaController.isShowing()) {
-                mediaController.hide();
-            } else {
-                mediaController.show();
-            }
-            return true;
-        }
-        return false;
-    }
+    
     public void prepare() {
         if (mVideoView != null) {
             mVideoView.setVideoURI(Uri.parse(videoPath));
@@ -189,6 +176,7 @@ public class VideoPlayerFragment extends Fragment implements OnTouchListener, On
 
         if (mVideoView != null && mVideoView.isPlaying()) {
             mVideoView.stopPlayback();
+            videoNotPrepared = true;
         }
 
         if (mediaController != null && mediaController.isShowing()) {
