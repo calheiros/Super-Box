@@ -313,7 +313,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         String locale = LocaleManager.getLanguage(getContext());
 
         if (locale == null)
-			return "Padr\u00e3o do sistema";
+			return getString(R.string.padrao_do_sistema);
 
 		switch (locale) {
 			case "en":

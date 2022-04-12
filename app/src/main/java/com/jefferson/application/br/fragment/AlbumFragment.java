@@ -4,11 +4,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -16,6 +17,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.jefferson.application.br.App;
@@ -24,19 +26,17 @@ import com.jefferson.application.br.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MainActivity;
 import com.jefferson.application.br.adapter.AlbumAdapter;
+import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.DeleteFilesTask;
+import com.jefferson.application.br.task.JTask;
+import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.util.JDebug;
-import com.jefferson.application.br.util.StringUtils;
 import com.jefferson.application.br.util.Storage;
+import com.jefferson.application.br.util.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
-import com.jefferson.application.br.util.DialogUtils;
-import android.os.Looper;
-import android.os.Handler;
-import android.os.Message;
-import com.jefferson.application.br.model.MediaModel;
-import com.jefferson.application.br.task.JTask;
 
 public class AlbumFragment extends Fragment {
 
@@ -71,7 +71,7 @@ public class AlbumFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        
+
         if (view == null) {
             view = inflater.inflate(R.layout.main_gallery, container, false);
             progressBar = view.findViewById(R.id.main_galery_progressBar);
@@ -109,9 +109,9 @@ public class AlbumFragment extends Fragment {
             @Override
             public void  handleMessage(Message m) {
                 ArrayList<FolderModel> list = (ArrayList<FolderModel>) m.getData().getParcelableArrayList("list");
-                setEmptyViewVisibility(list.isEmpty()? View.VISIBLE : View.GONE);
+                setEmptyViewVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
                 hideProgressBar();
-                
+
                 mAdapter = new AlbumAdapter(AlbumFragment.this, list);
                 if (recyclerView != null) {
                     recyclerView.setAdapter(mAdapter);
@@ -119,7 +119,7 @@ public class AlbumFragment extends Fragment {
             }
         };
 
-       Thread thread = new Thread() {
+        Thread thread = new Thread() {
 
             @Override
             public void  run() {
@@ -137,7 +137,7 @@ public class AlbumFragment extends Fragment {
     }
 
 	private ArrayList<FolderModel> getLocalList() {
-        
+
 		ArrayList<FolderModel> models = new ArrayList<FolderModel>();
         File root = Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO);
 		root.mkdirs();
@@ -168,32 +168,15 @@ public class AlbumFragment extends Fragment {
 		return models;
 	}
 
-	final class DeleteAlbumTask extends DeleteFilesTask  {
-
-        public DeleteAlbumTask(Context p1, ArrayList<String> p2, int p3, File p4) {
-			super(p1, p2, p3, p4);
-		}
-
-        @Override
-		protected void onPreExecute() {
-
-			super.onPreExecute();
-		}
-
-		@Override
-		protected void onPostExecute(Object result) {
-			super.onPostExecute(result);
-			((MainActivity)getActivity()).updateFragment(getPagerPosition());
-		}
-	}
-
     public void inputFolderDialog(final FolderModel model, final int action) {
 
         Context context = getContext();
         View contentView = getActivity().getLayoutInflater().
             inflate(R.layout.dialog_edit_text, null);
         final EditText editText = contentView.findViewById(R.id.editTextInput);
-        editText.requestFocus();
+        
+        //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); imm.hideSoftInputFromWindow(view.getWindowToken(),0);
+        
         String title = null; 
 
         if (action == ACTION_RENAME_FOLDER) {
@@ -205,28 +188,35 @@ public class AlbumFragment extends Fragment {
             title = getString(R.string.criar_pasta);
         }
 
-        AlertDialog dialog = new AlertDialog.Builder(context, R.style.CustomAlertDialog)
-            .setTitle(title)
-            .setView(contentView)
-            .setPositiveButton(context.getString(R.string.concluir), new DialogInterface.OnClickListener() {
+        SimpleDialog dialog = new SimpleDialog(context);
+        dialog.setTitle(title);
+        dialog.setContentView(contentView);
+        dialog.setPositiveButton(context.getString(R.string.concluir), new SimpleDialog.OnDialogClickListener(){
+
                 @Override
-                public void onClick(DialogInterface dInterface, int p) {
+                public boolean onClick(SimpleDialog dialog) {
                     String text = editText.getText().toString();
+                    AlbumFragment.ValidateResult result = validateFolderName(text);
+
+                    if (!result.passed) {
+                        Toast.makeText(getContext(), result.message, 1).show();
+                        return false;
+                    }
+
                     switch (action) {
                         case ACTION_RENAME_FOLDER:
-                            renameFolder(model, text);
-                            break;
+                            return renameFolder(model, text);
                         case ACTION_CREATE_FOLDER:
-                            createFolder(text);
-                            break;
+                            return createFolder(text);
                     }
+                    return true;
                 }
             }
         ).setNegativeButton(getString(R.string.cancelar), null).show();
-        DialogUtils.configureRoudedDialog(dialog);
     }
 
-    public void renameFolder(FolderModel model, String newName) {
+    public boolean renameFolder(FolderModel model, String newName) {
+
         Context activity = App.getAppContext();
         String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(activity);
@@ -239,13 +229,13 @@ public class AlbumFragment extends Fragment {
         if (folderName != null && folderName.equals(newName)) {
             Toast.makeText(getContext(), getString(R.string.pasta_mesmo_nome), Toast.LENGTH_LONG).show();
             folderDatabase.close();
-            return;
+            return false;
         }
 
         if (newFolderId != null) {
             Toast.makeText(getContext(), getString(R.string.pasta_existe), 1).show();
             folderDatabase.close();
-            return;
+            return false;
         }
 
         if (folderName == null) {
@@ -257,17 +247,15 @@ public class AlbumFragment extends Fragment {
         Snackbar.make(view, "Folder renamed to \"" + newName + "\"", Snackbar.LENGTH_SHORT).show();
         folderDatabase.close();
         update();
-
+        return true;
     }
-    
-    public void createFolder(String name) {
 
-        if (name.isEmpty()) name = getString(R.string.sem_nome);
+    public boolean createFolder(@NonNull String name) {
+
         String type = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(getContext());
         String id = folderDatabase.getFolderId(name, type);
         String randomStr = StringUtils.getRandomString(24);
-
         if (id == null) {
             id = randomStr;
             int strType = position == 0 ? Storage.IMAGE: Storage.VIDEO;
@@ -278,11 +266,28 @@ public class AlbumFragment extends Fragment {
                 Snackbar.make(view, "Created folder \"" + name + "\"", Snackbar.LENGTH_SHORT).show();
             }
         } else {
-            Toast.makeText(getContext(), getString(R.string.pasta_ja_existe), 1).show();
+            Toast.makeText(getContext(), getString(R.string.pasta_existe), 1).show();
+            return false;
         }
-        
+
         folderDatabase.close();
         update();
+        return true;
+    }
+
+    public ValidateResult validateFolderName(@NonNull String name) {
+        ValidateResult result = new ValidateResult();
+        String nospace = name.replace(" ", "");
+
+        if (nospace.isEmpty()) {
+            result.message = "Name is empty!";
+        } else if (name.length() > 50) {
+            result.message = "Many characters!";
+        } else {
+            result.passed = true;
+        }
+
+        return result;
     }
 
     public void deleteAlbum(final FolderModel model) {
@@ -295,11 +300,20 @@ public class AlbumFragment extends Fragment {
 				@Override
 				public void onClick(DialogInterface inter, int p2) {
 					File root = new File(model.getPath());
-					new DeleteAlbumTask(getContext(), model.getItemsPath(), position, root).execute();
+					DeleteFilesTask task = new DeleteFilesTask(getContext(), model.getItemsPath(), position, root);
+                    task.setOnFinishedListener(new JTask.OnFinishedListener() {
+
+                            @Override
+                            public void onFinished() {
+                                ((MainActivity)getActivity()).updateFragment(getPagerPosition());
+                            }
+                        }
+                    );
+                    task.start();
 				}
             }
         );
-        
+
 		builder.setNegativeButton(getString(R.string.nao), null);
         DialogUtils.configureRoudedDialog(builder.show());
 	}
@@ -307,4 +321,9 @@ public class AlbumFragment extends Fragment {
 	public void update() {
         populateReciclerView();
 	}
+
+    class ValidateResult {
+        public boolean passed = false;
+        public String message = "";
+    }
 }

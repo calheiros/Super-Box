@@ -59,7 +59,13 @@ public class Storage extends DocumentUtil {
 
         return true;
     }
-
+    
+    public static String getRecycleBinPath() {
+        File file = new File(getDefaultStorage(), ".trashed");
+        file.mkdirs();
+        return file.getAbsolutePath();
+    }
+    
     public static boolean writeFile(byte[] content, File target) {
         File parent = target.getParentFile();
         if (!parent.exists()) {

@@ -1,40 +1,42 @@
 package com.jefferson.application.br.app;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.TextView;
-import com.jefferson.application.br.library.NumberProgressBar;
-import com.jefferson.application.br.R;
-import android.widget.Button;
-import android.support.v4.content.ContextCompat;
+import android.view.ViewGroup;
 import android.view.Window;
-import android.support.v4.text.TextUtilsCompat;
-import android.text.TextUtils;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
+import android.widget.Button;
+import android.widget.TextView;
+import com.jefferson.application.br.R;
+import com.jefferson.application.br.library.NumberProgressBar;
 
-public class SimpleDialog extends AlertDialog {
+public class SimpleDialog  {
 
 	public static final int PROGRESS_STYLE = 123;
 	public static final int ALERT_STYLE = 321;
 
-    private View contentView;
+    private ViewGroup parentView;
 	private NumberProgressBar progressBar;
 	private TextView contentText;
 	private TextView contentTitle;
 	private SimpleDialog progressBarDialog;
-	private FrameLayout extraLayout;
 	private long maxBytes;
 	private long currentBytes;
 	private int progress;
     private Button positiveButton;
     private Button negativeButton;
+    private JDialog jdialog;
 	private Handler mHandler = new Handler() {
 
 		@Override
@@ -44,15 +46,22 @@ public class SimpleDialog extends AlertDialog {
 		}
 	};
 
+    private Context context;
+    private View editTextLayout;
+    public static final int INPUT_STYLE = 444;
+
 	public SimpleDialog(Context context, int style) {
-		super(context);
-	    create(style);
+        this.context = context;
+	    createView(style);
 	}
 
     public SimpleDialog(Context context) {
-		super(context);
-	    create(0);
+        this.context = context;
+	    createView(0);
 	}
+
+    public void setCanceledOnTouchOutside(boolean p0) {
+    }
 
 	public long getCurrentBytes() {
 		return currentBytes;
@@ -83,31 +92,24 @@ public class SimpleDialog extends AlertDialog {
         } else {
             contentText.setMaxLines(256);
             contentText.setEllipsize(TextUtils.TruncateAt.END);
-            
+
         }
         return this;
     }
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(contentView);
-	}
-
-	private void create(int style) {
+	private void createView(int style) {
 		progressBarDialog = this;
-		contentView = LayoutInflater.from(getContext()).inflate(R.layout.dialog_progress_view, null);
-		progressBar = contentView.findViewById(R.id.number_progress_bar);
-		extraLayout = contentView.findViewById(R.id.extra_view);
-		contentTitle = contentView.findViewById(R.id.title_text_view);
-		contentText = contentView.findViewById(R.id.message_text_view);
-		positiveButton = contentView.findViewById(R.id.dialogPositiveButton);
-		negativeButton = contentView.findViewById(R.id.dialogNegativebutton);
-
-        Window window = getWindow();
-        window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        window.setBackgroundDrawableResource(R.drawable.dialog_bg_inset);
-        int color  = ContextCompat.getColor(getContext(), R.color.colorAccent);
+		parentView = (ViewGroup) LayoutInflater.from(context).inflate(R.layout.dialog_progress_view, null);
+		progressBar = parentView.findViewById(R.id.number_progress_bar);
+		//extraView = contentView.findViewById(R.id.extra_view);
+		contentTitle = parentView.findViewById(R.id.title_text_view);
+		contentText = parentView.findViewById(R.id.message_text_view);
+		positiveButton = parentView.findViewById(R.id.dialogPositiveButton);
+		negativeButton = parentView.findViewById(R.id.dialogNegativebutton);
+        editTextLayout = parentView.findViewById(R.id.dialog_edit_text_layout);
+        this.jdialog = new JDialog(context);
+        
+        int color  = ContextCompat.getColor(context, R.color.colorAccent);
         progressBar.setMax(100);
         progressBar.setReachedBarColor(color);
         progressBar.setProgressTextColor(color);
@@ -118,9 +120,20 @@ public class SimpleDialog extends AlertDialog {
         boolean show = style == PROGRESS_STYLE ? true: false;
 		showNegativeButton(false);
 		showPositiveButton(false);
+        showTextMessage(false);
         setSingleLineMessage(false);
         showProgressBar(show);
+        //showEditText(style == INPUT_STYLE);
 	}
+
+    private void showTextMessage(boolean show) {
+        contentText.setVisibility(show ? View.VISIBLE: View.GONE);
+    }
+
+    private void showEditText(boolean show) {
+        int visibility = show ? View.VISIBLE : View.GONE;
+        editTextLayout.setVisibility(visibility);
+    }
 
 	public SimpleDialog setProgress(int progress) {
         mHandler.sendEmptyMessage(progress);
@@ -128,14 +141,28 @@ public class SimpleDialog extends AlertDialog {
         return this;
     }
 
-	public SimpleDialog addContentView(View view) {
-		extraLayout.setVisibility(View.VISIBLE);
-		extraLayout.addView(view);
+	public SimpleDialog setContentView(View view) {
+        parentView.addView(view, 3, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 		return this;
 	}
 
 	public int getProgress() {
         return progress;
+    }
+
+    public SimpleDialog setCancelable(boolean cancelable) {
+        this.jdialog.setCancelable(false);
+        return this;
+    }
+
+    public void setOnDismissListener(DialogInterface.OnDismissListener listener) {
+        this.jdialog.setOnDismissListener(listener);
+    }
+
+    public void dismiss() {
+        if (jdialog != null) {
+            this.jdialog.dismiss();
+        }
     }
 
 	public SimpleDialog showProgressBar(boolean show) {
@@ -158,8 +185,13 @@ public class SimpleDialog extends AlertDialog {
 		return this;
 	}
 
-    public void setTitle(int titleId) {
-        setTitle(getContext().getString(titleId));
+    public SimpleDialog setTitle(int titleId) {
+        setTitle(context.getString(titleId));
+        return this;
+    }
+
+    public Context getContext() {
+        return context;
     }
 
 	public SimpleDialog setTitle(String title) {
@@ -175,6 +207,14 @@ public class SimpleDialog extends AlertDialog {
 		contentText.setText(text);
 		return this;
 	}
+
+    public SimpleDialog show() {
+        // this.mAlertDialog = builder.create();
+        //mAlertDialog.setContentView(contentView);
+        
+        this.jdialog.show();
+        return this;
+    }
 
     public void setMessage(CharSequence message) {
         setMessage(String.valueOf(message));
@@ -212,10 +252,28 @@ public class SimpleDialog extends AlertDialog {
             if (listener != null) {
 			    if (!listener.onClick(progressBarDialog)) return;
 			}
-            dismiss();
+            jdialog.dismiss();
 		}
 	}
-
+    
+    private class JDialog extends AlertDialog {
+        
+        public JDialog(Context context) {
+            super(context);
+        }
+        
+        @Override
+        protected void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            setContentView(parentView);
+            Window window = getWindow();
+            window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE|WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
+            window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); 
+            window.setBackgroundDrawableResource(R.drawable.dialog_bg_inset); 
+            window.setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        }
+    }
+    
 	abstract public static class OnDialogClickListener {
 	    public abstract boolean onClick(SimpleDialog dialog);
 	}

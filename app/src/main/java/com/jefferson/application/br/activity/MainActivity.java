@@ -46,6 +46,10 @@ import java.util.ArrayList;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.ImportTaskListener {
 
+    public void setupToolbar(Toolbar toolbar, String string, int menuId) {
+        
+    }
+
     @Override
     public void onBeingStarted() {
     }
@@ -224,7 +228,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		dialog.setTitle("Erro detectado!");
 		dialog.setMessage("Lamento pelo erro ocorrido anteriormente. Por favor, relate o erro ocorrido para que ele seja corrigido o mais rápido possível.");
 		dialog.setCanceledOnTouchOutside(false);
-		dialog.addContentView(view);
+		dialog.setContentView(view);
 		dialog.setPositiveButton("Relatar", new SimpleDialog.OnDialogClickListener(){
 				@Override
 				public boolean onClick(SimpleDialog dialog) {

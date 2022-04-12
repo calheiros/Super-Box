@@ -10,94 +10,91 @@ import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
 
-public class DeleteFilesTask extends AsyncTask {
+public class DeleteFilesTask extends JTask {
 
-	public int progress;
-	private List<String> items;
-	public SimpleDialog dialog;
-	private Context context;
-	private int position;
-	private File rootFile;
-	private PathsData mData;
+    public int progress;
+    private List<String> items;
+    public SimpleDialog dialog;
+    private Context context;
+    private int position;
+    private File rootFile;
+    private PathsData mData;
     private PathsData.Folder folderDatabase;
 
-	public DeleteFilesTask(Context context, ArrayList<String> items, int position, File rootFile) {
-		this.items = items;
-		this.position = position;
-		this.rootFile = rootFile;
-		this.context = context;
-		File file = new File(Storage.getDefaultStorage());
-		this.mData = PathsData.getInstance(context, file.getAbsolutePath());
+    public DeleteFilesTask(Context context, ArrayList<String> items, int position, File rootFile) {
+        this.items = items;
+        this.position = position;
+        this.rootFile = rootFile;
+        this.context = context;
+        File file = new File(Storage.getDefaultStorage());
+        this.mData = PathsData.getInstance(context, file.getAbsolutePath());
         folderDatabase = PathsData.Folder.getInstance(context);
-	}
+    }
 
-	@Override
-	protected void onPreExecute() {
-		super.onPreExecute();
-		dialog = new SimpleDialog(context);
-		dialog.showProgressBar(!items.isEmpty())
-			.setTitle("Excluindo")
-			.setMax(items.size())
-			.setProgress(0)
-			.showPositiveButton(false)
-			.setNegativeButton(context.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
-				@Override
-				public boolean onClick(SimpleDialog dialog) {
-					cancel(true);
-					return true;
-				}
-			}
+    @Override
+    public void workingThread() {
+        for (String item : items) {
+            if (isInterrupted()) {
+                break;
+            }
+            File file = new File(item);
+
+            if (file.delete()) {
+                progress++;
+                String name = null;
+                if ((name = mData.getPath(file.getName())) != null) {
+                    mData.deleteData(file.getName());
+                }
+                sendUpdate(item, name);
+            }
+        }
+    }
+
+    @Override
+    public void onBeingStarted() {
+        dialog = new SimpleDialog(context);
+        dialog.showProgressBar(!items.isEmpty())
+            .setTitle("Excluindo")
+            .setMax(items.size())
+            .setProgress(0)
+            .showPositiveButton(false)
+            .setNegativeButton(context.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
+                @Override
+                public boolean onClick(SimpleDialog dialog) {
+                    interrupt();
+                    return true;
+                }
+            }
         );
 		dialog.show();
-	}
+    }
 
-	@Override
-	protected void onCancelled(Object result) {
-		Toast.makeText(context, "Cancelado!", 1).show();
-		//synchronizeData();
-	}
+    @Override
+    public void onFinished() {
+        dialog.dismiss();
 
-	@Override
-	protected void onPostExecute(Object result) {
-
-		dialog.dismiss();
-
-		if (rootFile.list().length == 0) {
-			deleteFolder(rootFile);
+        if (rootFile.list().length == 0) {
+            deleteFolder(rootFile);
 		}
-		//synchronizeData();
-	}
+    }
 
-	@Override
-	protected void onProgressUpdate(Object[] values) {
-		super.onProgressUpdate(values);
-		dialog.setProgress(progress);
-		dialog.setMessage((String)values[1]);
-		//mAdapter.removeItem(values[0]);
-	}
+    @Override
+    public void onException(Exception e) {
+        Toast.makeText(context, "Error", 1).show();
+    }
 
-	@Override
-	protected Object doInBackground(Object[] p1) {
+    @Override
+    protected void onInterrupted() {
+        super.onInterrupted();
+        Toast.makeText(context, context.getString(R.string.canceledo_usuario), 1).show();
+    }
 
-		try {
-			for (String item : items) {
-				if (isCancelled()) {
-					break;
-				}
-				File file = new File(item);
-
-                if (file.delete()) {
-					progress++;
-					String name = null;
-					if ((name = mData.getPath(file.getName())) != null) {
-						mData.deleteData(file.getName());
-					}
-					publishProgress(item, name);
-				}
-			}
-		} catch (Exception e) {}
-		return 0;
-	}
+    @Override
+    protected void onUpdated(Object[] get) {
+        super.onUpdated(get);
+        dialog.setProgress(progress);
+		dialog.setMessage((String)get[1]);
+    }
 
 	private void deleteFolder(File file) {
 

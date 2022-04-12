@@ -59,7 +59,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		    View fab = view.findViewById(R.id.fab);
             fab.setOnClickListener(this);
             fab.setOnLongClickListener(this);
-
+            
 			//view.findViewById(R.id.fab_create).setOnClickListener(this);
 			toogleTabIcon(0);
 		}

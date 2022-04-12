@@ -125,7 +125,22 @@
             android:name=".activity.CrashActivity">
 
         </activity>
+        
+        <activity
+            android:name=".activity.CloneActivity"
+            android:icon="@drawable/ic_android"
+            android:enabled="false">
+            
+            <intent-filter>
 
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+
+            </intent-filter>
+            
+        </activity>
+        
         <activity
             android:name=".Intruder_fragment"
             android:label="Possiveis intrusos"/>

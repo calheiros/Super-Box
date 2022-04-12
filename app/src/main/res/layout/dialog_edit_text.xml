@@ -2,10 +2,10 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical"
-	android:layout_width="fill_parent"
-	android:gravity="center"
-	android:layout_height="match_parent"
-	android:padding="16dp">
+    android:gravity="center"
+    android:id="@+id/dialog_edit_text_layout"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
 
 	<EditText
 		android:id="@+id/editTextInput"
@@ -13,9 +13,11 @@
 		android:layout_height="wrap_content"
 		android:singleLine="true"
 		android:inputType="text"
-		android:ems="11"
-		android:gravity="start"
-		android:textSize="20sp">
+        android:focusable="true"
+        android:ems="13"
+        android:hint="Maximun 50 digits"
+        android:gravity="start"
+		android:textSize="18sp">
 
 		<requestFocus/>
 

@@ -11,7 +11,12 @@
         android:visibility="gone"
 		android:layout_width="wrap_content"
 		style="?android:attr/buttonBarButtonStyle"
-        android:layout_height="40sp"
+        android:layout_height="wrap_content"
+        android:minHeight="14sp"
+        android:textSize="14sp"
+        android:padding="12dp"
+        android:minWidth="60dp"
+        android:gravity="center"
         android:textColor="@color/colorAccent"
 		android:id="@+id/dialogNegativebutton"
 		android:layout_marginRight="5dp"/>
@@ -20,9 +25,13 @@
         android:visibility="gone"
 		android:backgroundTint="@color/colorAccent"
 		android:layout_width="wrap_content"
-        android:layout_height="40sp"
-		android:id="@+id/dialogPositiveButton"
-		android:layout_marginRight="5dp"/>
+        android:layout_height="wrap_content"
+        android:minHeight="14sp"
+        android:textSize="14sp"
+        android:padding="12dp"
+        android:minWidth="60dp"
+        android:gravity="center"
+		android:id="@+id/dialogPositiveButton"/>
 
 </LinearLayout>
 

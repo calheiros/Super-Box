@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="padrao_do_sistema">System default</string>
     <string name="nao_vejo_nada">I can\'t see a thing!</string>
     <string name="poucas_fotos">Looks like you don\'t have a lot of pictures...</string>
     <string name="alguem_viu_uma_pasta">Has anyone seen a folder?</string>

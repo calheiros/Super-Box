@@ -6,10 +6,12 @@ import android.os.Looper;
 import android.os.Message;
 import com.jefferson.application.br.util.JDebug;
 import java.io.Serializable;
+import com.jefferson.application.br.task.JTask.OnFinishedListener;
 
 abstract public class JTask implements JTaskListener {
 
-    
+    private JTask.OnFinishedListener onFinishedListener;
+
     private static final int STATE_FINISHED = 3;
     private static final int STATE_INTERRUPTED = -1;
     private static final int STATE_BEING_STARTED = 1;
@@ -19,20 +21,22 @@ abstract public class JTask implements JTaskListener {
 
     private  Handler mainHandler;
     private Thread workThread;
-    
+    private OnUpdatedListener onUpdatedListener;
+    private OnBeingStartedListener onBeingStartedListener;
+
     public static enum Status {
         FINISHED,
         STARTED,
         INTERRUPTED
-    }
-    
+        }
+
     public Status status;
-    
+
     public JTask() {
         this.workThread = new WorkThread();
         this.mainHandler = new MainHandler(Looper.getMainLooper());
     }
-    
+
     private class MainHandler extends Handler {
 
         public MainHandler(Looper looper) {
@@ -48,10 +52,16 @@ abstract public class JTask implements JTaskListener {
                     status = Status.FINISHED;
                     workThread.interrupt();
                     onFinished();
+                    if (onFinishedListener != null) {
+                        onFinishedListener.onFinished();
+                    }
                     break;
                 case STATE_BEING_STARTED:
                     status = Status.STARTED;
                     onBeingStarted();
+                    if (onBeingStartedListener != null) {
+                        onBeingStartedListener.onBeingStarted();
+                    }
                     workThread.start();
                     break;
                 case STATE_INTERRUPTED:
@@ -64,6 +74,9 @@ abstract public class JTask implements JTaskListener {
                 case STATE_UPDATED:
                     Object[] data = (Object[]) msg.getData().getSerializable("data");
                     onUpdated(data);
+                    if (onUpdatedListener != null) {
+                        onUpdatedListener.onUpdated(data);
+                    }
                     break;
                 case STATE_EXCEPTION_CAUGHT:
                     onException(exception);
@@ -86,7 +99,7 @@ abstract public class JTask implements JTaskListener {
             sendState(STATE_FINISHED);
         }
     }
-    
+
     public void setThreadPriority(int priority) {
         workThread.setPriority(priority);
     }
@@ -94,7 +107,7 @@ abstract public class JTask implements JTaskListener {
     private void sendState(final int state) {
         sendState(state, null);
     }
-    
+
     public void start() {
         sendState(STATE_BEING_STARTED);
     }
@@ -122,14 +135,41 @@ abstract public class JTask implements JTaskListener {
         mainHandler.sendMessage(msg);
     }
 
+    public void setOnbeingStartedListener(OnBeingStartedListener listener) {
+        this.onBeingStartedListener = listener;
+    }
+
+    public void setOnUpdatedListener(OnUpdatedListener listener) {
+        this.onUpdatedListener = listener;
+    }
+
+    public void setOnFinishedListener(OnFinishedListener listener) {
+        this.onFinishedListener = listener;
+    }
+
     protected void onInterrupted() {}
+
     protected void onUpdated(Object[] get) {}
+
+    public static interface OnFinishedListener {
+        void onFinished()
+    }
+
+    public static interface OnBeingStartedListener {
+        void onBeingStarted()
+    }
+
+    public static interface OnUpdatedListener {
+        void onUpdated(Object[] values)
+    }
 }
 
 interface JTaskListener {
-
     void workingThread()
     void onBeingStarted()
     void onFinished()
     void onException(Exception e)
+
 }
+
+

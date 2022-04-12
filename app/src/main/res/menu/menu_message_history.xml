@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/count_show"
+    
+    <item android:id="@+id/item_message_history"
         android:visible="true"
-        android:title=""
+        android:icon="@drawable/ic_message_text_clock"
         app:showAsAction="always">
     </item>
+    
 </menu>

@@ -1,7 +1,12 @@
 package com.jefferson.application.br.activity;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -12,7 +17,6 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.JDebug;
-import android.support.v4.app.NotificationManagerCompat;
 
 public class DeveloperActivity extends MyCompatActivity {
 
@@ -66,7 +70,8 @@ public class DeveloperActivity extends MyCompatActivity {
     }
 
     public void notification(View v) {
-        if (!NotificationManagerCompat.getEnabledListenerPackages(getApplicationContext()) .contains(getApplicationContext().getPackageName())) { 
+        boolean bypass = true;
+        if (bypass || !NotificationManagerCompat.getEnabledListenerPackages(getApplicationContext()) .contains(getApplicationContext().getPackageName())) { 
             //We dont have access 
             Intent intent= new Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS"); //For API level 22+ you can directly use Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
@@ -80,10 +85,18 @@ public class DeveloperActivity extends MyCompatActivity {
     }
 
     public void camera(View v) {
-        Intent inten = new Intent(this, Camera.class);
-        startActivity(inten);
-    }
-
+        Intent i = new Intent(this, VerifyActivity.class); Bundle b = null; 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) { 
+            //
+            b = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), // 
+                                                     v.getHeight()).toBundle(); 
+            Bitmap bitmap = Bitmap.createBitmap(v.getWidth(), v.getHeight(), Bitmap.Config.ARGB_8888); 
+            bitmap.eraseColor(Color.parseColor("#308cf8")); 
+            b = ActivityOptions.makeThumbnailScaleUpAnimation(v, bitmap, 0, 0).toBundle(); 
+        } 
+        startActivity(i, b);
+        //startActivity(new);
+    } 
     public void quit(View v) {
         finish();
     }

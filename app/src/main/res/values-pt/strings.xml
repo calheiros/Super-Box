@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
+    <string name="padrao_do_sistema">Padrão do sistem</string>
     <string name="nao_vejo_nada">Não consigo ler nada!</string>
     <string name="poucas_fotos">Parece que vc não tem muitas fotos...</string>
     <string name="alguem_viu_uma_pasta">Alguém viu uma pasta?</string>

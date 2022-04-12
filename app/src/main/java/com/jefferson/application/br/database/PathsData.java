@@ -115,7 +115,7 @@ public class PathsData extends SQLiteOpenHelper {
 	}
 
     public boolean insertData(String id , String name, long duration) {
-
+       
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COL, name);

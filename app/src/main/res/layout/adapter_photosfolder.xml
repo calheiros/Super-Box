@@ -77,7 +77,6 @@
             android:id="@+id/tv_folder"
             android:textColor="@color/item_normalLight"
             android:textSize="16sp"
-            android:textStyle="bold"
             android:singleLine="true"/>
         
     </LinearLayout>

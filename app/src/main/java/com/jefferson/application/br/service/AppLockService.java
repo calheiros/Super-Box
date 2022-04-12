@@ -87,12 +87,11 @@ public class AppLockService extends Service {
                 lockedApps = database.getLockedPackages();
             }
         }
-
         JDebug.toast("stat command " + intent);
 		return START_STICKY;
 	}
 
-    private void createDataBusReceiver() {
+  /*  private void createDataBusReceiver() {
         dataBusReceiver = new BroadcastReceiver() {
 
             @Override
@@ -127,7 +126,7 @@ public class AppLockService extends Service {
         registerReceiver(dataBusReceiver, new IntentFilter(App.ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD));
         registerReceiver(dataBusReceiver, new IntentFilter(App.ACTION_APPLOCK_SERVICE_UPDATE_DATA));
     }
-
+*/
     private void startForeground() {
 
         String ChannelId = "";
@@ -174,7 +173,8 @@ public class AppLockService extends Service {
 
 	@Override
 	public void onDestroy() {
-
+        JDebug.toast("DESTROY CALLED!");
+        
         if (dataBusReceiver != null) {
             unregisterReceiver(dataBusReceiver);
         }

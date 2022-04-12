@@ -2,7 +2,7 @@
 	
     <group android:checkableBehavior="single">
 		<item
-			android:icon="@drawable/ic_from_gallery"
+			android:icon="@drawable/ic_folder_image"
 			android:id="@+id/main_item1"
 			android:title="@string/galeria"/>
 		<item

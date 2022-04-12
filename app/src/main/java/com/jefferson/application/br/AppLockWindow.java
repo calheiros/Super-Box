@@ -41,13 +41,14 @@ public class AppLockWindow {
 			WindowManager.LayoutParams.MATCH_PARENT,
 			WindowManager.LayoutParams.MATCH_PARENT,
             layoutParamsType,
-			(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
-            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED | View.SYSTEM_UI_FLAG_LAYOUT_STABLE |
+			(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS | WindowManager.LayoutParams.FLAG_DIM_BEHIND |
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
             WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD) ,
-			PixelFormat.RGBX_8888);
-
+			PixelFormat.TRANSLUCENT);
+            
 		params.windowAnimations = android.R.style.Animation_Dialog;
 		windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+       
 		createView();
 	}
 
@@ -78,24 +79,11 @@ public class AppLockWindow {
             @Override 
             public boolean dispatchKeyEvent(KeyEvent e) {
                 startDefaultLauncher();
+                JDebug.toast("Back pressed!");
                 //Toast.makeText(context, "KEY " + e.getKeyCode(), 1).show();
                 return true;
             }
-
-            @Override 
-            public boolean onKeyDown(int k, KeyEvent event) { 
-                Toast.makeText(context, "KEY CODE: " + event.getKeyCode(), 1).show();
-                if (event.getKeyCode() == KeyEvent.KEYCODE_BACK) {
-                    // < your action > 
-                    if (startDefaultLauncher()) {
-                        unlock();
-                    }
-                    JDebug.toast("Back pressed!");
-                    return true; 
-                } 
-                return super.dispatchKeyEvent(event); 
-            }
-
+           
             private boolean startDefaultLauncher() {
 
                 try {
@@ -116,10 +104,13 @@ public class AppLockWindow {
                 return true;
             }
         };
-
+        
+        //layout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         layout.setFocusable(true);
-		return LayoutInflater.from(context).inflate(R.layout.pattern, null);
-	}
+        
+        View root = LayoutInflater.from(context).inflate(R.layout.pattern, layout);
+	return root;
+    }
 
 	public void refreshView() {
 		createView();

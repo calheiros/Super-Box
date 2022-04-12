@@ -40,6 +40,8 @@ import java.util.List;
 import com.jefferson.application.br.util.DialogUtils;
 import android.content.IntentFilter;
 import com.jefferson.application.br.service.AppLockService;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 public class LockFragment extends Fragment implements OnItemClickListener {
 
@@ -87,7 +89,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 		Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
 		mActivity.setupToolbar(toolbar, getString(R.string.bloquear_apps));
 		mActivity.getSupportActionBar().dispatchMenuVisibilityChanged(true);
-
+        setHasOptionsMenu(true);
 		return view;
 	}
 
@@ -135,7 +137,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
         vi.startAnimation(animation);
     }
-
+    
     @Override
     public void onPause() {
         super.onPause();
@@ -199,9 +201,20 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		//inflater.inflate(R.menu.menu, menu);
+		inflater.inflate(R.menu.menu_message_history, menu);
 		super.onCreateOptionsMenu(menu, inflater);
-	} 
+	}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        
+        if (item.getItemId() == R.id.item_message_history) {
+            Toast.makeText(getContext(), "Not implemented!", Toast.LENGTH_LONG).show();
+        }
+        
+        return false;
+    }
+    
 
 	private class Task extends AsyncTask {
 

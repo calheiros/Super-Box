@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import com.jefferson.application.br.activity.ViewAlbum.DeleteFiles;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.ImportTaskListener {
 
@@ -84,7 +85,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private View emptyView;
     private FloatingActionButton fab;
     private static final int VIDEO_PLAY_CODE = 7;
-    private MyThread myThread;
+    private RetrieverDataTask myThread;
     private static final int CHANGE_DIRECTORY_CODE = 3;
     private static final int IMPORT_FROM_GALLLERY_CODE = 6;
     private String baseNameDirectory = null;
@@ -198,7 +199,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private void updateDatabase(final ArrayList<MediaModel> list, final MultiSelectRecyclerViewAdapter adapter) {
-        myThread =  new MyThread(list, adapter);
+        myThread =  new RetrieverDataTask(list, adapter);
         myThread.setPriority(Thread.MAX_PRIORITY);
         myThread.start();
     }
@@ -228,8 +229,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             String item = count + " " + getItemName(count);
             String message = String.format(getString(R.string.mover_galeria), item);
 
-            SimpleDialog dDialog = new SimpleDialog(ViewAlbum.this, SimpleDialog.ALERT_STYLE);
-            dDialog
+            SimpleDialog dialog = new SimpleDialog(ViewAlbum.this, SimpleDialog.ALERT_STYLE);
+            dialog
                 .setTitle(getString(R.string.mover))
                 .setMessage(message)
                 .setPositiveButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener(){
@@ -259,7 +260,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         String item = count + " " + getItemName(count);
         String message = String.format(getString(R.string.apagar_mensagem), item);
 
-        SimpleDialog dialog = new SimpleDialog(ViewAlbum.this);
+        SimpleDialog dialog = new SimpleDialog(ViewAlbum.this, SimpleDialog.INPUT_STYLE);
         dialog.showProgressBar(false);
         dialog.setTitle(getString(R.string.excluir));
         dialog.setMessage(message);
@@ -268,7 +269,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 @Override
                 public boolean onClick(SimpleDialog dialog) {
                     dialog.dismiss();
-                    new DeleteFiles(ViewAlbum.this, getSelectedItensPath(), position, folder).execute();
+                    ViewAlbum.DeleteFiles task =  new DeleteFiles(ViewAlbum.this, getSelectedItensPath(), position, folder);
+                    task.start();
                     return true;
                 }
             }
@@ -526,22 +528,22 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 			super(context, p1, p3, p4);
 		}
 
-		@Override
-		protected void onPreExecute() {
-
+        @Override
+        public void onBeingStarted() {
+            super.onBeingStarted();
+       
             if (myThread != null && myThread.isWorking()) {
                 myThread.stopWork();
                 threadInterrupted = true;
             }
 
 			exitSelectionMode();
-			super.onPreExecute();
 		}
 
-		@Override
-		protected void onCancelled(Object result) {
-			super.onCancelled(result);
-
+        @Override
+        protected void onInterrupted() {
+            super.onInterrupted();
+      
             if (threadInterrupted  && !mAdapter.mListItemsModels.isEmpty()) {
                 updateRecyclerView();
             }
@@ -549,10 +551,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 			synchronizeMainActivity();
 		}
 
-		@Override
-		protected void onPostExecute(Object result) {
-			super.onPostExecute(result);
-
+        @Override
+        public void onFinished() {
+            super.onFinished();
+        
             if (mAdapter.mListItemsModels.isEmpty()) {
 				finish();
 			} else if (threadInterrupted) {
@@ -562,25 +564,21 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 			synchronizeMainActivity();
 		}
 
-		@Override
-		protected void onProgressUpdate(Object[] values) {
-			super.onProgressUpdate(values);
-			mAdapter.removeItem((String)values[0]);
+        @Override
+        protected void onUpdated(Object[] get) {
+            super.onUpdated(get);
+			mAdapter.removeItem((String)get[0]);
 		}
 
-		@Override
-		protected Object doInBackground(Object[] p1) {
-			return super.doInBackground(p1);
-		}
 	}
 
-    public class MyThread extends Thread {
+    public class RetrieverDataTask extends Thread {
 
         private boolean running;
         private ArrayList<MediaModel> list;
         private MultiSelectRecyclerViewAdapter adapter;
 
-        public MyThread(ArrayList<MediaModel> list, MultiSelectRecyclerViewAdapter adapter) {
+        public RetrieverDataTask(ArrayList<MediaModel> list, MultiSelectRecyclerViewAdapter adapter) {
             this.list = list;
             this.adapter = adapter;
             this.running = true;
