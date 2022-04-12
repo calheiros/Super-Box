@@ -67,7 +67,7 @@ public class PathsData extends SQLiteOpenHelper {
 
     public int getDuration(String fileName) {
 
-        int duration = 1;
+        int duration = -1;
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + DURATION_COL + " FROM " + TABLE_NAME + " WHERE " + ID_COL + " = '" + fileName + "';", null);
 

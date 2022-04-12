@@ -24,14 +24,21 @@
 	<RelativeLayout
 		android:layout_height="match_parent"
 		android:layout_width="match_parent">
-		
-		<ListView
-			android:layout_height="match_parent"
-			android:layout_width="match_parent"
-			android:id="@+id/appList"
-			android:divider="@null"
-			android:scrollbarStyle="outsideOverlay"
-			android:choiceMode="multipleChoice"/>
+
+		<android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swiperefresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ListView
+                android:layout_height="match_parent"
+                android:layout_width="match_parent"
+                android:id="@+id/appList"
+                android:divider="@null"
+                android:scrollbarStyle="outsideOverlay"
+                android:choiceMode="multipleChoice"/>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
 
 		<ProgressBar
             style="?android:attr/progressBarStyleHorizontal"
@@ -53,6 +60,6 @@
 			android:layout_below="@id/progressApps"/>
 
 	</RelativeLayout>
-		
+
 </LinearLayout>
 

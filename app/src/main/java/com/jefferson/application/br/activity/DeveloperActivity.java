@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.FileObserver;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.view.View;
@@ -17,13 +18,16 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.JDebug;
+import java.io.File;
+import android.support.v4.os.EnvironmentCompat;
 
 public class DeveloperActivity extends MyCompatActivity {
 
     private static final int NOTIFICATION_REQUEST_CODE = 2;
 
     private static final String TAG = "Notifaction";
-
+    FileObserver observer;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +44,8 @@ public class DeveloperActivity extends MyCompatActivity {
                 }
             }
         );
+        
+        fileObserver();
     }
 
     public void showAlertDialog(View v) {
@@ -101,7 +107,17 @@ public class DeveloperActivity extends MyCompatActivity {
         finish();
     }
 
+    private void fileObserver() {
+        observer = new FileObserver(new File("/sdcard/")) {
 
+            @Override
+            public void onEvent(int position, String string) {
+                JDebug.toast(string);
+            }
+        };
+        observer.startWatching();
+    }
+        
     public void testThread(View v) {
         final SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.PROGRESS_STYLE);
         dialog.setTitle("thread teste");

@@ -44,8 +44,10 @@
                 android:textColor="@android:color/white"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:textSize="12sp"
                 android:id="@+id/gridview_itemTextView"/>
+            
         </LinearLayout>
 
 		<FrameLayout

@@ -13,6 +13,9 @@ public class LockCheck extends CheckBox {
     public LockCheck(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
+
+    public void setCheckedNoAnimation(boolean p0) {
+    }
     
 	@Override
 	public void setChecked(boolean checked) {
@@ -26,13 +29,13 @@ public class LockCheck extends CheckBox {
 		super.setChecked(checked);
 	}
     
-    public void animateCheckView(View vi) {
+    public void animateView() {
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
-        vi.startAnimation(animation);
+        startAnimation(animation);
     }
     
-    public void setCheckedWithAnim(boolean checked) {
+    public void setCheckedNoAnim(boolean checked) {
         setChecked(checked);
-        animateCheckView(this);
+        //animateCheckView(this);
     }
 }

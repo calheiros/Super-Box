@@ -23,7 +23,6 @@ public class AppLockAdapter extends BaseAdapter {
     public ArrayList<AppModel> models;
     public AppsDatabase database;
     public static AppLockService service;
-
     private boolean mutable;
 
 	public AppLockAdapter(Activity mActivity, ArrayList<AppModel> models) {
@@ -35,6 +34,16 @@ public class AppLockAdapter extends BaseAdapter {
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
+    public void clear() {
+        this.models.clear();
+        notifyDataSetInvalidated();
+    }
+    
+    public void putDataSet(ArrayList<AppModel> newModels) {
+        this.models = newModels;
+        notifyDataSetChanged();
+    }
+    
     public void setMutable(boolean mutable) {
         this.mutable = mutable;
     }

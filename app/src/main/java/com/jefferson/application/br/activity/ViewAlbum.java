@@ -12,6 +12,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import com.jefferson.application.br.activity.ViewAlbum.DeleteFiles;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.ImportTaskListener {
 
@@ -238,7 +238,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     @Override
                     public boolean onClick(SimpleDialog dialog) {
 
-                        ViewAlbum.ExportTask task = new ExportTask(getSelectedItensPath(), dialog);
+                        ViewAlbum.ExportTask task = new ExportTask(getSelectedItemsPath(), dialog);
                         exitSelectionMode();
                         task.start();
                         return false;
@@ -269,7 +269,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 @Override
                 public boolean onClick(SimpleDialog dialog) {
                     dialog.dismiss();
-                    ViewAlbum.DeleteFiles task =  new DeleteFiles(ViewAlbum.this, getSelectedItensPath(), position, folder);
+                    ViewAlbum.DeleteFiles task =  new DeleteFiles(ViewAlbum.this, getSelectedItemsPath(), position, folder);
                     task.start();
                     return true;
                 }
@@ -287,7 +287,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         final Intent intent = new Intent(ViewAlbum.this, FilePicker.class);
-        intent.putExtra("selection", getSelectedItensPath());
+        intent.putExtra("selection", getSelectedItemsPath());
         intent.putExtra("position", position);
         intent.putExtra("current_path", folder.getAbsolutePath());
         startActivityForResult(intent, CHANGE_DIRECTORY_CODE);
@@ -378,7 +378,16 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             updateDatabase(mListItemsPath, mAdapter);
         }
     }
-
+    
+    private void retrieveDataAndUpdate() {
+        if (mAdapter != null) {
+            ArrayList<MediaModel> list = mAdapter.mListItemsModels;
+            if (list != null) {
+                updateDatabase(list, mAdapter);
+            }
+        }
+    }
+    
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (selectionMode) {
@@ -445,7 +454,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		return true;
 	}
 
-	private ArrayList<String> getSelectedItensPath() {
+	private ArrayList<String> getSelectedItemsPath() {
 		ArrayList<String> selectedItens = new ArrayList<String>();
 		for (int i : mAdapter.getSelectedItems()) {
 			selectedItens.add(mAdapter.mListItemsModels.get(i).getPath());
@@ -531,7 +540,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         @Override
         public void onBeingStarted() {
             super.onBeingStarted();
-       
+
             if (myThread != null && myThread.isWorking()) {
                 myThread.stopWork();
                 threadInterrupted = true;
@@ -543,7 +552,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         @Override
         protected void onInterrupted() {
             super.onInterrupted();
-      
+
             if (threadInterrupted  && !mAdapter.mListItemsModels.isEmpty()) {
                 updateRecyclerView();
             }
@@ -554,7 +563,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         @Override
         public void onFinished() {
             super.onFinished();
-        
+
             if (mAdapter.mListItemsModels.isEmpty()) {
 				finish();
 			} else if (threadInterrupted) {
@@ -569,32 +578,33 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             super.onUpdated(get);
 			mAdapter.removeItem((String)get[0]);
 		}
-
 	}
 
     public class RetrieverDataTask extends Thread {
 
         private boolean running;
+        private boolean cancelled;
         private ArrayList<MediaModel> list;
         private MultiSelectRecyclerViewAdapter adapter;
-
+       
         public RetrieverDataTask(ArrayList<MediaModel> list, MultiSelectRecyclerViewAdapter adapter) {
             this.list = list;
             this.adapter = adapter;
             this.running = true;
+            this.cancelled = false;
         }
 
         @Override
         public void run() {
-
+               
             for (final MediaModel model: list) {
                 if (!running) break;
 
                 try {
                     File file = new File(model.getPath());
                     int duration = database.getDuration(file.getName());
-
-                    if (duration == 0) {
+                    Log.i("RetrieveDataTask", "duration " + duration);
+                    if (duration == -1) {
                         Uri uri = Uri.parse(model.getPath()); 
                         MediaMetadataRetriever mmr = new MediaMetadataRetriever(); 
                         mmr.setDataSource(App.getAppContext(), uri); 
@@ -602,9 +612,11 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         duration = Integer.parseInt(durationStr);
                         database.updateFileDuration(file.getName(), duration);
                     }
-
                     long secunds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
-                    final String time = String.format("%d:%02d", TimeUnit.MILLISECONDS.toMinutes(duration), secunds);
+                    long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
+                    long hours =  TimeUnit.MINUTES.toHours(minutes);
+                    minutes = minutes - (hours * 60);
+                    final String time = String.format("%d:%02d:%02d",hours, minutes , secunds);
 
                     runOnUiThread(new Runnable() {
 
@@ -624,8 +636,13 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             } 
             running = false;
         }
-
+        
+        public boolean cancelled() {
+            return cancelled;
+        }
+        
         public void stopWork() {
+            this.cancelled = true;
             this.running = false;
         }
 
@@ -643,7 +660,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		private ProgressThreadUpdate mUpdate;
 		private ArrayList<String> junkList= new ArrayList<>();
 		private String ACTION_UPDATE = "ACTION_UPDATE";
-        private boolean threadInterrupted;
         private boolean allowListModification = true;
 
 		public ExportTask(List<String> itens, SimpleDialog progress) {
@@ -718,6 +734,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
                 }
             }
+            
             if (junkList.size() > 0) {
                 sendUpdate(ACTION_UPDATE);
             }
@@ -727,7 +744,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         public void onBeingStarted() {
             if (myThread != null && myThread.isWorking()) {
                 myThread.stopWork();
-                threadInterrupted = true;
             }
 
             MainActivity.getInstance().prepareAd();
@@ -768,12 +784,16 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
         @Override
         public void onFinished() {
+            retrieveInfo();
             kill();
-            if (threadInterrupted) {
-                updateRecyclerView();
+        }
+        
+        private void retrieveInfo() {
+            if (myThread != null && myThread.cancelled() && mAdapter.getItemCount() > 0 ) {
+                retrieveDataAndUpdate();
             }
         }
-
+        
         @Override
         public void onException(Exception e) {
             Toast.makeText(ViewAlbum.this, "Finished with error!", 1).show();

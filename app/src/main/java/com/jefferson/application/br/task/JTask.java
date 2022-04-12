@@ -18,6 +18,7 @@ abstract public class JTask implements JTaskListener {
     private static final int STATE_UPDATED = 8;
     private static final int STATE_EXCEPTION_CAUGHT = 666;
     private static Exception exception = null;
+    private boolean revokeFinish = false;
 
     private  Handler mainHandler;
     private Thread workThread;
@@ -49,6 +50,9 @@ abstract public class JTask implements JTaskListener {
 
             switch (state) {
                 case STATE_FINISHED:
+                    if (revokeFinish) {
+                        break;
+                    }
                     status = Status.FINISHED;
                     workThread.interrupt();
                     onFinished();
@@ -92,12 +96,20 @@ abstract public class JTask implements JTaskListener {
             try {
                 workingThread();
             } catch (Exception e) {
+                revokeFinish(true);
                 exception = e;
                 sendState(STATE_EXCEPTION_CAUGHT);
-                return;
             }
             sendState(STATE_FINISHED);
         }
+    }
+    
+    public Status getStatus() {
+        return status;
+    }
+    
+    public void revokeFinish(boolean revoked) {
+        this.revokeFinish = revoked;
     }
 
     public void setThreadPriority(int priority) {

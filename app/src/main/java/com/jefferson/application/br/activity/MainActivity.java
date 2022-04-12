@@ -259,6 +259,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		if (fragment != getSupportFragmentManager().findFragmentById(R.id.fragment_container)) {
 
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+            
 			if (oldFrag != null)
 				transaction.detach(oldFrag);
 			transaction.replace(R.id.fragment_container, fragment);

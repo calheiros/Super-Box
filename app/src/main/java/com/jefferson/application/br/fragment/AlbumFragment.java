@@ -52,7 +52,20 @@ public class AlbumFragment extends Fragment {
     private RecyclerView recyclerView;
     private View progressBar;
     private View emptyView;
+    private Handler corruptedWarnHandler = new Handler() {
 
+        @Override
+        public void dispatchMessage(Message msg) {
+            super.dispatchMessage(msg);
+            SimpleDialog dialog = new SimpleDialog(getContext());
+            dialog.setTitle("Database corrupted!!!");
+            dialog.setMessage("The database has been corrupted!");
+            dialog.setCanceledOnTouchOutside(false);
+            dialog.setPositiveButton("okay", null);
+            dialog.show();
+        }
+        
+    };
 	public AlbumFragment() {
 
 	}
@@ -104,44 +117,56 @@ public class AlbumFragment extends Fragment {
 
     private void populateReciclerView() {
 
-        final Handler handler =  new Handler(){
+        JTask task = new JTask() {
+            ArrayList<FolderModel> list;
 
             @Override
-            public void  handleMessage(Message m) {
-                ArrayList<FolderModel> list = (ArrayList<FolderModel>) m.getData().getParcelableArrayList("list");
+            public void workingThread() {
+                this.list = getLocalList();
+            }
+
+            @Override
+            public void onBeingStarted() {
+
+            }
+
+            @Override
+            public void onFinished() {
                 setEmptyViewVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
                 hideProgressBar();
-
                 mAdapter = new AlbumAdapter(AlbumFragment.this, list);
+                
                 if (recyclerView != null) {
                     recyclerView.setAdapter(mAdapter);
                 }
             }
-        };
-
-        Thread thread = new Thread() {
 
             @Override
+            public void onException(Exception e) {
+                revokeFinish(true);
+                Toast.makeText(getContext(), "unknown error occurred! " + e.getMessage(), 1).show();
+                JDebug.writeLog(e.getCause());
+            }
             public void  run() {
-                ArrayList<FolderModel> list = getLocalList();
-                Bundle bundle = new Bundle();
-                bundle.putParcelableArrayList("list", list);
-                Message msg = new Message();
-                msg.setData(bundle);
-                handler.sendMessage(msg);
+
             }
 
         };
-        thread.setPriority(Thread.MAX_PRIORITY);
-        thread.start();
+        task.setThreadPriority(Thread.MAX_PRIORITY);
+        task.start();
     }
 
 	private ArrayList<FolderModel> getLocalList() {
-
+        PathsData.Folder sqldb = null;
 		ArrayList<FolderModel> models = new ArrayList<FolderModel>();
         File root = Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO);
 		root.mkdirs();
-		PathsData.Folder sqldb = PathsData.Folder.getInstance(getContext());
+
+        try {
+            sqldb = PathsData.Folder.getInstance(getContext());
+        } catch (android.database.sqlite.SQLiteDatabaseCorruptException e ) {
+            warnDatabaseCorrupted();
+        }
 
         if (root.exists()) {
 			String Files[] = root.list();
@@ -150,8 +175,11 @@ public class AlbumFragment extends Fragment {
 
 				if (file.isDirectory()) {
 					File folder_list[] = file.listFiles();
-					String folder_name = sqldb.getFolderName(Files[i], position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
-					FolderModel model = new FolderModel();
+					String folder_name = null;
+                    if (sqldb != null) {
+                        folder_name = sqldb.getFolderName(Files[i], position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
+                    }
+                    FolderModel model = new FolderModel();
 
 					model.setName(folder_name == null ?  Files[i]: folder_name);
 					model.setPath(file.getAbsolutePath());
@@ -164,9 +192,14 @@ public class AlbumFragment extends Fragment {
 				}
 			}
 		}
-		sqldb.close();
+        if (sqldb != null)
+		    sqldb.close();
 		return models;
 	}
+
+    private void warnDatabaseCorrupted() {
+        corruptedWarnHandler.sendEmptyMessage(0);
+    }
 
     public void inputFolderDialog(final FolderModel model, final int action) {
 
@@ -174,9 +207,9 @@ public class AlbumFragment extends Fragment {
         View contentView = getActivity().getLayoutInflater().
             inflate(R.layout.dialog_edit_text, null);
         final EditText editText = contentView.findViewById(R.id.editTextInput);
-        
+
         //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); imm.hideSoftInputFromWindow(view.getWindowToken(),0);
-        
+
         String title = null; 
 
         if (action == ACTION_RENAME_FOLDER) {
