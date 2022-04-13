@@ -37,7 +37,6 @@ public class ViewAlbumAdapter extends  RecyclerView.Adapter<ViewAlbumAdapter.Lis
     @Override
     public void onBindViewHolder(ListItemViewHolder viewHolder, int position) {
         String model = items.get(position);
-
         //viewHolder.itemView.setActivated(selectedItems.get(position, false));
     }
 
@@ -83,7 +82,6 @@ public class ViewAlbumAdapter extends  RecyclerView.Adapter<ViewAlbumAdapter.Lis
             image = (ImageView) view.findViewById(R.id.image);
 			fname = (TextView) view.findViewById(R.id.tv_folder);
 			fsize = (TextView) view.findViewById(R.id.tv_folder2);
-
         }
     }
 }

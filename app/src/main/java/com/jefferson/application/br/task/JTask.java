@@ -11,24 +11,27 @@ import com.jefferson.application.br.task.JTask.OnFinishedListener;
 abstract public class JTask implements JTaskListener {
 
     private JTask.OnFinishedListener onFinishedListener;
-
     private static final int STATE_FINISHED = 3;
     private static final int STATE_INTERRUPTED = -1;
     private static final int STATE_BEING_STARTED = 1;
     private static final int STATE_UPDATED = 8;
     private static final int STATE_EXCEPTION_CAUGHT = 666;
+    private static final int STATE_TASK_CANCELLED = 444;
+
+    private boolean interrupted = false;
     private static Exception exception = null;
     private boolean revokeFinish = false;
-
     private  Handler mainHandler;
     private Thread workThread;
+    private boolean cancelled = false;
     private OnUpdatedListener onUpdatedListener;
     private OnBeingStartedListener onBeingStartedListener;
 
     public static enum Status {
         FINISHED,
         STARTED,
-        INTERRUPTED
+        INTERRUPTED,
+        CANCELLED
         }
 
     public Status status;
@@ -70,10 +73,7 @@ abstract public class JTask implements JTaskListener {
                     break;
                 case STATE_INTERRUPTED:
                     status = Status.INTERRUPTED;
-                    if (!isInterrupted()) {
-                        workThread.interrupt();
-                        onInterrupted();
-                    }
+                    onInterrupted();
                     break;
                 case STATE_UPDATED:
                     Object[] data = (Object[]) msg.getData().getSerializable("data");
@@ -85,8 +85,21 @@ abstract public class JTask implements JTaskListener {
                 case STATE_EXCEPTION_CAUGHT:
                     onException(exception);
                     break;
+                case STATE_TASK_CANCELLED:
+                    status = Status.CANCELLED;
+                    onTaskCancelled();
             }
         }
+    }
+
+    public void cancelTask() {
+        revokeFinish = true;
+        workThread.interrupt();
+        sendState(STATE_TASK_CANCELLED);
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
     }
 
     private class WorkThread extends Thread {
@@ -96,11 +109,12 @@ abstract public class JTask implements JTaskListener {
             try {
                 workingThread();
             } catch (Exception e) {
-                revokeFinish(true);
                 exception = e;
+                revokeFinish(true);
                 sendState(STATE_EXCEPTION_CAUGHT);
+            } finally {
+                sendState(STATE_FINISHED);
             }
-            sendState(STATE_FINISHED);
         }
     }
 
@@ -125,11 +139,13 @@ abstract public class JTask implements JTaskListener {
     }
 
     public void interrupt() {
+        workThread.interrupt();
+        interrupted = true;
         sendState(STATE_INTERRUPTED);
     }
 
     public boolean isInterrupted() {
-        return workThread.isInterrupted();
+        return interrupted;
     }
 
     protected void sendUpdate(Object... objs) {
@@ -159,9 +175,17 @@ abstract public class JTask implements JTaskListener {
         this.onFinishedListener = listener;
     }
 
-    protected void onInterrupted() {}
+    protected void onTaskCancelled() {
 
-    protected void onUpdated(Object[] get) {}
+    }
+
+    protected void onInterrupted() {
+
+    }
+
+    protected void onUpdated(Object[] get) {
+
+    }
 
     public static interface OnFinishedListener {
         void onFinished()

@@ -25,19 +25,19 @@ import com.jefferson.application.br.util.JDebug;
 import com.bumptech.glide.Glide;
 import com.jefferson.application.br.ui.JVideoController;
 
-public class VideoPlayerFragment extends Fragment implements OnClickListener, JVideoController.OnPlayButtonPressedListener {
+public class VideoPlayerFragment extends Fragment implements OnClickListener, JVideoController.OnButtonPressedListener {
 
     @Override
     public void onPressed(boolean playing) {
-        
+
         if (videoNotPrepared) {
             videoNotPrepared = false;
             prepare();
         }
-        
+
         hideThumbView();
     }
-    
+
     private boolean videoNotPrepared;
     private View parentView;
     private VideoView mVideoView;
@@ -45,10 +45,8 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
     private MediaController mediaController;
     private boolean playOnCreate;
     private ImageView mThumbView;
-    //private View playButton;
-    //private Bitmap bmp;
     private JVideoController jController;
-
+    private boolean selected = false;
     public VideoPlayerFragment(String videoPath) {
         this.videoPath = videoPath;
     }
@@ -84,12 +82,12 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
 
             jController = new JVideoController(mVideoView);
             jController.setAnchor((ViewGroup)parentView);
-            jController.setOnPlayButtonPressed(this);
-            
+            jController.setOnButtonPressedListener(this);
+
             //mediaController = new MediaController(getActivity());
             //mediaController.setAnchorView(parentView);
             //mVideoView.setMediaController(mediaController);
-            jController.prepare(null);
+            jController.prepare();
             mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
 
                     @Override
@@ -109,29 +107,41 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
                     }
                 }
             );
-            
         }
-
         Glide.with(this).load("file://" + videoPath).into(mThumbView);
-
         return parentView;
     }
+   
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        //JDebug.toast("Destroyed");
+        try {
+            stop();
+            if (jController != null) {
+               if (jController.alive()) {
+                   jController.pause();
+                   JDebug.toast("Controller still alive");
+               } else {
+                   JDebug.toast("Controller is NOT alive!");
+               }
+            } else {
+                JDebug.toast("Controller is NULL!");
+            }
+        } finally {
 
-//    @Override 
-//    public void setUserVisibleHint(boolean isVisibleToUser) { 
-//        super.setUserVisibleHint(isVisibleToUser); 
-//        
-//        if(parentView == null) {
-//            return;
-//        }
-//        
-//        if (!isVisibleToUser && isResumed()) {
-//
-//           showVideoOverlay();
-//           stop();
-//        }
-//    }
-//
+        }
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //JDebug.toast("Resumed " + selected);
+    }
 
     @Override
     public void onClick(View view) {
@@ -144,7 +154,7 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
             mThumbView.setVisibility(View.GONE);
         }
     }
-    
+
     public void prepare() {
         if (mVideoView != null) {
             mVideoView.setVideoURI(Uri.parse(videoPath));
@@ -167,7 +177,7 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
         if (mVideoView != null) {
             stop();
         }
-
+        
         super.onPause();
     }
 
@@ -177,18 +187,10 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
         if (mVideoView != null && mVideoView.isPlaying()) {
             mVideoView.stopPlayback();
             videoNotPrepared = true;
-        }
-
-        if (mediaController != null && mediaController.isShowing()) {
-            mediaController.hide();
-        }
-    }
-
-    public void resume() {
-
-        if (mVideoView != null) {
-            mVideoView.resume();
-            mVideoView.requestFocus();
+        } 
+        
+        if (jController != null && jController.alive()){
+            jController.pause();
         }
     }
 

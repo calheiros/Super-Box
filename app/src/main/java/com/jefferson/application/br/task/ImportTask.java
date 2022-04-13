@@ -111,6 +111,7 @@ public class ImportTask extends JTask {
 		myAlertDialog.setStyle(SimpleDialog.ALERT_STYLE);
 		myAlertDialog.setTitle(context.getString(R.string.resultado));
 		myAlertDialog.setMessage(message);
+        myAlertDialog.setCancelable(true);
 		myAlertDialog.setPositiveButton("Ok", null).show();
 		myAlertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
 

@@ -1,5 +1,7 @@
 package com.jefferson.application.br.util;
 
+
+import android.app.ActivityOptions;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;

@@ -231,7 +231,7 @@ public class AlbumFragment extends Fragment {
             title = getString(R.string.criar_pasta);
         }
 
-        SimpleDialog dialog = new SimpleDialog(context);
+        SimpleDialog dialog = new SimpleDialog(context, SimpleDialog.INPUT_STYLE);
         dialog.setTitle(title);
         dialog.setContentView(contentView);
         dialog.setPositiveButton(context.getString(R.string.concluir), new SimpleDialog.OnDialogClickListener(){

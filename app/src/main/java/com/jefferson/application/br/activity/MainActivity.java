@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
@@ -37,17 +38,21 @@ import com.jefferson.application.br.fragment.MainFragment;
 import com.jefferson.application.br.fragment.SettingFragment;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.task.ImportTask;
+import com.jefferson.application.br.task.MonoTypePrepareTask;
 import com.jefferson.application.br.util.IntentUtils;
 import com.jefferson.application.br.util.ServiceUtils;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.widget.MyAlertDialog;
 import java.io.File;
 import java.util.ArrayList;
+import android.os.Message;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener {
 
+    private MonoTypePrepareTask preparationTask;
+
     public void setupToolbar(Toolbar toolbar, String string, int menuId) {
-        
+
     }
 
     @Override
@@ -66,9 +71,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     @Override
     public void onFinished() {
         updateCurrentFragment();
-        
+
     }
-    
+
     BroadcastReceiver receiver;
 
     private void updateCurrentFragment() {
@@ -123,11 +128,11 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        
+
 		if (savedInstanceState != null) {
 			startActivity(new Intent(this, VerifyActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
-        
+
         createFragments();
 		createAdView();
 		createInterstitial();
@@ -260,7 +265,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-            
+
 			if (oldFrag != null)
 				transaction.detach(oldFrag);
 			transaction.replace(R.id.fragment_container, fragment);
@@ -299,7 +304,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                     activityNotFound();
                 }
 		}
-        
+
 		drawerLayout.closeDrawer(GravityCompat.START);
 		return true;
 	}
@@ -342,53 +347,57 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                 Uri uri = data.getData();
 
                 if (Storage.checkIfSDCardRoot(uri)) {
-
                     getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
 					sharedPreferences.edit().putString(getString(R.string.EXTERNAL_URI), uri.toString()).commit();
 				} 
 
 			} else {
-
-                models = new ArrayList<>();
 				position = data.getIntExtra("position", -1);
+                String type = data.getStringExtra("type");
 				ArrayList<String> paths = data.getStringArrayListExtra("selection");
+                preparationTask = new MonoTypePrepareTask(MainActivity.this, paths, type, null, this);
+                preparationTask.setDestination(Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
+                
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty()))
+                    preparationTask.setOnLoopListener(new MonoTypePrepareTask.onLoopListener(){
 
-                for (String path : paths) {
-					FileModel model = new FileModel();
-					model.setResource(path);
-					model.setDestination(Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
-					model.setType(data.getStringExtra("type"));
-					models.add(model);
-				}
+                            @Override
+                            public void onLoop(String path) {
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-
-                    if (hasExternalFile(paths) && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty())) {
-						getSdCardUri(GET_URI_CODE_TASK);
-						return;
-					}
-			} 
-
-            if (requestCode != GET_URI_CODE) {
-				ImportTask mTask = new ImportTask(this, models, MainActivity.this);
-				mTask.start();
+                                if (Environment.isExternalStorageRemovable(new File(path))) {
+                                    preparationTask.await();
+                                    getSdCardUri(GET_URI_CODE_TASK);
+                                    return;
+                                }
+                            }
+                        }
+                  );
+                 preparationTask.start();
 			}
+            
+            if (requestCode == GET_URI_CODE_TASK) {
+                preparationTask.proceed();
+            }
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
+    
+    private Handler getSdCardUriHandler = new Handler() {
 
+        @Override
+        public void dispatchMessage(Message msg) {
+            super.dispatchMessage(msg);
+            Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), 1).show();
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, msg.what);
+            
+        }
+   
+    };
+    
 	private void getSdCardUri(int code) {
-		Toast.makeText(this, getString(R.string.selecionar_sdcard), 1).show();
-		Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-		startActivityForResult(intent, code);
-	}
-
-    private boolean hasExternalFile(ArrayList<String> paths) {
-        for (String file:paths) {
-			if (Environment.isExternalStorageRemovable(new File(file)))
-				return true;
-		}
-		return false;
+        getSdCardUriHandler.sendEmptyMessage(code);
+		
 	}
 
     @Override

@@ -1,17 +1,16 @@
 package com.jefferson.application.br;
 
-import android.content.*;
-import android.media.*;
-import android.net.*;
-import android.support.v7.widget.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
-import com.bumptech.glide.*;
-import java.io.*;
-import java.util.*;
-import com.jefferson.application.br.util.JDebug;
+import android.content.Context;
+import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+import com.bumptech.glide.Glide;
 import com.jefferson.application.br.model.MediaModel;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelectRecyclerViewAdapter.ViewHolder> {
 
@@ -175,7 +174,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         public void onClick(View v) {
 
             if (listener != null) {
-                listener.onItemClicked(getAdapterPosition());
+                listener.onItemClicked(getAdapterPosition(), v);
             }
         }
 
@@ -190,7 +189,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
         public interface ClickListener {
 
-            public void onItemClicked(int position);
+            public void onItemClicked(int position, View v);
 
             public boolean onItemLongClicked(int position);
         }

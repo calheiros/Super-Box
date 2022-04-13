@@ -27,7 +27,7 @@ public class AppLockWindow {
     private String passedApp = "";
     private String password;
     private View lastView;
-    
+
 	public AppLockWindow(final Context context, final AppsDatabase db) {
 
 	    this.context = context;
@@ -45,10 +45,10 @@ public class AppLockWindow {
             WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
             WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD) ,
 			PixelFormat.TRANSLUCENT);
-            
+
 		params.windowAnimations = android.R.style.Animation_Dialog;
 		windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-       
+
 		createView();
 	}
 
@@ -78,25 +78,22 @@ public class AppLockWindow {
 
             @Override 
             public boolean dispatchKeyEvent(KeyEvent e) {
-                startDefaultLauncher();
-                JDebug.toast("Back pressed!");
+                if (e.getKeyCode() == KeyEvent.KEYCODE_BACK) {
+                    startDefaultLauncher();
+                    JDebug.toast("Back pressed!");
+                }
                 //Toast.makeText(context, "KEY " + e.getKeyCode(), 1).show();
                 return true;
             }
-           
+
             private boolean startDefaultLauncher() {
 
                 try {
                     Intent intent = new Intent(Intent.ACTION_MAIN);
                     intent.addCategory(Intent.CATEGORY_HOME);
-                    String name = context.getPackageManager().queryIntentActivities(
-                        new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME),
-                        PackageManager.MATCH_DEFAULT_ONLY).get(0).activityInfo.packageName; 
-                    intent.setPackage(name);
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(intent);
-                  
-                } catch (Exception e) {
+                } catch (ActivityNotFoundException e) {
                     JDebug.toast(e.getMessage());
                     return false;
                 }
@@ -104,12 +101,12 @@ public class AppLockWindow {
                 return true;
             }
         };
-        
+
         //layout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         layout.setFocusable(true);
-        
+
         View root = LayoutInflater.from(context).inflate(R.layout.pattern, layout);
-	return root;
+        return root;
     }
 
 	public void refreshView() {
@@ -196,7 +193,7 @@ public class AppLockWindow {
                 passedApp = currentApp;
                 //Toast.makeText(context, "A aplicação continuará desbloqueada até que a tela seja desligada!", Toast.LENGTH_LONG).show();
 			}
-            
+
 			super.onPatternDetected(pattern, SimplePattern);
 		}
 

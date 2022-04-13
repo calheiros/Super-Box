@@ -45,7 +45,7 @@ import java.util.List;
 public class LockFragment extends Fragment implements OnItemClickListener {
 
     private static final int REQUEST_OVERLAY_CODE = 9;
-    private View lastClickedCheckView;
+    private View lastClickedParentView;
     private int lastClickedItemPosition;
 
 	public LockFragment() {
@@ -58,7 +58,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 	private AppLockAdapter appsAdapter;
 	private ListView mListView;
 	private Intent intent;
-	private View view;
+	private View parentView;
 	private LoadApplicationsTask mTask;
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private String LOG_TAG = "LockFragment";
@@ -66,12 +66,12 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		MainActivity mActivity = ((MainActivity)getActivity());
 
-        if (view == null) {
-			view = inflater.inflate(R.layout.list_view_app, container, false);
-			mProgressBar = view.findViewById(R.id.progressApps);            
-			mTextView = view.findViewById(R.id.porcent);
-			mListView = view.findViewById(R.id.appList);
-            mySwipeRefreshLayout = view.findViewById(R.id.swiperefresh);
+        if (parentView == null) {
+			parentView = inflater.inflate(R.layout.list_view_app, container, false);
+			mProgressBar = parentView.findViewById(R.id.progressApps);            
+			mTextView = parentView.findViewById(R.id.porcent);
+			mListView = parentView.findViewById(R.id.appList);
+            mySwipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
 			mListView.setItemsCanFocus(true);
 
 			if (mTask != null) {
@@ -110,12 +110,12 @@ public class LockFragment extends Fragment implements OnItemClickListener {
             }
         }
 
-		Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar);
+		Toolbar toolbar = (Toolbar) parentView.findViewById(R.id.toolbar);
 		mActivity.setupToolbar(toolbar, getString(R.string.bloquear_apps));
 		mActivity.getSupportActionBar().dispatchMenuVisibilityChanged(true);
         setHasOptionsMenu(true);
 
-		return view;
+		return parentView;
 
 	}
 
@@ -131,7 +131,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
     @Override
     public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
         lastClickedItemPosition = position;
-        lastClickedCheckView = view.findViewById(R.id.check1);
+        lastClickedParentView = view;
         boolean noNeedOverlayPermission = false;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) { 
@@ -145,8 +145,8 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 
         if (!needPermissionForBlocking(getContext())) {
             if (noNeedOverlayPermission) {
-                appsAdapter.toogleSelection(position);
-                animateCheckView(lastClickedCheckView);
+                appsAdapter.toogleSelection(position, view);
+                animateCheckView(lastClickedParentView);
             }
         } else {
             AlertDialog.Builder alert = new AlertDialog.Builder(getContext(), R.style.CustomAlertDialog);
@@ -169,8 +169,9 @@ public class LockFragment extends Fragment implements OnItemClickListener {
     }
 
     public void animateCheckView(View vi) {
+        View lockView = vi.findViewById(R.id.check1);
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
-        vi.startAnimation(animation);
+        lockView.startAnimation(animation);
     }
 
     @Override
@@ -234,14 +235,14 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (Settings.canDrawOverlays(getContext()) && !CodeManager.needPermissionForGetUsages(getContext())) {
-                appsAdapter.toogleSelection(lastClickedItemPosition);
-                animateCheckView(lastClickedCheckView);
+                appsAdapter.toogleSelection(lastClickedItemPosition, parentView);
+                animateCheckView(lastClickedParentView);
             }
 
         } else {
             if (!CodeManager.needPermissionForGetUsages(getContext())) {
-                appsAdapter.toogleSelection(lastClickedItemPosition);
-                animateCheckView(lastClickedCheckView);
+                appsAdapter.toogleSelection(lastClickedItemPosition, parentView);
+                animateCheckView(lastClickedParentView);
             }
         }
 		super.onActivityResult(requestCode, resultCode, data);
@@ -312,7 +313,7 @@ public class LockFragment extends Fragment implements OnItemClickListener {
         @Override
         public void onFinished() {
 
-            if (view != null) {
+            if (parentView != null) {
 				doTaskFinalized();
             }
         }

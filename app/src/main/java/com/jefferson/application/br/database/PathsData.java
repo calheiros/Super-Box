@@ -66,7 +66,6 @@ public class PathsData extends SQLiteOpenHelper {
     }
 
     public int getDuration(String fileName) {
-
         int duration = -1;
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + DURATION_COL + " FROM " + TABLE_NAME + " WHERE " + ID_COL + " = '" + fileName + "';", null);
@@ -82,7 +81,6 @@ public class PathsData extends SQLiteOpenHelper {
     }
 
     public String getPath(String id) {
-
 	    String path = null;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("Select " + NAME_COL + " from " + TABLE_NAME + " WHERE " + ID_COL + " = '" + id + "';", null);
@@ -97,7 +95,6 @@ public class PathsData extends SQLiteOpenHelper {
     }
 
 	public void deleteData(String id) {
-
         SQLiteDatabase db = this.getWritableDatabase();
         try {
             db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + ID_COL + " = '" + id + "';");
@@ -107,7 +104,6 @@ public class PathsData extends SQLiteOpenHelper {
 	}
 
     public List<String> getAllData() {
-
         SQLiteDatabase db = this.getReadableDatabase();
 		List<String> allData = new ArrayList<String>();
         Cursor cursor = db.rawQuery("Select * from " + TABLE_NAME, null);
@@ -125,7 +121,6 @@ public class PathsData extends SQLiteOpenHelper {
 	}
 
     public boolean insertData(String id , String name, long duration) {
-
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COL, name);
@@ -143,7 +138,6 @@ public class PathsData extends SQLiteOpenHelper {
     }
 
 	public boolean insertData(String id, String name) {
-
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COL, name);
@@ -184,21 +178,18 @@ public class PathsData extends SQLiteOpenHelper {
 		}
 
 		public void addName(String id, String name, String type) {
-
 			SQLiteDatabase writableDatabase = getWritableDatabase();
 			writableDatabase.execSQL("INSERT INTO FOLDER_ VALUES ('" + id + "', '" + name + "', '" + type + "');");
 			writableDatabase.close();
 		}
 
 		public void updateName(String id, String name, String type) {
-
             SQLiteDatabase writableDatabase = getWritableDatabase();
 			writableDatabase.execSQL("UPDATE FOLDER_ SET name = '" + name + "' WHERE id = '" + id + "' AND type = '" + type + "'");
 			writableDatabase.close();
 		}
 
 		public static Folder getInstance(Context context) {
-
             File file = new File(Storage.getDefaultStorage(), "database.db");
 			file.getParentFile().mkdirs();
             return new Folder(file.getAbsolutePath(), context);
@@ -211,7 +202,6 @@ public class PathsData extends SQLiteOpenHelper {
 		}
 
 		public String getFolderName(String str, String type) {
-
 			SQLiteDatabase readableDatabase = getReadableDatabase();
 			Cursor rawQuery = readableDatabase.rawQuery("SELECT name FROM FOLDER_ WHERE id='" + str + "' AND type = '" + type + "';", null);
 			String res = null;

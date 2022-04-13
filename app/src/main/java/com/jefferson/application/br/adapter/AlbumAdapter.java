@@ -18,16 +18,19 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 	private AlbumFragment fragment;
 	private ArrayList<FolderModel> items;
 	private View group;
-
+    private int pagerPosition;
+    
 	public AlbumAdapter(AlbumFragment fragment , ArrayList<FolderModel> items) {
 		this.fragment = fragment;
 		this.items = items;
+        this.pagerPosition = fragment.getPagerPosition();
 	}
-
-	public void setUpdatedData(ArrayList<FolderModel> localList) {
+    
+    public void setUpdatedData(ArrayList<FolderModel> localList) {
 		items = localList;
 		notifyDataSetChanged();
 	}
+    
 	@Override
 	public viewHolder onCreateViewHolder(ViewGroup parent, int p2) {
 		group = parent;
@@ -40,9 +43,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
         FolderModel f_model = items.get(position);
 	    holder.tv_foldern.setText(f_model.getName());
 		holder.tv_foldersize.setText(String.valueOf(f_model.getItems().size()));
-        boolean isEmpty = f_model.getItems().size() == 0;
-        int pagerPosition = fragment.getPagerPosition();
-		
+        boolean isEmpty = f_model.getItems().isEmpty();
+        
         /*if (pagerPosition == 1) {
 			holder.smallView.setVisibility(View.VISIBLE);
             holder.smallView.setImageResource(R.drawable.ic_play_box_outline);
@@ -58,9 +60,13 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
             holder.smallView.setImageResource(R.drawable.ic_image_broken_variant);
         }
         
-        int visibility = ( isEmpty || pagerPosition == 1 ) ? View.VISIBLE : View.GONE;
-        holder.smallView.setVisibility(visibility);
-		holder.cd_layout.setOnClickListener(new OnClickListener(){
+        int visibility = (isEmpty) ? View.VISIBLE : View.GONE;
+        
+        if (holder.smallView.getVisibility() != visibility){
+            holder.smallView.setVisibility(visibility);
+        }
+		
+        holder.cd_layout.setOnClickListener(new OnClickListener(){
 
 				@Override
 				public void onClick(View view) {

@@ -34,7 +34,7 @@ import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.DeleteFilesTask;
 import com.jefferson.application.br.task.ImportTask;
 import com.jefferson.application.br.task.JTask;
-import com.jefferson.application.br.task.PrepareMonoFilesTask;
+import com.jefferson.application.br.task.MonoTypePrepareTask;
 import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
@@ -49,6 +49,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import android.app.ActivityOptions;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.Listener {
 
@@ -330,7 +331,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                  
                 ArrayList<String> paths = data.getStringArrayListExtra("selection");
                 String type = data.getStringExtra("type");
-                new PrepareMonoFilesTask(this, paths, type, folder.getAbsolutePath(), this).start();
+                new MonoTypePrepareTask(this, paths, type, folder.getAbsolutePath(), this).start();
                 /*
                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 
@@ -393,7 +394,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	}
 
 	@Override
-	public void onItemClicked(int item_position) {
+	public void onItemClicked(int item_position, View v) {
         if (!selectionMode) {
 			Class<?> mClass = null;
 			switch (position) {
@@ -409,9 +410,11 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 				case 1:
 					mClass = VideoPlayerActivity.class;
 					Intent intent = new Intent(getApplicationContext(), mClass);
+                    
 					intent.putExtra("position", item_position);
 					intent.putExtra("filepath", mAdapter.getListItemsPath());
-					startActivityForResult(intent, VIDEO_PLAY_CODE);
+                    ActivityOptions opts = ActivityOptions.makeScaleUpAnimation( v, 0, 0, v.getWidth(), v.getHeight()); // Request the activity be started, using the custom animation options.
+                    startActivityForResult(intent, VIDEO_PLAY_CODE, opts.toBundle());
 					break;
 			}
 			return;

@@ -94,7 +94,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
     }
     
 	@Override
-	public void onItemClicked(int position) {
+	public void onItemClicked(int position, View v) {
 		updateItem(position);
 	}
     

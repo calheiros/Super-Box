@@ -20,11 +20,11 @@ import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.JDebug;
 import java.io.File;
 import android.support.v4.os.EnvironmentCompat;
+import android.os.Environment;
 
 public class DeveloperActivity extends MyCompatActivity {
 
     private static final int NOTIFICATION_REQUEST_CODE = 2;
-
     private static final String TAG = "Notifaction";
     FileObserver observer;
     
@@ -108,16 +108,27 @@ public class DeveloperActivity extends MyCompatActivity {
     }
 
     private void fileObserver() {
-        observer = new FileObserver(new File("/sdcard/")) {
-
-            @Override
-            public void onEvent(int position, String string) {
-                JDebug.toast(string);
-            }
-        };
+        File file = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        observer = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ? new MyObserver(file) : new MyObserver(file.getAbsolutePath());
         observer.startWatching();
     }
+    
+   private class MyObserver extends FileObserver {
+
+        public MyObserver(String path){
+            super(path);
+        }
         
+        public MyObserver(File file){
+            super(file);
+        }
+        
+        @Override
+        public void onEvent(int event, String name) {
+            JDebug.toast(name);
+        }
+    }
+    
     public void testThread(View v) {
         final SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.PROGRESS_STYLE);
         dialog.setTitle("thread teste");

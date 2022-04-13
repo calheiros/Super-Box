@@ -11,7 +11,7 @@ import com.jefferson.application.br.util.JDebug;
 import java.util.ArrayList;
 import android.view.LayoutInflater;
 
-public class PrepareMonoFilesTask extends JTask {
+public class MonoTypePrepareTask extends JTask {
 
     private ArrayList<String> paths;
     private String type;
@@ -20,8 +20,11 @@ public class PrepareMonoFilesTask extends JTask {
     private String parentPath;
     private Context context;
     private ImportTask.Listener listener;
+    private onLoopListener loopListener;
+    private String destinationPath;
+    private boolean await = false;
     
-    public  PrepareMonoFilesTask(Context context, ArrayList<String> paths, String type, String parent, ImportTask.Listener listener) {
+    public  MonoTypePrepareTask(Context context, ArrayList<String> paths, String type, String parent, ImportTask.Listener listener) {
         this.paths = paths;
         this.type = type;
         this.listener = listener;
@@ -31,15 +34,27 @@ public class PrepareMonoFilesTask extends JTask {
 
     @Override
     public void workingThread() {
+        
         for (String path : paths) {
+            if (loopListener != null) {
+                loopListener.onLoop(path);
+            }
+            if (isCancelled()) {
+                break;
+            }
             FileModel model = new FileModel();
             model.setResource(path);
+            model.setDestination(destinationPath);
             model.setParentPath(parentPath);
             model.setType(type);
             models.add(model);
         }
     }
-
+    
+    public void setDestination(String destination){
+        this.destinationPath = destination;
+    }
+    
     @Override
     public void onBeingStarted() {
         View view = ((LayoutInflater)App.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
@@ -54,11 +69,31 @@ public class PrepareMonoFilesTask extends JTask {
     @Override
     public void onFinished() {
         dialog.cancel();
+        
+        if (!await) {
+            proceed();
+        }
+        
+    }
+    
+    public void proceed(){
         new ImportTask(context, models, listener).start();
     }
 
+    public void await() {
+        await = true;
+    }
+    
     @Override
     public void onException(Exception e) {
         JDebug.writeLog(e.getCause());
+    }
+    
+    public void setOnLoopListener(onLoopListener listener) {
+        this.loopListener = listener;
+    }
+    
+    public static interface onLoopListener{
+       void onLoop(String path)
     }
 }

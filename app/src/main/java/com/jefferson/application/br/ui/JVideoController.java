@@ -24,6 +24,7 @@ import android.view.MotionEvent;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation;
 import com.jefferson.application.br.util.JDebug;
+//import com.jefferson.application.br.ui.JVideoController.ButtonState;
 
 public class JVideoController implements OnSeekBarChangeListener, OnClickListener, OnTouchListener {
 
@@ -35,8 +36,6 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     private Handler handler;
     private Handler controllerHandler;
     private Runnable controllerRunnable;
-    
-    private MediaPlayer mediaPlayer;
     private boolean tracking;
     public static final String TAG = "JVideoController";
     private VideoView mVideoView;
@@ -47,11 +46,12 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     private int duration = -1;
     private TextView startTextView;
     private ImageView controllerButton;
-    // private boolean paused;
-    private OnPlayButtonPressedListener onPlayButtonPressedListener;
+    private OnButtonPressedListener onPlayButtonPressedListener;
+    private Boolean ButtonStatePlaying = false;
 
     @Override
     public boolean onTouch(View view, MotionEvent event) {
+
         boolean invisible = (controllerView.getVisibility() != View.VISIBLE);
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -66,7 +66,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         }
         return false;
     }
-    
+
     public JVideoController(VideoView video, ViewGroup parentView) {
         this.mVideoView = video;
         this.anchorView = parentView;
@@ -80,6 +80,10 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         this.anchorView = view;
     }
 
+    public boolean alive() {
+        return timer != null && timerTask != null;
+    }
+
     @Override
     public void onClick(View view) {
         controllerHandler.removeCallbacks(controllerRunnable);
@@ -91,17 +95,55 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
 
         if (isPlaying) {
             mVideoView.pause();
+            setPlaying(false);
+
             if (controllerView.getVisibility() != View.VISIBLE) {
                 showController(true);
             }
         } else {
             mVideoView.start();
-            hideDelayed(1000);
+            setPlaying(true);
         }
     }
 
-    public void prepare(MediaPlayer mp) {
-        mediaPlayer = mp;
+    public void pause() {
+        JDebug.toast("Controller paused");
+
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+            timer = null;
+        }
+
+        if (timerTask != null) {
+            timerTask.cancel();
+            timerTask = null;
+        }
+        setButtonStatePlaying(false);
+    }
+
+    private void resume() {
+        JDebug.toast("Controller resumed!");
+
+        if (handler == null) {
+            handler = new MyHandler();
+        }
+
+        if (timerTask != null) {
+            timerTask.cancel();
+        }
+
+        if (timer != null) {
+            timer.cancel();
+            timer.purge();
+        }
+
+        timerTask = new MyTask();
+        timer = new Timer();
+        timer.scheduleAtFixedRate(timerTask, 0, 100);
+    }
+
+    public void prepare() {
         animFadeIn = AnimationUtils.loadAnimation(anchorView.getContext(), R.anim.jcontroller_fade_in);
         animFadeOut = AnimationUtils.loadAnimation(anchorView.getContext(), R.anim.jcontroller_fade_out);
         controllerRunnable = new Runnable() {
@@ -114,65 +156,50 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
             }
         };
         controllerHandler = new Handler();
-
-        if (handler == null) {
-            handler = new MyHandler();
-        }
-
-        if (timerTask != null) {
-            timerTask.cancel();
-        }
-
-        if (timer != null) {
-            timer.cancel();
-        }
-
-        timerTask = new MyTask();
-        timer = new Timer();
-        timer.scheduleAtFixedRate(timerTask, 0, 100);
-
-        if (controllerView == null) {
-            createControllerView();
-        }
+        createControllerView();
     }
 
     public void hideDelayed(int millis) {
         controllerHandler.postDelayed(controllerRunnable, millis);
     }
-    
+
     public void destroy() {
 
         if (timer != null) {
             timer.cancel();
+            timer.purge();
+            timer = null;
         }
 
         if (timerTask != null) {
             timerTask.cancel();
+            timerTask = null;
         }
 
-        timerTask = null;
-        timer = null;
         handler = null;
+        controllerView = null;
+        JDebug.toast("Destroyed!");
     }
 
-    public void setOnPlayButtonPressed(OnPlayButtonPressedListener listener) {
+    public void setOnButtonPressedListener(OnButtonPressedListener listener) {
         this.onPlayButtonPressedListener = listener;
     }
 
     private void createControllerView() {
-        if (mVideoView != null) {
-            Context context = mVideoView.getContext();
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
-            controllerView = inflater.inflate(R.layout.jvideo_controller_layout, null);
-            anchorView.addView(controllerView);
-            mSeekBar = controllerView.findViewById(R.id.jvideo_controller_seekbar);
-            startTextView = controllerView.findViewById(R.id.jcontroller_start_TextView);
-            endTextView = controllerView.findViewById(R.id.jcontroller_end_TextView);
-            controllerButton = controllerView.findViewById(R.id.jcontroller_view_button);
-            mSeekBar.setOnSeekBarChangeListener(this);
-            anchorView.setOnTouchListener(this);
-            toogleButton(!mVideoView.isPlaying());
-            controllerButton.setOnClickListener(this);
+        Context context = mVideoView.getContext();
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+        controllerView = inflater.inflate(R.layout.jvideo_controller_layout, null);
+        anchorView.addView(controllerView);
+        mSeekBar = controllerView.findViewById(R.id.jvideo_controller_seekbar);
+        startTextView = controllerView.findViewById(R.id.jcontroller_start_TextView);
+        endTextView = controllerView.findViewById(R.id.jcontroller_end_TextView);
+        controllerButton = controllerView.findViewById(R.id.jcontroller_view_button);
+        mSeekBar.setOnSeekBarChangeListener(this);
+        anchorView.setOnTouchListener(this);
+        controllerButton.setOnClickListener(this);
+
+        if (mVideoView.isPlaying()) {
+            setPlaying(true);
         }
     }
 
@@ -181,22 +208,35 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         controllerView.startAnimation(show ? animFadeIn : animFadeOut);
     }
 
-    private void toogleButton(boolean set) {
-        int resId = set ? R.drawable.ic_video_play : R.drawable.ic_video_pause;
-        controllerButton.setImageResource(resId);
+    private void setPlaying(boolean playing) {
+        // setButtonStatePlaying(playing);
+
+        if (playing) {
+            resume();
+        } else {
+            pause();
+        }
+    }
+
+    private void setButtonStatePlaying(boolean state) {
+        if (controllerButton != null) {
+            int resId = state ? R.drawable.ic_video_pause : R.drawable.ic_video_play;
+            controllerButton.setImageResource(resId);
+            this.ButtonStatePlaying = state;
+        }
     }
 
     @Override
     public void onProgressChanged(SeekBar seekbar, int postion, boolean tr) {
-             //do nothing
+        //do nothing
     }
 
     @Override
     public void onStartTrackingTouch(SeekBar seekbar) {
         tracking = true;
         controllerHandler.removeCallbacks(controllerRunnable);
-        
-        if (controllerView.getVisibility() != View.VISIBLE){
+
+        if (controllerView.getVisibility() != View.VISIBLE) {
             showController(true);
         }
     }
@@ -208,15 +248,17 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         tracking = false;
     }
 
+    private String max;
+
     public class MyHandler extends Handler {
 
-        private String max;
-
+        private boolean playing;
 
         @Override 
         public void dispatchMessage(Message message) {
 
-            if (mVideoView.isPlaying()) {
+            if (playing = mVideoView.isPlaying()) {
+
                 if (duration == -1) {
                     duration = mVideoView.getDuration();
                     mSeekBar.setVisibility(View.VISIBLE);
@@ -238,7 +280,10 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
                 String current = StringUtils.getFormatedVideoDuration(String.valueOf(position));
                 startTextView.setText(current);
             }
-            toogleButton(!mVideoView.isPlaying());
+
+            if (playing != ButtonStatePlaying) {
+                setButtonStatePlaying(playing);
+            }
         }
     }
 
@@ -250,7 +295,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         }
     }
 
-    public static interface OnPlayButtonPressedListener {
+    public static interface OnButtonPressedListener {
         void onPressed(boolean playing)
     }
 }

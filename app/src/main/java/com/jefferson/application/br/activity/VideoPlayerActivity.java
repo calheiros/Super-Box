@@ -38,15 +38,10 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
         @Override
         public void onPageSelected(int position) {
-//            VideoPlayFragment cachedFragment = adpter.getCachedFragment();
-//            
-//            if (cachedFragment != null){
-//                cachedFragment.stop();
-//            }
             VideoPlayerFragment lastFragment = pagerAdapter.getItem(lastFragmentPosition);
 
             if (lastFragment != null) {
-                lastFragment.stop();            
+                lastFragment.stop();
             }
 
             lastFragmentPosition = position;
@@ -94,6 +89,11 @@ public class VideoPlayerActivity extends MyCompatActivity {
         win.setAttributes(winParams);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private class VideoPagerAdapter extends FragmentStatePagerAdapter {
 
         private ArrayList<String> filesPath;
@@ -119,7 +119,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
 //        public VideoPlayFragment getCachedFragment() {
 //            return cachedFragment;
-//        }
+//       }
 
         @Override
         public int getCount() {
