@@ -249,7 +249,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     Storage.setNewLocalStorage(storageChoicePosition);
 
                     ((MainActivity) getActivity()).
-                        mainFragment.updateAll();
+                        mainFragment.updateAllFragments();
                     updateItem(4);
                 }
             }

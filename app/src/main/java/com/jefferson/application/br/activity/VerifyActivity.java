@@ -167,7 +167,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 				if (grantResult == PackageManager.PERMISSION_GRANTED) {
 					checkPassword();
 				} else {
-					requestPermission();
+					//requestPermission();
 				}
 			}
 		}

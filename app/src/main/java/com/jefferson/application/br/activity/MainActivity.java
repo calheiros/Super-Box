@@ -185,13 +185,13 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
     public void updateFragment(int position) {
         if (mainFragment != null) {
-            mainFragment.update(position);
+            mainFragment.updateFragment(position);
         }
     }
 
 	public void updateAllFragments() {
         if (mainFragment != null) {
-            mainFragment.updateAll();
+            mainFragment.updateAllFragments();
         }
     }
 

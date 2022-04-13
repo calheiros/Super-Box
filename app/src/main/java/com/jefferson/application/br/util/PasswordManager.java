@@ -47,27 +47,7 @@ public class PasswordManager {
     public boolean setPassword(String password) {
         return sharedPrefers.edit().putString(PATTERN_KEY, password).commit();
     }
-
-    public String getPasswordFile() {
-        String pass = new String();
-
-        try {
-            Scanner scan = new Scanner(file);
-            pass = scan.nextLine();
-        } catch (Exception e) {}
-
-        if (pass.isEmpty()) {
-            String sharedPass = getInternalPassword();
-
-            if (!sharedPass.isEmpty()) {
-                setPasswordToFile(sharedPass);
-                return sharedPass;
-            }
-        }
-
-        return pass;
-    }
-
+    
     public String getInternalPassword() {
         return sharedPrefers.getString(PATTERN_KEY, "");
     }

@@ -1,21 +1,32 @@
 package com.jefferson.application.br.fragment;
 
-import android.content.*;
-import android.os.*;
-import android.support.design.widget.*;
-import android.support.v4.app.*;
-import android.support.v4.view.*;
-import android.support.v4.view.ViewPager.*;
-import android.support.v7.app.*;
-import android.support.v7.widget.*;
-import android.view.*;
-import android.view.View.*;
-import android.widget.*;
-import com.jefferson.application.br.*;
-import com.jefferson.application.br.activity.*;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
+import android.widget.Toast;
+import com.jefferson.application.br.FileModel;
+import com.jefferson.application.br.FolderModel;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.activity.ImportGalleryActivity;
+import com.jefferson.application.br.activity.MainActivity;
+import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.model.MediaModel;
+import com.jefferson.application.br.task.JTask;
+import com.jefferson.application.br.util.Storage;
+import java.io.File;
 import java.util.ArrayList;
 
 public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener, OnLongClickListener {
@@ -28,7 +39,9 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	public static final String UNIT_TEST_ID="ca-app-pub-3940256099942544/6300978111";
 	public static final String UNIT_ID="ca-app-pub-3062666120925607/7395488498";
 	public static final int GET_FILE = 35;
-
+    private JTask retriveTask;
+    private boolean corruptedDatabase;
+    
     public int getPagerPosition() {
         return viewPager.getCurrentItem();
     }
@@ -59,7 +72,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		    View fab = view.findViewById(R.id.fab);
             fab.setOnClickListener(this);
             fab.setOnLongClickListener(this);
-            
+
 			//view.findViewById(R.id.fab_create).setOnClickListener(this);
 			toogleTabIcon(0);
 		}
@@ -87,7 +100,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 				break;
 		} 
 	}
-
+   
     @Override
     public boolean onLongClick(View view) {
         AlbumFragment fragment = (AlbumFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
@@ -108,28 +121,21 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
         tabLayout.getTabAt(position == 0 ? 1 : 0).setIcon(id);
     }
 
-	public void update(int id) {
-
-        if (pagerAdapter == null) return;
-        int mx = pagerAdapter.getCount();
-
-        if (id >= 0 && id < mx) {
+	public void updateFragment(int id) {
+        if (pagerAdapter != null) {
             pagerAdapter.update(id);
         }
-
     }
 
-    public void updateAll() {
-
-        if (pagerAdapter == null) {
-            return;
-        }
-
-        for (int i = 0; i < pagerAdapter.getCount(); i++) {
-            pagerAdapter.update(i);
+    public void updateAllFragments() {
+        
+        if (pagerAdapter != null){
+            for (int i =0; i< pagerAdapter.getCount(); i++) {
+                pagerAdapter.update(i);
+            }
         }
     }
-
+   
 	@Override
 	public void onPageScrolled(int p1, float p2, int p3) {
 
@@ -161,16 +167,22 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	}
 
 	private class pagerAdapter extends FragmentPagerAdapter {
-	    public static final int SIZE = 2;
-		private Fragment[] fragments = new Fragment[SIZE];
+
+        public static final int SIZE = 2;
+		private AlbumFragment[] fragments = new AlbumFragment[SIZE];
 
         public pagerAdapter(FragmentManager fm) {
 
 			super(fm);
 		}
 
+        public void update(int position, ArrayList<FolderModel> models) {
+            getItem(position).putModels(models);
+        }
+
 		@Override
-		public Fragment getItem(int position) {
+		public AlbumFragment getItem(int position) {
+
             if (fragments[position] == null) {
 			    fragments[position] = AlbumFragment.newInstance(position);
             }
@@ -178,7 +190,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		}
 
         public void update(int position) {
-			AlbumFragment fragment = (AlbumFragment)fragments[position];
+			AlbumFragment fragment = fragments[position];
 
             if (fragment != null) {
                 fragment.update();

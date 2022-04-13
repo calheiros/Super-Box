@@ -36,25 +36,29 @@ public class StringUtils {
         } return links.toArray(new String[links.size()]); 
     }
 
-    public static String getFormatedTime(String duration) {
-        int millis = 0;
+    public static String getFormatedVideoDuration(String millis) {
+        int duration = 0;
         try {
-            millis = Integer.valueOf(duration);
+            duration = Integer.valueOf(millis);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        long secunds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
-        final String time = String.format("%d:%02d", TimeUnit.MILLISECONDS.toMinutes(millis), secunds);
+        long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
+        long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
+        long hours =  TimeUnit.MINUTES.toHours(minutes);
+        minutes = minutes - (hours * 60);
+        //long secunds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
+        final String fmt = hours > 0 ? String.format("%d:%02d:%02d", hours, minutes, seconds) : String.format("%d:%02d", minutes, seconds);
 
-        return time;
+        return fmt;
     }
     public static String getFormatedDate() {
-        
+
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime(); 
         SimpleDateFormat simpleDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss");
         String timestamp = simpleDate.format(now);
-        
+
         return timestamp;
     }
 

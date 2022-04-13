@@ -22,12 +22,12 @@ public class PathsData extends SQLiteOpenHelper {
     public static void onUpgradeDatabase(SQLiteDatabase sQLiteDatabase, int oldVersion, int newVersion) {
         Log.e("DATABASE", " UPGRADE: oldVersion => " + oldVersion);
         if (oldVersion <= 9) {
-            sQLiteDatabase.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + DURATION_COL + " INTEGER DEFAULT 0");
+            sQLiteDatabase.execSQL("ALTER TABLE " + TABLE_NAME + " ADD COLUMN " + DURATION_COL + " INTEGER DEFAULT -1");
         }
     }
 
 	public static String getBaseCommand() {
-		return "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" + ID_COL + " TEXT NOT NULL," + NAME_COL + " TEXT, " + DURATION_COL + " INTEGER DEFAULT 0);";
+		return "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + " (" + ID_COL + " TEXT NOT NULL," + NAME_COL + " TEXT, " + DURATION_COL + " INTEGER DEFAULT -1);";
 	}
 
     private PathsData(Context context, String path) {
@@ -57,12 +57,12 @@ public class PathsData extends SQLiteOpenHelper {
     }
 
     public void updateFileDuration(String name, int millSecond) {
-
         SQLiteDatabase database = getWritableDatabase();
         ContentValues data = new ContentValues();
         data.put(DURATION_COL, millSecond);
         Log.i("Database", "duration " + millSecond);
         database.update(TABLE_NAME, data, ID_COL + " = '" + name + "'", null);
+        database.close();
     }
 
     public int getDuration(String fileName) {
@@ -70,12 +70,14 @@ public class PathsData extends SQLiteOpenHelper {
         int duration = -1;
         SQLiteDatabase database = getReadableDatabase();
         Cursor cursor = database.rawQuery("SELECT " + DURATION_COL + " FROM " + TABLE_NAME + " WHERE " + ID_COL + " = '" + fileName + "';", null);
-
-        if (cursor.moveToFirst()) {
-            duration = cursor.getInt(0);
+        try {
+            if (cursor.moveToFirst()) {
+                duration = cursor.getInt(0);
+            }
+        } finally {
+            cursor.close();
+            database.close();
         }
-        cursor.close();
-        database.close();
         return duration;
     }
 
@@ -84,19 +86,24 @@ public class PathsData extends SQLiteOpenHelper {
 	    String path = null;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor res = db.rawQuery("Select " + NAME_COL + " from " + TABLE_NAME + " WHERE " + ID_COL + " = '" + id + "';", null);
-
-        if (res.moveToFirst())
-			path = res.getString(0);
-		res.close();
-		db.close();
+        try {
+            if (res.moveToFirst())
+                path = res.getString(0);
+        } finally {
+            res.close();
+            db.close();
+        }
         return path;
     }
 
 	public void deleteData(String id) {
 
         SQLiteDatabase db = this.getWritableDatabase();
-		db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + ID_COL + " = '" + id + "';");
-		db.close();
+        try {
+            db.execSQL("DELETE FROM " + TABLE_NAME + " WHERE " + ID_COL + " = '" + id + "';");
+		} finally {
+            db.close();
+        }
 	}
 
     public List<String> getAllData() {
@@ -105,17 +112,20 @@ public class PathsData extends SQLiteOpenHelper {
 		List<String> allData = new ArrayList<String>();
         Cursor cursor = db.rawQuery("Select * from " + TABLE_NAME, null);
 
-		while (cursor.moveToNext()) {
-			allData.add(cursor.getString(1));
-		}
-		cursor.close();
-		db.close();
+        try {
+            while (cursor.moveToNext()) {
+                allData.add(cursor.getString(1));
+            }
+        } finally {
+            cursor.close();
+            db.close();
+        }
 
 		return allData;
 	}
 
     public boolean insertData(String id , String name, long duration) {
-       
+
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COL, name);
@@ -138,10 +148,12 @@ public class PathsData extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put(NAME_COL, name);
 		contentValues.put(ID_COL, id);
-
-        long result = db.insert(TABLE_NAME, null, contentValues);
-        db.close();
-
+        long result = -1;
+        try {
+            result = db.insert(TABLE_NAME, null, contentValues);
+        } finally {
+            db.close();
+        }
         if (result == -1) {
             return false;
         } else {
@@ -164,7 +176,7 @@ public class PathsData extends SQLiteOpenHelper {
 
 			SQLiteDatabase readableDatabase = getReadableDatabase();
             Cursor rawQuery = readableDatabase.rawQuery("SELECT id FROM FOLDER_ WHERE name = '" + name + "' AND type = '" + type + "'", (String[]) null);
-			
+
             if (rawQuery.moveToFirst()) {
 				return rawQuery.getString(0);
 			}
@@ -203,19 +215,24 @@ public class PathsData extends SQLiteOpenHelper {
 			SQLiteDatabase readableDatabase = getReadableDatabase();
 			Cursor rawQuery = readableDatabase.rawQuery("SELECT name FROM FOLDER_ WHERE id='" + str + "' AND type = '" + type + "';", null);
 			String res = null;
-
-			if (rawQuery.moveToFirst()) {
-				res = rawQuery.getString(0);
-			}
-
-			rawQuery.close();
-			readableDatabase.close();
+            try {
+                if (rawQuery.moveToFirst()) {
+                    res = rawQuery.getString(0);
+                }
+            } finally {
+                rawQuery.close();
+                readableDatabase.close();
+            }
 			return res;
 		}
 
 		public void delete(String f_name, String type) {
 			SQLiteDatabase writableDatabase = getWritableDatabase();
-			writableDatabase.execSQL("DELETE FROM FOLDER_ WHERE id='" + f_name + "' AND type = '" + type + "';");
+            try {
+                writableDatabase.execSQL("DELETE FROM FOLDER_ WHERE id='" + f_name + "' AND type = '" + type + "';");
+            } finally {
+                writableDatabase.close();
+            }
 		}
 
 		@Override

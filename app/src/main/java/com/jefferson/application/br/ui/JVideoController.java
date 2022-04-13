@@ -221,7 +221,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
                     duration = mVideoView.getDuration();
                     mSeekBar.setVisibility(View.VISIBLE);
                     mSeekBar.setMax(duration);
-                    max = StringUtils.getFormatedTime(String.valueOf(duration));
+                    max = StringUtils.getFormatedVideoDuration(String.valueOf(duration));
                     endTextView.setText(max);
                 }
 
@@ -235,7 +235,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
                         mSeekBar.setProgress(position);
                     }
                 }
-                String current = StringUtils.getFormatedTime(String.valueOf(position));
+                String current = StringUtils.getFormatedVideoDuration(String.valueOf(position));
                 startTextView.setText(current);
             }
             toogleButton(!mVideoView.isPlaying());

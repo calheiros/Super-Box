@@ -45,10 +45,9 @@ public class AlbumFragment extends Fragment {
 	private AlbumAdapter mAdapter;
 	private View view;
 	private SharedPreferences sharedPref;
-
+    private JTask retrieveMedia;
     public final static int ACTION_CREATE_FOLDER = 122;
     public final static int ACTION_RENAME_FOLDER = 54;
-
     private RecyclerView recyclerView;
     private View progressBar;
     private View emptyView;
@@ -64,13 +63,42 @@ public class AlbumFragment extends Fragment {
             dialog.setPositiveButton("okay", null);
             dialog.show();
         }
-        
+
     };
-	public AlbumFragment() {
 
-	}
+    public AlbumFragment() {
 
-	public static Fragment newInstance(int position) {
+    }
+
+    public void putModels(ArrayList<FolderModel> models) {
+        
+        if (mAdapter != null) {
+            mAdapter.setUpdatedData(models);
+        } else {
+            mAdapter = new AlbumAdapter(AlbumFragment.this, models);
+            notifyDataUpdated();
+        }
+        
+    }
+
+    private void notifyDataUpdated() {
+        
+        if (recyclerView.getAdapter() == null) {
+            recyclerView.setAdapter(mAdapter);
+        }
+        
+        int visibility = mAdapter.getItemCount() == 0 ? View.VISIBLE: View.GONE;
+        
+        if (emptyView != null) {
+            emptyView.setVisibility(visibility);
+        }
+        
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
+    }
+
+	public static AlbumFragment newInstance(int position) {
         AlbumFragment frament = new AlbumFragment();
 		Bundle bundle = new Bundle();
 		bundle.putInt("position", position);
@@ -100,29 +128,57 @@ public class AlbumFragment extends Fragment {
 		return view;
 	}
 
-    private void setEmptyViewVisibility(int visibility) {
+    public ArrayList<FolderModel> getModels(int position) {
+        PathsData.Folder sqldb = null;
+        ArrayList<FolderModel> models = new ArrayList<FolderModel>();
+        File root = Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO);
+        root.mkdirs();
 
-        if (emptyView != null && emptyView.getVisibility() != visibility) {
-            emptyView.setVisibility(visibility);
+        try {
+            sqldb = PathsData.Folder.getInstance(getContext());
+        } catch (android.database.sqlite.SQLiteDatabaseCorruptException e ) {
+            //do something
         }
-    }
 
-    private void hideProgressBar() {
+        if (root.exists()) {
+            String Files[] = root.list();
+            for (int i = 0;i < Files.length;i++) {
+                File file = new File(root, Files[i]);
 
-        if (progressBar != null) {
-            progressBar.setVisibility(View.GONE);
+                if (file.isDirectory()) {
+                    File folder_list[] = file.listFiles();
+                    String folder_name = null;
+                    if (sqldb != null) {
+                        folder_name = sqldb.getFolderName(Files[i], position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
+                    }
+                    FolderModel model = new FolderModel();
+
+                    model.setName(folder_name == null ?  Files[i]: folder_name);
+                    model.setPath(file.getAbsolutePath());
+
+                    for (int j = 0; j < folder_list.length; j++) {
+                        MediaModel mm = new MediaModel(folder_list[j].getAbsolutePath());
+                        model.addItem(mm);
+                    }
+                    models.add(model);
+                }
+            }
         }
 
-    }
+        if (sqldb != null)
+            sqldb.close();
 
+        return models;
+    }
+    
     private void populateReciclerView() {
 
-        JTask task = new JTask() {
+        retrieveMedia = new JTask() {
             ArrayList<FolderModel> list;
 
             @Override
             public void workingThread() {
-                this.list = getLocalList();
+                this.list = getModels(position);
             }
 
             @Override
@@ -132,13 +188,8 @@ public class AlbumFragment extends Fragment {
 
             @Override
             public void onFinished() {
-                setEmptyViewVisibility(list.isEmpty() ? View.VISIBLE : View.GONE);
-                hideProgressBar();
-                mAdapter = new AlbumAdapter(AlbumFragment.this, list);
-                
-                if (recyclerView != null) {
-                    recyclerView.setAdapter(mAdapter);
-                }
+                putModels(list);
+                notifyDataUpdated();
             }
 
             @Override
@@ -152,50 +203,9 @@ public class AlbumFragment extends Fragment {
             }
 
         };
-        task.setThreadPriority(Thread.MAX_PRIORITY);
-        task.start();
+        retrieveMedia.setThreadPriority(Thread.MAX_PRIORITY);
+        retrieveMedia.start();
     }
-
-	private ArrayList<FolderModel> getLocalList() {
-        PathsData.Folder sqldb = null;
-		ArrayList<FolderModel> models = new ArrayList<FolderModel>();
-        File root = Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO);
-		root.mkdirs();
-
-        try {
-            sqldb = PathsData.Folder.getInstance(getContext());
-        } catch (android.database.sqlite.SQLiteDatabaseCorruptException e ) {
-            warnDatabaseCorrupted();
-        }
-
-        if (root.exists()) {
-			String Files[] = root.list();
-			for (int i = 0;i < Files.length;i++) {
-				File file = new File(root, Files[i]);
-
-				if (file.isDirectory()) {
-					File folder_list[] = file.listFiles();
-					String folder_name = null;
-                    if (sqldb != null) {
-                        folder_name = sqldb.getFolderName(Files[i], position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
-                    }
-                    FolderModel model = new FolderModel();
-
-					model.setName(folder_name == null ?  Files[i]: folder_name);
-					model.setPath(file.getAbsolutePath());
-
-					for (int j = 0; j < folder_list.length; j++) {
-                        MediaModel mm = new MediaModel(folder_list[j].getAbsolutePath());
-						model.addItem(mm);
-					}
-					models.add(model);
-				}
-			}
-		}
-        if (sqldb != null)
-		    sqldb.close();
-		return models;
-	}
 
     private void warnDatabaseCorrupted() {
         corruptedWarnHandler.sendEmptyMessage(0);

@@ -23,8 +23,10 @@ import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.StringUtils;
 import java.util.ArrayList;
+import android.support.v4.widget.SwipeRefreshLayout;
+import com.jefferson.application.br.activity.ImportGalleryActivity;
 
-public class ImportGalleryActivity extends MyCompatActivity {
+public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
     private PhotosFolderAdapter obj_adapter;
 	private int position;
@@ -36,6 +38,10 @@ public class ImportGalleryActivity extends MyCompatActivity {
 	private String title;
     private static final String TAG = "GALERY ALBUM";
 
+    private SwipeRefreshLayout mySwipeRefreshLayout;
+
+    private ImportGalleryActivity.RetrieveMediaTask retrieveMediaTask;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,11 +49,26 @@ public class ImportGalleryActivity extends MyCompatActivity {
         gv_folder = (GridView)findViewById(R.id.gv_folder);
 		sharedPrefrs = MyPreferences.getSharedPreferences(this);
 	    position = getIntent().getExtras().getInt("position");
+        mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
+	    mySwipeRefreshLayout.setOnRefreshListener(this);
+        
         title = (position == 0 ? getString(R.string.importar_imagem) : getString(R.string.importar_video));
-        new RetrieveMediaTask().start();
+        retrieveMediaTask = new RetrieveMediaTask();
+        retrieveMediaTask.start();
 		setupToolbar();
 	}
+    @Override
+    public void onRefresh() {
+        if (retrieveMediaTask.getStatus() == JTask.Status.FINISHED) {
+            obj_adapter.clear();
+            retrieveMediaTask = new RetrieveMediaTask();
+            retrieveMediaTask.start();
+        } else {
+            mySwipeRefreshLayout.setRefreshing(false);
+        }
+    }
 
+    
     public  String getType() {
 		switch (position) {
 			case 0:
@@ -146,7 +167,7 @@ public class ImportGalleryActivity extends MyCompatActivity {
                 MediaModel mm = new MediaModel(absolutePathOfImage);
 
                 if (position == 1)
-                    mm.setDuration(StringUtils.getFormatedTime(duration));
+                    mm.setDuration(StringUtils.getFormatedVideoDuration(duration));
 
                 model.setName(cursor.getString(column_index_folder_name));
                 model.addItem(mm);
@@ -155,7 +176,7 @@ public class ImportGalleryActivity extends MyCompatActivity {
                 MediaModel mm = new MediaModel(absolutePathOfImage);
 
                 if (position == 1) {
-                    String formatedTime = StringUtils.getFormatedTime(duration);
+                    String formatedTime = StringUtils.getFormatedVideoDuration(duration);
                     mm.setDuration(formatedTime);
                 }
 
@@ -237,9 +258,11 @@ public class ImportGalleryActivity extends MyCompatActivity {
         @Override
         public void onFinished() {
             myProgress.setVisibility(View.GONE);
+            
             if (result != null) {
                 setAdapter(result);
 			}
+            mySwipeRefreshLayout.setRefreshing(false);
         }
 
         @Override
