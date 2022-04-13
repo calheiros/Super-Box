@@ -50,11 +50,11 @@ abstract public class JTask implements JTaskListener {
 
             switch (state) {
                 case STATE_FINISHED:
+                    status = Status.FINISHED;
+                    workThread.interrupt();
                     if (revokeFinish) {
                         break;
                     }
-                    status = Status.FINISHED;
-                    workThread.interrupt();
                     onFinished();
                     if (onFinishedListener != null) {
                         onFinishedListener.onFinished();
@@ -103,11 +103,11 @@ abstract public class JTask implements JTaskListener {
             sendState(STATE_FINISHED);
         }
     }
-    
+
     public Status getStatus() {
         return status;
     }
-    
+
     public void revokeFinish(boolean revoked) {
         this.revokeFinish = revoked;
     }

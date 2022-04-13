@@ -31,7 +31,9 @@ public class ImportTask extends JTask {
     public void onException(Exception e) {
         JDebug.writeLog(e.getCause());
         err_message.append("Erro inesperado ocorrido!");
-        synchronize();
+        err_count = 1;
+        revokeFinish(false);
+        //synchronize();
     }
 
     public static final int SESSION_OUTSIDE_APP = 1;
@@ -48,14 +50,13 @@ public class ImportTask extends JTask {
 	private FileTransfer mTransfer;
 	private ProgressThreadUpdate mUpdate;
 	private boolean waiting = false;
-    private ImportTaskListener listener;
+    private Listener listener;
 	private String WARNING_ALERT = "warning_alert";
 	private String no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n";
     private Context context;
-
     private static final String TAG = "ImportTask";
 
-	public ImportTask(Context context, ArrayList<FileModel> models, ImportTaskListener listener) {
+	public ImportTask(Context context, ArrayList<FileModel> models, Listener listener) {
         this.context = context;
 		this.listener = listener;
 		this.maxProgress = models.size();
@@ -131,11 +132,9 @@ public class ImportTask extends JTask {
 
     @Override
     public void onInterrupted() {
-
         if (listener != null) {
             listener.onInterrupted();
         }
-
 		Toast.makeText(context, context.getString(R.string.canceledo_usuario), 1).show();
 	}
 
@@ -179,6 +178,7 @@ public class ImportTask extends JTask {
                 err_message.append("\n" + context.getString(R.string.erro) + " " + err_count + ": O arquivo \"" + file.getName() + "\" não existe!\n");
                 continue;
             }
+            
             sendUpdate(null, file.getName());
 
             String folderName = file.getParentFile().getName();
@@ -271,10 +271,10 @@ public class ImportTask extends JTask {
 		dialog.show();
 	}
 
-    public interface ImportTaskListener {
+    public interface Listener {
         void onBeingStarted()
         void onUserInteration()
         void onInterrupted()
-        void onFinished();
+        void onFinished()
     }
 }

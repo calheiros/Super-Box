@@ -17,7 +17,7 @@ import android.support.v7.app.AlertDialog;
 import com.jefferson.application.br.activity.MainActivity;
 import android.support.annotation.NonNull;
 
-public class ReceiverMedia extends Activity implements ImportTask.ImportTaskListener {
+public class ReceiverMedia extends Activity implements ImportTask.Listener {
 
     @Override
     public void onInterrupted() {

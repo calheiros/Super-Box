@@ -44,7 +44,7 @@ import com.jefferson.application.br.widget.MyAlertDialog;
 import java.io.File;
 import java.util.ArrayList;
 
-public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.ImportTaskListener {
+public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener {
 
     public void setupToolbar(Toolbar toolbar, String string, int menuId) {
         
@@ -446,8 +446,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             unregisterReceiver(receiver);
             receiver = null;
         }
-
         super.onDestroy();
-
     }
 }

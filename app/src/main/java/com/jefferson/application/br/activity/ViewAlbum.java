@@ -26,6 +26,7 @@ import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.MultiSelectRecyclerViewAdapter;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.activity.ViewAlbum;
 import com.jefferson.application.br.app.ProgressThreadUpdate;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsData;
@@ -33,9 +34,11 @@ import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.DeleteFilesTask;
 import com.jefferson.application.br.task.ImportTask;
 import com.jefferson.application.br.task.JTask;
+import com.jefferson.application.br.task.PrepareMonoFilesTask;
 import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
+import com.jefferson.application.br.util.StringUtils;
 import com.stfalcon.frescoimageviewer.ImageViewer;
 import java.io.File;
 import java.io.FileInputStream;
@@ -46,10 +49,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import com.jefferson.application.br.util.StringUtils;
 
-public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.ImportTaskListener {
+public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.Listener {
 
     @Override
     public void onBeingStarted() {
@@ -326,17 +327,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     }
                 );
             } else if (requestCode == IMPORT_FROM_GALLLERY_CODE) {
-                ArrayList<FileModel> models = new ArrayList<>();
+                 
                 ArrayList<String> paths = data.getStringArrayListExtra("selection");
-
-                for (String path : paths) {
-                    FileModel model = new FileModel();
-                    model.setResource(path);
-                    model.setParentPath(folder.getAbsolutePath());
-                    model.setType(data.getStringExtra("type"));
-                    models.add(model);
-                }
-                new ImportTask(this, models, this).start();
+                String type = data.getStringExtra("type");
+                new PrepareMonoFilesTask(this, paths, type, folder.getAbsolutePath(), this).start();
                 /*
                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 
@@ -373,7 +367,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             }
         }
     }
-
+    
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (selectionMode) {

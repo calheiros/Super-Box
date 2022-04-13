@@ -60,7 +60,12 @@ public class SimpleDialog  {
 	    createView(0);
 	}
 
-    public void setCanceledOnTouchOutside(boolean p0) {
+    public void cancel() {
+        jdialog.cancel();
+    }
+
+    public void setCanceledOnTouchOutside(boolean cancelable) {
+        jdialog.setCanceledOnTouchOutside(cancelable);
     }
 
 	public long getCurrentBytes() {
