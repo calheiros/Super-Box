@@ -65,12 +65,17 @@
 			android:text="Thows Exception"/>
 
 		<Button
-			android:layout_marginTop="15dp"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="quit"
-			android:onClick="quit"/>
-
+			android:text="wifi on"
+			android:onClick="enableWifi"/>
+        
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="wifi off"
+            android:onClick="disableWifi"/>
+        
 		<Button
 			android:layout_width="wrap_content"
 			style="?android:attr/buttonStyleSmall"

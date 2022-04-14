@@ -110,7 +110,7 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 
 	public void requestPermission() {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             if (Environment.isExternalStorageManager()) { 
                 //todo when permission is granted 
             } else { //request for the permission 

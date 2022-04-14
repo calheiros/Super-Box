@@ -51,6 +51,7 @@ public class AlbumFragment extends Fragment {
     private RecyclerView recyclerView;
     private View progressBar;
     private View emptyView;
+    private MainFragment mainFragment;
     private Handler corruptedWarnHandler = new Handler() {
 
         @Override
@@ -71,39 +72,36 @@ public class AlbumFragment extends Fragment {
     }
 
     public void putModels(ArrayList<FolderModel> models) {
-        
+
         if (mAdapter != null) {
             mAdapter.setUpdatedData(models);
         } else {
             mAdapter = new AlbumAdapter(AlbumFragment.this, models);
             notifyDataUpdated();
         }
-        
+
     }
 
     private void notifyDataUpdated() {
-        
+
         if (recyclerView.getAdapter() == null) {
             recyclerView.setAdapter(mAdapter);
         }
-        
+
         int visibility = mAdapter.getItemCount() == 0 ? View.VISIBLE: View.GONE;
-        
+
         if (emptyView != null) {
             emptyView.setVisibility(visibility);
         }
-        
+
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
         }
     }
 
-	public static AlbumFragment newInstance(int position) {
-        AlbumFragment frament = new AlbumFragment();
-		Bundle bundle = new Bundle();
-		bundle.putInt("position", position);
-		frament.setArguments(bundle);
-		return frament;
+	public AlbumFragment(int position, MainFragment mainFragment) {
+        this.position = position;
+        this.mainFragment = mainFragment;
 	}
 
 	public int getPagerPosition() {
@@ -119,7 +117,6 @@ public class AlbumFragment extends Fragment {
             emptyView = view.findViewById(R.id.empty_linearLayout);
             sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             root = Environment.getExternalStorageDirectory().getAbsolutePath();
-            position = getArguments() != null ? getArguments().getInt("position", 0): 0;
             recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
             GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
             recyclerView.setLayoutManager(layoutManager);
@@ -170,7 +167,7 @@ public class AlbumFragment extends Fragment {
 
         return models;
     }
-    
+
     private void populateReciclerView() {
 
         retrieveMedia = new JTask() {
@@ -239,10 +236,10 @@ public class AlbumFragment extends Fragment {
                 @Override
                 public boolean onClick(SimpleDialog dialog) {
                     String text = editText.getText().toString();
-                    AlbumFragment.ValidateResult result = validateFolderName(text);
+                    String result = validateFolderName(text);
 
-                    if (!result.passed) {
-                        Toast.makeText(getContext(), result.message, 1).show();
+                    if (!"ok".equals(result)) {
+                        Toast.makeText(getContext(), result, 1).show();
                         return false;
                     }
 
@@ -294,11 +291,11 @@ public class AlbumFragment extends Fragment {
     }
 
     public boolean createFolder(@NonNull String name) {
-
         String type = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(getContext());
         String id = folderDatabase.getFolderId(name, type);
         String randomStr = StringUtils.getRandomString(24);
+        
         if (id == null) {
             id = randomStr;
             int strType = position == 0 ? Storage.IMAGE: Storage.VIDEO;
@@ -318,19 +315,16 @@ public class AlbumFragment extends Fragment {
         return true;
     }
 
-    public ValidateResult validateFolderName(@NonNull String name) {
-        ValidateResult result = new ValidateResult();
+    public String validateFolderName(@NonNull String name) {
         String nospace = name.replace(" ", "");
 
         if (nospace.isEmpty()) {
-            result.message = "Name is empty!";
+            return  "Name is empty!";
         } else if (name.length() > 50) {
-            result.message = "Many characters!";
+            return "Many characters!";
         } else {
-            result.passed = true;
+            return "ok";
         }
-
-        return result;
     }
 
     public void deleteAlbum(final FolderModel model) {
@@ -356,7 +350,6 @@ public class AlbumFragment extends Fragment {
 				}
             }
         );
-
 		builder.setNegativeButton(getString(R.string.nao), null);
         DialogUtils.configureRoudedDialog(builder.show());
 	}
@@ -365,8 +358,4 @@ public class AlbumFragment extends Fragment {
         populateReciclerView();
 	}
 
-    class ValidateResult {
-        public boolean passed = false;
-        public String message = "";
-    }
 }

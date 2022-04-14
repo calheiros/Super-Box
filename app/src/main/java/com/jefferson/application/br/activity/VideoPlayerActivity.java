@@ -3,21 +3,16 @@ package com.jefferson.application.br.activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
+import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
-import com.jefferson.application.br.App;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.fragment.VideoPlayerFragment;
 import java.util.ArrayList;
-import com.jefferson.application.br.util.JDebug;
-import com.jefferson.application.br.model.MediaModel;
-import android.support.v4.app.FragmentStatePagerAdapter;
 
 public class VideoPlayerActivity extends MyCompatActivity {
 
@@ -73,14 +68,32 @@ public class VideoPlayerActivity extends MyCompatActivity {
         viewPager.setOnPageChangeListener(new MyPageListerner(pagerAdapter, choice));
         viewPager.setCurrentItem(choice);
         viewPager.setOffscreenPageLimit(3);
+        viewPager.setPageMargin(dpToPx(5));
         pagerAdapter.getItem(choice).setPlayOnCreate(true);
+        hideNavigationBar();
+    }
+    
+    public int dpToPx(int dp) { 
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics(); 
+        return Math.round(dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)); 
     }
 
     private void requestOrientation(int width, int height) {
         int orientation = width > height ? ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE : ActivityInfo.SCREEN_ORIENTATION_PORTRAIT;
         setRequestedOrientation(orientation);
     }
-
+    
+    void hideNavigationBar(){
+        View decorView = getWindow().getDecorView();
+        // Hide both the navigation bar and the status bar.
+         // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
+        // a general rule, you should design your app to hide the status bar whenever you
+        // hide the navigation bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+             | View.SYSTEM_UI_FLAG_FULLSCREEN;
+         decorView.setSystemUiVisibility(uiOptions);
+    }
+    
     public void window() {
         Window win = getWindow();
         WindowManager.LayoutParams winParams = win.getAttributes();

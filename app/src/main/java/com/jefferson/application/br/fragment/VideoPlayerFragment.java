@@ -121,12 +121,12 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
             if (jController != null) {
                if (jController.alive()) {
                    jController.pause();
-                   JDebug.toast("Controller still alive");
-               } else {
-                   JDebug.toast("Controller is NOT alive!");
-               }
-            } else {
-                JDebug.toast("Controller is NULL!");
+                   // JDebug.toast("Controller still alive");
+               } //else {
+                   //JDebug.toast("Controller is NOT alive!");
+              // }
+            //} else {
+                //JDebug.toast("Controller is NULL!");
             }
         } finally {
 

@@ -6,13 +6,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,9 +21,11 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -38,16 +41,17 @@ import com.jefferson.application.br.model.AppModel;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.DialogUtils;
+import com.jefferson.application.br.util.JDebug;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class LockFragment extends Fragment implements OnItemClickListener {
+public class LockFragment extends Fragment implements OnItemClickListener, android.support.v7.widget.SearchView.OnQueryTextListener {
 
     private static final int REQUEST_OVERLAY_CODE = 9;
     private View lastClickedParentView;
     private int lastClickedItemPosition;
-
+    private SearchView searchView;
 	public LockFragment() {
 		startLoadPackagesTask();
 	}
@@ -73,8 +77,10 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 			mListView = parentView.findViewById(R.id.appList);
             mySwipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
 			mListView.setItemsCanFocus(true);
+            mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+			//mySwipeRefreshLayout.setProgressBackgroundColor(R.color.colorAccent);
 
-			if (mTask != null) {
+            if (mTask != null) {
 				JTask.Status status = mTask.getStatus();
 				if (status == JTask.Status.FINISHED) {
 					doTaskFinalized();
@@ -110,14 +116,62 @@ public class LockFragment extends Fragment implements OnItemClickListener {
             }
         }
 
-		Toolbar toolbar = (Toolbar) parentView.findViewById(R.id.toolbar);
+		Toolbar toolbar = parentView.findViewById(R.id.toolbar);
 		mActivity.setupToolbar(toolbar, getString(R.string.bloquear_apps));
 		mActivity.getSupportActionBar().dispatchMenuVisibilityChanged(true);
         setHasOptionsMenu(true);
-
 		return parentView;
-
 	}
+    
+    @Override
+    public boolean onQueryTextSubmit(String input) {
+        
+        if (appsAdapter == null || input.equals("")) {
+            return false;
+        }
+        
+        AppModel model = null;
+        ArrayList<AppModel> models = appsAdapter.models;
+
+        for (int x = 0; x < models.size(); x++) {
+            model = models.get(x);
+
+            if (model.appname.toLowerCase().contains(input.toLowerCase())) {
+                JDebug.toast("match + " + models.get(x).appname);
+                mListView.smoothScrollToPosition(x);
+                return true;
+            }
+       }
+        Toast.makeText(getContext(), "No match found", Toast.LENGTH_LONG).show();
+        hideInputMethod(searchView);
+        return false;
+    }
+    
+    Handler scrollHandler = new Handler () {
+        
+    };
+    
+    @Override
+    public boolean onQueryTextChange(String input) {
+        if (appsAdapter == null || input.isEmpty()) {
+            return false;
+        }
+        AppModel model = null;
+        ArrayList<AppModel> models = appsAdapter.models;
+
+        for (int x = 0; x < models.size(); x++) {
+            model = models.get(x);
+
+            if (model.appname.toLowerCase().contains(input.toLowerCase())) {
+                JDebug.toast("match + " + models.get(x).appname);
+                // mListView.smoothScrollToPosition(x);
+                mListView.setSelection(x);
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     private void showProgressView() {
         mProgressBar.setProgress(0);
@@ -125,7 +179,6 @@ public class LockFragment extends Fragment implements OnItemClickListener {
         mProgressBar.setVisibility(View.VISIBLE);
         mTextView.setText("");
         mTextView.setVisibility(View.VISIBLE);
-        
     }
 
     @Override
@@ -140,7 +193,8 @@ public class LockFragment extends Fragment implements OnItemClickListener {
             startActivityForResult(intent, REQUEST_OVERLAY_CODE); //It will call onActivityResult Function After you press Yes/No and go Back after giving permission 
         } else {
             noNeedOverlayPermission = true;
-            Log.v("App", "We already have permission for it."); // disablePullNotificationTouch(); // Do your stuff, we got permission captain 
+            Log.v("App", "We already have permission for it."); // disablePullNotificationTouch(); 
+                                                                // Do your stuff, we got permission captain 
         }
 
         if (!needPermissionForBlocking(getContext())) {
@@ -191,7 +245,6 @@ public class LockFragment extends Fragment implements OnItemClickListener {
         if (appsAdapter != null) {
             appsAdapter.setMutable(false);
         }
-
     }
 
 	public void startLoadPackagesTask() {
@@ -200,21 +253,21 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 	}
 
     public void doTaskFinalized() {
-        
+
         if (appsAdapter == null) {
             appsAdapter = new AppLockAdapter(getActivity(), appModels);
             mListView.setAdapter(appsAdapter);
         } else {
             appsAdapter.putDataSet(appModels);
         }
-        
+
 		mProgressBar.setVisibility(View.GONE);
 		mTextView.setVisibility(View.GONE);
 
         if (mySwipeRefreshLayout.isRefreshing()) {
             mySwipeRefreshLayout.setRefreshing(false);
         }
-       appModels = null;
+        appModels = null;
 	}
 
     private boolean needPermissionForBlocking(Context context) {
@@ -251,19 +304,47 @@ public class LockFragment extends Fragment implements OnItemClickListener {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.menu_message_history, menu);
+
+//        SearchManager searchManager =(SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+//            searchView.setSearchableInfo(
+//        searchManager.getSearchableInfo(getActivity().getComponentName()));
+//
+        searchView.setOnQueryTextFocusChangeListener(new  OnFocusChangeListener() {
+                @Override public void onFocusChange(View view, boolean hasFocus) {
+                    if (hasFocus) { 
+                        showInputMethod(view.findFocus());
+                    }
+                }
+            }
+        );
+        searchView.setOnQueryTextListener(this);
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
+    private void showInputMethod(View view) {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+        if (imm != null) {
+            imm.showSoftInput(view, 0);
+        } 
+    }
+    
+    private void hideInputMethod(View view) {
+        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        if (item.getItemId() == R.id.item_message_history) {
-            Toast.makeText(getContext(), "Not implemented!", Toast.LENGTH_LONG).show();
-        }
+        /*if (item.getItemId() == R.id.item_message_history) {
+         Toast.makeText(getContext(), "Not implemented!", Toast.LENGTH_LONG).show();
+         }*/
 
         return false;
     }
-
 
 	private class LoadApplicationsTask extends JTask {
 
@@ -338,8 +419,6 @@ public class LockFragment extends Fragment implements OnItemClickListener {
                 }
                 mProgressBar.setProgress((int)progress);
             }
-
-
         }
     }
 }

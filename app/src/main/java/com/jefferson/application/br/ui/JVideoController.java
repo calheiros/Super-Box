@@ -103,11 +103,12 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         } else {
             mVideoView.start();
             setPlaying(true);
+            hideDelayed(1000);
         }
     }
 
     public void pause() {
-        JDebug.toast("Controller paused");
+        //JDebug.toast("Controller paused");
 
         if (timer != null) {
             timer.cancel();
@@ -123,7 +124,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     }
 
     private void resume() {
-        JDebug.toast("Controller resumed!");
+        //JDebug.toast("Controller resumed!");
 
         if (handler == null) {
             handler = new MyHandler();

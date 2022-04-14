@@ -11,14 +11,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.bumptech.glide.Glide;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.database.AppsDatabase;
 import com.jefferson.application.br.model.AppModel;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.widget.LockCheck;
 import java.util.ArrayList;
-
 
 public class AppLockAdapter extends BaseAdapter {
 
@@ -43,12 +41,12 @@ public class AppLockAdapter extends BaseAdapter {
     public void clear() {
         this.models.clear();
         this.selectionArray.clear();
-        syncSelection();
         notifyDataSetInvalidated();
     }
 
     public void putDataSet(ArrayList<AppModel> newModels) {
         this.models = newModels;
+        syncSelection();
         notifyDataSetChanged();
     }
 

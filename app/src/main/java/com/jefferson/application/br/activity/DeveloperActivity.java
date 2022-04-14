@@ -1,12 +1,16 @@
 package com.jefferson.application.br.activity;
 
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.FileObserver;
+import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 import android.view.View;
@@ -19,18 +23,19 @@ import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.JDebug;
 import java.io.File;
-import android.support.v4.os.EnvironmentCompat;
-import android.os.Environment;
 
 public class DeveloperActivity extends MyCompatActivity {
 
     private static final int NOTIFICATION_REQUEST_CODE = 2;
     private static final String TAG = "Notifaction";
-    FileObserver observer;
-    
+    private FileObserver observer;
+    private WifiManager wifi;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+
         setContentView(R.layout.developer_layout);
         Switch switchView = (Switch) findViewById(R.id.developerlayoutSwitch);
         switchView.setChecked(JDebug.isDebugOn());
@@ -44,8 +49,26 @@ public class DeveloperActivity extends MyCompatActivity {
                 }
             }
         );
-        
         fileObserver();
+    }
+    
+    public void toogleWifi(boolean state) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) 
+            wifi.setWifiEnabled(true);
+        else { 
+            Intent panelIntent = new Intent(Settings.Panel.ACTION_WIFI);
+            startActivityForResult(panelIntent, 1); 
+        }
+    }
+    
+    public void enableWifi(View v) {
+        toogleWifi(true);
+        Toast.makeText(this, "Wifi ON", Toast.LENGTH_LONG).show();
+    }
+
+    public void disableWifi(View vi) {
+        toogleWifi(false);
+        Toast.makeText(this, "Wifi OFF", Toast.LENGTH_LONG).show();
     }
 
     public void showAlertDialog(View v) {
@@ -102,7 +125,8 @@ public class DeveloperActivity extends MyCompatActivity {
         } 
         startActivity(i, b);
         //startActivity(new);
-    } 
+    }
+
     public void quit(View v) {
         finish();
     }
@@ -112,23 +136,23 @@ public class DeveloperActivity extends MyCompatActivity {
         observer = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) ? new MyObserver(file) : new MyObserver(file.getAbsolutePath());
         observer.startWatching();
     }
-    
-   private class MyObserver extends FileObserver {
 
-        public MyObserver(String path){
+    private class MyObserver extends FileObserver {
+
+        public MyObserver(String path) {
             super(path);
         }
-        
-        public MyObserver(File file){
+
+        public MyObserver(File file) {
             super(file);
         }
-        
+
         @Override
         public void onEvent(int event, String name) {
             JDebug.toast(name);
         }
     }
-    
+
     public void testThread(View v) {
         final SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.PROGRESS_STYLE);
         dialog.setTitle("thread teste");

@@ -28,6 +28,8 @@ import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.Storage;
 import java.io.File;
 import java.util.ArrayList;
+import android.view.MenuInflater;
+import android.view.Menu;
 
 public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener, OnLongClickListener {
 
@@ -76,7 +78,9 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 			//view.findViewById(R.id.fab_create).setOnClickListener(this);
 			toogleTabIcon(0);
 		}
+        
 		main.setupToolbar(toolbar, getToolbarName(viewPager.getCurrentItem()));
+        setHasOptionsMenu(true);
 		return view;
 	}
 
@@ -100,6 +104,12 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 				break;
 		} 
 	}
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main_album, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
    
     @Override
     public boolean onLongClick(View view) {
@@ -184,7 +194,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		public AlbumFragment getItem(int position) {
 
             if (fragments[position] == null) {
-			    fragments[position] = AlbumFragment.newInstance(position);
+			    fragments[position] = new AlbumFragment(position, MainFragment.this);
             }
             return fragments[position];
 		}

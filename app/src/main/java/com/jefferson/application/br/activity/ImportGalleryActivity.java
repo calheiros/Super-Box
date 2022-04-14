@@ -7,6 +7,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,14 +18,15 @@ import android.widget.Toast;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.FolderModel;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.activity.ImportGalleryActivity;
 import com.jefferson.application.br.adapter.PhotosFolderAdapter;
 import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.StringUtils;
 import java.util.ArrayList;
-import android.support.v4.widget.SwipeRefreshLayout;
-import com.jefferson.application.br.activity.ImportGalleryActivity;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -51,6 +53,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 	    position = getIntent().getExtras().getInt("position");
         mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 	    mySwipeRefreshLayout.setOnRefreshListener(this);
+        mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
         
         title = (position == 0 ? getString(R.string.importar_imagem) : getString(R.string.importar_video));
         retrieveMediaTask = new RetrieveMediaTask();
@@ -68,7 +71,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         }
     }
 
-    
+
     public  String getType() {
 		switch (position) {
 			case 0:
@@ -184,7 +187,13 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
             }
         }
         cursor.close();
-
+        
+        Collections.sort(al_images, new Comparator<FolderModel>() {
+                @Override public int compare(FolderModel o1, FolderModel o2) { 
+                    return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase()); 
+                } 
+            }
+        );
         return al_images;
     }
 
@@ -258,7 +267,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         @Override
         public void onFinished() {
             myProgress.setVisibility(View.GONE);
-            
+
             if (result != null) {
                 setAdapter(result);
 			}
