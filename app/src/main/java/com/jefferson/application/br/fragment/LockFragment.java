@@ -10,6 +10,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
@@ -26,12 +27,12 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.CodeManager;
 import com.jefferson.application.br.R;
@@ -45,6 +46,7 @@ import com.jefferson.application.br.util.JDebug;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import android.widget.Toast;
 
 public class LockFragment extends Fragment implements OnItemClickListener, android.support.v7.widget.SearchView.OnQueryTextListener {
 
@@ -52,10 +54,14 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     private View lastClickedParentView;
     private int lastClickedItemPosition;
     private SearchView searchView;
+
 	public LockFragment() {
 		startLoadPackagesTask();
 	}
-
+    private int firstVisibleItem = -1;
+    private int lastVisibleItem = -1;
+    private int visibleCount = -1;
+    private int totalItemCount = -1;
 	private ProgressBar mProgressBar;
 	private TextView mTextView;
 	private ArrayList<AppModel> appModels;
@@ -77,8 +83,24 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 			mListView = parentView.findViewById(R.id.appList);
             mySwipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
 			mListView.setItemsCanFocus(true);
+
             mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 			//mySwipeRefreshLayout.setProgressBackgroundColor(R.color.colorAccent);
+            mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+                    @Override
+                    public void onScrollStateChanged(AbsListView p1, int p2) {
+
+                    }
+
+                    @Override public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) { 
+                        LockFragment.this.lastVisibleItem = firstVisibleItem + visibleItemCount;
+                        LockFragment.this.firstVisibleItem = firstVisibleItem;
+                        LockFragment.this.visibleCount = visibleItemCount;
+                        LockFragment.this.totalItemCount = totalItemCount;
+                    }
+                }
+            );
 
             if (mTask != null) {
 				JTask.Status status = mTask.getStatus();
@@ -102,10 +124,6 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                             appsAdapter.clear();
                             showProgressView();
                             startLoadPackagesTask();
-                            //Log.i(LOG_TAG, "onRefresh called from SwipeRefreshLayout");
-                            // This method performs the actual data-refresh operation.
-                            // The method calls setRefreshing(false) when it's finished.
-                            //Toast.makeText(getContext(), "refreshing...", 1).show();
                         }
                     }
                 }
@@ -123,53 +141,92 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 		return parentView;
 	}
     
+    private void applicationFound(int x) {
+        mListView.smoothScrollToPositionFromTop(scrollPosition, (mListView.getHeight() / 2) - (appsAdapter.getItemHeight() / 2));
+        //mListView.smoothScrollToPosition(scrollPosition);
+        hideInputMethod(getActivity().getWindow().getCurrentFocus());
+
+        if (x >= firstVisibleItem && x < lastVisibleItem) {
+            //Toast.makeText(getContext(), "It's a visible item!", 1).show();
+            appsAdapter.animateSearchedItem(x);
+        } else {
+            appsAdapter.setSearchedItem(x);
+        }
+    }
+
     @Override
     public boolean onQueryTextSubmit(String input) {
-        
-        if (appsAdapter == null || input.equals("")) {
-            return false;
-        }
-        
-        AppModel model = null;
-        ArrayList<AppModel> models = appsAdapter.models;
 
-        for (int x = 0; x < models.size(); x++) {
-            model = models.get(x);
-
-            if (model.appname.toLowerCase().contains(input.toLowerCase())) {
-                JDebug.toast("match + " + models.get(x).appname);
-                mListView.smoothScrollToPosition(x);
-                return true;
-            }
-       }
-        Toast.makeText(getContext(), "No match found", Toast.LENGTH_LONG).show();
-        hideInputMethod(searchView);
-        return false;
-    }
-    
-    Handler scrollHandler = new Handler () {
-        
-    };
-    
-    @Override
-    public boolean onQueryTextChange(String input) {
         if (appsAdapter == null || input.isEmpty()) {
             return false;
         }
+
         AppModel model = null;
         ArrayList<AppModel> models = appsAdapter.models;
+        int firstContains = -1;
 
         for (int x = 0; x < models.size(); x++) {
             model = models.get(x);
+            String lowerName = model.appname.toLowerCase();
+            String lowerInput = input.toLowerCase();
 
-            if (model.appname.toLowerCase().contains(input.toLowerCase())) {
-                JDebug.toast("match + " + models.get(x).appname);
-                // mListView.smoothScrollToPosition(x);
-                mListView.setSelection(x);
+            if (lowerName.startsWith(lowerInput)) {
+                //JDebug.toast("match + " + models.get(x).appname);
+                scrollPosition = x;
+                applicationFound(x);
                 return true;
+            } else if (firstContains == -1) {
+                if (lowerName.contains(lowerInput)) {
+                    firstContains = x;
+                }
             }
         }
 
+        if (firstContains != -1) {
+            applicationFound(firstContains);
+            return true;
+        }
+
+        Toast.makeText(getContext(), "No match found!", 1).show();
+        return false;
+    }
+
+    private int scrollPosition = 0;
+//    private Handler scrollHandler = new Handler();
+//    private Runnable scrollRunnbale = new Runnable() {
+//
+//        @Override
+//        public void run() {
+//
+//            if (totalItemCount - scrollPosition < visibleCount) {
+//            }
+//            //JDebug.toast("scroll ps " + scrollPosition + " total " + totalItemCount + " totalVisible " + visibleCount);
+//            //mListView.smoothScrollToPosition(scrollPosition);
+//        }
+//    };
+
+    @Override
+    public boolean onQueryTextChange(String input) {
+
+//        if (appsAdapter == null || input.isEmpty()) {
+//            return false;
+//        }
+//
+//        AppModel model = null;
+//        ArrayList<AppModel> models = appsAdapter.models;
+//        scrollHandler.removeCallbacks(scrollRunnbale);
+//
+//        for (int x = 0; x < models.size(); x++) {
+//            model = models.get(x);
+//
+//            if (model.appname.toLowerCase().startsWith(input.toLowerCase())) {
+//                //JDebug.toast("match + " + models.get(x).appname);
+//                scrollPosition = x;
+//                scrollHandler.postDelayed(scrollRunnbale, 1000);
+//                return true;
+//            }
+//        }
+//
         return false;
     }
 
@@ -193,8 +250,9 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             startActivityForResult(intent, REQUEST_OVERLAY_CODE); //It will call onActivityResult Function After you press Yes/No and go Back after giving permission 
         } else {
             noNeedOverlayPermission = true;
-            Log.v("App", "We already have permission for it."); // disablePullNotificationTouch(); 
-                                                                // Do your stuff, we got permission captain 
+            Log.v("App", "We already have permission for it.");
+            // disablePullNotificationTouch(); 
+            // Do your stuff, we got permission captain 
         }
 
         if (!needPermissionForBlocking(getContext())) {
@@ -324,25 +382,26 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 
     private void showInputMethod(View view) {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+
         if (imm != null) {
             imm.showSoftInput(view, 0);
         } 
     }
-    
-    private void hideInputMethod(View view) {
+
+    private void hideInputMethod(@NonNull View view) {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         /*if (item.getItemId() == R.id.item_message_history) {
          Toast.makeText(getContext(), "Not implemented!", Toast.LENGTH_LONG).show();
-         }*/
-
+         }
+         */
         return false;
     }
 
@@ -372,9 +431,9 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                 }
                 ResolveInfo p = apps.get(i);
 
-                if (p.activityInfo.packageName.equals(context.getPackageName()))
+                if (p.activityInfo.packageName.equals(context.getPackageName())) {
                     continue;
-
+                }
                 AppModel newInfo = new AppModel();
                 newInfo.appname = p.loadLabel(pm).toString();
                 newInfo.pname = p.activityInfo.packageName;

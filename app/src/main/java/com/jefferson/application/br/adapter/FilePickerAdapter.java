@@ -1,10 +1,14 @@
 package com.jefferson.application.br.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.support.annotation.ColorInt;
 import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
@@ -13,7 +17,6 @@ import com.bumptech.glide.Glide;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.model.PickerModel;
 import java.util.List;
-import android.view.animation.Animation;
 
 public class FilePickerAdapter extends BaseAdapter {
 
@@ -70,7 +73,17 @@ public class FilePickerAdapter extends BaseAdapter {
         View overlay = view.findViewById(R.id.layoutOverlay);
         PickerModel pickerModel = models.get(position);
         boolean selected = position == getSelectedItem();
-        int color = selected ? R.color.colorAccent : R.color.item_normal;
+        
+        int color = 0;
+        
+        if(selected) {
+           color = ContextCompat.getColor(context, R.color.colorAccent);
+        } else {
+            TypedValue typedValue = new TypedValue(); 
+            Resources.Theme theme = context.getTheme();
+            theme.resolveAttribute(R.attr.commonColor, typedValue, true);
+            color = typedValue.data; 
+        }
         overlay.setVisibility(selected ? View.VISIBLE : View.GONE);
         
         if (selected) {
@@ -79,7 +92,7 @@ public class FilePickerAdapter extends BaseAdapter {
             overlay.startAnimation(anim);
         }
         
-        textView.setTextColor(ContextCompat.getColor(context, color));
+        textView.setTextColor(color);
         textView.setText(pickerModel.getName());
         textView2.setText(String.valueOf(pickerModel.getSize()));
         Glide.with(context).load("file://" + pickerModel.getTumbPath()).centerCrop().into(imageView);

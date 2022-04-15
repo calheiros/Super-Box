@@ -28,12 +28,12 @@
 	<LinearLayout
 		android:layout_height="45dp"
 		android:layout_width="match_parent"
-		android:background="@color/colorBackgroundDark"
+		android:background="?colorBackgroundSecondary"
 		android:gravity="center_vertical">
 
 			<ImageView
                 android:background="?attr/selectableItemBackground"
-                android:tint="@color/item_normal"
+                android:tint="?commonColor"
 				android:layout_height="wrap_content"
                 android:gravity="center"
                 android:padding="6dp"
@@ -44,7 +44,7 @@
 
 			<ImageView
                 android:background="?attr/selectableItemBackground"
-                android:tint="@color/item_normal"
+                android:tint="?commonColor"
 				android:layout_height="wrap_content"
 				android:layout_width="wrap_content"
                 android:layout_weight="1.0"

@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="pasta_nome_muito_grande">Maximum number of characters exceeded!</string>
+    <string name="pasta_nome_vazio">The folder name can\'t be empty!</string>
     <string name="padrao_do_sistema">System default</string>
     <string name="nao_vejo_nada">I can\'t see a thing!</string>
     <string name="poucas_fotos">Looks like you don\'t have a lot of pictures...</string>

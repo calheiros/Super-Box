@@ -37,7 +37,7 @@
         <TextView
             android:text="@string/unicode_look_of_disapproval"
             android:textSize="40dp"
-            android:textColor="@color/item_normalDark"
+            android:textColor="?commonColorDark"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
@@ -47,7 +47,7 @@
             android:textAllCaps="true"
             android:layout_width="wrap_content"
             android:text="@string/galeria_vazia"
-            android:textColor="@color/item_normalDark"
+            android:textColor="?commonColorDark"
             android:id="@+id/emptyTextView"
             android:layout_marginTop="14dp"/>
 
@@ -60,7 +60,7 @@
 		android:gravity="center"
 		android:visibility="gone"
 		android:id="@+id/vazio"
-        android:textColor="@color/item_normal"
+        android:textColor="?commonColor"
 		android:layout_centerInParent="true"
 		android:padding="10dp"
 		android:textAppearance="?android:attr/textAppearanceMedium"/>

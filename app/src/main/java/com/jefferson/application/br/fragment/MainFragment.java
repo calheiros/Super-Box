@@ -80,7 +80,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		}
         
 		main.setupToolbar(toolbar, getToolbarName(viewPager.getCurrentItem()));
-        setHasOptionsMenu(true);
+        //setHasOptionsMenu(true);
 		return view;
 	}
 
@@ -107,7 +107,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main_album, menu);
+        //inflater.inflate(R.menu.menu_main_album, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
    

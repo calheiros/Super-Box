@@ -28,10 +28,10 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     public static final String ACTION_REPORT_CRASH = "com.jefferson.application.action.REPORT_CRASH";
     public static String PERMISSION_RECEIVE_BUS_DATA = "com.jefferson.application.RECEIVE_UPDATED_DATA";
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
-    private Handler mHandler = new Handler();;
+    private Handler mHandler = new Handler();
     public static boolean localeConfigured = false;
     private ArrayList<MyCompatActivity> activities = new ArrayList<>();
-	private boolean timing = false;
+	private boolean counting = false;
     public AppLockService appLockService;
 	private Runnable mRunnable = new Runnable() {
 
@@ -40,7 +40,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
 			if (isAnyNotRunning()) {
 				destroyActivities();
 			}
-			App.this.timing = false;
+			App.this.counting = false;
         }
     };
 
@@ -59,8 +59,8 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         activities.remove(activity);
     }
 
-    public boolean isTiming() {
-        return timing;
+    public boolean isCounting() {
+        return counting;
     }
 
     @Override
@@ -117,6 +117,11 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         }
     }
 
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(LocaleManager.updateResources(base, LocaleManager.getLanguage(base)));
+    }
+    
     public static Context getAppContext() {
         return application;
     }
@@ -145,10 +150,11 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     public void startCount(int millis) {
         long upTime = SystemClock.uptimeMillis();
         mHandler.postAtTime(mRunnable, upTime + millis);
-        timing = true;
+        counting = true;
     }
+    
     public void startCount() {
         startCount(60000);
-        timing = true;
+        counting = true;
     }
 }

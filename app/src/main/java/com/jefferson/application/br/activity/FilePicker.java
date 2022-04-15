@@ -7,16 +7,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.adapter.FilePickerAdapter;
+import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsData;
 import com.jefferson.application.br.model.PickerModel;
 import com.jefferson.application.br.task.JTask;
@@ -45,7 +43,7 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
 
         ArrayList<String> mMovedArray;
         String folder;
-        ProgressDialog progress;
+        SimpleDialog progress;
 
         public MoveFilesTask(FilePicker filePicker, String str) {
             this.mMovedArray = new ArrayList<>();
@@ -54,8 +52,7 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
 
         @Override
         public void onBeingStarted() {
-            this.progress = new ProgressDialog(FilePicker.this);
-			this.progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            this.progress = new SimpleDialog(FilePicker.this);
             this.progress.setMax(paths.size());
             this.progress.setTitle("Movendo...");
 			this.progress.setProgress(0);

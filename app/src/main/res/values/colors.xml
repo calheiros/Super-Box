@@ -39,9 +39,9 @@
     <color name="colorPrimaryDark">#640BCB</color>
     <color name="fab_pressed">#00b899</color>
     <color name="highLightColor">#11FFFFFF</color>
-    <color name="item_normalDark">#FF757B85</color>
-    <color name="item_normal">#FFA0A8B5</color>
-    <color name="item_normalLight">#FFD4DCE5</color>
+    <color name="colorCommonDark">#FF757B85</color>
+    <color name="colorCommonNormal">#FFA0A8B5</color>
+    <color name="colorCommonLight">#FFD4DCE5</color>
     <color name="blue_bt">#4dc9f7</color>
     <color name="blue_bt_pressed">#88dcff</color>
     <color name="red_bt">#f8584d</color>

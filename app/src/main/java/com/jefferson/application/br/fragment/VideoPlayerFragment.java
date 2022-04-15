@@ -84,9 +84,6 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
             jController.setAnchor((ViewGroup)parentView);
             jController.setOnButtonPressedListener(this);
 
-            //mediaController = new MediaController(getActivity());
-            //mediaController.setAnchorView(parentView);
-            //mVideoView.setMediaController(mediaController);
             jController.prepare();
             mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
 
@@ -111,25 +108,18 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
         Glide.with(this).load("file://" + videoPath).into(mThumbView);
         return parentView;
     }
-   
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //JDebug.toast("Destroyed");
+
         try {
             stop();
-            if (jController != null) {
-               if (jController.alive()) {
-                   jController.pause();
-                   // JDebug.toast("Controller still alive");
-               } //else {
-                   //JDebug.toast("Controller is NOT alive!");
-              // }
-            //} else {
-                //JDebug.toast("Controller is NULL!");
+            if (jController != null && jController.alive()) {
+                jController.pause();
             }
         } finally {
-
+            
         }
     }
 
@@ -140,7 +130,6 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
     @Override
     public void onResume() {
         super.onResume();
-        //JDebug.toast("Resumed " + selected);
     }
 
     @Override
@@ -177,7 +166,7 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
         if (mVideoView != null) {
             stop();
         }
-        
+
         super.onPause();
     }
 
@@ -188,8 +177,8 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
             mVideoView.stopPlayback();
             videoNotPrepared = true;
         } 
-        
-        if (jController != null && jController.alive()){
+
+        if (jController != null && jController.alive()) {
             jController.pause();
         }
     }

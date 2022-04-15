@@ -13,6 +13,7 @@ import android.view.WindowManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.fragment.VideoPlayerFragment;
 import java.util.ArrayList;
+import android.view.View.OnSystemUiVisibilityChangeListener;
 
 public class VideoPlayerActivity extends MyCompatActivity {
 
@@ -61,7 +62,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
         Intent intent = getIntent();
         choice = intent.getExtras().getInt("position");
         ArrayList<String> filesPath = intent.getStringArrayListExtra("filepath");
-
+        fullscreen();
         pagerAdapter = new VideoPagerAdapter(getSupportFragmentManager(), filesPath);
         viewPager = (ViewPager) findViewById(R.id.video_view_pager);
         viewPager.setAdapter(pagerAdapter);
@@ -70,7 +71,8 @@ public class VideoPlayerActivity extends MyCompatActivity {
         viewPager.setOffscreenPageLimit(3);
         viewPager.setPageMargin(dpToPx(5));
         pagerAdapter.getItem(choice).setPlayOnCreate(true);
-        hideNavigationBar();
+        //hideNavigationBar();
+        viewPager.requestFocus();
     }
     
     public int dpToPx(int dp) { 
@@ -94,7 +96,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
          decorView.setSystemUiVisibility(uiOptions);
     }
     
-    public void window() {
+    public void fullscreen() {
         Window win = getWindow();
         WindowManager.LayoutParams winParams = win.getAttributes();
         int bits = WindowManager.LayoutParams.FLAG_FULLSCREEN;
@@ -111,9 +113,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
 
         private ArrayList<String> filesPath;
         private VideoPlayerFragment[] fragments;
-        private VideoPlayerFragment cachedFragment;
-        private VideoPlayerFragment currentFragment;
-
+        
         public VideoPagerAdapter(FragmentManager fm, ArrayList<String> paths) {
             super(fm);
             this.filesPath = paths;

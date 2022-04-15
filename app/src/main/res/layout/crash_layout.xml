@@ -14,7 +14,7 @@
 		android:textSize="40dp"
 		android:layout_marginBottom="40dp"
 		android:layout_marginTop="40dp"
-		android:textColor="@color/item_normalDark"/>
+		android:textColor="?commonColorDark"/>
     
     <ScrollView
         android:layout_width="wrap_content"
@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/crashlayoutTextView"
-            android:textColor="@color/item_normal"
+            android:textColor="?commonColor"
             android:textSize="13sp"/>
     </ScrollView>
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.jefferson.application.br.activity;
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,11 +8,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.design.widget.NavigationView;
@@ -24,6 +27,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Toast;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -45,7 +50,7 @@ import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.widget.MyAlertDialog;
 import java.io.File;
 import java.util.ArrayList;
-import android.os.Message;
+import com.jefferson.application.br.util.DialogUtils;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener {
 
@@ -120,9 +125,13 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        setTheme(R.style.DefaultTheme);
         this.instance = this;
 		super.onCreate(savedInstanceState);
+
+        if (Build.VERSION.SDK_INT >= 21) { 
+            setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
 		setContentView(R.layout.main_activity);
 		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -138,7 +147,18 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		createInterstitial();
         createReceiver();
 	}
-
+    
+    public static void setWindowFlag(Activity activity, final int bits, boolean on) { 
+        Window win = activity.getWindow(); 
+        WindowManager.LayoutParams winParams = win.getAttributes();
+        if (on) {
+            winParams.flags |= bits; 
+        } else { 
+            winParams.flags &= ~bits; 
+        } 
+        win.setAttributes(winParams); 
+    }
+    
     private void createReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_UPDATE);
@@ -357,7 +377,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 				ArrayList<String> paths = data.getStringArrayListExtra("selection");
                 preparationTask = new MonoTypePrepareTask(MainActivity.this, paths, type, null, this);
                 preparationTask.setDestination(Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
-                
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty()))
                     preparationTask.setOnLoopListener(new MonoTypePrepareTask.onLoopListener(){
 
@@ -371,17 +391,17 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                                 }
                             }
                         }
-                  );
-                 preparationTask.start();
+                    );
+                preparationTask.start();
 			}
-            
+
             if (requestCode == GET_URI_CODE_TASK) {
                 preparationTask.proceed();
             }
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
-    
+
     private Handler getSdCardUriHandler = new Handler() {
 
         @Override
@@ -390,14 +410,14 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), 1).show();
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             startActivityForResult(intent, msg.what);
-            
+
         }
-   
+
     };
-    
+
 	private void getSdCardUri(int code) {
         getSdCardUriHandler.sendEmptyMessage(code);
-		
+
 	}
 
     @Override
@@ -411,7 +431,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 
 	private void showExitDialog() {
-	    MyAlertDialog.Builder builder = new MyAlertDialog.Builder(this, R.style.CustomAlertDialog);
+	    MyAlertDialog.Builder builder = new MyAlertDialog.Builder(this, DialogUtils.getTheme());
         builder.setTitle(getString(R.string.confirmacao));
         builder.setMessage(getString(R.string.quer_realmente_sair));
         builder.setPositiveButton(getString(R.string.sim), new DialogInterface.OnClickListener(){

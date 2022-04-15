@@ -20,14 +20,13 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 	private boolean running;
 
 	public boolean isAlive() {
-		// TODO: Implement this method
 		return running;
 	}
     @Override
     protected void onResume() {
         super.onResume();
         
-        if (this.app.isTiming()) {
+        if (this.app.isCounting()) {
             app.stopCount();
         }
 		
@@ -48,6 +47,11 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
     }
 
     @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleManager.updateResources(newBase, LocaleManager.getLanguage(newBase)));
+    }
+    
+    @Override
     public void startActivityForResult(Intent intent, int i) {
         this.allowQuit = true;
         super.startActivityForResult(intent, i);
@@ -61,7 +65,8 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        LocaleManager.configureLocale(this);
+        
+        setTheme(MyPreferences.getAppTheme());
 		super.onCreate(savedInstanceState);
 
         pm = (PowerManager) getSystemService("power");

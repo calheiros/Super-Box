@@ -319,9 +319,9 @@ public class AlbumFragment extends Fragment {
         String nospace = name.replace(" ", "");
 
         if (nospace.isEmpty()) {
-            return  "Name is empty!";
+            return  getString(R.string.pasta_nome_vazio);
         } else if (name.length() > 50) {
-            return "Many characters!";
+            return getString(R.string.pasta_nome_muito_grande);
         } else {
             return "ok";
         }

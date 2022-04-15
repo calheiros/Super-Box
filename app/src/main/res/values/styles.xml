@@ -16,28 +16,26 @@
 
     </style>
 
-	<!--
-	<style name="AppTheme.NoActionBar">
-	<item name="windowActionBar">false</item>
-	<item name="windowNoTitle">true</item>
-	<item name="android:windowDrawsSystemBarBackgrounds">true</item>
-	<item name="android:statusBarColor">@android:color/transparent</item>
-    </style>-->
-    
     <style name="LauncherTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    
+
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    
+    <style name="CustomAlertDialogLight" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <!--<item name="android:background">@drawable/alert_background</item>
+
+        <item name="colorControlHighlight">@android:color/transparent</item>
+        -->
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
         <!--<item name="android:background">@drawable/alert_background</item>
 
@@ -52,13 +50,31 @@
 		<item name="colorAccent">#10D863</item>
 	</style>
 
+    <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorBackground">#f0f0f0</item>
+        <item name="colorBackgroundSecondary">#FFDADCDD</item>
+        <item name="commonColorDark">#FFA6AAB1</item>
+        <item name="commonColor">#FF141414</item>
+        <item name="commonColorLight">#FF0D0D0D</item>
+        <item name="android:windowBackground">#f0f0f0</item>
+        <item name="colorControlHighlight">#1C050505</item>
+    </style>
+
 	<style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
 		<item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:windowBackground">@color/colorBackground</item> 
+        <item name="colorBackgroundSecondary">@color/colorBackgroundDark</item>
+        <item name="colorBackground">@color/colorBackground</item>
+        <item name="commonColorDark">@color/colorCommonDark</item>
+        <item name="commonColor">@color/colorCommonLight</item>
+        <item name="commonColorLight">@color/colorCommonLight</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
         <item name="colorControlHighlight">@color/highLightColor</item>
-        
+
 		<!-- specify shared element transitions -->
 		<!--<item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
 		<item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>

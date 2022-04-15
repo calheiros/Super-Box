@@ -17,6 +17,10 @@ import com.jefferson.application.br.model.AppModel;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.widget.LockCheck;
 import java.util.ArrayList;
+import android.support.v4.content.ContextCompat;
+import java.util.HashMap;
+import java.util.HashSet;
+import com.jefferson.application.br.util.JDebug;
 
 public class AppLockAdapter extends BaseAdapter {
 
@@ -27,20 +31,43 @@ public class AppLockAdapter extends BaseAdapter {
     public AppsDatabase database;
     public static AppLockService service;
     private boolean mutable;
-    private boolean clicked = false;
+    private HashMap<Integer, View> cachedViews;
+    private int searchedItemPosition = -1;
+    private volatile View view;
 
 	public AppLockAdapter(Activity mActivity, ArrayList<AppModel> models) {
         this.activity = mActivity;
 		this.models = models; 
+        this.cachedViews = new HashMap<>();
 		this.database = new AppsDatabase(mActivity);
         syncSelection();
+
 		inflater = (LayoutInflater) mActivity
 			.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
+    public void animateSearchedItem(int x) {
+        View view = cachedViews.get(x);
+
+        if (view != null) {
+            view.startAnimation(getBlinkAnimation());
+        } else {
+            JDebug.toast("View is NULL");
+        }
+    }
+
+    private Animation getBlinkAnimation() {
+        return AnimationUtils.loadAnimation(activity, R.anim.blink);         
+    }
+
+    public void setSearchedItem(int x) {
+        this.searchedItemPosition = x;
+    }
+
     public void clear() {
         this.models.clear();
         this.selectionArray.clear();
+        this.cachedViews.clear();
         notifyDataSetInvalidated();
     }
 
@@ -57,9 +84,16 @@ public class AppLockAdapter extends BaseAdapter {
     public boolean isMutable() {
         return mutable;
     }
-
-	public View getView(int position, View convertView, ViewGroup parent) {
-        View view = convertView;
+    
+    public int getItemHeight() {
+        int height = 1;
+        if (view != null) {
+            height = view.getHeight();
+        }
+        return height;
+    }
+	public View getView(final int position, View convertView, ViewGroup parent) {
+        view = convertView;
 
         if (convertView == null) {
 			view = inflater.inflate(R.layout.list_item, null);
@@ -73,13 +107,51 @@ public class AppLockAdapter extends BaseAdapter {
 		imageView.setImageDrawable(info.icon);
 		textView.setText(info.appname);
 		checkView.setChecked(selectionArray.get(position, false));
-
-
         Animation animation = AnimationUtils.loadAnimation(activity, R.anim.zoom_in);
-        //animation.setDuration(250);
+        animation.setAnimationListener(new Animation.AnimationListener() {
+
+                @Override
+                public void onAnimationStart(Animation p1) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation anim) {
+                    animateIfSearchedItem(position);
+                }
+
+
+                @Override
+                public void onAnimationRepeat(Animation p1) {
+
+                }
+            }
+        );
         view.startAnimation(animation);
-        
-		return view;
+        cachedViews.put(position, view);
+
+        return view;
+    }
+    private void animateIfSearchedItem(int position) {
+        final View view = cachedViews.get(position);
+
+        if (view == null) {
+            JDebug.toast("animateIfSearched: View is NULL");
+        }
+
+        if (searchedItemPosition == position) {
+            view.post(new Runnable(){
+                    @Override 
+                    public void run() {
+                        Animation blinkAnim = getBlinkAnimation();
+                        //anim.setDuration(1000);
+                        blinkAnim.setStartTime(1000);
+                        view.startAnimation(blinkAnim);
+                        searchedItemPosition = -1;
+                    }
+                }
+            );
+        }
     }
 
     private void syncSelection() {
@@ -92,16 +164,11 @@ public class AppLockAdapter extends BaseAdapter {
         }
     }
 
-    /* public void toogleSelection(int index) {
-     boolean selected = selectionArray.get(index, false);
-     selectionArray.put(index, !selected);
-     }
-     */
 	public void toogleSelection(int position, View view) {
         setMutable(true);
 		String pname = models.get(position).pname;
         boolean hasSelected = selectionArray.get(position, false);
-        
+
         if (hasSelected) {
 			selectionArray.delete(position);
 			database.removeLockedApp(pname);
@@ -109,11 +176,9 @@ public class AppLockAdapter extends BaseAdapter {
 			selectionArray.put(position, true);
 			database.addLockedApp(pname);
 		}
-        
+
         LockCheck lockView = view.findViewById(R.id.check1);
         lockView.setChecked(!hasSelected);
-        
-		//notifyDataSetChanged();
 	}
 
 	public final int getCount() {

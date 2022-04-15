@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:id="@+id/title_text_view"
         android:singleLine="true"
-        android:textColor="@color/item_normalLight"
+        android:textColor="?commonColorLight"
         android:layout_marginBottom="8dp"/>
 
     <com.jefferson.application.br.library.NumberProgressBar
@@ -43,7 +43,7 @@
             android:textSize="16sp"
             android:breakStrategy="simple"
             android:hyphenationFrequency="full"
-            android:textColor="@color/item_normalLight"/>
+            android:textColor="?commonColorLight"/>
     </ScrollView>
     
     <include

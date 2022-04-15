@@ -85,7 +85,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     public ArrayList<PreferenceItem> createItemsList() {
         ArrayList<PreferenceItem> items = new ArrayList<>();
 
-        for (int i = 0; i <= 8; i++) {
+        for (int i = 0; i <= 9; i++) {
             PreferenceItem item = new PreferenceItem();
             switch (i) {
                 case 0:
@@ -104,32 +104,37 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.description = getLanguage();
                     break;
                 case 3:
+                    item.type = PreferenceItem.ITEM_TYPE;
+                    item.icon_id = R.drawable.ic_palette;
+                    item.item_name = "App theme";
+                    break;
+                case 4:
                     item.type = item.SECTION_TYPE;
                     item.item_name = getString(R.string.preferecias_avancadas);
                     break;
-                case 4:
+                case 5:
                     item.type = item.ITEM_TYPE;
                     item.icon_id = R.drawable.ic_storage;
                     item.item_name = getString(R.string.local_armazenamento);
                     item.description = getStorageName();
                     break;
-                case 5:
+                case 6:
                     item.item_name = getString(R.string.modo_secreto);
                     item.icon_id = R.drawable.ic_drama_masks;
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE;
                     item.description = getString(R.string.ocultar_descricao);
                     break;
-                case 6:
+                case 7:
                     item.item_name = getString(R.string.codigo_discador);
                     item.type = item.ITEM_TYPE;
                     item.icon_id = R.drawable.ic_dialpad;
                     item.description = getDialerCode();
                     break;
-                case 7:
+                case 8:
                     item.item_name = getString(R.string.preferecias_sobre);
                     item.type = item.SECTION_TYPE;
                     break;
-                case 8:
+                case 9:
                     item.icon_id = R.drawable.ic_about;
                     item.item_name = getString(R.string.app_name);
                     item.type = item.ITEM_TYPE;
@@ -176,23 +181,55 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 			case 2:
 				showLanguageDialog();
 				break;
-			case 5:
+            case 3:
+                showThemeDialog();
+                break;
+            case 5:
+                showDialogChooseStorage();
+				break;
+			case 6:
 				Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
 				boolean checked = !mySwitch.isChecked();
                 changeIconVisibility(checked);
 				mySwitch.setChecked(checked);
 				break;
-			case 4:
-				showDialogChoose();
-				break;
-			case 6:
+			case 7:
 				changeCodeDialog();
 				break;
-			case 8:
+			case 9:
 				showAbout();
 				break;
 		}
 	}
+
+    private void showThemeDialog() {
+        final CharSequence[] itens = {"Default", "Light"};
+
+        AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
+            .setTitle("Choose your theme")
+            .setItems(itens, new DialogInterface.OnClickListener(){
+                int themeId;
+                @Override
+                public void onClick(DialogInterface p1, int position) {
+
+                    switch (position) {
+                        case 0:
+                            themeId = R.style.MainTheme;
+                            break;
+                        case 1:
+                            themeId = R.style.LightTheme;
+                            break;
+                    }
+                    int set = MyPreferences.getAppTheme();
+                    if (set != themeId) {
+                        MyPreferences.setAppTheme(themeId);
+                        refreshActivity();
+                    }
+                }
+            }
+        );
+       configureRoundedDialog(b.show());
+    }
 
     @Override
     public void onClick(View view) {
@@ -204,7 +241,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         super.onPause();
         egg = 0;
     }
-    
+
     public void configureRoundedDialog(AlertDialog dialog) {
         DialogUtils.configureRoudedDialog(dialog);
     }
@@ -219,7 +256,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         }
     }
 
-    public void showDialogChoose() {
+    public void showDialogChooseStorage() {
         final int storagePosition = Storage.getStoragePosition();
         storageChoicePosition = storagePosition;
 
@@ -227,7 +264,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         if (Storage.getExternalStorage() == null)
             options = new String[]{getString(R.string.armaz_interno)};
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.CustomAlertDialog);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), DialogUtils.getTheme());
         builder.setTitle(getString(R.string.armazenamento));
         builder.setSingleChoiceItems(options, storagePosition, new DialogInterface.OnClickListener() {
 
@@ -256,8 +293,15 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         );
         builder.setNegativeButton(getString(R.string.cancelar), null);
         configureRoundedDialog(builder.show());
-
 	}
+
+    private void refreshActivity() {
+        Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        intent.setAction(MainActivity.ACTION_START_IN_PREFERENCES);
+        startActivity(intent);
+        getActivity().overridePendingTransition(0, 0);
+    }
 
 	private void changeIconVisibility(boolean isChecked) {
 		getActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), "com.jefferson.application.br.LuancherAlias"), 
@@ -269,8 +313,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 		final EditText editText = (EditText) view.findViewById(R.id.editTextDialogUserInput);
 		editText.append(getDialerCode());
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), R.style.CustomAlertDialog);
-		builder.setTitle("Novo código");
+		AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), DialogUtils.getTheme());
+		builder.setTitle("New code");
 		builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener(){
 
 				@Override
@@ -281,7 +325,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     if (code.length() < 3) {
 						Toast.makeText(getContext(), "O Código não pode ser menor que 3 caractéres.", 1).show();
 					} else if (code.length() > 15) {
-						Toast.makeText(getContext(), "O código não pode ter maior que 15 caractéres.", 1).show();
+						Toast.makeText(getContext(), "O código não pode ter mais que 15 caractéres.", 1).show();
 					} else {
 						mEdit.putString("secret_code", code).commit();
 						mAdapter.getItem(6).description = code;
@@ -327,7 +371,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
 	private void showAbout() {
-        AlertDialog.Builder build = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog);
+        AlertDialog.Builder build = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme());
 		View view = LayoutInflater.from(getContext()).inflate(R.layout.credits_layout, null, false);
         TextView asciiTextView = view.findViewById(R.id.ascii_text_view);
         Typeface font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Raleway-Regular.ttf");
@@ -336,7 +380,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         asciiTextView.setLetterSpacing(0);
         asciiTextView.setText(ASCIIArt.CHIKA_ART);
         view.findViewById(R.id.githubTextView).setOnClickListener(this);
-        
+
 		build.setView(view);
         build.setPositiveButton("fechar", new DialogInterface.OnClickListener() {
 
@@ -402,7 +446,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
         final CharSequence[] itens = {"Português(Brasil)","English","Español"};
 
-        AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), R.style.CustomAlertDialog)
+        AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
 			.setTitle(R.string.escolha_idioma)
 			.setItems(itens, new DialogInterface.OnClickListener(){
 
@@ -420,14 +464,11 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 							locale = "es";
 							break;
 					}
-
-					LocaleManager.setNewLocale(getContext(), locale);
-					Intent intent = new Intent(getContext(), MainActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-					intent.setAction(MainActivity.ACTION_START_IN_PREFERENCES);
-					startActivity(intent);
-                    getActivity().overridePendingTransition(0, 0);
-				}
+                    if (!locale.equals(LocaleManager.getLanguage(getContext()))){
+					    LocaleManager.setNewLocale(getContext(), locale);
+                        refreshActivity();
+                    }
+                }
             }
         );
 		configureRoundedDialog(b.show());
