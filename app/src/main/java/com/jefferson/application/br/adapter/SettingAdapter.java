@@ -23,6 +23,10 @@ public class SettingAdapter extends BaseAdapter {
         this.inflater = (LayoutInflater) fragment.getActivity().getSystemService("layout_inflater");
     }
 
+    public ArrayList<PreferenceItem> getPreferenceItems() {
+        return items;
+    }
+
     @Override
     public int getCount() {
 
@@ -60,14 +64,14 @@ public class SettingAdapter extends BaseAdapter {
             } else {
                 descriptionText.setText(preferenceItem.description);
             }
-            titleView.setText(preferenceItem.item_name);
+            titleView.setText(preferenceItem.title);
             return view; 
         } 
         
         if (preferenceItem.type == PreferenceItem.SECTION_TYPE) {
             
             view = inflater.inflate(R.layout.preference_section_item, (ViewGroup) null);
-            ((TextView) view.findViewById(R.id.title_view)).setText(preferenceItem.item_name);
+            ((TextView) view.findViewById(R.id.title_view)).setText(preferenceItem.title);
             return view;
         } 
         
@@ -76,7 +80,7 @@ public class SettingAdapter extends BaseAdapter {
             view = inflater.inflate(R.layout.preference_common_item, (ViewGroup) null);
             TextView descriptionText = (TextView) view.findViewById(R.id.description_text_view);
             ImageView iconView = (ImageView) view.findViewById(R.id.ic_view);
-            ((TextView) view.findViewById(R.id.item_title)).setText(preferenceItem.item_name);
+            ((TextView) view.findViewById(R.id.item_title)).setText(preferenceItem.title);
             iconView.setImageResource(preferenceItem.icon_id);
             if (preferenceItem.description != null) {
                 descriptionText.setVisibility(View.VISIBLE);

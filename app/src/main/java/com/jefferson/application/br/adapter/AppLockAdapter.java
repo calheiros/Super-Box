@@ -2,6 +2,10 @@ package com.jefferson.application.br.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +19,11 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.database.AppsDatabase;
 import com.jefferson.application.br.model.AppModel;
 import com.jefferson.application.br.service.AppLockService;
+import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.widget.LockCheck;
 import java.util.ArrayList;
-import android.support.v4.content.ContextCompat;
 import java.util.HashMap;
-import java.util.HashSet;
-import com.jefferson.application.br.util.JDebug;
+import android.support.annotation.NonNull;
 
 public class AppLockAdapter extends BaseAdapter {
 
@@ -84,7 +87,7 @@ public class AppLockAdapter extends BaseAdapter {
     public boolean isMutable() {
         return mutable;
     }
-    
+
     public int getItemHeight() {
         int height = 1;
         if (view != null) {
@@ -103,8 +106,9 @@ public class AppLockAdapter extends BaseAdapter {
 		ImageView imageView = (ImageView) view.findViewById(R.id.iconeApps);
 		TextView textView = (TextView) view.findViewById(R.id.app_name);
 		LockCheck checkView = (LockCheck) view.findViewById(R.id.check1);
-        //Glide.with(activity).load(info.icon).skipMemoryCache(true).into(imageView);
-		imageView.setImageDrawable(info.icon);
+
+        @NonNull Drawable icon = info.icon;
+		imageView.setImageDrawable(icon);
 		textView.setText(info.appname);
 		checkView.setChecked(selectionArray.get(position, false));
         Animation animation = AnimationUtils.loadAnimation(activity, R.anim.zoom_in);
@@ -132,6 +136,46 @@ public class AppLockAdapter extends BaseAdapter {
 
         return view;
     }
+
+//    private Drawable getResizedDrawable(int position, View view) {
+//
+//        Drawable drawable = models.get(position).icon;
+//        int previewWidth = 0;
+//        int previewHeight = 0;
+//        int mViewWidth = view.getWidth();
+//        int mViewHeight = view.getHeight();
+//        int newWidth = 0;
+//        int newHeight = 0;
+//
+//        if (drawable != null && drawable.getIntrinsicWidth() > 0 && drawable.getIntrinsicHeight() > 0) { 
+//            // the intrinsic dimensions can be -1 in some cases such as ColorDrawables which aim to fill 
+//            // the whole View 
+//            previewWidth = drawable.getIntrinsicWidth(); 
+//            previewHeight = drawable.getIntrinsicHeight(); 
+//        } 
+//
+//        final float widthScale = mViewWidth / (float) (previewWidth);
+//        
+//        if (widthScale != 1f) 
+//            newWidth = Math.max((int)(widthScale * previewWidth), 1);
+//        
+//        final float heightScale = mViewHeight / (float) (previewHeight); 
+//        
+//        if (heightScale != 1f)
+//            newHeight = Math.max((int)(heightScale * previewHeight), 1); 
+//
+//        // Define the Canvas and Bitmap the drawable will be drawn against 
+//        final Canvas c = new Canvas(); 
+//        Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap(); 
+//        c.setBitmap(bitmap); // Draw the scaled drawable into the final bitmap 
+//        
+//        if (drawable != null) {
+//            drawable.setBounds(0, 0, newWidth, newHeight);
+//            drawable.draw(c); 
+//        }
+//        return drawable;
+//    }
+//    
     private void animateIfSearchedItem(int position) {
         final View view = cachedViews.get(position);
 

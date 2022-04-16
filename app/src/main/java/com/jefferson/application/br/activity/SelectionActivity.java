@@ -135,7 +135,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 	}
 
 	private void toogleSelectViewIcon() {
-		int resId = (mAdapter.getSelectedItemCount() == data.size()) ? R.drawable.ic_unselect_all : R.drawable.ic_select_all;
+		int resId = (mAdapter.getSelectedItemCount() == data.size()) ? R.drawable.ic_select : R.drawable.ic_select_all;
 	    selectAllView.setImageResource(resId);
 	}
 }

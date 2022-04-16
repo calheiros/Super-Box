@@ -241,7 +241,10 @@ public class AppLockService extends Service {
 					if (appLockWindow.isLocked()) {
 						appLockWindow.unlock();
 					}
-
+                    
+                    if (activityOnTop.equals("com.android.settings.Settings")){
+                        startLauncher();
+                    }
 					appLockWindow.lock(activityOnTop);
                     /*Intent intent = new Intent(App.getAppContext(), VerifyActivity.class);
                      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    

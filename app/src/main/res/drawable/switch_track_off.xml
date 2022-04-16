@@ -5,14 +5,14 @@
 
     <corners
         android:radius="15dp" />
-
-    <size
-        android:width="42dp"
-        android:height="25dp" />
+    
+   <size
+        android:width="40dp"
+        android:height="24dp" />
 
     <solid
         android:color="#9b9b9b" />
-
+   
     <!--stroke
     android:width="2dp"
     android:color="#000000" /-->

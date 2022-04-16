@@ -45,6 +45,7 @@ import com.jefferson.application.br.activity.DeveloperActivity;
 import com.jefferson.application.br.util.MyPreferences;
 import android.widget.AutoCompleteTextView.OnDismissListener;
 import android.graphics.Typeface;
+import com.jefferson.application.br.model.PreferenceItem.ID;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
@@ -56,6 +57,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	private SharedPreferences.Editor mEdit;
 	private int egg;
     private int storageChoicePosition;
+
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,54 +91,61 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             PreferenceItem item = new PreferenceItem();
             switch (i) {
                 case 0:
-                    item.item_name = getString(R.string.preferecias_gerais);
+                    item.title = getString(R.string.preferecias_gerais);
                     item.type = item.SECTION_TYPE;
                     break;
                 case 1:
+                    item.id = PreferenceItem.ID.PASSWORD;
                     item.icon_id = R.drawable.ic_key;
-                    item.item_name = getString(R.string.mudar_senha);
+                    item.title = getString(R.string.mudar_senha);
                     item.type = item.ITEM_TYPE;
                     break;
                 case 2:
+                    item.id = PreferenceItem.ID.LANGUAGE;
                     item.icon_id = R.drawable.ic_language;
-                    item.item_name = getString(R.string.idioma);
+                    item.title = getString(R.string.idioma);
                     item.type = item.ITEM_TYPE;
                     item.description = getLanguage();
                     break;
                 case 3:
+                    item.id = PreferenceItem.ID.APP_THEME;
                     item.type = PreferenceItem.ITEM_TYPE;
                     item.icon_id = R.drawable.ic_palette;
-                    item.item_name = "App theme";
+                    item.title = "App theme";
                     break;
                 case 4:
                     item.type = item.SECTION_TYPE;
-                    item.item_name = getString(R.string.preferecias_avancadas);
+                    item.title = getString(R.string.preferecias_avancadas);
                     break;
                 case 5:
+                    item.id  = PreferenceItem.ID.STORAGE;
                     item.type = item.ITEM_TYPE;
                     item.icon_id = R.drawable.ic_storage;
-                    item.item_name = getString(R.string.local_armazenamento);
+                    item.title = getString(R.string.local_armazenamento);
                     item.description = getStorageName();
                     break;
                 case 6:
-                    item.item_name = getString(R.string.modo_secreto);
+                    item.id = PreferenceItem.ID.APP_ICON;
+                    item.title = getString(R.string.modo_secreto);
                     item.icon_id = R.drawable.ic_drama_masks;
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE;
                     item.description = getString(R.string.ocultar_descricao);
                     break;
                 case 7:
-                    item.item_name = getString(R.string.codigo_discador);
+                    item.id = PreferenceItem.ID.DIALER_CODE;
+                    item.title = getString(R.string.codigo_discador);
                     item.type = item.ITEM_TYPE;
                     item.icon_id = R.drawable.ic_dialpad;
                     item.description = getDialerCode();
                     break;
                 case 8:
-                    item.item_name = getString(R.string.preferecias_sobre);
+                    item.title = getString(R.string.preferecias_sobre);
                     item.type = item.SECTION_TYPE;
                     break;
                 case 9:
+                    item.id = PreferenceItem.ID.ABOUT;
                     item.icon_id = R.drawable.ic_about;
-                    item.item_name = getString(R.string.app_name);
+                    item.title = getString(R.string.app_name);
                     item.type = item.ITEM_TYPE;
                     try {
                         item.description = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0).versionName;
@@ -171,37 +180,30 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-		switch (position) {
+        PreferenceItem.ID itemId  = mAdapter.getItem(position).id;
 
-			case 1:
-				Intent intent = new Intent(getContext(), CreatePattern.class);
-				intent.setAction(CreatePattern.ENTER_RECREATE);
-				getActivity().startActivity(intent);
-				break;
-			case 2:
-				showLanguageDialog();
-				break;
-            case 3:
-                showThemeDialog();
-                break;
-            case 5:
-                showDialogChooseStorage();
-				break;
-			case 6:
-				Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
-				boolean checked = !mySwitch.isChecked();
-                changeIconVisibility(checked);
-				mySwitch.setChecked(checked);
-				break;
-			case 7:
-				changeCodeDialog();
-				break;
-			case 9:
-				showAbout();
-				break;
-		}
-	}
-
+        if (itemId == PreferenceItem.ID.PASSWORD) {
+            Intent intent = new Intent(getContext(), CreatePattern.class);
+            intent.setAction(CreatePattern.ENTER_RECREATE);
+            getActivity().startActivity(intent);
+        } else if (itemId == PreferenceItem.ID.LANGUAGE) {
+            showLanguageDialog();
+        } else if (itemId == PreferenceItem.ID.APP_THEME) {
+            showThemeDialog();
+        } else if (itemId == PreferenceItem.ID.STORAGE) {
+            showDialogChooseStorage();
+        } else if (itemId == PreferenceItem.ID.APP_ICON) {
+            Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
+            boolean checked = !mySwitch.isChecked();
+            changeIconVisibility(checked);
+            mySwitch.setChecked(checked);
+        } else if (itemId == PreferenceItem.ID.DIALER_CODE) {
+            changeCodeDialog();
+        } else if (itemId == PreferenceItem.ID.ABOUT) {
+            showAbout();
+        }
+    }
+    
     private void showThemeDialog() {
         final CharSequence[] itens = {"Default", "Light"};
 
@@ -228,7 +230,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 }
             }
         );
-       configureRoundedDialog(b.show());
+        configureRoundedDialog(b.show());
     }
 
     @Override
@@ -287,7 +289,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
                     ((MainActivity) getActivity()).
                         mainFragment.updateAllFragments();
-                    updateItem(4);
+                    updateItemDescription(PreferenceItem.ID.STORAGE, getStorageName());
                 }
             }
         );
@@ -328,7 +330,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 						Toast.makeText(getContext(), "O código não pode ter mais que 15 caractéres.", 1).show();
 					} else {
 						mEdit.putString("secret_code", code).commit();
-						mAdapter.getItem(6).description = code;
+						updateItemDescription(PreferenceItem.ID.DIALER_CODE, code);
 						mAdapter.notifyDataSetChanged();
 					}
 				}
@@ -348,9 +350,15 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 		return Storage.getStorageLocation().equals(Storage.INTERNAL) ? getString(R.string.armaz_interno) : getString(R.string.armaz_externo);
     }
 
-    public void updateItem(int position) {
-		mAdapter.getItem(position).description = getStorageName();
-		mAdapter.notifyDataSetChanged();
+    public void updateItemDescription(PreferenceItem.ID id, String description) {
+
+        for (int i = 0; i < mAdapter.getCount(); i++) {
+            if (mAdapter.getItem(i).id == id) {
+                mAdapter.getItem(i).description = description;
+                mAdapter.notifyDataSetChanged();
+                break;
+            }
+        }
 	}
 
     private String getLanguage() {
@@ -464,7 +472,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 							locale = "es";
 							break;
 					}
-                    if (!locale.equals(LocaleManager.getLanguage(getContext()))){
+                    if (!locale.equals(LocaleManager.getLanguage(getContext()))) {
 					    LocaleManager.setNewLocale(getContext(), locale);
                         refreshActivity();
                     }

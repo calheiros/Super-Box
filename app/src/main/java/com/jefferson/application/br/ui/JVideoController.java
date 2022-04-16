@@ -250,7 +250,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     }
 
     private String max;
-
+    
     public class MyHandler extends Handler {
 
         private boolean playing;

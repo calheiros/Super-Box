@@ -450,7 +450,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	}
 
 	private void switchIcon() {
-		((ImageView)mViewSelect).setImageResource(mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size() ? R.drawable.ic_unselect_all : R.drawable.ic_select_all);
+		((ImageView)mViewSelect).setImageResource(mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size() ? R.drawable.ic_select : R.drawable.ic_select_all);
 	}
 
     public void enterSeletionMode() {

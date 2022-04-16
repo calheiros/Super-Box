@@ -32,7 +32,7 @@
 
                 <ImageView
                     android:id="@+id/layoutOverlay"
-                    android:background="#BA000000"
+                    android:background="#9D000000"
                     android:src="@drawable/item_checked"
                     android:padding="10dp"
                     android:layout_width="55dp"
