@@ -122,17 +122,17 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		toggle.syncState();
 		drawerLayout.setDrawerListener(toggle);
 	}
-
+   
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         this.instance = this;
 		super.onCreate(savedInstanceState);
-
+		setContentView(R.layout.main_activity);
+        
         if (Build.VERSION.SDK_INT >= 21) { 
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-		setContentView(R.layout.main_activity);
 		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);

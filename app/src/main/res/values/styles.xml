@@ -63,26 +63,40 @@
         <item name="colorControlHighlight">#1C050505</item>
     </style>
 
-	<style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
-		<item name="colorPrimary">@color/colorPrimary</item>
+    <style name="CalculatorTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorBackground</item>
+        <item name="colorAccent">#00BCD4</item>
+        <item name="colorBackgroundSecondary">@color/colorBackgroundDark</item>
+        <item name="colorBackground">@color/colorBackground</item>
+        <item name="commonColorDark">@color/colorCommonDark</item>
+        <item name="commonColor">@color/colorCommon</item>
+        <item name="colorControlHighlight">#72000000</item>
+        
+        <item name="commonColorLight">@color/colorCommonLight</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+    </style>
+    
+    <style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorBackgroundSecondary">@color/colorBackgroundDark</item>
         <item name="colorBackground">@color/colorBackground</item>
         <item name="commonColorDark">@color/colorCommonDark</item>
-        <item name="commonColor">@color/colorCommonLight</item>
+        <item name="commonColor">@color/colorCommon</item>
         <item name="commonColorLight">@color/colorCommonLight</item>
         <item name="android:windowBackground">@color/colorBackground</item>
         <item name="colorControlHighlight">@color/highLightColor</item>
 
-		<!-- specify shared element transitions -->
-		<!--<item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
-		<item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>
-		<item name="colorControlHighlight">@color/green_semi_transparent</item>-->
-	</style>
-	<style name="drawer_theme" parent="Theme.AppCompat.NoActionBar">
-		<item name="colorControlHighlight">@color/highLightColor</item> 
-	</style>
+        <!-- specify shared element transitions -->
+        <!--<item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
+        <item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>
+        <item name="colorControlHighlight">@color/green_semi_transparent</item>-->
+    </style>
+    <style name="drawer_theme" parent="Theme.AppCompat.NoActionBar">
+        <item name="colorControlHighlight">@color/highLightColor</item> 
+    </style>
 
     <style name="VideoPlayerTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowNoTitle">true</item>
@@ -92,14 +106,19 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowBackground">#000</item> 
 
-	</style>
+    </style>
 
-	<style name="Theme.Transparent" parent="Theme.AppCompat"> 
-		<item name="android:windowIsTranslucent">true</item> 
-		<item name="android:windowBackground">@android:color/transparent</item> 
-		<item name="android:windowContentOverlay">@null</item> 
-		<item name="android:windowNoTitle">true</item> 
-		<item name="android:windowIsFloating">true</item> 
-		<item name="android:backgroundDimEnabled">true</item> 
-	</style> 
+    <style name="Theme.Transparent" parent="Theme.AppCompat"> 
+        <item name="commonColorDark">@color/colorCommonDark</item>
+        <item name="commonColor">@color/colorCommon</item>
+        <item name="commonColorLight">@color/colorCommonLight</item>
+        <item name="colorBackground">@color/colorBackground</item>
+
+        <item name="android:windowIsTranslucent">true</item> 
+        <item name="android:windowBackground">@android:color/transparent</item> 
+        <item name="android:windowContentOverlay">@null</item> 
+        <item name="android:windowNoTitle">true</item> 
+        <item name="android:windowIsFloating">true</item> 
+        <item name="android:backgroundDimEnabled">true</item> 
+    </style> 
 </resources>

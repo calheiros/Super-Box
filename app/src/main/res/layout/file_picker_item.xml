@@ -49,7 +49,7 @@
             android:layout_marginLeft="10dp">
 
             <TextView
-                android:textColor="?commonColor"
+                android:textColor="?commonColorLight"
                 android:id="@+id/item_name"
                 android:textSize="17sp"
                 android:layout_width="match_parent"
@@ -58,8 +58,9 @@
 
             <TextView
                 android:textSize="12sp"
+                android:textStyle="bold"
                 android:id="@+id/item_size"
-                android:textColor="?commonColor"
+                android:textColor="?commonColorDark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

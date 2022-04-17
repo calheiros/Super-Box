@@ -328,7 +328,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     }
                 );
             } else if (requestCode == IMPORT_FROM_GALLLERY_CODE) {
-                 
+
                 ArrayList<String> paths = data.getStringArrayListExtra("selection");
                 String type = data.getStringExtra("type");
                 new MonoTypePrepareTask(this, paths, type, folder.getAbsolutePath(), this).start();
@@ -368,7 +368,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             }
         }
     }
-    
+
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		if (selectionMode) {
@@ -410,10 +410,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 				case 1:
 					mClass = VideoPlayerActivity.class;
 					Intent intent = new Intent(getApplicationContext(), mClass);
-                    
+
 					intent.putExtra("position", item_position);
 					intent.putExtra("filepath", mAdapter.getListItemsPath());
-                    ActivityOptions opts = ActivityOptions.makeScaleUpAnimation( v, 0, 0, v.getWidth(), v.getHeight()); // Request the activity be started, using the custom animation options.
+                    ActivityOptions opts = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()); // Request the activity be started, using the custom animation options.
                     startActivityForResult(intent, VIDEO_PLAY_CODE, opts.toBundle());
 					break;
 			}
@@ -591,12 +591,16 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         int duration = database.getDuration(file.getName());
                         Log.i("RetrieveDataTask", "duration " + duration);
 
-                        if (duration == -1) {
-                            Uri uri = Uri.parse(model.getPath()); 
-                            MediaMetadataRetriever mmr = new MediaMetadataRetriever(); 
-                            mmr.setDataSource(App.getAppContext(), uri); 
-                            String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); 
-                            duration = Integer.parseInt(durationStr);
+                        if (duration == -1 || duration == 0) {
+                            try {
+                                Uri uri = Uri.parse(model.getPath()); 
+                                MediaMetadataRetriever mmr = new MediaMetadataRetriever(); 
+                                mmr.setDataSource(App.getAppContext(), uri); 
+                                String durationStr = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION); 
+                                duration = Integer.parseInt(durationStr);
+                            } catch (RuntimeException e) {
+                                duration = -2;
+                            }
                             database.updateFileDuration(file.getName(), duration);
                         }
                         final String time = StringUtils.getFormatedVideoDuration(String.valueOf(duration));
@@ -608,8 +612,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                                 }
                             }
                         );
-                    } catch (RuntimeException e) {
-                        e.printStackTrace();
                     } catch (Exception e) {
                         e.printStackTrace();
                         JDebug.writeLog(e.getCause());

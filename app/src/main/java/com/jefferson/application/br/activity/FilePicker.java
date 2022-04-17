@@ -1,12 +1,15 @@
 package com.jefferson.application.br.activity;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
@@ -32,14 +35,16 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
     private Toolbar mToolbar;
     private List<String> paths;
     private int position;
-    
+
+    private FloatingActionButton fab;
+
     public class MoveFilesTask extends JTask {
 
         @Override
         public void onException(Exception e) {
             Toast.makeText(FilePicker.this, "Error!", 1).show();
         }
-        
+
 
         ArrayList<String> mMovedArray;
         String folder;
@@ -57,13 +62,13 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
             this.progress.setTitle("Movendo...");
 			this.progress.setProgress(0);
             this.progress.show();
-           
+
         }
 
         @Override
         protected void onUpdated(Object[] objArr) {
             this.progress.setProgress(((Integer) objArr[0]).intValue());
-           
+
         }
 
         @Override
@@ -77,7 +82,7 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
 
         @Override
         public void workingThread() {
-        
+
             for (String str : paths) {
 
                 File file = new File(str);
@@ -88,7 +93,6 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
                 }
 
                 sendUpdate(progress.getProgress() + 1);
-
             }
         }
     }
@@ -103,22 +107,39 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
         this.position = getIntent().getIntExtra("position", -1);
         this.paths = getIntent().getStringArrayListExtra("selection");
         this.currentPath = getIntent().getStringExtra("current_path");
-        
+
         this.filePickerAdapter = new FilePickerAdapter(getModels(this.position), this);
         this.mListView.setAdapter(this.filePickerAdapter);
         this.mListView.setOnItemClickListener(this);
-          setSupportActionBar(this.mToolbar);
+        setSupportActionBar(this.mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Move to");
+        fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View p1) {
+                    new MoveFilesTask(FilePicker.this, (filePickerAdapter.models.get(filePickerAdapter.getSelectedItem())).getPath()).start();
+                    fab.hide();
+                }
+            }
+        );
+        fab.setVisibility(View.GONE);
     }
-    
+
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long j) {
         int selectedItem = this.filePickerAdapter.getSelectedItem();
 
         if (selectedItem == -1) {
-            invalidateOptionsMenu();
-        }
+            fab.setVisibility(View.VISIBLE);
+            Animation slideUpAnimation = AnimationUtils.loadAnimation(FilePicker.this, R.anim.slide_up);
+            slideUpAnimation.setInterpolator(new DecelerateInterpolator());
+            fab.startAnimation(slideUpAnimation);
+        } 
+        Animation anim = AnimationUtils.loadAnimation(FilePicker.this, R.anim.fade_in);
+        anim.setDuration(250);
+        view.startAnimation(anim);
         filePickerAdapter.setSelectedItem(i);
     }
 
@@ -127,23 +148,10 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-
-        if (filePickerAdapter.getSelectedItem() != -1) {
-            getMenuInflater().inflate(R.menu.menu_confirm, menu);
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
         int itemId = menuItem.getItemId();
 
-        if (itemId == R.id.confirm) {
-            new MoveFilesTask(this, (filePickerAdapter.models.get(filePickerAdapter.getSelectedItem())).getPath()).start();
-        } else if (itemId == 2131231044) {
-			//MainFragment.createFolder(position, this, this);
-        } else {
+        if (itemId == android.R.id.home) {
             finish();
         }
 

@@ -151,9 +151,12 @@
         </activity>
 
         <activity
-            android:name=".activity.CloneActivity"
-            android:icon="@drawable/ic_android"
-            android:enabled="false">
+            android:name=".activity.CalculatorActivity"
+            android:label="Calculator"
+            
+            android:theme="@style/CalculatorTheme"
+            android:icon="@mipmap/ic_calculator"
+            android:enabled="true">
 
             <intent-filter>
 

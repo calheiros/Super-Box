@@ -1,10 +1,14 @@
 package com.jefferson.application.br.fragment;
 
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -12,40 +16,30 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.jefferson.application.br.LocaleManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.CreatePattern;
+import com.jefferson.application.br.activity.DeveloperActivity;
 import com.jefferson.application.br.activity.MainActivity;
 import com.jefferson.application.br.adapter.SettingAdapter;
+import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.model.PreferenceItem;
+import com.jefferson.application.br.util.ASCIIArt;
+import com.jefferson.application.br.util.DialogUtils;
+import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.Storage;
 import java.util.ArrayList;
-import android.view.View.OnLongClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.Adapter;
-import com.jefferson.application.br.util.JDebug;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.Color;
-import android.widget.TextView;
-import com.jefferson.application.br.util.ASCIIArt;
-import java.net.URI;
-import android.net.Uri;
-import android.content.ActivityNotFoundException;
-import android.view.View.OnClickListener;
-import com.jefferson.application.br.util.DialogUtils;
-import com.jefferson.application.br.activity.DeveloperActivity;
-import com.jefferson.application.br.util.MyPreferences;
-import android.widget.AutoCompleteTextView.OnDismissListener;
-import android.graphics.Typeface;
-import com.jefferson.application.br.model.PreferenceItem.ID;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
@@ -194,6 +188,14 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             showDialogChooseStorage();
         } else if (itemId == PreferenceItem.ID.APP_ICON) {
             Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
+            if (!mySwitch.isChecked() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                SimpleDialog alert = new SimpleDialog(getContext());
+                alert.setTitle("Unsupported!");
+                alert.setMessage("This feature is no longer supported on Android 10 or later.");
+                alert.setNegativeButton("okay", null);
+                alert.show();
+                return;
+            }
             boolean checked = !mySwitch.isChecked();
             changeIconVisibility(checked);
             mySwitch.setChecked(checked);
@@ -203,7 +205,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             showAbout();
         }
     }
-    
+
     private void showThemeDialog() {
         final CharSequence[] itens = {"Default", "Light"};
 

@@ -86,12 +86,6 @@ public class FilePickerAdapter extends BaseAdapter {
         }
         overlay.setVisibility(selected ? View.VISIBLE : View.GONE);
         
-        if (selected) {
-            Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_in);
-            anim.setDuration(250);
-            overlay.startAnimation(anim);
-        }
-        
         textView.setTextColor(color);
         textView.setText(pickerModel.getName());
         textView2.setText(String.valueOf(pickerModel.getSize()));

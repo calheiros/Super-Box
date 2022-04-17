@@ -28,15 +28,15 @@
 			android:paddingLeft="6dp">
 
 			<TextView
-				android:textSize="16sp"
-				android:textColor="?commonColor"
+				android:textSize="17sp"
+				android:textColor="?commonColorLight"
 				android:layout_gravity="center|start"
 				android:id="@+id/item_title"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"/>
 
 			<TextView
-				android:textAppearance="?android:attr/textAppearanceSmall"
+				android:textSize="13sp"
 				android:textColor="?commonColor"
 				android:layout_gravity="start"
 				android:id="@+id/description_text_view"

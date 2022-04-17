@@ -10,7 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import com.jefferson.application.br.R;
 import android.view.View.*;
 import android.widget.*;
-
+(%÷
 public class Camera2 extends AppCompatActivity
 {
 	public static final String IMAGE_PATH = "/application/data/imagens";

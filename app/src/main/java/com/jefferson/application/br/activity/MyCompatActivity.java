@@ -65,8 +65,7 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        
-        setTheme(MyPreferences.getAppTheme());
+        onApplyCustomTheme();
 		super.onCreate(savedInstanceState);
 
         pm = (PowerManager) getSystemService("power");
@@ -75,7 +74,11 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
         app.putActivity(this, KEY);
         initialized = true;
     }
-
+    
+    protected void onApplyCustomTheme() {
+        setTheme(MyPreferences.getAppTheme());
+    }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
