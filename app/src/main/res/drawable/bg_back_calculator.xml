@@ -1,0 +1,13 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?colorControlHighlight"> <!-- default ripple color -->
+    <layer-list>
+        <item>
+            <shape android:shape="oval">
+                <solid android:color="?colorAccent" />
+                <!-- <corners android:radius="16pt" />-->
+            </shape>
+        </item>
+        <item
+            android:drawable="@drawable/ic_backspace"/>
+    </layer-list>
+</ripple>

@@ -9,17 +9,25 @@ import android.widget.EditText;
 import com.jefferson.application.br.R;
 import android.view.View.OnLongClickListener;
 import android.text.Editable;
+import android.widget.Toast;
 
 public class CalculatorActivity extends AppCompatActivity implements OnLongClickListener  {
 
     @Override
     public boolean onLongClick(View view) {
-        return enter();
+        int id = view.getId();
+        if (id == R.id.calculator_backspaceButton) {
+            editText.getText().clear();
+            return true;
+        } else {
+            return enter();
+        }
     }
 
-    char[] operations = new char[] {'+','×','÷', '%', '-'};
-    EditText editText;
-    Button resultButton;
+    protected char[] operations = new char[] {'+','×','÷', '%', '-'};
+    protected EditText editText;
+    protected Button resultButton;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,6 +35,7 @@ public class CalculatorActivity extends AppCompatActivity implements OnLongClick
         editText = findViewById(R.id.calculator_layoutEditText);
         resultButton = findViewById(R.id.calculator_result);
         resultButton.setOnLongClickListener(this);
+        findViewById(R.id.calculator_backspaceButton).setOnLongClickListener(this);
     }
 
     public void one(View v) {
@@ -69,40 +78,50 @@ public class CalculatorActivity extends AppCompatActivity implements OnLongClick
     }
 
     public void plus(View v) {
-        editText.append("+");
+        appendOperation("+");
     }
 
     public void subtraction(View v) {
-        editText.append("-");
+        appendOperation("-");
     }
 
     public void multiplication(View v) {
-        editText.append("×");
+        appendOperation("×");
     }
 
     public void division(View v) {
-        editText.append("÷");
+        appendOperation("÷");
     }
 
     public void percentage(View v) {
         appendOperation("%");
     }
 
-    private void appendOperation(CharSequence operation) {
-        Editable text = editText.getText();
+    public void result(View v) {
 
+    }
+
+    public void backspace(View v) {
+        int lenght = editText.getText().length();
+        if (lenght == 0) {
+            return;
+        }
+        editText.setText(editText.getText().subSequence(0, lenght - 1));
+    }
+
+    private void appendOperation(String operation) {
+        String text = editText.getText().toString();
         if (text.length() == 0) {
             return ;
         }
-        
         char lastChar = text.charAt(text.length() - 1);
         for (char op : operations) {
             if (lastChar == op) {
-                text.replace(text.length() - 1, text.length(), operation);
-                return;
+                text = text.toString().substring(0, text.length() - 1);
+                break;
             }
         }
-        editText.append(operation);
+        editText.setText(text + operation);
     }
 
     public void dot(View v) {

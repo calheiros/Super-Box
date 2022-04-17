@@ -153,7 +153,9 @@
         <activity
             android:name=".activity.CalculatorActivity"
             android:label="Calculator"
-            
+            android:screenOrientation="portrait"
+            android:excludeFromRecents="true"
+            android:windowSoftInputMode="stateHidden"
             android:theme="@style/CalculatorTheme"
             android:icon="@mipmap/ic_calculator"
             android:enabled="true">
