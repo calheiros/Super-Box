@@ -117,11 +117,6 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         }
     }
 
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(LocaleManager.updateResources(base, LocaleManager.getLanguage(base)));
-    }
-    
     public static Context getAppContext() {
         return application;
     }

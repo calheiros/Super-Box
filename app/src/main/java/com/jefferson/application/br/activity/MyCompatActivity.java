@@ -37,7 +37,6 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        //Toast.makeText(this, "SaveInstanceState Called", 1).show();
     }
     
     @Override
@@ -48,7 +47,8 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleManager.updateResources(newBase, LocaleManager.getLanguage(newBase)));
+        Context context = LocaleManager.updateResources(newBase, LocaleManager.getLanguage(App.getAppContext()));
+        super.attachBaseContext(context);
     }
     
     @Override

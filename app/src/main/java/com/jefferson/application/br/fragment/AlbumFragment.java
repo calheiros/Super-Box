@@ -40,14 +40,16 @@ import java.util.ArrayList;
 
 public class AlbumFragment extends Fragment {
 
+    public static final String FOLDER_NAME_OKAY = "folder_name_okay";
+    public final static int ACTION_CREATE_FOLDER = 122;
+    public final static int ACTION_RENAME_FOLDER = 54;
+
 	private String root;
 	private int position;
-	private AlbumAdapter mAdapter;
+	private AlbumAdapter albumAdapter;
 	private View view;
 	private SharedPreferences sharedPref;
     private JTask retrieveMedia;
-    public final static int ACTION_CREATE_FOLDER = 122;
-    public final static int ACTION_RENAME_FOLDER = 54;
     private RecyclerView recyclerView;
     private View progressBar;
     private View emptyView;
@@ -64,7 +66,6 @@ public class AlbumFragment extends Fragment {
             dialog.setPositiveButton("okay", null);
             dialog.show();
         }
-
     };
 
     public AlbumFragment() {
@@ -73,22 +74,25 @@ public class AlbumFragment extends Fragment {
 
     public void putModels(ArrayList<FolderModel> models) {
 
-        if (mAdapter != null) {
-            mAdapter.setUpdatedData(models);
+        if (albumAdapter != null) {
+            albumAdapter.setUpdatedData(models);
         } else {
-            mAdapter = new AlbumAdapter(AlbumFragment.this, models);
+            albumAdapter = new AlbumAdapter(AlbumFragment.this, models);
             notifyDataUpdated();
         }
+    }
 
+    public void removeFolder(int folderPosition) {
+        albumAdapter.removeItem(folderPosition);
     }
 
     private void notifyDataUpdated() {
 
         if (recyclerView.getAdapter() == null) {
-            recyclerView.setAdapter(mAdapter);
+            recyclerView.setAdapter(albumAdapter);
         }
 
-        int visibility = mAdapter.getItemCount() == 0 ? View.VISIBLE: View.GONE;
+        int visibility = albumAdapter.getItemCount() == 0 ? View.VISIBLE: View.GONE;
 
         if (emptyView != null) {
             emptyView.setVisibility(visibility);
@@ -192,13 +196,12 @@ public class AlbumFragment extends Fragment {
             @Override
             public void onException(Exception e) {
                 revokeFinish(true);
-                Toast.makeText(getContext(), "unknown error occurred! " + e.getMessage(), 1).show();
+                Toast.makeText(getContext(), "Unknown error occurred! " + e.getMessage(), 1).show();
                 JDebug.writeLog(e.getCause());
             }
             public void  run() {
-
+                
             }
-
         };
         retrieveMedia.setThreadPriority(Thread.MAX_PRIORITY);
         retrieveMedia.start();
@@ -208,15 +211,12 @@ public class AlbumFragment extends Fragment {
         corruptedWarnHandler.sendEmptyMessage(0);
     }
 
-    public void inputFolderDialog(final FolderModel model, final int action) {
+    public void inputFolderDialog(final FolderModel model, final int action, final int itemPosition) {
 
         Context context = getContext();
         View contentView = getActivity().getLayoutInflater().
             inflate(R.layout.dialog_edit_text, null);
         final EditText editText = contentView.findViewById(R.id.editTextInput);
-
-        //InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); imm.hideSoftInputFromWindow(view.getWindowToken(),0);
-
         String title = null; 
 
         if (action == ACTION_RENAME_FOLDER) {
@@ -236,98 +236,135 @@ public class AlbumFragment extends Fragment {
                 @Override
                 public boolean onClick(SimpleDialog dialog) {
                     String text = editText.getText().toString();
-                    String result = validateFolderName(text);
+                    String result = validateFolderName(text, getContext());
 
-                    if (!"ok".equals(result)) {
+                    if (!result.equals(FOLDER_NAME_OKAY)) {
                         Toast.makeText(getContext(), result, 1).show();
                         return false;
                     }
+                    boolean success = true;
+                    String message = null;
 
                     switch (action) {
+
                         case ACTION_RENAME_FOLDER:
-                            return renameFolder(model, text);
+                            if (success = renameFolder(getContext(), model, text, position)) {
+                                message = "Folder renamed to \"" + text + "\".";
+                                FolderModel item = albumAdapter.getItem(itemPosition);
+                                if (item != null) {
+                                    item.setName(text);
+                                    albumAdapter.notifyItemChanged(itemPosition);
+                                }
+                            } else {
+                                message = "Falied to rename folder! :(";
+                            }
+                            break;
                         case ACTION_CREATE_FOLDER:
-                            return createFolder(text);
+                            FolderModel folder = createFolder(getContext(), text, position);                            
+                            if (folder != null) {
+                                message = "Folder \"" +  text + "\" created.";
+                                albumAdapter.insertItem(folder);
+                            } else {
+                                message = "Falied to create folder! :(";
+                            }
                     }
-                    return true;
+                    if (success) {
+                         populateReciclerView();
+                     }
+                    ((MainActivity)getActivity()).showSnackBar(message, Snackbar.LENGTH_SHORT);
+                    notifyDataUpdated();
+                    Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+                    return success;
                 }
             }
         ).setNegativeButton(getString(R.string.cancelar), null).show();
     }
 
-    public boolean renameFolder(FolderModel model, String newName) {
+    public static boolean renameFolder(Context context, FolderModel model, String newName, int position) {
+        PathsData.Folder folderDatabase = null;
 
-        Context activity = App.getAppContext();
-        String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
-        PathsData.Folder folderDatabase = PathsData.Folder.getInstance(activity);
-        File file = new File(model.getPath());
-        String id = file.getName();
-        String folderName = folderDatabase.getFolderName(id, folderType);
-        JDebug.toast("ID => " + folderName + "\n NAME => " + model.getName());
-        String newFolderId = folderDatabase.getFolderId(newName, folderType);
+        try {
+            String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
+            folderDatabase = PathsData.Folder.getInstance(context);
+            File file = new File(model.getPath());
+            String id = file.getName();
+            String folderName = folderDatabase.getFolderName(id, folderType);
+            //JDebug.toast("ID => " + folderName + "\n NAME => " + model.getName());
+            String newFolderId = folderDatabase.getFolderId(newName, folderType);
 
-        if (folderName != null && folderName.equals(newName)) {
-            Toast.makeText(getContext(), getString(R.string.pasta_mesmo_nome), Toast.LENGTH_LONG).show();
-            folderDatabase.close();
-            return false;
-        }
-
-        if (newFolderId != null) {
-            Toast.makeText(getContext(), getString(R.string.pasta_existe), 1).show();
-            folderDatabase.close();
-            return false;
-        }
-
-        if (folderName == null) {
-            folderDatabase.addName(id, newName, folderType);
-        } else {
-            folderDatabase.updateName(id, newName, folderType);
-        }
-
-        Snackbar.make(view, "Folder renamed to \"" + newName + "\"", Snackbar.LENGTH_SHORT).show();
-        folderDatabase.close();
-        update();
-        return true;
-    }
-
-    public boolean createFolder(@NonNull String name) {
-        String type = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
-        PathsData.Folder folderDatabase = PathsData.Folder.getInstance(getContext());
-        String id = folderDatabase.getFolderId(name, type);
-        String randomStr = StringUtils.getRandomString(24);
-        
-        if (id == null) {
-            id = randomStr;
-            int strType = position == 0 ? Storage.IMAGE: Storage.VIDEO;
-            File file = new File(Storage.getFolder(strType), randomStr);
-
-            if (file.mkdirs()) {
-                folderDatabase.addName(id, name, type);
-                Snackbar.make(view, "Created folder \"" + name + "\"", Snackbar.LENGTH_SHORT).show();
+            if (folderName != null && folderName.equals(newName)) {
+                Toast.makeText(context, context.getString(R.string.pasta_mesmo_nome), Toast.LENGTH_LONG).show();
+                folderDatabase.close();
+                return false;
             }
-        } else {
-            Toast.makeText(getContext(), getString(R.string.pasta_existe), 1).show();
-            return false;
-        }
 
-        folderDatabase.close();
-        update();
+            if (newFolderId != null) {
+                Toast.makeText(context, context.getString(R.string.pasta_existe), 1).show();
+                folderDatabase.close();
+                return false;
+            }
+
+            if (folderName == null) {
+                folderDatabase.addName(id, newName, folderType);
+            } else {
+                folderDatabase.updateName(id, newName, folderType);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (folderDatabase != null) {
+                folderDatabase.close();
+            }
+        }
         return true;
     }
 
-    public String validateFolderName(@NonNull String name) {
+    public static FolderModel createFolder(Context context, @NonNull String name, int position) {
+        PathsData.Folder folderDatabase = null;
+        FolderModel folder = null;
+
+        try {
+            String type = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
+            folderDatabase = PathsData.Folder.getInstance(context);
+            String id = folderDatabase.getFolderId(name, type);
+            String randomStr = StringUtils.getRandomString(24);
+
+            if (id == null) {
+                id = randomStr;
+                int strType = position == 0 ? Storage.IMAGE: Storage.VIDEO;
+                File file = new File(Storage.getFolder(strType), randomStr);
+
+                if (file.mkdirs()) {
+                    folder = new FolderModel();
+                    folderDatabase.addName(id, name, type);
+                    folder.setName(name);
+                    folder.setPath(file.getAbsolutePath());
+                }
+            } else {
+                Toast.makeText(context, context.getString(R.string.pasta_existe), 1).show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally   {
+            folderDatabase.close();
+        }
+        return folder;
+    }
+
+    public static String validateFolderName(@NonNull String name, Context context) {
         String nospace = name.replace(" ", "");
 
         if (nospace.isEmpty()) {
-            return  getString(R.string.pasta_nome_vazio);
+            return  context.getString(R.string.pasta_nome_vazio);
         } else if (name.length() > 50) {
-            return getString(R.string.pasta_nome_muito_grande);
+            return context.getString(R.string.pasta_nome_muito_grande);
         } else {
-            return "ok";
+            return FOLDER_NAME_OKAY;
         }
     }
 
-    public void deleteAlbum(final FolderModel model) {
+    public void deleteAlbum(final FolderModel model, final int itemPosition) {
 		String name = "\"" + model.getName() + "\"";
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(getString(R.string.apagar));
@@ -336,13 +373,17 @@ public class AlbumFragment extends Fragment {
 
 				@Override
 				public void onClick(DialogInterface inter, int p2) {
-					File root = new File(model.getPath());
-					DeleteFilesTask task = new DeleteFilesTask(getContext(), model.getItemsPath(), position, root);
+					final File root = new File(model.getPath());
+					final DeleteFilesTask task = new DeleteFilesTask(getContext(), model.getItemsPath(), position, root);
                     task.setOnFinishedListener(new JTask.OnFinishedListener() {
 
                             @Override
                             public void onFinished() {
-                                ((MainActivity)getActivity()).updateFragment(getPagerPosition());
+                                if (task.success()){
+                                    albumAdapter.removeItem(itemPosition);
+                                } else{
+                                    ((MainActivity)getActivity()).updateFragment(getPagerPosition());
+                                }
                             }
                         }
                     );
@@ -357,5 +398,4 @@ public class AlbumFragment extends Fragment {
 	public void update() {
         populateReciclerView();
 	}
-
 }

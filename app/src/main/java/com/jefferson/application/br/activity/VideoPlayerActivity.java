@@ -57,7 +57,6 @@ public class VideoPlayerActivity extends MyCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.video_view_activity);
         Intent intent = getIntent();
         choice = intent.getExtras().getInt("position");

@@ -13,6 +13,10 @@ public class FolderModel implements Parcelable {
 	private String path = "";
 	private ArrayList<MediaModel> items = new ArrayList<>();
 
+    public String getTag() {
+        return null;
+    }
+
 	public String getPath() {
 		return path;
 	}

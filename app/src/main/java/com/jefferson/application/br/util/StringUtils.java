@@ -1,4 +1,5 @@
 package com.jefferson.application.br.util;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.util.Patterns;
 import java.text.SimpleDateFormat;
@@ -14,6 +15,20 @@ public class StringUtils {
 	public static String Dictionary = "abcdefghijklmnopqrstuvwxyz01234567890123456789";
 
     private static String TAG = "StringUtils";
+
+    public static String replaceEach(String text, ArrayMap<Character, Character> operators) {
+        // Create a buffer sufficiently large that re-allocations are minimized.
+        StringBuilder builder = new StringBuilder(text.length());
+        
+        for (int i = 0; i < text.length(); i++ ) {
+            char c = text.charAt(i);
+            if (operators.containsKey(c)) {
+                c = operators.get(c);
+            }
+            builder.append(c);
+        }
+        return builder.toString();
+    }
 
 	public static String  getRandomString(int length) {
 		String generate = new String();

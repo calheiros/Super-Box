@@ -30,11 +30,9 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-        checkPassword();
 		super.onCreate(savedInstanceState);
+        checkPassword();
 		setContentView(R.layout.pattern);
-	    LocaleManager.configureLocale(this);
-
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
 

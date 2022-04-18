@@ -34,6 +34,7 @@ public class SimpleDialog  {
 	private long maxBytes;
 	private long currentBytes;
 	private int progress;
+    private boolean dismissed = false;
     private Button positiveButton;
     private Button negativeButton;
     private JDialog jdialog;
@@ -112,7 +113,7 @@ public class SimpleDialog  {
 		positiveButton = parentView.findViewById(R.id.dialogPositiveButton);
 		negativeButton = parentView.findViewById(R.id.dialogNegativebutton);
         editTextLayout = parentView.findViewById(R.id.dialog_edit_text_layout);
-        
+
         this.jdialog = new JDialog(context, style == INPUT_STYLE);
 
         int color  = ContextCompat.getColor(context, R.color.colorAccent);
@@ -169,6 +170,10 @@ public class SimpleDialog  {
         if (jdialog != null) {
             this.jdialog.dismiss();
         }
+    }
+
+    public boolean isDismissed() {
+        return dismissed;
     }
 
 	public SimpleDialog showProgressBar(boolean show) {
@@ -229,7 +234,7 @@ public class SimpleDialog  {
     public void setTitle(CharSequence title) {
         setTitle(String.valueOf(title));
     }
-   
+
 	public SimpleDialog setPositiveButton(String buttonText, OnDialogClickListener listener) {
         if (positiveButton.getVisibility() != View.VISIBLE)
             positiveButton.setVisibility(View.VISIBLE);
@@ -263,30 +268,42 @@ public class SimpleDialog  {
 	}
 
     private class JDialog extends AlertDialog {
-       private boolean requestKeyboard = false;
-        
+        private boolean requestKeyboard = false;
+
         public JDialog(Context context, boolean requestKeyboard) {
             super(context);
             this.requestKeyboard = requestKeyboard;
         }
-        
+
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             setContentView(parentView);
-            
+
             Window window = getWindow();
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); 
             window.setBackgroundDrawableResource(R.drawable.dialog_bg_inset); 
-            
+
             if (requestKeyboard) {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
                 window.setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
             }
-            
+
+        }
+
+        @Override
+        public void dismiss() {
+            super.dismiss();
+            dismissed = true;
+        }
+
+        @Override
+        public void cancel() {
+            super.cancel();
+            dismissed = true;
         }
     }
-
+   
 	abstract public static class OnDialogClickListener {
 	    public abstract boolean onClick(SimpleDialog dialog);
 	}

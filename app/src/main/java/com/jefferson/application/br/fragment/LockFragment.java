@@ -142,7 +142,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 	}
     
     private void applicationFound(int x) {
-        mListView.smoothScrollToPositionFromTop(scrollPosition, (mListView.getHeight() / 2) - (appsAdapter.getItemHeight() / 2));
+        mListView.smoothScrollToPositionFromTop(x, (mListView.getHeight() / 2) - (appsAdapter.getItemHeight() / 2));
         //mListView.smoothScrollToPosition(scrollPosition);
         hideInputMethod(getActivity().getWindow().getCurrentFocus());
 
@@ -172,12 +172,12 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 
             if (lowerName.startsWith(lowerInput)) {
                 //JDebug.toast("match + " + models.get(x).appname);
-                scrollPosition = x;
                 applicationFound(x);
                 return true;
             } else if (firstContains == -1) {
                 if (lowerName.contains(lowerInput)) {
                     firstContains = x;
+                    //JDebug.toast(lowerName + " contains => " + input + " position " + firstContains);
                 }
             }
         }
@@ -191,7 +191,6 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         return false;
     }
 
-    private int scrollPosition = 0;
 //    private Handler scrollHandler = new Handler();
 //    private Runnable scrollRunnbale = new Runnable() {
 //

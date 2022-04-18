@@ -38,7 +38,8 @@ public class CodeManager {
 			activity.overridePendingTransition(0, 0);
 		}
 	}
-	public static boolean needPermissionForGetUsages(Context context) {
+	
+    public static boolean needPermissionForGetUsages(Context context) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			try {
 				PackageManager packageManager = context.getPackageManager();
@@ -51,7 +52,8 @@ public class CodeManager {
 		}
 		return false;
 	}
-	public static void decrypteFile(SecretKey skey, File input, File output) throws FileNotFoundException, IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+	
+    public static void decrypteFile(SecretKey skey, File input, File output) throws FileNotFoundException, IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
 		File inpfile = input;
 		int read;
 		if (!inpfile.exists())
@@ -75,7 +77,8 @@ public class CodeManager {
 		}
 		cos.close();
 	}
-	public static void encrypteFile(SecretKey skey, File input) throws FileNotFoundException, IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
+	
+    public static void encrypteFile(SecretKey skey, File input) throws FileNotFoundException, IOException, NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException {
 		FileInputStream fis = new FileInputStream(input);
 		File outfile = new File(Environment.getExternalStorageDirectory(), "cripData");
 		int read;
@@ -96,11 +99,12 @@ public class CodeManager {
 		}   
 		fos.close();
 	}
+    
 	public static SecretKey getKey(String key) {
 		return new SecretKeySpec(key.getBytes(), "ARC4");
-
 	}
-	public static Bitmap getCroppedBitmap(Bitmap bitmap) {
+	
+    public static Bitmap getCroppedBitmap(Bitmap bitmap) {
 		Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
 											bitmap.getHeight(), Bitmap.Config.ARGB_8888);
 		Canvas canvas = new Canvas(output);
@@ -184,7 +188,8 @@ public class CodeManager {
 
 		return imageEncoded;
 	}
-	public static Bitmap decodeBase64(String input) {
+	
+    public static Bitmap decodeBase64(String input) {
 		byte[] decodedByte = Base64.decode(input, 0);
 		return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.length); 
 	}
@@ -225,7 +230,8 @@ public class CodeManager {
 			mActivity.finish();
 		}
 	}
-	public static String gerarNome() {
+	
+    public static String gerarNome() {
 
 		String letras = "abcdefghijklmnopqrstuvywxzABCDEFGHIJKLMNOPQRSTUVYWXZ0123456789";  
 
@@ -266,8 +272,8 @@ public class CodeManager {
 			return false;
 		}
 		return true;
-
 	}
+    
 	public static void callDialog(String Title, String message, int IdIcon, Context mContext) {
 		AlertDialog.Builder mBuild = new AlertDialog.Builder(mContext);
 		mBuild.setTitle(Title)
@@ -299,7 +305,8 @@ public class CodeManager {
 		} catch (IOException e) {
 		}
 	}
-	public static void callBroadCast(File file, Context Context) {
+	
+    public static void callBroadCast(File file, Context Context) {
 
 		if (Build.VERSION.SDK_INT >= 19) {
 			Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);

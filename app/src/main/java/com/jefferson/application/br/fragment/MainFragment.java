@@ -30,6 +30,7 @@ import java.io.File;
 import java.util.ArrayList;
 import android.view.MenuInflater;
 import android.view.Menu;
+import android.support.design.widget.Snackbar;
 
 public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener, OnLongClickListener {
 
@@ -41,13 +42,9 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	public static final String UNIT_TEST_ID="ca-app-pub-3940256099942544/6300978111";
 	public static final String UNIT_ID="ca-app-pub-3062666120925607/7395488498";
 	public static final int GET_FILE = 35;
-    private JTask retriveTask;
-    private boolean corruptedDatabase;
-    
-    public int getPagerPosition() {
-        return viewPager.getCurrentItem();
-    }
 
+    private View fab;
+   
 	public MainFragment() {
 
 	}
@@ -55,7 +52,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		MainActivity main = (MainActivity)getActivity();
-
+        
 		if (view == null) {
 			view = inflater.inflate(R.layout.main_fragment, null);
 			pagerAdapter = new pagerAdapter(getActivity().getSupportFragmentManager());
@@ -71,7 +68,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 			tabLayout.setupWithViewPager(viewPager);
 
 			//fabMenu = (FloatingActionsMenu) view.findViewById(R.id.mFloatingActionsMenu);
-		    View fab = view.findViewById(R.id.fab);
+		    fab = view.findViewById(R.id.fab);
             fab.setOnClickListener(this);
             fab.setOnLongClickListener(this);
 
@@ -114,10 +111,25 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     @Override
     public boolean onLongClick(View view) {
         AlbumFragment fragment = (AlbumFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
-        fragment.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER);
+        fragment.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER, -1);
         return true;
     }
+    
+    public void showSnackBar(String message, int length) {
+        Snackbar.make(fab, message, length);
+    }
 
+    public void removeFolder(int folderPosition, int pagerPostion) {
+        if (pagerAdapter != null) {
+            AlbumFragment fragment = pagerAdapter.getItem(pagerPostion);
+            fragment.removeFolder(folderPosition);
+        }
+    }
+
+    public int getPagerPosition() {
+        return viewPager.getCurrentItem();
+    }
+    
 	public void importFromGallery() {
 		Intent intent = new Intent(getContext(), ImportGalleryActivity.class);
 		intent.putExtra("position", viewPager.getCurrentItem());

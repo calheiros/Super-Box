@@ -16,18 +16,42 @@ import com.jefferson.application.br.util.*;
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> {
 
 	private AlbumFragment fragment;
-	private ArrayList<FolderModel> items;
+	private ArrayList<FolderModel> models;
 	private View group;
     private int pagerPosition;
     
 	public AlbumAdapter(AlbumFragment fragment , ArrayList<FolderModel> items) {
 		this.fragment = fragment;
-		this.items = items;
+		this.models = items;
         this.pagerPosition = fragment.getPagerPosition();
 	}
+
+    public FolderModel getItem(int itemPosition) {
+        if (itemPosition >= 0 && itemPosition < getItemCount()) {
+            return models.get(itemPosition);
+        }
+        return null;
+    }
+    
+    public void insertItem(FolderModel item) {
+        models.add(item);
+        notifyItemInserted(getItemCount() - 1);
+    }
+    
+    public void insertItem(FolderModel model, int position){
+        models.add(position, model);
+        notifyItemInserted(position);
+    }
+    
+    public void removeItem(int position) {
+        if (position >= 0 && position < getItemCount()){
+             models.remove(position);
+             notifyItemRemoved(position);
+        }
+    }
     
     public void setUpdatedData(ArrayList<FolderModel> localList) {
-		items = localList;
+		models = localList;
 		notifyDataSetChanged();
 	}
     
@@ -40,7 +64,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
 	@Override
 	public void onBindViewHolder(final viewHolder holder, final int position) {
-        FolderModel f_model = items.get(position);
+        FolderModel f_model = models.get(position);
 	    holder.tv_foldern.setText(f_model.getName());
 		holder.tv_foldersize.setText(String.valueOf(f_model.getItems().size()));
         boolean isEmpty = f_model.getItems().isEmpty();
@@ -72,15 +96,15 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 				public void onClick(View view) {
 					Intent intent = new Intent(fragment.getContext(), ViewAlbum.class);
 					intent.putExtra("position", fragment.getPagerPosition());
-					intent.putExtra("name", items.get(position).getName());
-					intent.putExtra("data", items.get(position).getItems());
-					intent.putExtra("folder", items.get(position).getPath());
+					intent.putExtra("name", models.get(position).getName());
+					intent.putExtra("data", models.get(position).getItems());
+					intent.putExtra("folder", models.get(position).getPath());
 					fragment.getActivity().startActivity(intent);
 				}
 			}
         );
 
-		holder.cd_layout.setOnLongClickListener(new View.OnLongClickListener(){
+		holder.cd_layout.setOnLongClickListener(new View.OnLongClickListener() {
 
 				@Override
 				public boolean onLongClick(final View view) {
@@ -93,9 +117,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 							public void onClick(DialogInterface dInterface, int index) {
 
                                 if (index == 0) {
-									fragment.deleteAlbum(items.get(position));
+									fragment.deleteAlbum(models.get(position), position);
 								} else {
-                                    fragment.inputFolderDialog(items.get(position), fragment.ACTION_RENAME_FOLDER);
+                                    fragment.inputFolderDialog(models.get(position), fragment.ACTION_RENAME_FOLDER, position);
                                 }
 							}
 						}
@@ -110,7 +134,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
 	@Override
 	public int getItemCount() {
-		return items.size();
+		return models.size();
 	}
 
 	public class viewHolder extends RecyclerView.ViewHolder {

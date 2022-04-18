@@ -52,11 +52,10 @@
                 android:id="@+id/tv_folder2"
                 android:singleLine="true"
                 android:gravity="center"
-                android:textStyle="bold"
                 android:layout_marginBottom="8dp"
                 android:layout_marginLeft="10dp"
                 android:shadowColor="#8B000000"
-                android:shadowRadius="1"
+                android:shadowRadius="2"
                 android:textColor="#f0f0f0"
                 android:layout_gravity="bottom|start"
                 android:textSize="13sp"/>

@@ -1,5 +1,6 @@
 package com.jefferson.application.br.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +13,7 @@ import android.view.animation.AnimationUtils;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import com.jefferson.application.br.FileModel;
@@ -19,14 +21,16 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.adapter.FilePickerAdapter;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.fragment.AlbumFragment;
 import com.jefferson.application.br.model.PickerModel;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.Storage;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import android.view.Menu;
 
-public class FilePicker extends MyCompatActivity implements OnItemClickListener {
+public class FolderPicker extends MyCompatActivity implements OnItemClickListener {
 
     private String currentPath;
     private FilePickerAdapter filePickerAdapter;
@@ -35,34 +39,30 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
     private Toolbar mToolbar;
     private List<String> paths;
     private int position;
-
     private FloatingActionButton fab;
 
     public class MoveFilesTask extends JTask {
 
         @Override
         public void onException(Exception e) {
-            Toast.makeText(FilePicker.this, "Error!", 1).show();
+            Toast.makeText(FolderPicker.this, "Error!", 1).show();
         }
-
-
         ArrayList<String> mMovedArray;
         String folder;
         SimpleDialog progress;
 
-        public MoveFilesTask(FilePicker filePicker, String str) {
+        public MoveFilesTask(FolderPicker filePicker, String str) {
             this.mMovedArray = new ArrayList<>();
             this.folder = str;
         }
 
         @Override
         public void onBeingStarted() {
-            this.progress = new SimpleDialog(FilePicker.this);
+            this.progress = new SimpleDialog(FolderPicker.this);
             this.progress.setMax(paths.size());
             this.progress.setTitle("Movendo...");
 			this.progress.setProgress(0);
             this.progress.show();
-
         }
 
         @Override
@@ -84,14 +84,11 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
         public void workingThread() {
 
             for (String str : paths) {
-
                 File file = new File(str);
                 File newFile = new File(folder, file.getName());
-
                 if (file.renameTo(newFile)) {
 					mMovedArray.add(str);
                 }
-
                 sendUpdate(progress.getProgress() + 1);
             }
         }
@@ -119,7 +116,7 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
 
                 @Override
                 public void onClick(View p1) {
-                    new MoveFilesTask(FilePicker.this, (filePickerAdapter.models.get(filePickerAdapter.getSelectedItem())).getPath()).start();
+                    new MoveFilesTask(FolderPicker.this, (filePickerAdapter.models.get(filePickerAdapter.getSelectedItem())).getPath()).start();
                     fab.hide();
                 }
             }
@@ -133,11 +130,11 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
 
         if (selectedItem == -1) {
             fab.setVisibility(View.VISIBLE);
-            Animation slideUpAnimation = AnimationUtils.loadAnimation(FilePicker.this, R.anim.slide_up);
+            Animation slideUpAnimation = AnimationUtils.loadAnimation(FolderPicker.this, R.anim.slide_up);
             slideUpAnimation.setInterpolator(new DecelerateInterpolator());
             fab.startAnimation(slideUpAnimation);
         } 
-        Animation anim = AnimationUtils.loadAnimation(FilePicker.this, R.anim.fade_in);
+        Animation anim = AnimationUtils.loadAnimation(FolderPicker.this, R.anim.fade_in);
         anim.setDuration(250);
         view.startAnimation(anim);
         filePickerAdapter.setSelectedItem(i);
@@ -147,12 +144,50 @@ public class FilePicker extends MyCompatActivity implements OnItemClickListener 
         this.filePickerAdapter.update(getModels(this.position));
     }
 
+    public void createFolder() {
+        View contentView = getLayoutInflater().inflate(R.layout.dialog_edit_text, null);
+        final EditText editText = contentView.findViewById(R.id.editTextInput);
+        SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.INPUT_STYLE);
+        
+        dialog.setContentView(contentView);
+        dialog.setTitle(getString(R.string.criar_pasta));
+        dialog.setNegativeButton(getString(android.R.string.cancel), null);
+        dialog.setPositiveButton(getString(android.R.string.ok), new SimpleDialog.OnDialogClickListener() {
+
+                @Override
+                public boolean onClick(SimpleDialog dialog) {
+                    String name = editText.getText().toString();
+                    String result = AlbumFragment.validateFolderName(name, FolderPicker.this);
+                    if (!result.equals(AlbumFragment.FOLDER_NAME_OKAY)) {
+                        Toast.makeText(FolderPicker.this, result, Toast.LENGTH_SHORT).show();
+                        return false;
+                    }
+                    boolean success = AlbumFragment.createFolder(FolderPicker.this, name, position) != null;
+                    if (success) {
+                        update();
+                    }
+                    return success;
+                }
+            }
+        ).show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_file_picker, menu);
+        return true;
+    }
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
-        int itemId = menuItem.getItemId();
 
-        if (itemId == android.R.id.home) {
-            finish();
+        switch (menuItem.getItemId()) {
+            case android.R.id.home:   
+                finish();
+                break;
+            case R.id.item_create_folder:
+                createFolder();
+                break;
         }
 
         return super.onOptionsItemSelected(menuItem);

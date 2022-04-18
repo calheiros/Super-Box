@@ -28,7 +28,7 @@
 			android:paddingLeft="6dp">
 
 			<TextView
-				android:textSize="17sp"
+				android:textSize="16sp"
 				android:textColor="?commonColorLight"
 				android:layout_gravity="center|start"
 				android:id="@+id/item_title"

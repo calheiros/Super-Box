@@ -57,7 +57,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     private MonoTypePrepareTask preparationTask;
 
     public void setupToolbar(Toolbar toolbar, String string, int menuId) {
-
     }
 
     @Override
@@ -147,6 +146,18 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		createInterstitial();
         createReceiver();
 	}
+    
+    public void showSnackBar(String message, int length) {
+        if (mainFragment != null) {
+            mainFragment.showSnackBar(message, length);
+        }
+    }
+    
+    public void removeFolder(int folderPosition, int pagerPostion) {
+        if (mainFragment != null) {
+            mainFragment.removeFolder(folderPosition, pagerPostion);
+        }
+    }
     
     public static void setWindowFlag(Activity activity, final int bits, boolean on) { 
         Window win = activity.getWindow(); 

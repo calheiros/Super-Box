@@ -10,8 +10,8 @@
     <LinearLayout
         android:id="@+id/calculator_layoutLinearLayout"
         android:layout_width="match_parent"
-        android:layout_weight="1"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
         <EditText
             android:layout_width="match_parent"
@@ -20,16 +20,16 @@
             android:id="@+id/calculator_layoutEditText"
             android:focusableInTouchMode="false"
             android:textSize="22pt"
-            android:digits="1234567890+×÷-."
+            android:digits="1234567890+×÷-.()"
             android:background="@android:color/transparent"
             android:ems="200"/>
+        
     </LinearLayout>
 
     <GridLayout
-        android:layout_weight="1.5"
         android:useDefaultMargins="true"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:columnCount="4"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
@@ -43,6 +43,7 @@
             android:layout_width="42pt"
             android:layout_height="42pt"
             android:text="("
+            android:onClick="openParenthesis"
             android:includeFontPadding="false"
             android:focusable="true"
             android:textStyle="bold"
@@ -53,6 +54,7 @@
             android:layout_width="42pt"
             android:layout_height="42pt"
             android:text=")"
+            android:onClick="closeParenthesis"
             android:includeFontPadding="false"
             android:focusable="true"
             android:textStyle="bold"
@@ -62,8 +64,8 @@
             android:background="@drawable/bg_rounded"
             android:layout_width="42pt"
             android:layout_height="42pt"
-            android:text="%"
-            android:onClick="percentage"
+            android:text="√"
+            android:onClick="exponentiation"
             android:id="@+id/calculator_percentage"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -82,7 +84,7 @@
             android:textStyle="bold"
             android:textSize="22pt"/>
 
-        <!--"- ROW MULTIPLICATION -->
+        <!-- ROW MULTIPLICATION -->
 
         <Button
             android:background="@drawable/bg_rounded"
@@ -257,8 +259,8 @@
             android:includeFontPadding="false"
             android:textColor="#FFDE4029"
             android:id="@+id/calculator_backspaceButton"
-            android:layout_height="42pt"
-            android:layout_width="42pt"/>
+            android:layout_height="40pt"
+            android:layout_width="40pt"/>
 
         <Button
             android:background="@drawable/bg_button_calc_result"
@@ -271,8 +273,7 @@
             android:focusable="true"
             android:textStyle="bold"
             android:textSize="22pt"/>
-
-
+        
     </GridLayout>
 
 </LinearLayout>

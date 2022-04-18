@@ -274,7 +274,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             return;
         }
 
-        final Intent intent = new Intent(ViewAlbum.this, FilePicker.class);
+        final Intent intent = new Intent(ViewAlbum.this, FolderPicker.class);
         intent.putExtra("selection", getSelectedItemsPath());
         intent.putExtra("position", position);
         intent.putExtra("current_path", folder.getAbsolutePath());
@@ -797,7 +797,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 			Storage.scanMediaFiles(mArrayPath.toArray(new String[mArrayPath.size()]));
 
 			mySimpleDialog.dismiss();
-			mUpdate.die();
+			mUpdate.destroy();
 
 			if (mAdapter.mListItemsModels.isEmpty()) {
 				deleteFolder();

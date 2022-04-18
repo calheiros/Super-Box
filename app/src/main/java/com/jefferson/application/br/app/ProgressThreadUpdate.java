@@ -42,7 +42,7 @@ public class ProgressThreadUpdate extends Thread {
 		this.max = max;
 	}
     
-	public void die() {
+    public void destroy() {
 		mHandler.removeCallbacks(mRunnable);
 		running = false;
 		
@@ -52,6 +52,7 @@ public class ProgressThreadUpdate extends Thread {
             
         }
 	}
+    
 	@Override
 	public void start() {
 		
@@ -63,16 +64,16 @@ public class ProgressThreadUpdate extends Thread {
 		}
 	}
     
-	public void Tsleep(int millis){
-		try {
-			this.sleep(millis);
-		} catch (InterruptedException e) {}
-	}
+	
     
 	@Override
 	public void run() {
 		while (running) {
-			Tsleep(50);
+			try {
+                sleep(50);
+            } catch (InterruptedException e) {
+                
+            }
 			long kilobytes = mTransfer.getTransferedKbs();
 			long progress = Math.round(((100 / (double)max) * kilobytes));
 			dialog.setProgress((int)progress);

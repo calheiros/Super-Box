@@ -124,7 +124,7 @@ public class ImportTask extends JTask {
 	}
 
 	private void synchronize() {
-		mUpdate.die();
+		mUpdate.destroy();
 		myAlertDialog.dismiss();
 		Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]));
         folderDatabase.close();

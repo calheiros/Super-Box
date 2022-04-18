@@ -20,7 +20,8 @@ public class DeleteFilesTask extends JTask {
     private File rootFile;
     private PathsData mData;
     private PathsData.Folder folderDatabase;
-
+    private boolean success;
+    
     public DeleteFilesTask(Context context, ArrayList<String> items, int position, File rootFile) {
         this.items = items;
         this.position = position;
@@ -31,6 +32,10 @@ public class DeleteFilesTask extends JTask {
         folderDatabase = PathsData.Folder.getInstance(context);
     }
 
+    public boolean success() {
+        return false;
+    }
+
     @Override
     public void workingThread() {
         for (String item : items) {
@@ -39,7 +44,7 @@ public class DeleteFilesTask extends JTask {
             }
             File file = new File(item);
 
-            if (file.delete()) {
+            if (success = file.delete()) {
                 progress++;
                 String name = null;
                 if ((name = mData.getPath(file.getName())) != null) {

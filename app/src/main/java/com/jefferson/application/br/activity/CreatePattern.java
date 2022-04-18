@@ -2,33 +2,24 @@ package com.jefferson.application.br.activity;
 
 import android.Manifest;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+import com.jefferson.application.br.App;
 import com.jefferson.application.br.MaterialLockView;
-import com.jefferson.application.br.util.PasswordManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MyCompatActivity;
-import java.util.List;
-import com.jefferson.application.br.util.JDebug;
-import android.provider.Settings;
-import android.content.IntentFilter;
-import com.jefferson.application.br.App;
-import com.jefferson.application.br.util.EncrytionUtil;
-import com.jefferson.application.br.AppLockWindow;
-import java.io.File;
-import com.jefferson.application.br.util.Storage;
-import com.jefferson.application.br.util.StringUtils;
-import javax.crypto.SecretKey;
 import com.jefferson.application.br.service.AppLockService;
-import android.widget.Toast;
+import com.jefferson.application.br.util.PasswordManager;
+import java.util.List;
 
 public class CreatePattern extends MyCompatActivity {
 

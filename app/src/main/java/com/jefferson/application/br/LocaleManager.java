@@ -1,18 +1,20 @@
 package com.jefferson.application.br;
 
-import android.content.*;
-import android.content.res.*;
-import android.os.*;
-import android.preference.*;
-import java.util.*;
-import android.widget.Toast;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.os.Build;
+import com.jefferson.application.br.util.MyPreferences;
+import java.util.Locale;
 
 public class LocaleManager {
 
     public static void configureLocale(Context c) {
         String language = getLanguage(c);
-        if (language != null)
+        if (language != null) {
             updateResources(c, language);
+        }
     }
 
     public static void setNewLocale(Context c, String language) {
@@ -21,17 +23,18 @@ public class LocaleManager {
     }
 
     public static String getLanguage(Context c) { 
-		SharedPreferences mSheredPreferences = PreferenceManager.getDefaultSharedPreferences(c);
-		return mSheredPreferences.getString("locale", null);
+		SharedPreferences mSheredPreferences = MyPreferences.getSharedPreferences(c);
+		return mSheredPreferences.getString("locale", Locale.getDefault().getLanguage());
 	}
 
     private static void persistLanguage(Context c, String language) { 
-        SharedPreferences mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(c);
+        SharedPreferences mSharedPreferences = MyPreferences.getSharedPreferences(c);
 		mSharedPreferences.edit().putString("locale", language).commit();
 	}
 
     public static Context updateResources(Context context, String language) {
-        Context newContext = context; Locale locale = new Locale(language);
+        Context newContext = context; 
+        Locale locale = new Locale(language);
         Locale.setDefault(locale); 
         Resources resources = context.getResources();
         Configuration config = new Configuration(resources.getConfiguration());
@@ -40,7 +43,8 @@ public class LocaleManager {
             config.setLocale(locale);
             newContext = context.createConfigurationContext(config);
         } else {
-            config.locale = locale; resources.updateConfiguration(config, resources.getDisplayMetrics()); 
+            config.locale = locale; 
+            resources.updateConfiguration(config, resources.getDisplayMetrics()); 
         } return newContext;
     }
 }
