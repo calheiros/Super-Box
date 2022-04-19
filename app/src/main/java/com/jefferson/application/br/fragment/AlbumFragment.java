@@ -69,7 +69,7 @@ public class AlbumFragment extends Fragment {
     };
 
     public AlbumFragment() {
-
+        
     }
 
     public void putModels(ArrayList<FolderModel> models) {
@@ -200,7 +200,7 @@ public class AlbumFragment extends Fragment {
                 JDebug.writeLog(e.getCause());
             }
             public void  run() {
-                
+
             }
         };
         retrieveMedia.setThreadPriority(Thread.MAX_PRIORITY);
@@ -211,7 +211,7 @@ public class AlbumFragment extends Fragment {
         corruptedWarnHandler.sendEmptyMessage(0);
     }
 
-    public void inputFolderDialog(final FolderModel model, final int action, final int itemPosition) {
+    public void inputFolderDialog(final FolderModel model, final int action) {
 
         Context context = getContext();
         View contentView = getActivity().getLayoutInflater().
@@ -250,10 +250,11 @@ public class AlbumFragment extends Fragment {
                         case ACTION_RENAME_FOLDER:
                             if (success = renameFolder(getContext(), model, text, position)) {
                                 message = "Folder renamed to \"" + text + "\".";
-                                FolderModel item = albumAdapter.getItem(itemPosition);
-                                if (item != null) {
-                                    item.setName(text);
-                                    albumAdapter.notifyItemChanged(itemPosition);
+                                int index = albumAdapter.getItemPosition(model.getPath());
+                                //FolderModel model = albumAdapter.getItem(index);
+                                if (index != -1) {
+                                    model.setName(text);
+                                    albumAdapter.notifyItemChanged(index);
                                 }
                             } else {
                                 message = "Falied to rename folder! :(";
@@ -268,9 +269,9 @@ public class AlbumFragment extends Fragment {
                                 message = "Falied to create folder! :(";
                             }
                     }
-                    if (success) {
-                         populateReciclerView();
-                     }
+                    /* if (!success) {
+                     //populateReciclerView();
+                     }*/
                     ((MainActivity)getActivity()).showSnackBar(message, Snackbar.LENGTH_SHORT);
                     notifyDataUpdated();
                     Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
@@ -364,7 +365,10 @@ public class AlbumFragment extends Fragment {
         }
     }
 
-    public void deleteAlbum(final FolderModel model, final int itemPosition) {
+    public void deleteAlbum(final FolderModel model) {
+        if (model == null){
+            return;
+        }
 		String name = "\"" + model.getName() + "\"";
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(getString(R.string.apagar));
@@ -379,9 +383,10 @@ public class AlbumFragment extends Fragment {
 
                             @Override
                             public void onFinished() {
-                                if (task.success()){
-                                    albumAdapter.removeItem(itemPosition);
-                                } else{
+                                if (task.deletedAll()) {
+                                    albumAdapter.removeItem(model);
+                                    notifyDataUpdated();
+                                } else {
                                     ((MainActivity)getActivity()).updateFragment(getPagerPosition());
                                 }
                             }

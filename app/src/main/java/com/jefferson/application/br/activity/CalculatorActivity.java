@@ -133,7 +133,6 @@ public class CalculatorActivity extends AppCompatActivity implements OnLongClick
 
     public void result(View v) {
         String expression = StringUtils.replaceEach(editText.getText().toString(), operatorMap);
-        //Toast.makeText(this, expression, 1).show();
         String result = "";
         try {
             DecimalFormat format = new DecimalFormat("0.#");

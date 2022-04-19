@@ -32,7 +32,6 @@
         android:textColor="?colorBackground"
         android:padding="12dp"
         android:minWidth="65dp"
-        android:textStyle="bold"
         android:includeFontPadding="false"
         android:gravity="center"
 		android:id="@+id/dialogPositiveButton"/>

@@ -38,7 +38,6 @@
     </style>
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
         <!--<item name="android:background">@drawable/alert_background</item>
-
         <item name="colorControlHighlight">@android:color/transparent</item>
         -->
         <item name="colorAccent">@color/colorAccent</item>
@@ -51,6 +50,7 @@
 	</style>
 
     <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -59,7 +59,7 @@
         <item name="commonColorDark">#FFA6AAB1</item>
         <item name="commonColor">#FF141414</item>
         <item name="commonColorLight">#FF0D0D0D</item>
-        <item name="android:windowBackground">#f0f0f0</item>
+        <!--<item name="android:windowBackground">#FFF0F0F0</item>-->
         <item name="colorControlHighlight">#1C050505</item>
     </style>
 
@@ -72,12 +72,26 @@
         <item name="commonColorDark">@color/colorCommonDark</item>
         <item name="commonColor">@color/colorCommon</item>
         <item name="colorControlHighlight">#72000000</item>
-        
         <item name="commonColorLight">@color/colorCommonLight</item>
         <item name="android:windowBackground">@color/colorBackground</item>
     </style>
     
+    <!--<style name="TransparentTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="textShadowColor">#6900D6FF</item>
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorBackgroundSecondary">@color/colorBackgroundDark</item>
+        <item name="colorBackground">#8A333333</item>
+        <item name="commonColorDark">@color/colorCommonDark</item>
+        <item name="commonColor">@color/colorCommon</item>
+        <item name="commonColorLight">@color/colorCommonLight</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="colorControlHighlight">@color/highLightColor</item>
+    </style>-->
+        
     <style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>

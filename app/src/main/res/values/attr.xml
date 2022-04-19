@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="textShadowColor" format="reference|color"/>
     <attr name="colorBackgroundSecondary" format="reference|color"/>
     <attr name="colorBackground" format="reference|color"/>
     <attr name="commonColorDark" format="reference|color"/>

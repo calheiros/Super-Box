@@ -11,6 +11,8 @@ import com.jefferson.application.br.database.*;
 import com.jefferson.application.br.widget.*;
 import java.util.*;
 import com.jefferson.application.br.util.*;
+import android.app.AlertDialog;
+import com.jefferson.application.br.activity.FakeDialogActivity;
 
 public class AppLockWindow {
 
@@ -21,12 +23,13 @@ public class AppLockWindow {
 	private Handler Handler = new Handler();
 	private String currentApp;
 	private MaterialLockView materialLockView;
-    private boolean isLocked;
+    private boolean locked;
 	private AppsDatabase database;
 	private ImageView iconImageView;
     private String passedApp = "";
     private String password;
     private View lastView;
+    private String appAllowed = "";
 
 	public AppLockWindow(final Context context, final AppsDatabase db) {
 
@@ -85,21 +88,6 @@ public class AppLockWindow {
                 //Toast.makeText(context, "KEY " + e.getKeyCode(), 1).show();
                 return true;
             }
-
-            private boolean startDefaultLauncher() {
-
-                try {
-                    Intent intent = new Intent(Intent.ACTION_MAIN);
-                    intent.addCategory(Intent.CATEGORY_HOME);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    context.startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    JDebug.toast(e.getMessage());
-                    return false;
-                }
-
-                return true;
-            }
         };
 
         //layout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
@@ -108,7 +96,20 @@ public class AppLockWindow {
         View root = LayoutInflater.from(context).inflate(R.layout.pattern, layout);
         return root;
     }
+    private boolean startDefaultLauncher() {
 
+        try {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            JDebug.toast(e.getMessage());
+            return false;
+        }
+
+        return true;
+    }
 	public void refreshView() {
 		createView();
 
@@ -125,7 +126,7 @@ public class AppLockWindow {
         materialLockView = (MaterialLockView) view.findViewById(R.id.pattern);
 
 		if (currentApp != null) 
-			iconImageView.setImageDrawable(getIcon(currentApp));
+			iconImageView.setImageDrawable(getIconDrawable(currentApp));
 
         if (materialLockView != null) {
             materialLockView.setTactileFeedbackEnabled(false);
@@ -134,22 +135,38 @@ public class AppLockWindow {
 	}
 
 	public boolean isLocked() {
-		return isLocked;
+		return locked;
 	}
 
 	public void lock(String appName) {
-		isLocked = true;
+		locked = true;
 		currentApp = appName;
-		iconImageView.setImageDrawable(getIcon(appName));
-		windowManager.addView(view, params);
+		iconImageView.setImageDrawable(getIconDrawable(appName));
+        if (startDefaultLauncher()) {
+            appAllowed = appName;
+            openFakeDialog(appName);
+        } else {
+		    windowManager.addView(view, params);
+        }
 	}
+
+    private void openFakeDialog(String appName) {
+        Intent intent = new Intent(context, FakeDialogActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra("app_name", appName);
+        context.startActivity(intent);
+    }
 
 	public void unlock() {
-		windowManager.removeView(view);
-		isLocked = false;
+        try {
+            windowManager.removeView(view);
+        } catch (IllegalArgumentException e) {
+            //JDebug.writeLog(e.getCause());
+        }
+		locked = false;
 	}
 
-	private Drawable getIcon(String packageName) {
+	private Drawable getIconDrawable(String packageName) {
 		try {
 			return context.getPackageManager().getApplicationIcon(packageName);
 		} catch (PackageManager.NameNotFoundException e) {}

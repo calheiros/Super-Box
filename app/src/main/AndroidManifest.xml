@@ -207,7 +207,12 @@
         <activity android:name=".activity.Camera"/>
 
         <activity android:name=".activity.FolderPicker"/>
-
+            
+        <activity
+            android:name=".activity.FakeDialogActivity"
+            android:theme="@style/Theme.Transparent"
+            android:excludeFromRecents="true"/>
+        
         <activity
             android:name=".activity.CreatePattern"
             android:excludeFromRecents="true"

@@ -91,7 +91,6 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 				break;
 			case R.id.ad_view: // R.id.fab_create:
                 int position = getPagerPosition();
-
                 try {
 					startActivityForResult(new Intent(Intent.ACTION_GET_CONTENT).addCategory(Intent.CATEGORY_DEFAULT).setType(position == 0 ? "image/*" : "video/*"), GET_FILE);
 				} catch (ActivityNotFoundException e) {
@@ -111,7 +110,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     @Override
     public boolean onLongClick(View view) {
         AlbumFragment fragment = (AlbumFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
-        fragment.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER, -1);
+        fragment.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER);
         return true;
     }
     

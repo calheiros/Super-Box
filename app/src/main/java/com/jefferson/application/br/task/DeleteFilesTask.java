@@ -9,6 +9,7 @@ import com.jefferson.application.br.database.*;
 import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
+import com.jefferson.application.br.task.JTask.OnFinishedListener;
 
 public class DeleteFilesTask extends JTask {
 
@@ -20,8 +21,10 @@ public class DeleteFilesTask extends JTask {
     private File rootFile;
     private PathsData mData;
     private PathsData.Folder folderDatabase;
-    private boolean success;
-    
+    private boolean deletedAll;
+
+    private JTask.OnFinishedListener listener;
+
     public DeleteFilesTask(Context context, ArrayList<String> items, int position, File rootFile) {
         this.items = items;
         this.position = position;
@@ -32,25 +35,24 @@ public class DeleteFilesTask extends JTask {
         folderDatabase = PathsData.Folder.getInstance(context);
     }
 
-    public boolean success() {
-        return false;
+    public boolean deletedAll() {
+        return deletedAll;
     }
 
     @Override
     public void workingThread() {
-        for (String item : items) {
+        for (String path : items) {
             if (isInterrupted()) {
                 break;
             }
-            File file = new File(item);
-
-            if (success = file.delete()) {
+            File file = new File(path);
+            if (file.delete()) {
                 progress++;
                 String name = null;
                 if ((name = mData.getPath(file.getName())) != null) {
                     mData.deleteData(file.getName());
                 }
-                sendUpdate(item, name);
+                sendUpdate(path, name);
             }
         }
     }
@@ -71,16 +73,28 @@ public class DeleteFilesTask extends JTask {
                 }
             }
         );
-		dialog.show();
+        if (items.size() > 10) {
+            dialog.show();
+        }
     }
 
     @Override
     public void onFinished() {
-        dialog.dismiss();
-
-        if (rootFile.list().length == 0) {
+        dialog.cancel();
+        deletedAll = rootFile.list().length == 0; 
+        
+        if (deletedAll) {
             deleteFolder(rootFile);
-		}
+        }
+
+        if (listener != null) {
+            listener.onFinished();
+        }
+    }
+
+    @Override
+    public void setOnFinishedListener(JTask.OnFinishedListener listener) {
+        this.listener = listener;
     }
 
     @Override
@@ -103,9 +117,12 @@ public class DeleteFilesTask extends JTask {
 
 	private void deleteFolder(File file) {
 
-        if (file.delete()) {
-			folderDatabase.delete(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
-		}
-		folderDatabase.close();
+        try {
+            if (file.delete()) {
+                folderDatabase.delete(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
+            }
+        } finally {
+            folderDatabase.close();
+        }
 	}
 }

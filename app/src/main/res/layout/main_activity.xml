@@ -33,7 +33,6 @@
 		app:itemIconTint="@color/drawer_item"
 		app:itemTextColor="@color/drawer_item"
 		android:fitsSystemWindows="true"
-		
 		android:id="@+id/nav_view"
 		android:layout_gravity="start"
 		android:layout_width="wrap_content"

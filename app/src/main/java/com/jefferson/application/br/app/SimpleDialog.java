@@ -90,7 +90,6 @@ public class SimpleDialog  {
 	}
 
     public SimpleDialog setSingleLineMessage(boolean single) {
-        //deprecated
         //contentText.setSingleLine(single);
         if (single) { 
             contentText.setEllipsize(TextUtils.TruncateAt.MIDDLE);
@@ -98,7 +97,6 @@ public class SimpleDialog  {
         } else {
             contentText.setMaxLines(256);
             contentText.setEllipsize(TextUtils.TruncateAt.END);
-
         }
         return this;
     }
@@ -116,7 +114,7 @@ public class SimpleDialog  {
 
         this.jdialog = new JDialog(context, style == INPUT_STYLE);
 
-        int color  = ContextCompat.getColor(context, R.color.colorAccent);
+        int color = ContextCompat.getColor(context, R.color.colorAccent);
         progressBar.setMax(100);
         progressBar.setReachedBarColor(color);
         progressBar.setProgressTextColor(color);
