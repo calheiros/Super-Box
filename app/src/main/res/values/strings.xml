@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="usage_data_permission_message">You need to grant permission &quot;Access usage data&quot; for this function to work correctly.</string>
+    <string name="calculadora">Calculator</string>
     <string name="pasta_nome_muito_grande">Maximum number of characters exceeded!</string>
     <string name="pasta_nome_vazio">The folder name can\'t be empty!</string>
     <string name="padrao_do_sistema">System default</string>
@@ -40,7 +42,7 @@
 	<string name="itens">items</string>
 	<string name="erro">Error</string>
 	<string name="criar_album">Create album</string>
-	<string name="quer_realmente_sair">Do you really want to go out?</string>
+	<string name="quer_realmente_sair">Do you really want to exit?</string>
 	<string name="nao">No</string>
 	<string name="app_name">Super Box</string>
 	<string name="excluir_aviso">This action cannot be undone.</string>

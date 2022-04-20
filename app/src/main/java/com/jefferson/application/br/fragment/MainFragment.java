@@ -87,7 +87,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		switch (v.getId()) {
 			case R.id.fab:
 				Intent intent = new Intent(getContext(), ImportGalleryActivity.class);
-				getActivity().startActivityForResult(intent.putExtra("position", viewPager.getCurrentItem()), 23);
+				getActivity().startActivityForResult(intent.putExtra("position", viewPager.getCurrentItem()), MainActivity.IMPORT_FROM_GALLERY_CODE);
 				break;
 			case R.id.ad_view: // R.id.fab_create:
                 int position = getPagerPosition();

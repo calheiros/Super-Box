@@ -76,7 +76,7 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
     }
     
     protected void onApplyCustomTheme() {
-        setTheme(MyPreferences.getAppTheme());
+        setTheme(MyPreferences.getThemeResId());
     }
     
     @Override

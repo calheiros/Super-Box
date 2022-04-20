@@ -20,7 +20,7 @@ public class DialogUtils {
     }
     
     public static int getTheme(){
-       if( MyPreferences.getAppTheme() == R.style.MainTheme){
+       if( MyPreferences.getThemeResId() == R.style.MainTheme){
            return R.style.CustomAlertDialog;
        } else {
            return R.style.CustomAlertDialogLight;

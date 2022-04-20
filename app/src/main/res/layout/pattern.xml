@@ -3,13 +3,9 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent"
+    android:id="@+id/patternRelativeLayout"
+    android:background="@color/colorPrimary"
 	android:orientation="vertical">
-
-	<ImageView
-		android:layout_height="match_parent"
-		android:layout_width="match_parent"
-		android:background="@color/colorPrimary"
-		android:id="@+id/patternImageView1"/>
 
 	<RelativeLayout
         android:layout_gravity="center"

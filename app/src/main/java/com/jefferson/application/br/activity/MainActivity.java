@@ -89,10 +89,11 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	public static final String admob_key="ca-app-pub-3062666120925607/8250392170";
     public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
-    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 0;
+    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12;
     private static final int GET_URI_CODE_TASK = 54;
 	private static final int GET_URI_CODE = 98;
-
+    public static final int IMPORT_FROM_GALLERY_CODE = 43;
+    
     public MainFragment mainFragment;
 	private LockFragment lockFragment;
 	private DrawerLayout drawerLayout;
@@ -382,7 +383,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 					sharedPreferences.edit().putString(getString(R.string.EXTERNAL_URI), uri.toString()).commit();
 				} 
 
-			} else {
+			} else if (requestCode == IMPORT_FROM_GALLERY_CODE) {
 				position = data.getIntExtra("position", -1);
                 String type = data.getStringExtra("type");
 				ArrayList<String> paths = data.getStringArrayListExtra("selection");

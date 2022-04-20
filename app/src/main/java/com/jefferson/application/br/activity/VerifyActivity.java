@@ -3,6 +3,7 @@ package com.jefferson.application.br.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,11 +12,11 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import com.jefferson.application.br.App;
-import com.jefferson.application.br.LocaleManager;
 import com.jefferson.application.br.MaterialLockView;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.PasswordManager;
@@ -33,6 +34,14 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
 		super.onCreate(savedInstanceState);
         checkPassword();
 		setContentView(R.layout.pattern);
+        
+        View parent = findViewById(R.id.patternRelativeLayout);
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = getTheme();
+        theme.resolveAttribute(R.attr.colorPrimary, typedValue, true);
+        int color = typedValue.data;
+        parent.setBackgroundColor(color);
+
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
 

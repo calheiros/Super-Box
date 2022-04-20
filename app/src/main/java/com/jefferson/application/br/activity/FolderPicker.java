@@ -133,7 +133,8 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
             Animation slideUpAnimation = AnimationUtils.loadAnimation(FolderPicker.this, R.anim.slide_up);
             slideUpAnimation.setInterpolator(new DecelerateInterpolator());
             fab.startAnimation(slideUpAnimation);
-        } 
+        }
+
         Animation anim = AnimationUtils.loadAnimation(FolderPicker.this, R.anim.fade_in);
         anim.setDuration(250);
         view.startAnimation(anim);
@@ -148,7 +149,7 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
         View contentView = getLayoutInflater().inflate(R.layout.dialog_edit_text, null);
         final EditText editText = contentView.findViewById(R.id.editTextInput);
         SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.INPUT_STYLE);
-        
+
         dialog.setContentView(contentView);
         dialog.setTitle(getString(R.string.criar_pasta));
         dialog.setNegativeButton(getString(android.R.string.cancel), null);
@@ -177,7 +178,7 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
         getMenuInflater().inflate(R.menu.menu_file_picker, menu);
         return true;
     }
-    
+
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
 
@@ -222,8 +223,9 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
                 arrayList.add(pickerModel);
             }
         }
-        if (arrayList.isEmpty()) {
-            myOverlay.setVisibility(View.VISIBLE);
+        int visibility = arrayList.isEmpty() ? View.VISIBLE: View.GONE;
+        if (myOverlay.getVisibility() != visibility) {
+            myOverlay.setVisibility(visibility);
         }
         return arrayList;
     }

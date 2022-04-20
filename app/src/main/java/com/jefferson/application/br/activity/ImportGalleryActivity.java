@@ -3,12 +3,14 @@ package com.jefferson.application.br.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -54,7 +56,13 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 	    mySwipeRefreshLayout.setOnRefreshListener(this);
         mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = getTheme();
+        theme.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true);
+        int color = typedValue.data;
         
+        mySwipeRefreshLayout.setProgressBackgroundColorSchemeColor(color);// .setProgressBackgroundColor(color);
+
         title = (position == 0 ? getString(R.string.importar_imagem) : getString(R.string.importar_video));
         retrieveMediaTask = new RetrieveMediaTask();
         retrieveMediaTask.start();
@@ -187,7 +195,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
             }
         }
         cursor.close();
-        
+
         Collections.sort(al_images, new Comparator<FolderModel>() {
                 @Override public int compare(FolderModel o1, FolderModel o2) { 
                     return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase()); 

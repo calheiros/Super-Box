@@ -36,8 +36,8 @@
 				android:layout_height="wrap_content"/>
 
 			<TextView
-				android:textSize="13sp"
-				android:textColor="?commonColor"
+				android:textSize="13.5sp"
+				android:textColor="?commonColorDark"
 				android:layout_gravity="start"
 				android:id="@+id/description_text_view"
 				android:visibility="gone"

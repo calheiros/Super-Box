@@ -66,7 +66,6 @@ public class FilePickerAdapter extends BaseAdapter {
         if (view == null) {
             view = mLayoutInflater.inflate(R.layout.file_picker_item, (ViewGroup) null);
         }
-    
         ImageView imageView = view.findViewById(R.id.tumbView);
         TextView textView = view.findViewById(R.id.item_name);
         TextView textView2 = view.findViewById(R.id.item_size);

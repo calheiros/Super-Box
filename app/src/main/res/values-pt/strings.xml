@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
+    <string name="usage_data_permission_message">Você precisa conceder a permisão &quot;Acessar dados de uso&quot; para esta função funcionar corretamente.</string>
+    <string name="calculadora">Calculadora</string>
     <string name="pasta_nome_muito_grande">Número máximo de caracteres excedido!</string>
     <string name="pasta_nome_vazio">O nome da pasta não pode ficar vazio!</string>
     <string name="padrao_do_sistema">Padrão do sistem</string>

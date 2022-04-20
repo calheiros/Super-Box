@@ -5,10 +5,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -17,6 +17,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +34,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.CodeManager;
 import com.jefferson.application.br.R;
@@ -42,11 +44,9 @@ import com.jefferson.application.br.model.AppModel;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.DialogUtils;
-import com.jefferson.application.br.util.JDebug;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import android.widget.Toast;
 
 public class LockFragment extends Fragment implements OnItemClickListener, android.support.v7.widget.SearchView.OnQueryTextListener {
 
@@ -83,9 +83,13 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 			mListView = parentView.findViewById(R.id.appList);
             mySwipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
 			mListView.setItemsCanFocus(true);
-
+            TypedValue typedValue = new TypedValue();
+            Resources.Theme theme = getActivity().getTheme();
+            theme.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true);
+            int color = typedValue.data;
+           
             mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-			//mySwipeRefreshLayout.setProgressBackgroundColor(R.color.colorAccent);
+			mySwipeRefreshLayout.setProgressBackgroundColorSchemeColor(color);// .setProgressBackgroundColor(color);
             mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
                     @Override
@@ -140,7 +144,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         setHasOptionsMenu(true);
 		return parentView;
 	}
-    
+
     private void applicationFound(int x) {
         mListView.smoothScrollToPositionFromTop(x, (mListView.getHeight() / 2) - (appsAdapter.getItemHeight() / 2));
         //mListView.smoothScrollToPosition(scrollPosition);
@@ -187,7 +191,8 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             return true;
         }
 
-        Toast.makeText(getContext(), "No match found!", 1).show();
+        Toast toast = Toast.makeText(getContext(), "No match found!", Toast.LENGTH_SHORT);
+        //showInputMethod(searchView);
         return false;
     }
 
@@ -260,9 +265,9 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                 animateCheckView(lastClickedParentView);
             }
         } else {
-            AlertDialog.Builder alert = new AlertDialog.Builder(getContext(), R.style.CustomAlertDialog);
-            alert.setMessage("Você precisa ativar a permisão \"Acessar dados de uso\" para esta função funcionar corretamente.");
-            alert.setPositiveButton("conceder", new DialogInterface.OnClickListener(){
+            AlertDialog.Builder alert = new AlertDialog.Builder(getContext(), DialogUtils.getTheme());
+            alert.setMessage(getString(R.string.usage_data_permission_message));
+            alert.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener(){
 
                     @Override
                     public void onClick(DialogInterface p1, int p2) {
@@ -271,7 +276,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                 }
             );
 
-            alert.setNegativeButton(getString(R.string.cancelar), null);
+            alert.setNegativeButton(getString(android.R.string.cancel), null);
             AlertDialog alertDialog = alert.create();
             DialogUtils.configureRoudedDialog(alertDialog);
             alertDialog.setCanceledOnTouchOutside(false);

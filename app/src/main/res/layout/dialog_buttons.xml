@@ -18,13 +18,13 @@
         android:minWidth="65dp"
         android:includeFontPadding="false"
         android:gravity="center"
-        android:textColor="@color/colorAccent"
+        android:textColor="?colorAccent"
 		android:id="@+id/dialogNegativebutton"
 		android:layout_marginRight="5dp"/>
 
 	<Button
         android:visibility="gone"
-		android:backgroundTint="@color/colorAccent"
+		android:backgroundTint="?colorAccent"
 		android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minHeight="0dp"

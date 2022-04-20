@@ -28,7 +28,7 @@
 	<LinearLayout
 		android:layout_height="45dp"
 		android:layout_width="match_parent"
-		android:background="?colorBackgroundSecondary"
+		android:background="?colorBackgroundDark"
 		android:gravity="center_vertical">
 
 			<ImageView

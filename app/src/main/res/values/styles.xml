@@ -34,7 +34,7 @@
 
         <item name="colorControlHighlight">@android:color/transparent</item>
         -->
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorAccentLight</item>
     </style>
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
         <!--<item name="android:background">@drawable/alert_background</item>
@@ -51,23 +51,30 @@
 
     <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="textShadowColor">#00FFFFFF</item>
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorBackground">#f0f0f0</item>
-        <item name="colorBackgroundSecondary">#FFDADCDD</item>
+        <item name="colorPrimary">@color/turquoise</item>
+        <item name="colorPrimaryDark">@color/turquoiseDark</item>
+        <item name="colorAccent">@color/colorAccentLight</item>
+        <item name="colorBackgroundLight">#f0f0f0</item>item>
+        <item name="colorBackground">#FAFAFA</item>
+        <item name="colorBackgroundDark">#FFDADCDD</item>
+        <!--BACKUP
         <item name="commonColorDark">#FFA6AAB1</item>
-        <item name="commonColor">#FF141414</item>
-        <item name="commonColorLight">#FF0D0D0D</item>
+        <item name="commonColor">#FF38383A</item>
+        <item name="commonColorLight">#FF2B2C2D</item>
+        -->
+        <item name="commonColorDark">#FF9DA0A6</item>
+        <item name="commonColor">#FF4D4D51</item>
+        <item name="commonColorLight">#FF3D3D41</item>
         <!--<item name="android:windowBackground">#FFF0F0F0</item>-->
-        <item name="colorControlHighlight">#1C050505</item>
+        <item name="colorControlHighlight">#1C00ABBB</item>
     </style>
-
+   
     <style name="CalculatorTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorBackground</item>
+        
         <item name="colorAccent">#00BCD4</item>
-        <item name="colorBackgroundSecondary">@color/colorBackgroundDark</item>
+        <item name="colorBackgroundDark">@color/colorBackgroundDark</item>
         <item name="colorBackground">@color/colorBackground</item>
         <item name="commonColorDark">@color/colorCommonDark</item>
         <item name="commonColor">@color/colorCommon</item>
@@ -93,9 +100,11 @@
     <style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorBackgroundLight">#FF1B1D1D</item>
+        
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-        <item name="colorBackgroundSecondary">@color/colorBackgroundDark</item>
+        <item name="colorBackgroundDark">@color/colorBackgroundDark</item>
         <item name="colorBackground">@color/colorBackground</item>
         <item name="commonColorDark">@color/colorCommonDark</item>
         <item name="commonColor">@color/colorCommon</item>

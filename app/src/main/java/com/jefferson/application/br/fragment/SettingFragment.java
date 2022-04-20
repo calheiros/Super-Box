@@ -40,6 +40,7 @@ import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.Storage;
 import java.util.ArrayList;
+import com.jefferson.application.br.util.MyAnimationUtils;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
@@ -51,7 +52,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	private SharedPreferences.Editor mEdit;
 	private int egg;
     private int storageChoicePosition;
-
+    public static final int CALCULATOR_CREATE_CODE_RESULT = 85;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -187,18 +188,26 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         } else if (itemId == PreferenceItem.ID.STORAGE) {
             showDialogChooseStorage();
         } else if (itemId == PreferenceItem.ID.APP_ICON) {
-            Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
-            if (!mySwitch.isChecked() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                SimpleDialog alert = new SimpleDialog(getContext());
-                alert.setTitle("Unsupported!");
-                alert.setMessage("This feature is no longer supported on Android 10 or later.");
-                alert.setNegativeButton("okay", null);
-                alert.show();
-                return;
-            }
-            boolean checked = !mySwitch.isChecked();
-            changeIconVisibility(checked);
-            mySwitch.setChecked(checked);
+            /* Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
+             //            if (!mySwitch.isChecked() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+             //                SimpleDialog alert = new SimpleDialog(getContext());
+             //                alert.setTitle("Unsupported!");
+             //                alert.setMessage("This feature is no longer supported on Android 10 or later.");
+             //                alert.setNegativeButton("okay", null);
+             //                alert.show();
+             //                return;
+             //            }
+             checked = !mySwitch.isChecked();
+             View layout = view.findViewById(R.id.steal_thexpandable_layout);
+
+             if (checked) {
+             MyAnimationUtils.expand(layout);
+             } else {
+             MyAnimationUtils.collapse(layout);
+             }
+
+             changeIconVisibility(checked);
+             mySwitch.setChecked(checked);*/
         } else if (itemId == PreferenceItem.ID.DIALER_CODE) {
             changeCodeDialog();
         } else if (itemId == PreferenceItem.ID.ABOUT) {
@@ -206,27 +215,24 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+
+    }
+
     private void showThemeDialog() {
         final CharSequence[] itens = {"Default", "Light"};
-
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
             .setTitle("Choose your theme")
             .setItems(itens, new DialogInterface.OnClickListener(){
-                int themeId;
+
                 @Override
                 public void onClick(DialogInterface p1, int position) {
 
-                    switch (position) {
-                        case 0:
-                            themeId = R.style.MainTheme;
-                            break;
-                        case 1:
-                            themeId = R.style.LightTheme;
-                            break;
-                    }
-                    int set = MyPreferences.getAppTheme();
-                    if (set != themeId) {
-                        MyPreferences.setAppTheme(themeId);
+                    int themeId = MyPreferences.getThemePosition();
+                    if (position != themeId) {
+                        MyPreferences.setThemePosition(position);
                         refreshActivity();
                     }
                 }

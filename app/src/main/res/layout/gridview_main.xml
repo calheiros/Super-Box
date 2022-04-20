@@ -63,7 +63,7 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:background="?colorBackgroundSecondary"
+        android:background="?colorBackgroundDark"
         android:id="@+id/lock_layout"
         android:layout_alignParentBottom="true"
         android:visibility="gone"
