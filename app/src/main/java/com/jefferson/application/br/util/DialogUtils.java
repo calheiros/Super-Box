@@ -20,11 +20,7 @@ public class DialogUtils {
     }
     
     public static int getTheme(){
-       if( MyPreferences.getThemeResId() == R.style.MainTheme){
-           return R.style.CustomAlertDialog;
-       } else {
-           return R.style.CustomAlertDialogLight;
-       }
+       return ThemeUtils.getDialogTheme();
     }
     
     public static AlertDialog.Builder createDialog(Context context) {

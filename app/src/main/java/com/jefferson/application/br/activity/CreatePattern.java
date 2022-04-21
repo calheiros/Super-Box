@@ -138,6 +138,11 @@ public class CreatePattern extends MyCompatActivity {
         );
 	}
 
+    @Override
+    protected void onApplyCustomTheme() {
+       
+    }
+    
     public void requestPermission() {
 
         if (ContextCompat.checkSelfPermission(this,

@@ -77,7 +77,7 @@
             android:layout_height="match_parent"
             android:id="@+id/gv_folder"
             android:numColumns="auto_fit"
-            android:padding="6dp"/>
+            android:paddingHorizontal="6dp"/>
 
     </android.support.v4.widget.SwipeRefreshLayout>
     

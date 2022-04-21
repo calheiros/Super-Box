@@ -15,8 +15,10 @@ import com.jefferson.application.br.util.MathUtils;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.StringUtils;
 import java.text.DecimalFormat;
+import com.jefferson.application.br.app.SimpleDialog;
+import android.support.design.widget.Snackbar;
 
-public class CalculatorActivity extends AppCompatActivity implements OnLongClickListener {
+public class CalculatorActivity extends MyCompatActivity implements OnLongClickListener {
     public final static String ACTION_CREATE_CODE = "create_code_action";
 
     private boolean createCode;
@@ -27,10 +29,11 @@ public class CalculatorActivity extends AppCompatActivity implements OnLongClick
         int id = view.getId();
         if (id == R.id.calculator_backspaceButton) {
             editText.getText().clear();
-            return true;
+            
         } else {
-            return enter();
+            enter();
         }
+        return true;
     }
 
     private ArrayMap<Character, Character> operatorMap = new ArrayMap<>();
@@ -49,8 +52,20 @@ public class CalculatorActivity extends AppCompatActivity implements OnLongClick
         editText.setLongClickable(false);
         findViewById(R.id.calculator_backspaceButton).setOnLongClickListener(this);
         createOperatorMap();
+       
+        if (createCode) {
+            showTipDialog();
+        }
     }
-
+   
+    private void showTipDialog() {
+        SimpleDialog dialog = new SimpleDialog(this);
+        dialog.setTitle("Tip");
+        dialog.setMessage("Enter your code and press and hold the = button to confirm it.");
+        dialog.setPositiveButton(getString(android.R.string.ok), null);
+        dialog.show();
+    }
+    
     private void createOperatorMap() {
 
         for (Character c : operations) {
@@ -72,6 +87,11 @@ public class CalculatorActivity extends AppCompatActivity implements OnLongClick
         }
     }
 
+    @Override
+    protected void onApplyCustomTheme() {
+        //do nothing...
+    }
+    
     public void openParenthesis(View v) {
         editText.append("(");
     }
@@ -185,17 +205,17 @@ public class CalculatorActivity extends AppCompatActivity implements OnLongClick
         }
     }
 
-    public boolean enter() {
+    public void enter() {
         String input = editText.getText().toString();
-        if (input.isEmpty()) return true;
+        if (input.isEmpty()) return;
         
         if (createCode) {
             if (input.length() > 50) {
                 Toast.makeText(this, "Too big! Maximum 50 characters", 0).show();
-                return true;
+                return;
             } else if (input.length() < 3) {
-                Toast.makeText(this, "Too short! Minimum 3 characters", 1).show();
-                return true;
+                showSnack("Too short! Minimum 3 characters");
+                return;
             }
            
             if (code != null) {
@@ -205,21 +225,25 @@ public class CalculatorActivity extends AppCompatActivity implements OnLongClick
                     setResult(RESULT_OK);
                     finish();
                 } else {
-                    Toast.makeText(this, "The code does not match!", 0).show();
+                    showSnack("The code does not match!");
                 }
             } else {
                 code = input;
                 editText.getText().clear();
-                Toast.makeText(this, "Type your code again to confirm.", 0).show();
+                showSnack("Type your code again to confirm it.");
             }
         } else if (input.equals(MyPreferences.getCalculatorCode())) {
             Intent intent = new Intent(this, MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             startActivity(intent);
             overridePendingTransition(0, 0);
-            return true;
+            return;
         } 
-        return true;
+        return;
+    }
+
+    private void showSnack(String message) {
+        Snackbar.make(editText, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -227,7 +251,7 @@ public class CalculatorActivity extends AppCompatActivity implements OnLongClick
         
         if (createCode && code != null) {
             code = null;
-            Toast.makeText(this, "CODE RESETED!", 1).show();
+            showSnack("Last code cleared!");
             return;
         } 
         super.onBackPressed();

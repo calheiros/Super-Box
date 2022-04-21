@@ -14,7 +14,7 @@
 		android:singleLine="true"
 		android:inputType="text"
         android:focusable="true"
-        android:ems="13"
+        android:ems="50"
         android:hint="Maximun 50 digits"
         android:gravity="start"
 		android:textSize="18sp">

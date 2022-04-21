@@ -22,7 +22,7 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.PasswordManager;
 import java.util.List;
 
-public class VerifyActivity extends android.support.v7.app.AppCompatActivity {  
+public class VerifyActivity extends MyCompatActivity {  
 
 	private Runnable Runnable;
 	private Handler Handler;
@@ -35,13 +35,13 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
         checkPassword();
 		setContentView(R.layout.pattern);
         
-        View parent = findViewById(R.id.patternRelativeLayout);
-        TypedValue typedValue = new TypedValue();
-        Resources.Theme theme = getTheme();
-        theme.resolveAttribute(R.attr.colorPrimary, typedValue, true);
-        int color = typedValue.data;
-        parent.setBackgroundColor(color);
-
+//        View parent = findViewById(R.id.patternRelativeLayout);
+//        TypedValue typedValue = new TypedValue();
+//        Resources.Theme theme = getTheme();
+//        theme.resolveAttribute(R.attr.colorPrimary, typedValue, true);
+//        int color = typedValue.data;
+//        parent.setBackgroundColor(color);
+//
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
 
@@ -83,6 +83,11 @@ public class VerifyActivity extends android.support.v7.app.AppCompatActivity {
         );
 	}
 
+    @Override
+    protected void onApplyCustomTheme() {
+        
+    }
+    
     private boolean canProceed() {
         String action = getIntent().getAction();
 

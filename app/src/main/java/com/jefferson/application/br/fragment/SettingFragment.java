@@ -41,6 +41,7 @@ import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.Storage;
 import java.util.ArrayList;
 import com.jefferson.application.br.util.MyAnimationUtils;
+import com.jefferson.application.br.util.ThemeUtils;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
@@ -222,17 +223,17 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     private void showThemeDialog() {
-        final CharSequence[] itens = {"Default", "Light"};
+        final CharSequence[] itens = ThemeUtils.THEME_LIST;
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
             .setTitle("Choose your theme")
             .setItems(itens, new DialogInterface.OnClickListener(){
 
                 @Override
                 public void onClick(DialogInterface p1, int position) {
-
-                    int themeId = MyPreferences.getThemePosition();
+                    int themeId = ThemeUtils.getThemeIndex();
+                    
                     if (position != themeId) {
-                        MyPreferences.setThemePosition(position);
+                        ThemeUtils.setThemeIndex(position);
                         refreshActivity();
                     }
                 }
@@ -317,6 +318,11 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 		getActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), "com.jefferson.application.br.LuancherAlias"), 
 																	 isChecked ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED: PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 	}
+
+    private void setCompomentEnabled(boolean enabled, String component) {
+        getActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), component),
+                                                                     enabled ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED: PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+    }
 
 	public void changeCodeDialog() {
         final View view = getLayoutInflater(null).inflate(R.layout.dialog_call, null);

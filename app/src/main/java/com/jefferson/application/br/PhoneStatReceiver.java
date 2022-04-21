@@ -1,9 +1,12 @@
 package com.jefferson.application.br;
 
-import android.content.*;
-import android.preference.*;
-import android.util.*;
-import com.jefferson.application.br.activity.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+import android.util.Log;
+import com.jefferson.application.br.activity.VerifyActivity;
 
 public class PhoneStatReceiver extends BroadcastReceiver {
 	

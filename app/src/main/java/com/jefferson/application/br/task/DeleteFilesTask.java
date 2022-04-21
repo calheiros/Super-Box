@@ -10,6 +10,7 @@ import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
 import com.jefferson.application.br.task.JTask.OnFinishedListener;
+import com.jefferson.application.br.database.PathsData.Folder;
 
 public class DeleteFilesTask extends JTask {
 
@@ -19,10 +20,7 @@ public class DeleteFilesTask extends JTask {
     private Context context;
     private int position;
     private File rootFile;
-    private PathsData mData;
-    private PathsData.Folder folderDatabase;
     private boolean deletedAll;
-
     private JTask.OnFinishedListener listener;
 
     public DeleteFilesTask(Context context, ArrayList<String> items, int position, File rootFile) {
@@ -30,9 +28,6 @@ public class DeleteFilesTask extends JTask {
         this.position = position;
         this.rootFile = rootFile;
         this.context = context;
-        File file = new File(Storage.getDefaultStorage());
-        this.mData = PathsData.getInstance(context, file.getAbsolutePath());
-        folderDatabase = PathsData.Folder.getInstance(context);
     }
 
     public boolean deletedAll() {
@@ -41,19 +36,25 @@ public class DeleteFilesTask extends JTask {
 
     @Override
     public void workingThread() {
-        for (String path : items) {
-            if (isInterrupted()) {
-                break;
-            }
-            File file = new File(path);
-            if (file.delete()) {
-                progress++;
-                String name = null;
-                if ((name = mData.getPath(file.getName())) != null) {
-                    mData.deleteData(file.getName());
+        PathsData database = PathsData.getInstance(context, Storage.getDefaultStorage());
+        try {
+            for (String path : items) {
+                if (isInterrupted()) {
+                    break;
                 }
-                sendUpdate(path, name);
+
+                File file = new File(path);
+                if (file.delete()) {
+                    progress++;
+                    String name = null;
+                    if ((name = database.getPath(file.getName())) != null) {
+                        database.deleteData(file.getName());
+                    }
+                    sendUpdate(path, name);
+                }
             }
+        } finally {
+            database.close();
         }
     }
 
@@ -82,7 +83,7 @@ public class DeleteFilesTask extends JTask {
     public void onFinished() {
         dialog.cancel();
         deletedAll = rootFile.list().length == 0; 
-        
+
         if (deletedAll) {
             deleteFolder(rootFile);
         }
@@ -116,13 +117,13 @@ public class DeleteFilesTask extends JTask {
     }
 
 	private void deleteFolder(File file) {
-
+        PathsData.Folder database = PathsData.Folder.getInstance(context);
         try {
             if (file.delete()) {
-                folderDatabase.delete(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
+                database.delete(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
             }
         } finally {
-            folderDatabase.close();
+            database.close();
         }
 	}
 }
