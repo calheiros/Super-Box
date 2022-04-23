@@ -6,10 +6,10 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.TypedValue;
+import android.view.WindowManager;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.LocaleManager;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.StringUtils;
 import com.jefferson.application.br.util.ThemeUtils;
 
@@ -77,7 +77,7 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
         onApplyCustomTheme();
 		super.onCreate(savedInstanceState);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         pm = (PowerManager) getSystemService("power");
         app = (App) getApplication();
         KEY = StringUtils.getRandomString(8);

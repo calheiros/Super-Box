@@ -98,7 +98,7 @@ public class AppLockAdapter extends BaseAdapter {
 	public View getView(final int position, View convertView, ViewGroup parent) {
         view = convertView;
 
-        if (convertView == null) {
+        if (view == null) {
 			view = inflater.inflate(R.layout.list_item, null);
         }
 
@@ -180,7 +180,7 @@ public class AppLockAdapter extends BaseAdapter {
         final View view = cachedViews.get(position);
 
         if (view == null) {
-            JDebug.toast("animateIfSearched: View is NULL");
+            return; //JDebug.toast("animateIfSearched: View is NULL");
         }
 
         if (searchedItemPosition == position) {

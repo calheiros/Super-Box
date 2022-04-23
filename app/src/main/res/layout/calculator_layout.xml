@@ -20,13 +20,23 @@
             android:id="@+id/calculator_layoutEditText"
             android:focusableInTouchMode="false"
             android:textSize="22pt"
+            android:ems="200"
             android:digits="1234567890+×÷-.()"
-            android:background="@android:color/transparent"
-            android:ems="200"/>
-        
+            android:background="@android:color/transparent"/>
     </LinearLayout>
-
+    
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_marginBottom="5dp"
+        android:textSize="16sp"
+        android:textColor="#fafafa"
+        android:id="@+id/calculator_hintTextView"
+        android:paddingHorizontal="10dp"/>
+    
     <GridLayout
+        
         android:useDefaultMargins="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,7 +55,8 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="("
-            android:onClick="openParenthesis"
+            android:id="@+id/calculator_open_parenthesis"
+            android:onClick="onKeyPressed"
             android:includeFontPadding="false"
             android:focusable="true"
             android:textStyle="bold"
@@ -58,7 +69,8 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text=")"
-            android:onClick="closeParenthesis"
+            android:id="@+id/calculator_close_parenthesis"
+            android:onClick="onKeyPressed"
             android:includeFontPadding="false"
             android:focusable="true"
             android:textStyle="bold"
@@ -71,7 +83,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="√"
-            android:onClick="exponentiation"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_percentage"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -85,12 +97,12 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="÷"
-            android:onClick="division"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_division"
             android:includeFontPadding="false"
             android:focusable="true"
             android:textStyle="bold"
-            android:textSize="22pt"/>
+            android:textSize="20pt"/>
 
         <!-- ROW MULTIPLICATION -->
 
@@ -101,7 +113,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="7"
-            android:onClick="seven"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_seven"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -114,7 +126,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="8"
-            android:onClick="eight"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_eight"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -127,7 +139,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="9"
-            android:onClick="nine"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_nine"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -140,12 +152,12 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="×"
-            android:onClick="multiplication"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_multiplication"
             android:includeFontPadding="false"
             android:focusable="true"
             android:textStyle="bold"
-            android:textSize="22pt"/>
+            android:textSize="20pt"/>
 
         <!-- ROW SUBTRATION -->
 
@@ -156,7 +168,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="4"
-            android:onClick="four"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_four"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -169,7 +181,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="5"
-            android:onClick="five"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_five"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -182,7 +194,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="6"
-            android:onClick="six"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_six"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -196,12 +208,12 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="-"
-            android:onClick="subtraction"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_subtration"
             android:includeFontPadding="false"
             android:focusable="true"
             android:textStyle="bold"
-            android:textSize="22pt"/>
+            android:textSize="20pt"/>
 
         <!-- ROW ADITION -->
 
@@ -212,7 +224,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="1"
-            android:onClick="one"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_one"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -225,7 +237,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="2"
-            android:onClick="two"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_two"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -238,7 +250,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="3"
-            android:onClick="three"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_three"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -251,12 +263,12 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="+"
-            android:onClick="plus"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_plus"
             android:includeFontPadding="false"
             android:focusable="true"
             android:textStyle="bold"
-            android:textSize="22pt"/>
+            android:textSize="20pt"/>
 
         <!-- ROW RESULT-->
 
@@ -267,7 +279,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="."
-            android:onClick="dot"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_dot"
             android:includeFontPadding="false"
             android:focusable="true"
@@ -281,7 +293,7 @@
             android:minWidth="38pt"
             android:minHeight="38pt"
             android:text="0"
-            android:onClick="zero"
+            android:onClick="onKeyPressed"
             android:id="@+id/calculator_zero"
             android:includeFontPadding="false"
             android:focusable="true"

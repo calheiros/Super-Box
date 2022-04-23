@@ -2,34 +2,37 @@ package com.jefferson.application.br.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.design.widget.Snackbar;
 import android.util.ArrayMap;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.util.MathUtils;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.StringUtils;
 import java.text.DecimalFormat;
-import com.jefferson.application.br.app.SimpleDialog;
-import android.support.design.widget.Snackbar;
+import android.animation.Animator;
+import android.view.animation.AnimationUtils;
+import android.view.animation.Animation;
 
 public class CalculatorActivity extends MyCompatActivity implements OnLongClickListener {
+
     public final static String ACTION_CREATE_CODE = "create_code_action";
 
     private boolean createCode;
     private String code = null;
-
+    private TextView hintTextView;
     @Override
     public boolean onLongClick(View view) {
         int id = view.getId();
         if (id == R.id.calculator_backspaceButton) {
             editText.getText().clear();
-            
+
         } else {
             enter();
         }
@@ -52,21 +55,26 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
         editText.setLongClickable(false);
         findViewById(R.id.calculator_backspaceButton).setOnLongClickListener(this);
         createOperatorMap();
-       
+
         if (createCode) {
-            showTipDialog();
+            hintTextView = findViewById(R.id.calculator_hintTextView);
+            hintTextView.setText("Enter your code and press and hold the = button to confirm it.");
+            //showTipDialog();
         }
     }
-   
-    private void showTipDialog() {
+
+    private void showHintDialog() {
         SimpleDialog dialog = new SimpleDialog(this);
-        dialog.setTitle("Tip");
+        dialog.setTitle("Hint");
         dialog.setMessage("Enter your code and press and hold the = button to confirm it.");
         dialog.setPositiveButton(getString(android.R.string.ok), null);
         dialog.show();
     }
-    
+
     private void createOperatorMap() {
+        if (createCode) {
+
+        }
 
         for (Character c : operations) {
             char value = '0';
@@ -87,76 +95,99 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
         }
     }
 
+    private String extractNumber(String text, int position) {
+        int end = text.length() - 1;
+        int start = 0;
+
+        // get start of number
+        for (int i = position; i > 0; i--) {
+            char c = text.charAt(i);
+            if (!Character.isDigit(c)) {
+                start = i;
+            }
+        }
+
+        //get end of number
+
+        for (int i = position; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (!Character.isDigit(c)) {
+                end = i;
+            }
+        }
+
+        String number = text.substring(start, end + 1);
+        Toast.makeText(this, number, 1).show();
+        return number;
+    }
+
     @Override
     protected void onApplyCustomTheme() {
         //do nothing...
     }
-    
-    public void openParenthesis(View v) {
-        editText.append("(");
-    }
 
-    public void closeParenthesis(View v) {
-        editText.append(")");
-    }
+    public void onKeyPressed(View v) {
+        String key = null;
 
-    public void one(View v) {
-        editText.append("1");
-    }
+        switch (v.getId()) {
+            case R.id.calculator_one:
+                key = "1";
+                break;
+            case R.id.calculator_two:
+                key = "2";
+                break;
+            case R.id.calculator_three:
+                key = "3";
+                break;
+            case R.id.calculator_four:
+                key = "4";
+                break;
+            case R.id.calculator_five:
+                key = "5";
+                break;
+            case R.id.calculator_six:
+                key = "6";
+                break;
+            case R.id.calculator_seven:
+                key = "7";
+                break;
+            case R.id.calculator_eight:
+                key = "8";
+                break;
+            case R.id.calculator_nine:
+                key = "9";
+                break;
+            case R.id.calculator_zero:
+                key = "0";
+                break;
+            case R.id.calculator_dot:
+                extractNumber(editText.getText().toString(), editText.getText().length() - 1);
+                dot();
+                return;
+            case R.id.calculator_plus:
+                appendOperation("+");
+                return;
+            case R.id.calculator_division:
+                appendOperation("÷");
+                return;
+            case R.id.calculator_subtration:
+                appendOperation("-");
+                return;
+            case R.id.calculator_multiplication:
+                appendOperation("×");
+                return;
+            case R.id.calculator_percentage:
+                appendOperation("√");
+                return;
+            case R.id.calculator_open_parenthesis:
+                key = "(";
+                break;
+            case R.id.calculator_close_parenthesis:
+                key = ")";
+                break;
 
-    public void two(View v) {
-        editText.append("2");
-    }
-
-    public void three(View v) {
-        editText.append("3");
-    }
-    public void four(View v) {
-        editText.append("4");
-    }
-
-    public void five(View v) {
-        editText.append("5");
-    }
-
-    public void six(View v) {
-        editText.append("6");
-    }
-
-    public void eight(View v) {
-        editText.append("8");
-    }
-
-    public void seven(View v) {
-        editText.append("7");
-    }
-
-    public void nine(View v) {
-        editText.append("9");
-    }
-
-    public void zero(View v) {
-        editText.append("0");
-    }
-
-    public void plus(View v) {
-        appendOperation("+");
-    }
-
-    public void subtraction(View v) {
-        appendOperation("-");
-    }
-
-    public void multiplication(View v) {
-        appendOperation("×");
-    }
-
-    public void division(View v) {
-        appendOperation("÷");
-    }
-
-    public void exponentiation(View v) {
-        appendOperation("√");
+        }
+        editText.append(key);
     }
 
     public void result(View v) {
@@ -199,7 +230,7 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
         editText.setText(text + operation);
     }
 
-    public void dot(View v) {
+    public void dot() {
         if (!editText.getText().toString().contains(".")) {
             editText.append(".");
         }
@@ -208,16 +239,16 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
     public void enter() {
         String input = editText.getText().toString();
         if (input.isEmpty()) return;
-        
+
         if (createCode) {
             if (input.length() > 50) {
                 Toast.makeText(this, "Too big! Maximum 50 characters", 0).show();
                 return;
             } else if (input.length() < 3) {
-                showSnack("Too short! Minimum 3 characters");
+                showHint("Too short! Minimum 3 characters");
                 return;
             }
-           
+
             if (code != null) {
                 if (code.equals(input)) {
                     MyPreferences.putCalculatorCode(input);
@@ -225,12 +256,12 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
                     setResult(RESULT_OK);
                     finish();
                 } else {
-                    showSnack("The code does not match!");
+                    showHint("The code does not match!");
                 }
             } else {
                 code = input;
                 editText.getText().clear();
-                showSnack("Type your code again to confirm it.");
+                showHint("Type your code again to confirm it.");
             }
         } else if (input.equals(MyPreferences.getCalculatorCode())) {
             Intent intent = new Intent(this, MainActivity.class);
@@ -242,16 +273,39 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
         return;
     }
 
-    private void showSnack(String message) {
-        Snackbar.make(editText, message, Snackbar.LENGTH_SHORT).show();
+    private void showHint(final String message) {
+        Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out);
+        fadeOut.setDuration(200);
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+
+                @Override
+                public void onAnimationStart(Animation animator) {
+
+                }
+
+                @Override
+                public void onAnimationEnd(Animation aninator) {
+                    Animation fadeIn = AnimationUtils.loadAnimation(CalculatorActivity.this, R.anim.fade_in);
+                    fadeIn.setDuration(200);
+                    hintTextView.setText(message);
+                    hintTextView.startAnimation(fadeIn);
+                }
+
+                @Override
+                public void onAnimationRepeat(Animation animator) {
+                }
+            }
+        );
+        hintTextView.startAnimation(fadeOut);
+        //Snackbar.make(editText, message, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
     public void onBackPressed() {
-        
+
         if (createCode && code != null) {
             code = null;
-            showSnack("Last code cleared!");
+            showHint("Last code cleared!");
             return;
         } 
         super.onBackPressed();

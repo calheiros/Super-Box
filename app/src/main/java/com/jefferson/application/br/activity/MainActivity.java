@@ -78,8 +78,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
     }
 
-    BroadcastReceiver receiver;
-
     private void updateCurrentFragment() {
         if (mainFragment != null) {
             int pagerPosition =  mainFragment.getPagerPosition();
@@ -93,7 +91,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     private static final int GET_URI_CODE_TASK = 54;
 	private static final int GET_URI_CODE = 98;
     public static final int IMPORT_FROM_GALLERY_CODE = 43;
-    
+
+    private BroadcastReceiver receiver;
     public MainFragment mainFragment;
 	private LockFragment lockFragment;
 	private DrawerLayout drawerLayout;
@@ -103,7 +102,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     private SharedPreferences sharedPreferences;
 	private int position;
 	private static MainActivity instance;
-	private ArrayList<FileModel> models;
 	private AdView adview;
 	private InterstitialAd interstitial;
 
@@ -122,17 +120,18 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		toggle.syncState();
 		drawerLayout.setDrawerListener(toggle);
 	}
-   
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         this.instance = this;
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
-        
+
         if (Build.VERSION.SDK_INT >= 21) { 
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
+        
 		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -147,19 +146,19 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		createInterstitial();
         createReceiver();
 	}
-    
+
     public void showSnackBar(String message, int length) {
         if (mainFragment != null) {
             mainFragment.showSnackBar(message, length);
         }
     }
-    
+
     public void removeFolder(int folderPosition, int pagerPostion) {
         if (mainFragment != null) {
             mainFragment.removeFolder(folderPosition, pagerPostion);
         }
     }
-    
+
     public static void setWindowFlag(Activity activity, final int bits, boolean on) { 
         Window win = activity.getWindow(); 
         WindowManager.LayoutParams winParams = win.getAttributes();
@@ -170,7 +169,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         } 
         win.setAttributes(winParams); 
     }
-    
+
     private void createReceiver() {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ACTION_UPDATE);

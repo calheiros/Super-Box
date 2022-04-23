@@ -1,5 +1,6 @@
 package com.jefferson.application.br.activity;
 
+import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaMetadataRetriever;
@@ -49,7 +50,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import android.app.ActivityOptions;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.Listener {
 
@@ -108,6 +108,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, mListItemsPath, this, position);
         mRecyclerView.setAdapter(mAdapter);
+        
         fab = (FloatingActionButton) findViewById(R.id.view_album_fab_button);
 		menuLayout = findViewById(R.id.lock_layout);
 		mViewUnlock = findViewById(R.id.unlockView);
@@ -115,13 +116,14 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		mViewSelect = findViewById(R.id.selectView);
 		mViewMove = findViewById(R.id.moveView);
         emptyView = findViewById(R.id.view_album_empty_view);
+        
 		mViewUnlock.setOnClickListener(this);
 		mViewDelete.setOnClickListener(this);
 		mViewMove.setOnClickListener(this);
 		mViewSelect.setOnClickListener(this);
         fab.setOnClickListener(this);
         initToolbar();
-
+        
         if (mListItemsPath.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);
         }
@@ -193,7 +195,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private void toggleSelection() {
-
+        
         if (mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size()) {
             mAdapter.clearSelection();
         } else {
@@ -589,7 +591,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     try {
                         File file = new File(model.getPath());
                         int duration = database.getDuration(file.getName());
-                        Log.i("RetrieveDataTask", "duration " + duration);
 
                         if (duration == -1 || duration == 0) {
                             try {
