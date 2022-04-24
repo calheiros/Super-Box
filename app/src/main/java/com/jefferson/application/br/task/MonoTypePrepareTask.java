@@ -10,6 +10,7 @@ import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.util.JDebug;
 import java.util.ArrayList;
 import android.view.LayoutInflater;
+import android.widget.Toast;
 
 public class MonoTypePrepareTask extends JTask {
 
@@ -22,7 +23,6 @@ public class MonoTypePrepareTask extends JTask {
     private ImportTask.Listener listener;
     private onLoopListener loopListener;
     private String destinationPath;
-    private boolean await = false;
     
     public  MonoTypePrepareTask(Context context, ArrayList<String> paths, String type, String parent, ImportTask.Listener listener) {
         this.paths = paths;
@@ -67,21 +67,25 @@ public class MonoTypePrepareTask extends JTask {
     }
 
     @Override
-    public void onFinished() {
+    protected void onTaskCancelled() {
+        super.onTaskCancelled();
         dialog.cancel();
-        
-        if (!await) {
-            proceed();
-        }
-        
+        Toast.makeText(context, "Cancelled", 0).show();
     }
     
-    public void proceed(){
-        new ImportTask(context, models, listener).start();
+    @Override
+    public void onFinished() {
+        proceed();
     }
-
-    public void await() {
-        await = true;
+    
+    public void proceed() {
+        dialog.cancel();
+        
+        if (getStatus() == Status.FINISHED) {
+            new ImportTask(context, models, listener).start();
+        } else {
+            revokeFinish(false);
+        }
     }
     
     @Override

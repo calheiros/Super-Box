@@ -130,7 +130,7 @@
 
         <activity
             android:excludeFromRecents="true"
-            android:theme="@style/LauncherTheme"
+            android:theme="@style/MainTheme"
             android:name=".activity.VerifyActivity">
 
             <intent-filter>
@@ -191,22 +191,6 @@
         </activity>
         
         <activity-alias
-            android:name=".VerifyActivityLight"
-            android:theme="@style/LightTheme"
-            android:enabled="false"
-            android:targetActivity=".activity.VerifyActivity">
-
-            <intent-filter>
-
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
-
-            </intent-filter>
-
-        </activity-alias>
-        
-        <activity-alias
             android:name=".LuancherAlias"
             android:targetActivity=".activity.VerifyActivity">
 
@@ -232,8 +216,7 @@
         <activity
             android:name=".activity.CreatePattern"
             android:excludeFromRecents="true"
-            android:configChanges="orientation|screenSize"
-            android:theme="@style/LauncherTheme"/>
+            android:configChanges="orientation|screenSize"/>
 
         <activity
             android:name="com.google.android.gms.ads.AdActivity"

@@ -40,7 +40,7 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
     }
 
     private ArrayMap<Character, Character> operatorMap = new ArrayMap<>();
-    protected char[] operations = new char[] {'+','×','÷', '√', '-'};
+    protected char[] operations = new char[] {'+','×','÷', '√', '-', ','};
     protected EditText editText;
     protected Button resultButton;
 
@@ -88,6 +88,8 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
                 case '÷':
                     value = '/';
                     break;
+                case ',':
+                    value = '.';
             }
             if (value != '0') {
                 operatorMap.put(c, value);
@@ -95,15 +97,16 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
         }
     }
 
-    private String extractNumber(String text, int position) {
-        int end = text.length() - 1;
-        int start = 0;
-
+    private boolean canAppendDot(String text, int position) {
+        if (text.isEmpty()) return true;
         // get start of number
-        for (int i = position; i > 0; i--) {
+        for (int i = position; i >= 0; i--) {
             char c = text.charAt(i);
+            if (c == ',') {
+                return false;
+            }
             if (!Character.isDigit(c)) {
-                start = i;
+                break;
             }
         }
 
@@ -111,14 +114,14 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
 
         for (int i = position; i < text.length(); i++) {
             char c = text.charAt(i);
-            if (!Character.isDigit(c)) {
-                end = i;
+            if (c == ',') {
+                return false;
+            }
+            if(!Character.isDigit(c)){
+                break;
             }
         }
-
-        String number = text.substring(start, end + 1);
-        Toast.makeText(this, number, 1).show();
-        return number;
+         return true;
     }
 
     @Override
@@ -161,8 +164,10 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
                 key = "0";
                 break;
             case R.id.calculator_dot:
-                extractNumber(editText.getText().toString(), editText.getText().length() - 1);
-                dot();
+                boolean canAppend = canAppendDot(editText.getText().toString(), editText.getText().length() - 1);
+                if (canAppend){
+                    editText.append(",");
+                }
                 return;
             case R.id.calculator_plus:
                 appendOperation("+");
@@ -228,12 +233,6 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
             }
         }
         editText.setText(text + operation);
-    }
-
-    public void dot() {
-        if (!editText.getText().toString().contains(".")) {
-            editText.append(".");
-        }
     }
 
     public void enter() {

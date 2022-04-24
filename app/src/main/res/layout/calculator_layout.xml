@@ -4,7 +4,7 @@
 	android:orientation="vertical"
 	android:layout_width="match_parent"
     android:gravity="center_horizontal|bottom"
-    android:padding="5dp"
+    android:padding="5pt"
 	android:layout_height="match_parent">
 
     <LinearLayout
@@ -21,10 +21,10 @@
             android:focusableInTouchMode="false"
             android:textSize="22pt"
             android:ems="200"
-            android:digits="1234567890+×÷-.()"
+            android:digits="1234567890+×÷-.,()"
             android:background="@android:color/transparent"/>
     </LinearLayout>
-    
+
     <TextView
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
@@ -34,299 +34,411 @@
         android:textColor="#fafafa"
         android:id="@+id/calculator_hintTextView"
         android:paddingHorizontal="10dp"/>
-    
-    <GridLayout
-        
+
+    <TableLayout
         android:useDefaultMargins="true"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:columnCount="4"
+        android:stretchColumns="*"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/calculator_layoutLinearLayout"
         android:id="@+id/calculator_layoutGridLayout">
 
         <!-- ROW DIVISION-->
+        <TableRow
+            android:paddingVertical="5dp"
+            >
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="("
-            android:id="@+id/calculator_open_parenthesis"
-            android:onClick="onKeyPressed"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textStyle="bold"
-            android:textSize="15pt"/>
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text=")"
-            android:id="@+id/calculator_close_parenthesis"
-            android:onClick="onKeyPressed"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textStyle="bold"
-            android:textSize="15pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="("
+                    android:id="@+id/calculator_open_parenthesis"
+                    android:onClick="onKeyPressed"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textStyle="bold"
+                    android:textSize="15pt"/>
+            </LinearLayout>
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="√"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_percentage"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textStyle="bold"
-            android:textSize="15pt"/>
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="÷"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_division"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textStyle="bold"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text=")"
+                    android:id="@+id/calculator_close_parenthesis"
+                    android:onClick="onKeyPressed"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textStyle="bold"
+                    android:textSize="15pt"/>
+            </LinearLayout>
 
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="√"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_percentage"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textStyle="bold"
+                    android:textSize="15pt"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="÷"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_division"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textStyle="bold"
+                    android:textSize="20pt"/>
+            </LinearLayout>
+
+        </TableRow>
         <!-- ROW MULTIPLICATION -->
+        <TableRow
+            android:paddingVertical="5dp"
+            >
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="7"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_seven"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="7"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_seven"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="8"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_eight"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="8"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_eight"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="9"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_nine"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="9"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_nine"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="×"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_multiplication"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textStyle="bold"
-            android:textSize="20pt"/>
-
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="×"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_multiplication"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textStyle="bold"
+                    android:textSize="20pt"/>
+            </LinearLayout>
+        </TableRow>
         <!-- ROW SUBTRATION -->
+        <TableRow
+            android:paddingVertical="5dp"
+            >
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="4"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_four"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="4"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_four"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
+            </LinearLayout>
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="5"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_five"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="6"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_six"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="5"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_five"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
+            </LinearLayout>
 
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="-"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_subtration"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textStyle="bold"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="6"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_six"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
 
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="-"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_subtration"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textStyle="bold"
+                    android:textSize="20pt"/>
+            </LinearLayout>
+        </TableRow>
         <!-- ROW ADITION -->
+        <TableRow
+            android:paddingVertical="5dp"
+            >
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="1"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_one"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="1"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_one"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
+            </LinearLayout>
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="2"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_two"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="3"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_three"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="2"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_two"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
+            </LinearLayout>
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="+"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_plus"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textStyle="bold"
-            android:textSize="20pt"/>
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="3"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_three"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+
+                    android:text="+"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_plus"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textStyle="bold"
+                    android:textSize="20pt"/>
+            </LinearLayout>
+
+        </TableRow>
         <!-- ROW RESULT-->
+        <TableRow
+            android:paddingVertical="5dp"
+            >
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="."
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_dot"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textStyle="bold"
-            android:textSize="20pt"/>
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="0"
-            android:onClick="onKeyPressed"
-            android:id="@+id/calculator_zero"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textSize="20pt"/>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text=","
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_dot"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textStyle="bold"
+                    android:textSize="20pt"/>
+            </LinearLayout>
 
-        <Button
-            android:background="@drawable/bg_rounded"
-            android:onClick="backspace"
-            android:text="C"
-            android:textSize="20pt"
-            android:includeFontPadding="false"
-            android:textColor="#FFDE4029"
-            android:id="@+id/calculator_backspaceButton"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:layout_height="42pt"
-            android:layout_width="42pt"/>
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
 
-        <Button
-            android:background="@drawable/bg_button_calc_result"
-            android:layout_width="42pt"
-            android:layout_height="42pt"
-            android:minWidth="38pt"
-            android:minHeight="38pt"
-            android:text="="
-            android:onClick="result"
-            android:id="@+id/calculator_result"
-            android:includeFontPadding="false"
-            android:focusable="true"
-            android:textStyle="bold"
-            android:textSize="22pt"/>
-        
-    </GridLayout>
+                <Button
+                    android:background="@drawable/bg_rounded"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="0"
+                    android:onClick="onKeyPressed"
+                    android:id="@+id/calculator_zero"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textSize="18pt"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:background="@drawable/bg_rounded"
+                    android:onClick="backspace"
+                    android:src="@drawable/ic_backspace_outline"
+                    android:gravity="center"
+                    android:id="@+id/calculator_backspaceButton"
+                    android:layout_height="38pt"
+                    android:layout_width="38pt"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_weight="1.0"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content">
+
+                <Button
+                    android:background="@drawable/bg_button_calc_result"
+                    android:layout_width="38pt"
+                    android:layout_height="38pt"
+                    android:text="="
+                    android:onClick="result"
+                    android:id="@+id/calculator_result"
+                    android:includeFontPadding="false"
+                    android:focusable="true"
+                    android:textStyle="bold"
+                    android:textSize="22pt"/>
+            </LinearLayout>
+
+        </TableRow>
+
+    </TableLayout>
 
 </LinearLayout>
 

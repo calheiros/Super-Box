@@ -16,13 +16,13 @@
 
     </style>
 
-    <style name="LauncherTheme" parent="Theme.AppCompat.NoActionBar">
+    <!--<style name="LauncherTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
+-->
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/splash_background</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -52,7 +52,7 @@
   <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/turquoise</item>
-        <item name="colorPrimaryDark">@color/turquoiseDark</item>
+        <item name="colorPrimaryDark">@color/turquoise</item>
         <item name="colorAccent">@color/colorAccentLight</item>
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
@@ -72,7 +72,7 @@
     <style name="LightBlueTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/bondiBlue</item>
-        <item name="colorPrimaryDark">@color/bondiBlueDark</item>
+        <item name="colorPrimaryDark">@color/bondiBlue</item>
         <item name="colorAccent">@color/colorAccentLight</item>
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
@@ -122,7 +122,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorBackgroundLight">#FF1B1D1D</item>
         
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorBackgroundDark">@color/colorBackgroundDark</item>
         <item name="colorBackground">@color/colorBackground</item>

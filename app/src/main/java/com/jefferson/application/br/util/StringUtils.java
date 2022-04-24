@@ -19,8 +19,8 @@ public class StringUtils {
     public static String replaceEach(String text, ArrayMap<Character, Character> operators) {
         // Create a buffer sufficiently large that re-allocations are minimized.
         StringBuilder builder = new StringBuilder(text.length());
-        
-        for (int i = 0; i < text.length(); i++ ) {
+
+        for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             if (operators.containsKey(c)) {
                 c = operators.get(c);
@@ -67,14 +67,16 @@ public class StringUtils {
 
         return fmt;
     }
-    public static String getFormatedDate() {
 
+    public static String getFormatedDate() {
+        return getFormatedDate("dd-MM-yyyy_HH-mm-ss");
+    }
+    
+    public static String getFormatedDate(String format) {
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime(); 
-        SimpleDateFormat simpleDate = new SimpleDateFormat("dd-MM-yyyy_HH-mm-ss");
+        SimpleDateFormat simpleDate = new SimpleDateFormat(format);
         String timestamp = simpleDate.format(now);
-
         return timestamp;
     }
-
 }

@@ -390,15 +390,15 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                 preparationTask.setDestination(Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty()))
-                    preparationTask.setOnLoopListener(new MonoTypePrepareTask.onLoopListener(){
-
+                    preparationTask.setOnLoopListener(new MonoTypePrepareTask.onLoopListener() {
+                           
                             @Override
                             public void onLoop(String path) {
 
                                 if (Environment.isExternalStorageRemovable(new File(path))) {
-                                    preparationTask.await();
+                                    preparationTask.setOnLoopListener(null);
+                                    preparationTask.revokeFinish(true);
                                     getSdCardUri(GET_URI_CODE_TASK);
-                                    return;
                                 }
                             }
                         }
@@ -409,7 +409,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             if (requestCode == GET_URI_CODE_TASK) {
                 preparationTask.proceed();
             }
-		}
+		} else if (requestCode == GET_URI_CODE_TASK) {
+            preparationTask.cancelTask();
+        }
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 

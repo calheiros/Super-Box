@@ -34,7 +34,7 @@ public class VerifyActivity extends MyCompatActivity {
 		super.onCreate(savedInstanceState);
         checkPassword();
 		setContentView(R.layout.pattern);
-        
+
 //        View parent = findViewById(R.id.patternRelativeLayout);
 //        TypedValue typedValue = new TypedValue();
 //        Resources.Theme theme = getTheme();
@@ -85,9 +85,9 @@ public class VerifyActivity extends MyCompatActivity {
 
     @Override
     protected void onApplyCustomTheme() {
-        
+
     }
-    
+
     private boolean canProceed() {
         String action = getIntent().getAction();
 
