@@ -12,6 +12,7 @@ import com.jefferson.application.br.LocaleManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.StringUtils;
 import com.jefferson.application.br.util.ThemeUtils;
+import com.jefferson.application.br.util.MyPreferences;
 
 public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 
@@ -65,19 +66,20 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
         this.allowQuit = true;
         super.finish();
     }
-    
+
     public int getAttrColor(int resId) {
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = getTheme();
         theme.resolveAttribute(resId, typedValue, true);
         return typedValue.data;
     }
-    
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         onApplyCustomTheme();
 		super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+        if (!MyPreferences.getAllowScreenshot())
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
         pm = (PowerManager) getSystemService("power");
         app = (App) getApplication();
         KEY = StringUtils.getRandomString(8);

@@ -7,12 +7,13 @@ public class PreferenceItem {
 	public String title;
 	public int type;
 	public String description;
-    public int icon_id;
+    public int icon_res_id;
 	public static final int ITEM_SWITCH_TYPE = 3;
 	public static final int ITEM_TYPE = 2;
 	public static final int SECTION_TYPE = 1;
-	public boolean isChecked;
     public ID id;
+
+    public boolean checked;
 
 	public static final enum ID {
         LANGUAGE,
@@ -21,6 +22,7 @@ public class PreferenceItem {
         PASSWORD,
         APP_ICON,
         DIALER_CODE,
+        SCREENSHOT,
         ABOUT,
     }
     

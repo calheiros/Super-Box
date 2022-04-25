@@ -17,15 +17,22 @@ import java.util.ArrayList;
 import com.jefferson.application.br.util.MyAnimationUtils;
 import android.content.Intent;
 import com.jefferson.application.br.activity.CalculatorActivity;
+import com.jefferson.application.br.util.MyPreferences;
+import com.jefferson.application.br.app.SimpleDialog;
+import android.widget.CompoundButton;
+import com.jefferson.application.br.activity.MainActivity;
 
 public class SettingAdapter extends BaseAdapter {
 
     public LayoutInflater inflater;
     public ArrayList<PreferenceItem> items;
 	public SettingFragment settingFragment;
+    private TextView calculatorDescText;
+    private boolean switchCancelled = false;
 
+    private Switch mySwitch;
+    
     public SettingAdapter(ArrayList<PreferenceItem> arrayList, SettingFragment fragment) {
-
 		this.settingFragment = fragment;
         this.items = arrayList;
         this.inflater = (LayoutInflater) fragment.getActivity().getSystemService("layout_inflater");
@@ -37,19 +44,16 @@ public class SettingAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-
         return this.items.size();
     }
 
     @Override
     public PreferenceItem getItem(int id) {
-
         return this.items.get(id);
     }
 
     @Override
     public long getItemId(int id) {
-
         return (long) id;
     }
 
@@ -63,8 +67,8 @@ public class SettingAdapter extends BaseAdapter {
             ImageView iconView =  view.findViewById(R.id.ic_view);
             Switch mySwitch = view.findViewById(R.id.my_switch);
             TextView descriptionText = view.findViewById(R.id.description_text_view);
-            iconView.setImageResource(preferenceItem.icon_id);
-            mySwitch.setChecked(settingFragment.getComponentEnabledSetting() == PackageManager.COMPONENT_ENABLED_STATE_DISABLED);
+            iconView.setImageResource(preferenceItem.icon_res_id);
+            mySwitch.setChecked(preferenceItem.checked);
 
             if (preferenceItem.id == PreferenceItem.ID.APP_ICON) {
                 View expandableLayout = inflater.inflate(R.layout.stealth_expandable_layout, null);
@@ -96,7 +100,7 @@ public class SettingAdapter extends BaseAdapter {
             TextView descriptionText = view.findViewById(R.id.description_text_view);
             ImageView iconView = view.findViewById(R.id.ic_view);
             ((TextView) view.findViewById(R.id.item_title)).setText(preferenceItem.title);
-            iconView.setImageResource(preferenceItem.icon_id);
+            iconView.setImageResource(preferenceItem.icon_res_id);
 
             if (preferenceItem.description != null) {
                 descriptionText.setVisibility(View.VISIBLE);
@@ -108,10 +112,25 @@ public class SettingAdapter extends BaseAdapter {
 
     }
 
+    public void onCalculatorCodeChanged(String text) {
+        if (switchCancelled && mySwitch != null) {
+            switchCancelled = false;
+            mySwitch.setChecked(!mySwitch.isChecked());
+        }
+        
+        if (calculatorDescText != null) {
+            calculatorDescText.setText(text);
+        } 
+    }
+
     private void setExpandableLayoutListener(View v) {
         final View expandableLayout = v.findViewById(R.id.steal_thexpandable_layout);
         View calculator = v.findViewById(R.id.steal_calculator_layout);
-        calculator.setOnClickListener(new OnClickListener(){
+        calculatorDescText = v.findViewById(R.id.stealth_expandable_descriptionTextView);
+        calculatorDescText.setText(MyPreferences.getCalculatorCode());
+        mySwitch = v.findViewById(R.id.my_switch);
+
+        calculator.setOnClickListener(new OnClickListener() {
 
                 @Override
                 public void onClick(View view) {
@@ -120,27 +139,62 @@ public class SettingAdapter extends BaseAdapter {
                 }
             }
         );
-        
+
         v.setOnClickListener(new OnClickListener() {
                 @Override 
                 public void onClick(View v) {
-                    Switch mySwitch = v.findViewById(R.id.my_switch);
                     boolean checked = mySwitch.isChecked();
 
-                    if (checked) {
-                        MyAnimationUtils.collapse(expandableLayout);
-                    } else {
-                        MyAnimationUtils.expand(expandableLayout);
+                    if (!checked && MyPreferences.getCalculatorCode().equals("4321")) {
+                        View contentView = settingFragment.getActivity().getLayoutInflater().inflate(R.layout.calculator_tip_dialog_layout, null);
+                        SimpleDialog dialog = new SimpleDialog(settingFragment.getActivity());
+                        dialog.setContentView(contentView);
+                        dialog.setTitle(R.string.aviso);
+                        //dialog.setMessage("The app icon you be changed to a fake one!");
+                        dialog.setPositiveButton(android.R.string.ok,  new SimpleDialog.OnDialogClickListener(){
+
+                                @Override
+                                public boolean onClick(SimpleDialog dialog) {
+                                    startCalculatorActivity();
+                                    switchCancelled = true;
+                                    return true;
+                                }
+                            }
+                        );
+                        dialog.setNegativeButton(android.R.string.cancel, null);
+                        dialog.setCanceledOnTouchOutside(false);
+                        dialog.show();
+                        return;
                     }
                     mySwitch.setChecked(!checked);
                 } 
             }
         );
+
+        mySwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
+
+                @Override
+                public void onCheckedChanged(CompoundButton button, boolean checked) {
+                    settingFragment.setCalculatorEnabled(checked);
+                    MainActivity main = (MainActivity) settingFragment.getActivity();
+
+                    if (main.calculatorStateEnabled != checked) {
+                        Toast.makeText(settingFragment.getContext(), "Will take effect after the app closes", 0).show();
+                    }
+                    
+                    if (checked) {
+                        MyAnimationUtils.expand(expandableLayout);
+                    } else {
+                        MyAnimationUtils.collapse(expandableLayout);
+                    }
+                }
+            }
+        );
     }
-    
+
     private void startCalculatorActivity() {
         Intent intent = new Intent(settingFragment.getActivity(), CalculatorActivity.class);
         intent.setAction(CalculatorActivity.ACTION_CREATE_CODE);
-        settingFragment.startActivityForResult(intent, SettingFragment.CALCULATOR_CREATE_CODE_RESULT);
+        settingFragment.getActivity().startActivityForResult(intent, SettingFragment.CALCULATOR_CREATE_CODE_RESULT);
     }
 }

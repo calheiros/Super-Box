@@ -4,8 +4,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+    
     <LinearLayout
         android:gravity="center"
+        android:background="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -13,9 +15,9 @@
         <ImageView
             android:tint="?commonColor"
             android:id="@+id/ic_view"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_margin="7dp"/>
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"/>
 
         <LinearLayout
             android:orientation="vertical"
@@ -45,7 +47,7 @@
             android:focusable="false"
             android:clickable="false"
             android:layout_width="wrap_content"
-            android:layout_height="24dp"
+            android:layout_height="22dp"
             android:track="@drawable/switch_track_selector"
             android:thumb="@drawable/switch_thumb"
             android:layout_margin="7dp"/>

@@ -37,16 +37,16 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 
     <!-- ler seus contatos -->
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <!-- <uses-permission android:name="android.permission.READ_CONTACTS"/>-->
 
     <!-- WRITE_CONTATCS -->
-    <uses-permission android:name="android.permission.WRITE_CONTATCS"/>
+    <!--<uses-permission android:name="android.permission.WRITE_CONTATCS"/>-->
 
     <!-- READ_PHONE_NUMBERS -->
-    <uses-permission android:name="READ_PHONE_NUMBERS"/>
+    <!--<uses-permission android:name="READ_PHONE_NUMBERS"/>-->
 
     <!-- redirecionar as chamadas efetuadas -->
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+    <!--<uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>-->
 
     <!-- tirar fotos e gravar vídeos -->
     <uses-permission android:name="android.permission.CAMERA"/>
@@ -61,10 +61,10 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
 
     <!-- conectar e desconectar do Wi-Fi -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <!--<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>-->
 
     <!-- ver conexões Wi-Fi -->
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!--<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>-->
 
     <uses-permission
         android:name="READ_PHONE_STATE"
@@ -149,7 +149,7 @@
             android:name=".activity.CrashActivity">
 
         </activity>
-
+        
         <activity
             android:name=".activity.CalculatorActivity"
             android:label="@string/calculadora"
@@ -157,19 +157,31 @@
             android:excludeFromRecents="true"
             android:windowSoftInputMode="stateHidden"
             android:theme="@style/CalculatorTheme"
-            android:icon="@mipmap/ic_calculator"
-            android:enabled="true">
+            android:icon="@mipmap/ic_calculator">
 
             <intent-filter>
 
                 <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER"/>
-
             </intent-filter>
 
         </activity>
+        
+        <activity-alias
+            android:name=".CalculatorAlias"
+            android:enabled="false"
+            android:targetActivity=".activity.CalculatorActivity">
+            
+            <intent-filter>
+               
+                <action android:name="android.intent.action.MAIN"/>
 
+                <category android:name="android.intent.category.LAUNCHER"/>
+
+            </intent-filter>
+            
+        </activity-alias>
+      
         <activity
             android:name=".Intruder_fragment"
             android:label="Possiveis intrusos"/>
@@ -259,7 +271,9 @@
             android:theme="@style/MainTheme"
             android:screenOrientation="portrait"/>
 
-        <receiver android:name=".PhoneStatReceiver">
+        <receiver
+            android:enabled="false"
+            android:name=".PhoneStatReceiver">
 
             <intent-filter>
 

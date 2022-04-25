@@ -42,18 +42,34 @@ import com.jefferson.application.br.util.Storage;
 import java.util.ArrayList;
 import com.jefferson.application.br.util.MyAnimationUtils;
 import com.jefferson.application.br.util.ThemeUtils;
+import android.view.WindowManager;
+import android.view.Window;
+import com.jefferson.application.br.activity.CalculatorActivity;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
 	public String[] storages;
 	public String version;
-    private SettingAdapter mAdapter;
+    private SettingAdapter adapter;
 	private Toolbar mToolbar;
 	private SharedPreferences mShared;
 	private SharedPreferences.Editor mEdit;
 	private int egg;
     private int storageChoicePosition;
     public static final int CALCULATOR_CREATE_CODE_RESULT = 85;
+    private boolean calculatorEnabled = false;
+
+    public void setCodeDescription(String calculatorCode) {
+        adapter.onCalculatorCodeChanged(calculatorCode);
+    }
+
+    public boolean isCalculatorEnabledInSettings() {
+        return calculatorEnabled;
+    }
+
+    public void setCalculatorEnabled(boolean enabled) {
+        this.calculatorEnabled = enabled;
+    }
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -62,15 +78,15 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 		storages = new String[]{ getString(R.string.armaz_interno), getString(R.string.armaz_externo) };
 
 		((MainActivity)getActivity()).setupToolbar(mToolbar, getString(R.string.configuracoes));
-
+        // calculatorEnabled = PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getComponentEnabledState(CalculatorActivity.class.getCanonicalName());
 		mShared = PreferenceManager.getDefaultSharedPreferences(getContext());
 		mEdit = mShared.edit();
-		ListView mListView = (ListView)view.findViewById(R.id.list_config);
+		ListView mListView = (ListView) view.findViewById(R.id.list_config);
 		mListView.setDivider(null);
 
         ArrayList<PreferenceItem> items = createItemsList();
-		mAdapter = new SettingAdapter(items, this);
-		mListView.setAdapter(mAdapter);
+		adapter = new SettingAdapter(items, this);
+		mListView.setAdapter(adapter);
 		mListView.setOnItemClickListener(this);
         mListView.setOnItemLongClickListener(this);
 		return view;
@@ -92,22 +108,23 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     break;
                 case 1:
                     item.id = PreferenceItem.ID.PASSWORD;
-                    item.icon_id = R.drawable.ic_key;
+                    item.icon_res_id = R.drawable.ic_key;
                     item.title = getString(R.string.mudar_senha);
                     item.type = item.ITEM_TYPE;
                     break;
                 case 2:
                     item.id = PreferenceItem.ID.LANGUAGE;
-                    item.icon_id = R.drawable.ic_language;
+                    item.icon_res_id = R.drawable.ic_language;
                     item.title = getString(R.string.idioma);
                     item.type = item.ITEM_TYPE;
-                    item.description = getLanguage();
+                    item.description = getLanguageDisplay();
                     break;
                 case 3:
                     item.id = PreferenceItem.ID.APP_THEME;
                     item.type = PreferenceItem.ITEM_TYPE;
-                    item.icon_id = R.drawable.ic_palette;
+                    item.icon_res_id = R.drawable.ic_palette;
                     item.title = "App theme";
+                    item.description = ThemeUtils.THEME_LIST[ThemeUtils.getThemeIndex()];
                     break;
                 case 4:
                     item.type = item.SECTION_TYPE;
@@ -116,31 +133,41 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 case 5:
                     item.id  = PreferenceItem.ID.STORAGE;
                     item.type = item.ITEM_TYPE;
-                    item.icon_id = R.drawable.ic_storage;
+                    item.icon_res_id = R.drawable.ic_micro_sd;
                     item.title = getString(R.string.local_armazenamento);
                     item.description = getStorageName();
                     break;
                 case 6:
                     item.id = PreferenceItem.ID.APP_ICON;
-                    item.title = getString(R.string.modo_secreto);
-                    item.icon_id = R.drawable.ic_drama_masks;
+                    item.title = "Calculator icon";
+                    item.icon_res_id = R.drawable.ic_calculator_variant;
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE;
                     item.description = getString(R.string.ocultar_descricao);
+                    item.checked = calculatorEnabled;
                     break;
+//                case 7:
+//                    item.id = PreferenceItem.ID.DIALER_CODE;
+//                    item.title = getString(R.string.codigo_discador);
+//                    item.type = item.ITEM_TYPE;
+//                    item.icon_res_id = R.drawable.ic_dialpad;
+//                    item.description = getDialerCode()
+//                    break;
                 case 7:
-                    item.id = PreferenceItem.ID.DIALER_CODE;
-                    item.title = getString(R.string.codigo_discador);
-                    item.type = item.ITEM_TYPE;
-                    item.icon_id = R.drawable.ic_dialpad;
-                    item.description = getDialerCode();
+                    item.id = PreferenceItem.ID.SCREENSHOT;
+                    item.icon_res_id = R.drawable.ic_cellphone_screenshot;
+                    item.type = PreferenceItem.ITEM_SWITCH_TYPE;
+                    item.title = "Allow screenshot";
+                    item.description = "Less secure if enabled.";
+                    item.checked = MyPreferences.getAllowScreenshot();
                     break;
                 case 8:
                     item.title = getString(R.string.preferecias_sobre);
                     item.type = item.SECTION_TYPE;
                     break;
+
                 case 9:
                     item.id = PreferenceItem.ID.ABOUT;
-                    item.icon_id = R.drawable.ic_about;
+                    item.icon_res_id = R.drawable.ic_about;
                     item.title = getString(R.string.app_name);
                     item.type = item.ITEM_TYPE;
                     try {
@@ -161,7 +188,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         return MyPreferences.getSharedPreferences().getBoolean("eggs_found", false);
     }
 
-    private void enterDebugActivitu() {
+    private void enterDebugActivity() {
         Intent intent = new Intent(getContext(), DeveloperActivity.class);
         getActivity().startActivity(intent);
     }
@@ -176,7 +203,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
 	@Override
 	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-        PreferenceItem.ID itemId  = mAdapter.getItem(position).id;
+        PreferenceItem.ID itemId  = SettingFragment.this.adapter.getItem(position).id;
 
         if (itemId == PreferenceItem.ID.PASSWORD) {
             Intent intent = new Intent(getContext(), CreatePattern.class);
@@ -187,9 +214,24 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         } else if (itemId == PreferenceItem.ID.APP_THEME) {
             showThemeDialog();
         } else if (itemId == PreferenceItem.ID.STORAGE) {
-            showDialogChooseStorage();
+            showDialogStorage();
+        } else if (itemId == PreferenceItem.ID.SCREENSHOT) {
+            Switch mySwitch = view.findViewById(R.id.my_switch);
+            boolean checked = !mySwitch.isChecked();
+            MyPreferences.setAllowScreenshot(checked);
+            Window window = getActivity().getWindow();
+            int flags = WindowManager.LayoutParams.FLAG_SECURE | WindowManager.LayoutParams.FLAG_SECURE;
+
+            if (checked) {
+                window.clearFlags(flags);
+            } else {
+                window.addFlags(flags);
+            }
+            mySwitch.setChecked(checked);
+
         } else if (itemId == PreferenceItem.ID.APP_ICON) {
-            /* Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
+            /*
+             Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
              //            if (!mySwitch.isChecked() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
              //                SimpleDialog alert = new SimpleDialog(getContext());
              //                alert.setTitle("Unsupported!");
@@ -208,7 +250,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
              }
 
              changeIconVisibility(checked);
-             mySwitch.setChecked(checked);*/
+             mySwitch.setChecked(checked);
+             */
         } else if (itemId == PreferenceItem.ID.DIALER_CODE) {
             changeCodeDialog();
         } else if (itemId == PreferenceItem.ID.ABOUT) {
@@ -230,9 +273,9 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
                 @Override
                 public void onClick(DialogInterface p1, int position) {
-                    int themeId = ThemeUtils.getThemeIndex();
-                    
-                    if (position != themeId) {
+                    int themeIndex = ThemeUtils.getThemeIndex();
+
+                    if (position != themeIndex) {
                         ThemeUtils.setThemeIndex(position);
                         refreshActivity();
                     }
@@ -267,14 +310,14 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         }
     }
 
-    public void showDialogChooseStorage() {
+    public void showDialogStorage() {
         final int storagePosition = Storage.getStoragePosition();
         storageChoicePosition = storagePosition;
-
         String[] options = new String[]{getString(R.string.armaz_interno), getString(R.string.armaz_externo)};
-        if (Storage.getExternalStorage() == null)
-            options = new String[]{getString(R.string.armaz_interno)};
 
+        if (Storage.getExternalStorage() == null) {
+            options = new String[] { getString(R.string.armaz_interno) };
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), DialogUtils.getTheme());
         builder.setTitle(getString(R.string.armazenamento));
         builder.setSingleChoiceItems(options, storagePosition, new DialogInterface.OnClickListener() {
@@ -307,26 +350,28 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	}
 
     private void refreshActivity() {
+        ((MainActivity)getActivity()).setRestarting(true);
         Intent intent = new Intent(getContext(), MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
         intent.setAction(MainActivity.ACTION_START_IN_PREFERENCES);
+        intent.putExtra("calculator_enabled", calculatorEnabled);
         startActivity(intent);
         getActivity().overridePendingTransition(0, 0);
     }
 
-	private void changeIconVisibility(boolean isChecked) {
+	public void disableLauncherActivity(boolean disable) {
 		getActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), "com.jefferson.application.br.LuancherAlias"), 
-																	 isChecked ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED: PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+																	 disable ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED: PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
 	}
 
-    private void setCompomentEnabled(boolean enabled, String component) {
+    public void setCompomentEnabled(boolean enabled, String component) {
         getActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), component),
                                                                      enabled ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED: PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
 
 	public void changeCodeDialog() {
         final View view = getLayoutInflater(null).inflate(R.layout.dialog_call, null);
-		final EditText editText = (EditText) view.findViewById(R.id.editTextDialogUserInput);
+		final EditText editText = view.findViewById(R.id.editTextDialogUserInput);
 		editText.append(getDialerCode());
 
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), DialogUtils.getTheme());
@@ -345,7 +390,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 					} else {
 						mEdit.putString("secret_code", code).commit();
 						updateItemDescription(PreferenceItem.ID.DIALER_CODE, code);
-						mAdapter.notifyDataSetChanged();
+						adapter.notifyDataSetChanged();
 					}
 				}
 			}
@@ -356,8 +401,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         configureRoundedDialog(builder.show());
 	}
 
-	public int getComponentEnabledSetting() {
-		return getActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(getContext(), getActivity().getPackageName() + ".LuancherAlias"));
+	public int getComponentEnabledState(String componentName) {
+		return getActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(getContext(), componentName));
 	}
 
 	private String getStorageName() {
@@ -365,23 +410,21 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     public void updateItemDescription(PreferenceItem.ID id, String description) {
-
-        for (int i = 0; i < mAdapter.getCount(); i++) {
-            if (mAdapter.getItem(i).id == id) {
-                mAdapter.getItem(i).description = description;
-                mAdapter.notifyDataSetChanged();
+        for (int i = 0; i < adapter.getCount(); i++) {
+            if (adapter.getItem(i).id == id) {
+                adapter.getItem(i).description = description;
+                adapter.notifyDataSetChanged();
                 break;
             }
         }
 	}
 
-    private String getLanguage() {
-        String locale = LocaleManager.getLanguage(getContext());
-
-        if (locale == null)
-			return getString(R.string.padrao_do_sistema);
-
+    private String getLanguageDisplay() {
+        String locale = MyPreferences.getSharedPreferences().getString(LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE);
+        
 		switch (locale) {
+            case LocaleManager.SYSTEM_LOCALE:
+                return getString(R.string.padrao_do_sistema);
 			case "en":
 				return "English";
 			case "pt":
@@ -432,7 +475,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
                     @Override 
                     public void onClick(DialogInterface dialog, int id) {
-                        enterDebugActivitu();
+                        enterDebugActivity();
                     }
                 }
             );
@@ -443,7 +486,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
 	private void showWarning() {
-
         View view = getLayoutInflater(null).inflate(R.layout.dialog_check_box_view, null);
 		final CheckBox mCheckBox = (CheckBox) view.findViewById(R.id.dialogcheckbox);
 		new AlertDialog.Builder(getActivity())
@@ -465,28 +507,30 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	}
 
 	private void showLanguageDialog() {
-
-        final CharSequence[] itens = {"Português(Brasil)","English","Español"};
-
+        final CharSequence[] itens = { getString(R.string.padrao_do_sistema), "Português (Brasil)","English","Español" };
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
 			.setTitle(R.string.escolha_idioma)
 			.setItems(itens, new DialogInterface.OnClickListener(){
 
 				@Override
 				public void onClick(DialogInterface p1, int position) {
-					String locale = null;
+					String locale = LocaleManager.SYSTEM_LOCALE;
 					switch (position) {
-						case 0:
+						case 1:
 							locale = "pt";
 							break;
-						case 1:
+						case 2:
 							locale = "en";
 							break;
-						case 2:
+						case 3:
 							locale = "es";
 							break;
+                        case 4:
+                            locale = "ja";
+                            break;
 					}
-                    if (!locale.equals(LocaleManager.getLanguage(getContext()))) {
+                    
+                    if (!locale.equals(MyPreferences.getSharedPreferences().getString(LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE))) {
 					    LocaleManager.setNewLocale(getContext(), locale);
                         refreshActivity();
                     }

@@ -9,7 +9,10 @@ import com.jefferson.application.br.util.MyPreferences;
 import java.util.Locale;
 
 public class LocaleManager {
-
+    
+    public static final String SYSTEM_LOCALE = "system_locale";
+    public static final String LOCALE_KEY = "locale";
+    
     public static void configureLocale(Context c) {
         String language = getLanguage(c);
         if (language != null) {
@@ -24,12 +27,19 @@ public class LocaleManager {
 
     public static String getLanguage(Context c) { 
 		SharedPreferences mSheredPreferences = MyPreferences.getSharedPreferences(c);
-		return mSheredPreferences.getString("locale", Locale.getDefault().getLanguage());
+        String locale = mSheredPreferences.getString(LOCALE_KEY, SYSTEM_LOCALE);
+        
+        if (SYSTEM_LOCALE.equals(locale)) {
+            return Locale.getDefault().getLanguage();
+        } else {
+            return locale;
+        }
+
 	}
 
     private static void persistLanguage(Context c, String language) { 
         SharedPreferences mSharedPreferences = MyPreferences.getSharedPreferences(c);
-		mSharedPreferences.edit().putString("locale", language).commit();
+		mSharedPreferences.edit().putString(LOCALE_KEY, language).commit();
 	}
 
     public static Context updateResources(Context context, String language) {
@@ -38,7 +48,7 @@ public class LocaleManager {
         Locale.setDefault(locale); 
         Resources resources = context.getResources();
         Configuration config = new Configuration(resources.getConfiguration());
-        
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) { 
             config.setLocale(locale);
             newContext = context.createConfigurationContext(config);

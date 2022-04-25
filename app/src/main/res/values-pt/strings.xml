@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
+    <string name="padrao_do_sistema">Seguir o sistema</string>
+   <string name="depois">Depois</string>
+    <string name="antes">Antes</string>
+    <string name="aviso">Aviso</string>
+    <string name="codigo_calculadora_mensagem_1">O Super Box se disfarçará de um aplicativo de calculadora:</string>
+    <string name="codigo_calculadora_mensagem_2">Você precisará definir um código de entrada através da interface da calculadora para acessar o aplicativo novamente.\nO código padrão é 4321. É fortemente recomendado criar um novo.</string>
+    <string name="mudando_para_icone_padrao">Mundando para icone padrão.</string>
     <string name="usage_data_permission_message">Você precisa conceder a permisão &quot;Acessar dados de uso&quot; para esta função funcionar corretamente.</string>
     <string name="calculadora">Calculadora</string>
     <string name="pasta_nome_muito_grande">Número máximo de caracteres excedido!</string>
     <string name="pasta_nome_vazio">O nome da pasta não pode ficar vazio!</string>
-    <string name="padrao_do_sistema">Padrão do sistem</string>
     <string name="nao_vejo_nada">Não consigo ler nada!</string>
-    <string name="poucas_fotos">Parece que vc não tem muitas fotos...</string>
+    <string name="poucas_fotos">Parece que você não gosta de tirar muitas fotos...</string>
     <string name="alguem_viu_uma_pasta">Alguém viu uma pasta?</string>
     <string name="falha_video">Falha ao reproduzir vídeo!</string>
     <string name="pasta_mesmo_nome">Nada mudou.</string>

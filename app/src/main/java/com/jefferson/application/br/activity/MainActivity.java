@@ -51,20 +51,32 @@ import com.jefferson.application.br.widget.MyAlertDialog;
 import java.io.File;
 import java.util.ArrayList;
 import com.jefferson.application.br.util.DialogUtils;
+import android.content.pm.PackageManager;
+import android.content.ComponentName;
+import com.jefferson.application.br.util.MyPreferences;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener {
 
     private MonoTypePrepareTask preparationTask;
+    public boolean calculatorStateEnabled;
+    private boolean restarting;
+
+    public void setRestarting(boolean restarting) {
+        this.restarting = restarting;
+    }
 
     public void setupToolbar(Toolbar toolbar, String string, int menuId) {
+        
     }
 
     @Override
     public void onBeingStarted() {
+        
     }
 
     @Override
     public void onUserInteration() {
+        
     }
 
     @Override
@@ -75,7 +87,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     @Override
     public void onFinished() {
         updateCurrentFragment();
-
     }
 
     private void updateCurrentFragment() {
@@ -131,12 +142,13 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-        
+
 		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
+        calculatorStateEnabled = isCalculatorComponentEnabled();
+        
 		if (savedInstanceState != null) {
 			startActivity(new Intent(this, VerifyActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
@@ -252,44 +264,53 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         this.mainFragment = new MainFragment();
 	    this.lockFragment = new LockFragment();
         this.settingFragment = new SettingFragment();
-
-		boolean toSetting = ACTION_START_IN_PREFERENCES.equals(getIntent().getAction());
-		changeFragment(toSetting ? settingFragment: mainFragment);
-		navigationView.getMenu().getItem(toSetting ? 2 : 0).setChecked(true);
+        boolean startInSetting = ACTION_START_IN_PREFERENCES.equals(getIntent().getAction());
+        
+        if (startInSetting) {
+            settingFragment.setCalculatorEnabled(getIntent().getBooleanExtra("calculator_enabled", false));
+        } else {
+            settingFragment.setCalculatorEnabled(calculatorStateEnabled);
+        }
+		changeFragment(startInSetting ? settingFragment: mainFragment);
+		navigationView.getMenu().getItem(startInSetting ? 2 : 0).setChecked(true);
 	}
 
-    private void sorryAlert() {
-		View view = getLayoutInflater().inflate(R.layout.dialog_check_box_view, null);
-        SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.ALERT_STYLE);
-		dialog.setTitle("Erro detectado!");
-		dialog.setMessage("Lamento pelo erro ocorrido anteriormente. Por favor, relate o erro ocorrido para que ele seja corrigido o mais rápido possível.");
-		dialog.setCanceledOnTouchOutside(false);
-		dialog.setContentView(view);
-		dialog.setPositiveButton("Relatar", new SimpleDialog.OnDialogClickListener(){
-				@Override
-				public boolean onClick(SimpleDialog dialog) {
+    private boolean isCalculatorComponentEnabled() {
+        return PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getPackageManager().getComponentEnabledSetting(new ComponentName(this, "com.jefferson.application.br.CalculatorAlias"));
+    }
 
-					if (ServiceUtils.isConnected(MainActivity.this))
-						Toast.makeText(getApplicationContext(), "obrigado! relatório de erro enviado.", 1).show();
-					else 
-						Toast.makeText(getApplicationContext(), "obrigado! relatório de será enviado quando estiver conectado.", 1).show();
-					return true;
-				}
-            }
-        );
-
-        dialog.setNegativeButton(getString(R.string.cancelar), null);
-		dialog.show();
-		dialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
-
-				@Override
-				public void onDismiss(DialogInterface dInterface) {
-					//sharedPreferences.edit().putBoolean(app.EXCEPTION_FOUND, false).commit();
-
-				}
-			}
-        );
-	}
+//    private void sorryAlert() {
+//		View view = getLayoutInflater().inflate(R.layout.dialog_check_box_view, null);
+//        SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.ALERT_STYLE);
+//		dialog.setTitle("Erro detectado!");
+//		dialog.setMessage("Lamento pelo erro ocorrido anteriormente. Por favor, relate o erro ocorrido para que ele seja corrigido o mais rápido possível.");
+//		dialog.setCanceledOnTouchOutside(false);
+//		dialog.setContentView(view);
+//		dialog.setPositiveButton("Relatar", new SimpleDialog.OnDialogClickListener(){
+//				@Override
+//				public boolean onClick(SimpleDialog dialog) {
+//
+//					if (ServiceUtils.isConnected(MainActivity.this))
+//						Toast.makeText(getApplicationContext(), "obrigado! relatório de erro enviado.", 1).show();
+//					else 
+//						Toast.makeText(getApplicationContext(), "obrigado! relatório de será enviado quando estiver conectado.", 1).show();
+//					return true;
+//				}
+//            }
+//        );
+//
+//        dialog.setNegativeButton(getString(R.string.cancelar), null);
+//		dialog.show();
+//		dialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
+//
+//				@Override
+//				public void onDismiss(DialogInterface dInterface) {
+//					//sharedPreferences.edit().putBoolean(app.EXCEPTION_FOUND, false).commit();
+//
+//				}
+//			}
+//        );
+//	}
 
 	private void changeFragment(Fragment fragment) {
 		if (fragment != getSupportFragmentManager().findFragmentById(R.id.fragment_container)) {
@@ -355,13 +376,20 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (Settings.canDrawOverlays(this)) { 
 
             }
         }
 
-		if (resultCode == MyCompatActivity.RESULT_OK) {
+		if (resultCode == RESULT_OK) {
+
+            if (requestCode == SettingFragment.CALCULATOR_CREATE_CODE_RESULT) {
+                settingFragment.setCodeDescription(MyPreferences.getCalculatorCode());
+                return;
+            }
+
             if (requestCode == MainFragment.GET_FILE) {
 
                 Uri uri = null;
@@ -391,7 +419,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty()))
                     preparationTask.setOnLoopListener(new MonoTypePrepareTask.onLoopListener() {
-                           
+
                             @Override
                             public void onLoop(String path) {
 
@@ -488,6 +516,20 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             unregisterReceiver(receiver);
             receiver = null;
         }
+        
+        if (!restarting) {
+            boolean enabled = settingFragment.isCalculatorEnabledInSettings();
+            if (enabled != isCalculatorComponentEnabled()) {
+
+                settingFragment.disableLauncherActivity(enabled);
+                settingFragment.setCompomentEnabled(!enabled, "com.jefferson.application.br.CalculatorAlias");
+
+                Toast.makeText(this, "Changing to " + (enabled ? "Calculator icon": "default icon"), 1).show();
+            }
+        }
         super.onDestroy();
+
+
+
     }
 }

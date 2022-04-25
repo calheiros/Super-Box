@@ -159,7 +159,15 @@ public class SimpleDialog  {
         this.jdialog.setCancelable(false);
         return this;
     }
-
+    
+    public void setPositiveButton(int stringId, OnDialogClickListener listener) {
+      setPositiveButton(context.getString(stringId), listener);
+        
+    }
+    
+    public void setNegativeButton(int stringId, OnDialogClickListener listener) {
+        setNegativeButton(context.getString(stringId), listener);
+    }
     public void setOnDismissListener(DialogInterface.OnDismissListener listener) {
         this.jdialog.setOnDismissListener(listener);
     }

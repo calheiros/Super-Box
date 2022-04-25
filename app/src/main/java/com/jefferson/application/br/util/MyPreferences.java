@@ -5,8 +5,16 @@ import com.jefferson.application.br.App;
 import com.jefferson.application.br.R;
 
 public class MyPreferences {
-
+    private final static String ALLOW_SCREENSHOT_KEY = "allow_screenshot";
     private final static String CALCULATOR_CODE_KEY = "calculator_code";
+
+    public static boolean getAllowScreenshot() {
+        return getSharedPreferences().getBoolean(ALLOW_SCREENSHOT_KEY, false);
+    }
+
+    public static void setAllowScreenshot(boolean allow) {
+        getSharedPreferencesEditor().putBoolean(ALLOW_SCREENSHOT_KEY, allow).commit();
+    }
 
     public static void putCalculatorCode(String input) {
         getSharedPreferencesEditor().putString(CALCULATOR_CODE_KEY, input).commit();

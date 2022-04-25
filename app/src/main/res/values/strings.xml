@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="padrao_do_sistema">Follow system</string>
+    <string name="depois">After</string>
+    <string name="antes">Before</string>
+    <string name="aviso">Notice</string>
+    <string name="codigo_calculadora_mensagem_1">The Super Box will disguise itself as a calculator app:</string>
+    <string name="codigo_calculadora_mensagem_2">You will need to set an input code through the calculator interface to access the application again.\nThe default code is 4321. It is strongly recommended to create a new.</string>
+    <string name="mudando_para_icone_padrao">Switching to default icon</string>
     <string name="usage_data_permission_message">You need to grant permission &quot;Access usage data&quot; for this function to work correctly.</string>
     <string name="calculadora">Calculator</string>
     <string name="pasta_nome_muito_grande">Maximum number of characters exceeded!</string>
     <string name="pasta_nome_vazio">The folder name can\'t be empty!</string>
-    <string name="padrao_do_sistema">System default</string>
     <string name="nao_vejo_nada">I can\'t see a thing!</string>
-    <string name="poucas_fotos">Looks like you don\'t have a lot of pictures...</string>
+    <string name="poucas_fotos">It seems that you do not like to take many pictures...</string>
     <string name="alguem_viu_uma_pasta">Has anyone seen a folder?</string>
     <string name="falha_video">Failed to play video!</string>
     <string name="pasta_mesmo_nome">The name cannot be the same ಠ_ಠ</string>
