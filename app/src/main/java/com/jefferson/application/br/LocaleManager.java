@@ -21,8 +21,9 @@ public class LocaleManager {
     }
 
     public static void setNewLocale(Context c, String language) {
-        persistLanguage(c, language);
-        updateResources(c, language);
+        if (persistLanguage(c, language)){
+            configureLocale(c);
+        }
     }
 
     public static String getLanguage(Context c) { 
@@ -30,16 +31,27 @@ public class LocaleManager {
         String locale = mSheredPreferences.getString(LOCALE_KEY, SYSTEM_LOCALE);
         
         if (SYSTEM_LOCALE.equals(locale)) {
-            return Locale.getDefault().getLanguage();
+            return getSystemLocale(c);
         } else {
             return locale;
         }
-
 	}
 
-    private static void persistLanguage(Context c, String language) { 
+    private static String getSystemLocale(Context c) {
+        //return Locale.getDefault().getLanguage();
+        Configuration config = c.getResources().getConfiguration();
+        
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return config.locale.getLanguage(); 
+        } else {
+            return config.getLocales().get(0).getLanguage();
+        }
+       
+    }
+
+    private static boolean persistLanguage(Context c, String language) { 
         SharedPreferences mSharedPreferences = MyPreferences.getSharedPreferences(c);
-		mSharedPreferences.edit().putString(LOCALE_KEY, language).commit();
+		return mSharedPreferences.edit().putString(LOCALE_KEY, language).commit();
 	}
 
     public static Context updateResources(Context context, String language) {

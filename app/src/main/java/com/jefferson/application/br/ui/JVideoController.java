@@ -198,7 +198,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         mSeekBar.setOnSeekBarChangeListener(this);
         anchorView.setOnTouchListener(this);
         controllerButton.setOnClickListener(this);
-
+        
         if (mVideoView.isPlaying()) {
             setPlaying(true);
         }

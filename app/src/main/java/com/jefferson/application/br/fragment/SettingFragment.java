@@ -8,7 +8,6 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -18,6 +17,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
@@ -33,18 +34,14 @@ import com.jefferson.application.br.activity.CreatePattern;
 import com.jefferson.application.br.activity.DeveloperActivity;
 import com.jefferson.application.br.activity.MainActivity;
 import com.jefferson.application.br.adapter.SettingAdapter;
-import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.model.PreferenceItem;
 import com.jefferson.application.br.util.ASCIIArt;
 import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.Storage;
-import java.util.ArrayList;
-import com.jefferson.application.br.util.MyAnimationUtils;
 import com.jefferson.application.br.util.ThemeUtils;
-import android.view.WindowManager;
-import android.view.Window;
-import com.jefferson.application.br.activity.CalculatorActivity;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
@@ -123,7 +120,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.id = PreferenceItem.ID.APP_THEME;
                     item.type = PreferenceItem.ITEM_TYPE;
                     item.icon_res_id = R.drawable.ic_palette;
-                    item.title = "App theme";
+                    item.title = getString(R.string.tema_applicativo);
                     item.description = ThemeUtils.THEME_LIST[ThemeUtils.getThemeIndex()];
                     break;
                 case 4:
@@ -139,7 +136,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     break;
                 case 6:
                     item.id = PreferenceItem.ID.APP_ICON;
-                    item.title = "Calculator icon";
+                    item.title = getString(R.string.disfarce_calculadora);
                     item.icon_res_id = R.drawable.ic_calculator_variant;
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE;
                     item.description = getString(R.string.ocultar_descricao);
@@ -156,8 +153,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.id = PreferenceItem.ID.SCREENSHOT;
                     item.icon_res_id = R.drawable.ic_cellphone_screenshot;
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE;
-                    item.title = "Allow screenshot";
-                    item.description = "Less secure if enabled.";
+                    item.title = getString(R.string.permitir_captura_tela);
+                    item.description = getString(R.string.menos_seguro_se_habilitado);
                     item.checked = MyPreferences.getAllowScreenshot();
                     break;
                 case 8:
@@ -421,16 +418,20 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
     private String getLanguageDisplay() {
         String locale = MyPreferences.getSharedPreferences().getString(LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE);
-        
+
 		switch (locale) {
             case LocaleManager.SYSTEM_LOCALE:
                 return getString(R.string.padrao_do_sistema);
 			case "en":
 				return "English";
 			case "pt":
-				return "Portugu\u00eas";
+                return "Portugu\u00eas";
+            case "de":
+                return "Deutsch";
 			case "es":
 				return "Espa\u00f1ol";
+            case "ja":
+                return "日本語";
         }
 		return null;
     }
@@ -447,7 +448,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         view.findViewById(R.id.githubTextView).setOnClickListener(this);
 
 		build.setView(view);
-        build.setPositiveButton("fechar", new DialogInterface.OnClickListener() {
+        build.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
                 @Override
                 public void onClick(DialogInterface dialogInterface, int id) {
@@ -507,36 +508,43 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 	}
 
 	private void showLanguageDialog() {
-        final CharSequence[] itens = { getString(R.string.padrao_do_sistema), "Português (Brasil)","English","Español" };
+        final CharSequence[] itens = { getString(R.string.padrao_do_sistema),"English", "Español", "Deutsch", "Português (Brasil)", "日本語"};
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
 			.setTitle(R.string.escolha_idioma)
 			.setItems(itens, new DialogInterface.OnClickListener(){
 
 				@Override
 				public void onClick(DialogInterface p1, int position) {
-					String locale = LocaleManager.SYSTEM_LOCALE;
+					String locale;
 					switch (position) {
-						case 1:
-							locale = "pt";
+                        case 1:
+                            locale = "en";
 							break;
 						case 2:
-							locale = "en";
-							break;
-						case 3:
 							locale = "es";
 							break;
+                        case 3:
+                            locale = "de";
+                            break;
                         case 4:
+                            locale = "pt";
+							break;
+                        case 5:
                             locale = "ja";
                             break;
+                        default:
+                            locale = LocaleManager.SYSTEM_LOCALE;
+                            break;
 					}
-                    
+
                     if (!locale.equals(MyPreferences.getSharedPreferences().getString(LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE))) {
 					    LocaleManager.setNewLocale(getContext(), locale);
                         refreshActivity();
                     }
                 }
             }
-        );
+        ); 
+        //Toast.makeText(getContext(), Locale.getDefault().getLanguage(), 1).show();
 		configureRoundedDialog(b.show());
 	}
 }

@@ -31,7 +31,7 @@
         android:gravity="center"
         android:layout_marginBottom="5dp"
         android:textSize="16sp"
-        android:textColor="#fafafa"
+        android:textColor="@color/colorCommonLight"
         android:id="@+id/calculator_hintTextView"
         android:paddingHorizontal="10dp"/>
 
@@ -47,9 +47,9 @@
 
         <!-- ROW DIVISION-->
         <TableRow
-            android:paddingVertical="5dp"
-            >
-
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
+            
             <LinearLayout
                 android:layout_weight="1.0"
                 android:layout_width="0dp"
@@ -129,8 +129,9 @@
         </TableRow>
         <!-- ROW MULTIPLICATION -->
         <TableRow
-            android:paddingVertical="5dp"
-            >
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
+            
             <LinearLayout
                 android:layout_weight="1.0"
                 android:layout_width="0dp"
@@ -204,8 +205,9 @@
         </TableRow>
         <!-- ROW SUBTRATION -->
         <TableRow
-            android:paddingVertical="5dp"
-            >
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
+            
             <LinearLayout
                 android:layout_weight="1.0"
                 android:layout_width="0dp"
@@ -282,8 +284,9 @@
         </TableRow>
         <!-- ROW ADITION -->
         <TableRow
-            android:paddingVertical="5dp"
-            >
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
+            
             <LinearLayout
                 android:layout_weight="1.0"
                 android:layout_width="0dp"
@@ -361,8 +364,8 @@
         </TableRow>
         <!-- ROW RESULT-->
         <TableRow
-            android:paddingVertical="5dp"
-            >
+            android:paddingBottom="5dp"
+            android:paddingTop="5dp">
 
             <LinearLayout
                 android:layout_weight="1.0"

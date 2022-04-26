@@ -524,7 +524,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                 settingFragment.disableLauncherActivity(enabled);
                 settingFragment.setCompomentEnabled(!enabled, "com.jefferson.application.br.CalculatorAlias");
 
-                Toast.makeText(this, "Changing to " + (enabled ? "Calculator icon": "default icon"), 1).show();
+                Toast.makeText(this, getString(R.string.aplicando_configuracoes), 1).show();
             }
         }
         super.onDestroy();

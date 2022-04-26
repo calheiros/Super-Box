@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
+    <string name="aplicando_configuracoes">Aplicando configuração</string>
+    <string name="mudar_codigo">Alterar codigo</string>
+    <string name="tema_applicativo">Tema do applicativo</string>
+    <string name="menos_seguro_se_habilitado">Menos seguro se habilitado</string>
+    <string name="permitir_captura_tela">Permitir captura de tela</string>
+    <string name="disfarce_calculadora">Disfarce de calculadora</string>
+    
     <string name="padrao_do_sistema">Seguir o sistema</string>
-   <string name="depois">Depois</string>
+    <string name="depois">Depois</string>
     <string name="antes">Antes</string>
     <string name="aviso">Aviso</string>
     <string name="codigo_calculadora_mensagem_1">O Super Box se disfarçará de um aplicativo de calculadora:</string>
     <string name="codigo_calculadora_mensagem_2">Você precisará definir um código de entrada através da interface da calculadora para acessar o aplicativo novamente.\nO código padrão é 4321. É fortemente recomendado criar um novo.</string>
     <string name="mudando_para_icone_padrao">Mundando para icone padrão.</string>
-    <string name="usage_data_permission_message">Você precisa conceder a permisão &quot;Acessar dados de uso&quot; para esta função funcionar corretamente.</string>
+    <string name="usage_data_permission_message">Você precisa conceder a permisão \"Acessar dados de uso\" para esta função funcionar corretamente.</string>
     <string name="calculadora">Calculadora</string>
     <string name="pasta_nome_muito_grande">Número máximo de caracteres excedido!</string>
     <string name="pasta_nome_vazio">O nome da pasta não pode ficar vazio!</string>
@@ -81,7 +88,7 @@
 	<string name="imagem">imagem</string>
 	<string name="senha_definida_como">Seu padrão de desbloqueio foi definido como:</string>
 	<string name="apagar_mensagem">Tem certeza que quer apagar %s permanentimente?</string>
-	<string name="restart_to_change_linguage">Reinicie a aplicação para as mudanças terem efeito</string>
+	<string name="reiniciar_para_aplicar">Reinicie a aplicação para as mudanças terem efeito</string>
 	<string name="vazio">Por enquanto vazio.</string>
 	<string name="intruder_vazio">Tudo limpo! Nenhum intruso foi capturado.</string>
 	<string name="inserir">Insira a senha</string>
@@ -97,7 +104,6 @@
 	<string name="definir">Definir</string>
 	<string name="re_exibir">Tornar visível novamente</string>
 	<string name="compartilhar">Compartilhar</string>
-	<string name="sair">Sair?</string>
 	<string name="sim">Sim</string>
 	<string name="uma_tentativa">1 tentativa</string>
 	<string name="duas_tentativas">2 tentativas</string>
@@ -114,7 +120,7 @@
 	<string name="capturar_apos">Capturar foto após:</string>
 	<string name="capturar_descricao">A foto é capturada após um determinado número de falhas ao tentar desbloquear o dispositivo"</string>
 	<string name="intruso_descricao">Captura fotos de possiveis intrusos ao tentar desbloquear o dispositivo</string>
-	<string name="ocultar_descricao">Ocultar o icone na grade de aplicativos</string>
+	<string name="ocultar_descricao">Alterar ícone no launcher</string>
 	<string name="message_dialog_camera">É preciso a permission CAMERA para a aplicação funcionar</string>
 	<string name="apagar">Apagar</string>
 	<string name="dialog_permission_title">Permissão!</string>
@@ -133,11 +139,11 @@
 
 	<string name="pref_user_profile">perfil do usuário</string>
 	<string name="pref_update_setting">Update Settings</string>
-	<string-array name="navigation_drawer_items_array">
+	<!--<string-array name="navigation_drawer_items_array">
 
 		<item>Imagens</item>
 		<item>Fixtures</item>
 		<item>Table</item>
-	</string-array>
+	</string-array>-->
 
 </resources>

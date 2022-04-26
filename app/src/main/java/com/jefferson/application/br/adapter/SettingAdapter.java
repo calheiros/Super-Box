@@ -179,7 +179,7 @@ public class SettingAdapter extends BaseAdapter {
                     MainActivity main = (MainActivity) settingFragment.getActivity();
 
                     if (main.calculatorStateEnabled != checked) {
-                        Toast.makeText(settingFragment.getContext(), "Will take effect after the app closes", 0).show();
+                        Toast.makeText(settingFragment.getContext(), settingFragment.getString(R.string.reiniciar_para_aplicar), Toast.LENGTH_SHORT).show();
                     }
                     
                     if (checked) {

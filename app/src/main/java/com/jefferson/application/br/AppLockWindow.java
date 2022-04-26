@@ -29,8 +29,7 @@ public class AppLockWindow {
     private String passedApp = "";
     private String password;
     private View lastView;
-    private String appAllowed = "";
-
+    
 	public AppLockWindow(final Context context, final AppsDatabase db) {
 
 	    this.context = context;
@@ -142,21 +141,17 @@ public class AppLockWindow {
 		locked = true;
 		currentApp = appName;
 		iconImageView.setImageDrawable(getIconDrawable(appName));
-        if (startDefaultLauncher()) {
-            appAllowed = appName;
-            openFakeDialog(appName);
-        } else {
-		    windowManager.addView(view, params);
-        }
+        windowManager.addView(view, params);
+        
 	}
 
-    private void openFakeDialog(String appName) {
-        Intent intent = new Intent(context, FakeDialogActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.putExtra("app_name", appName);
-        context.startActivity(intent);
-    }
-
+//    private void openFakeDialog(String appName) {
+//        Intent intent = new Intent(context, FakeDialogActivity.class);
+//        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        intent.putExtra("app_name", appName);
+//        context.startActivity(intent);
+//    }
+//
 	public void unlock() {
         try {
             windowManager.removeView(view);
