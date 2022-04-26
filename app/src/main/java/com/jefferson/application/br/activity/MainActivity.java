@@ -407,8 +407,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
                 if (Storage.checkIfSDCardRoot(uri)) {
                     getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
-					sharedPreferences.edit().putString(getString(R.string.EXTERNAL_URI), uri.toString()).commit();
-				} 
+                    Storage.storeExternalUri(uri.toString());
+                    
+			} 
 
 			} else if (requestCode == IMPORT_FROM_GALLERY_CODE) {
 				position = data.getIntExtra("position", -1);

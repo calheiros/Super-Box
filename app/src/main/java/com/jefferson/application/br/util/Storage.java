@@ -40,6 +40,11 @@ public class Storage extends DocumentUtil {
     public static final int VIDEO = 2;
 	public static final String IMAGE_DIR_NAME = "b17rvm0891wgrqwoal5sg6rr";
 	public static final String VIDEO_DIR_NAME = "bpe8x1svi9jvhmprmawsy3d8";
+    public static final String EXTERNAL_URI_KEY = "external_uri";
+
+    public static void storeExternalUri(String uri) {
+        MyPreferences.getSharedPreferencesEditor().putString(Storage.EXTERNAL_URI_KEY, uri).commit();
+    }
 
     public static boolean writeFile(String content, File target) {
         File parent = target.getParentFile();
@@ -59,13 +64,13 @@ public class Storage extends DocumentUtil {
 
         return true;
     }
-    
+
     public static String getRecycleBinPath() {
         File file = new File(getDefaultStorage(), ".trashed");
         file.mkdirs();
         return file.getAbsolutePath();
     }
-    
+
     public static boolean writeFile(byte[] content, File target) {
         File parent = target.getParentFile();
         if (!parent.exists()) {
@@ -139,7 +144,7 @@ public class Storage extends DocumentUtil {
 	}
 
     public static Uri getExternalUri(Context context) {
-        String string = MyPreferences.getSharedPreferences().getString(context.getString(R.string.EXTERNAL_URI), null);
+        String string = MyPreferences.getSharedPreferences().getString(EXTERNAL_URI_KEY, null);
 
         if (string == null) {
             return null;
@@ -278,31 +283,31 @@ public class Storage extends DocumentUtil {
 	}
 
 	/*public static String getPathFromUri(@NonNull Uri uri, Context context) {
-		String filePath = null;
+     String filePath = null;
 
-		if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-            try {
-                String[] proj = { MediaStore.Video.Media.DATA, MediaStore.Images.Media.DATA};
-                Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
-                int column_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-                boolean c = cursor.moveToFirst();
-                if (c) {
-                    return cursor.getString(column_index);
-                }
-            } catch (IllegalStateException e) {
-                e.printStackTrace();
-            }
-		} else {
-			filePath = uri.getPath();
-		}
-		Log.d("", "Chosen path = " + filePath);
-		return filePath;
-	}
-    */
+     if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
+     try {
+     String[] proj = { MediaStore.Video.Media.DATA, MediaStore.Images.Media.DATA};
+     Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
+     int column_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+     boolean c = cursor.moveToFirst();
+     if (c) {
+     return cursor.getString(column_index);
+     }
+     } catch (IllegalStateException e) {
+     e.printStackTrace();
+     }
+     } else {
+     filePath = uri.getPath();
+     }
+     Log.d("", "Chosen path = " + filePath);
+     return filePath;
+     }
+     */
     public static String getPath(Uri uri) {
         return new FileUtils(App.getAppContext()).getPath(uri);
     }
-    
+
     public static void mediaScannerConnection(String[] strArr) {
 
         MediaScannerConnection.scanFile(App.getAppContext(), strArr, null, new MediaScannerConnection.OnScanCompletedListener(){
@@ -311,7 +316,8 @@ public class Storage extends DocumentUtil {
 				public void onScanCompleted(String p1, Uri p2) {
 
 				}
-			});
+			}
+        );
     }
 
     @TargetApi(21)
