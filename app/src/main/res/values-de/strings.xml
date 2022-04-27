@@ -29,7 +29,7 @@
     <string name="resultado">Ergebnis</string>
     <string name="pasta_ja_existe">Ordner ist bereits vorhanden!</string>
     <string name="sem_nome">Ungenannt</string>
-    <string name="apagar_pasta_aviso">Möchten Sie den Ordner %s und alle Ihre Inhalte dauerhaft löschen?</string>
+    <string name="apagar_pasta_aviso">Möchten Sie den Ordner "\%s"\ und alle Ihre Inhalte dauerhaft löschen?</string>
     <string name="criar_pasta">Ordner erstellen</string>
     <string name="renomear_pasta">Ordner umbenennen</string>
     <string name="concluir">Bestätigen</string>
@@ -71,7 +71,7 @@
     <string name="codigo_chamada">Call code</string>
     <string name="mover_galeria">Möchten Sie %s wirklich in die Galerie verschieben?</string>
     <string name="mover">Bewegen</string>
-	<string name="vazio">Nichts hier.</string>
+	<string name="vazio">Nichts hier</string>
     <string name="movendo">Verarbeitung</string>
     <string name="confirmacao">Bestätigung</string>
     <string name="caixa_principal">Main box</string>

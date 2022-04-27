@@ -84,6 +84,13 @@
 			android:text="pin activity"
 			android:id="@+id/openPin"/>
 
+        <Button
+            android:layout_width="wrap_content"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_height="wrap_content"
+            android:onClick="quit"
+            android:text="import activity"
+			android:id="@+id/openPin"/>
 	</LinearLayout>
 
 </ScrollView>

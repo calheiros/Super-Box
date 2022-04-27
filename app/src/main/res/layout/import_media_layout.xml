@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="10dp"
+	android:gravity="center_horizontal">
+
+	<com.jefferson.application.br.view.CircleProgressView
+		android:layout_height="145dp"
+		android:layout_width="145dp"
+		android:id="@+id/circle_progress_view"
+		android:layout_marginTop="40dp"
+		android:layout_marginBottom="10dp"/>
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+        android:paddingRight="24dp"
+        android:paddingLeft="24dp">
+        
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Preparing"
+            android:textSize="15sp"
+            android:layout_marginTop="10dp"
+            android:textColor="?commonColor"
+            android:textStyle="bold"
+            android:id="@+id/import_media_title_preparation_text_view"/>
+
+        <TextView
+            android:layout_below="@+id/import_media_title_preparation_text_view"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_marginTop="4dp"
+            android:layout_height="wrap_content"
+            android:text="file/path/image.png"
+            android:textSize="15sp"
+            android:textColor="?commonColorDark"
+            android:id="@+id/import_media_prepare_text_view"/>
+        
+        <TextView
+            android:layout_below="@+id/import_media_prepare_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Moving..."
+            android:textSize="15sp"
+            android:gravity="center"
+            android:layout_marginTop="10dp"
+            android:textColor="?commonColor"
+            android:textStyle="bold"
+            android:id="@+id/import_media_title_move_text_view"/>
+        
+        <TextView
+            android:layout_below="@+id/import_media_title_move_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="4dp"
+            android:text="file/path/image.png"
+            android:textSize="15sp"
+            android:textColor="?commonColorDark"
+            android:id="@+id/import_media_move_text_view"/>
+        
+    </RelativeLayout>
+    
+</LinearLayout>
+

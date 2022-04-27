@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="escolha_tema">Choose a theme</string>
+    <string name="escuro">Dark</string>
+    <string name="claro">Blue (Light)</string>
+    <string name="claro_verde">Green (Light)</string>
+    <string name="automatico">Automatic</string>
+    
     <string name="aplicando_configuracoes">Applying setting</string>
     <string name="mudar_codigo">Change code</string>
     <string name="tema_applicativo">App theme</string>
@@ -30,7 +36,7 @@
     <string name="resultado">Result</string>
     <string name="pasta_ja_existe">Folder already exists!</string>
     <string name="sem_nome">Unnamed</string>
-    <string name="apagar_pasta_aviso">Are you sure you want to delete the %s folder and all your content permanently?</string>
+    <string name="apagar_pasta_aviso">Are you sure you want to delete the \"%s\" folder and all your content permanently?</string>
     <string name="criar_pasta">Create folder</string>
     <string name="renomear_pasta">Rename folder</string>
     <string name="concluir">Confirm</string>
@@ -72,7 +78,7 @@
     <string name="codigo_chamada">Call code</string>
     <string name="mover_galeria">Are you sure you want to move %s to the gallery?</string>
     <string name="mover">Move</string>
-	<string name="vazio">Nothing here.</string>
+	<string name="vazio">Nothing here for now</string>
     <string name="movendo">Moving</string>
     <string name="confirmacao">Confirmation</string>
     <string name="caixa_principal">Main box</string>

@@ -1,10 +1,11 @@
 package com.jefferson.application.br.util;
 
-import android.content.Context;
-import com.jefferson.application.br.R;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.Color;
 import android.app.AlertDialog;
+import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import com.jefferson.application.br.App;
+import com.jefferson.application.br.R;
 //import android.support.v7.app.AlertDialog;
 
 public class DialogUtils {
@@ -20,7 +21,7 @@ public class DialogUtils {
     }
     
     public static int getTheme(){
-       return ThemeUtils.getDialogTheme();
+       return ThemeConfig.getDialogTheme(App.getAppContext());
     }
     
     public static AlertDialog.Builder createDialog(Context context) {

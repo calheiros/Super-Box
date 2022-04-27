@@ -179,7 +179,7 @@ public class ImportTask extends JTask {
                 err_message.append("\n" + context.getString(R.string.erro) + " " + err_count + ": O arquivo \"" + file.getName() + "\" não existe!\n");
                 continue;
             }
-            
+
             sendUpdate(null, file.getName());
 
             String folderName = file.getParentFile().getName();
@@ -195,7 +195,7 @@ public class ImportTask extends JTask {
             }
 
             String parentPath = model.getParentPath();
-            String root = parentPath == null ?  model.getDestination() + File.separator + randomString2 : parentPath;
+            String root = parentPath == null ? model.getDestination() + File.separator + randomString2 : parentPath;
             File destFile = new File(root, randomString);
             destFile.getParentFile().mkdirs();
 
@@ -237,7 +237,6 @@ public class ImportTask extends JTask {
 	}
 
     public void waitForResponse() {
-
 		waiting = true;
 		while (waiting) {
 			try {

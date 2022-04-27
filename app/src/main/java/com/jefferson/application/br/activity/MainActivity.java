@@ -54,6 +54,7 @@ import com.jefferson.application.br.util.DialogUtils;
 import android.content.pm.PackageManager;
 import android.content.ComponentName;
 import com.jefferson.application.br.util.MyPreferences;
+import com.jefferson.application.br.util.ThemeConfig;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener {
 
@@ -61,22 +62,24 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     public boolean calculatorStateEnabled;
     private boolean restarting;
 
+    public static int INITIAL_THEME;
+
     public void setRestarting(boolean restarting) {
         this.restarting = restarting;
     }
 
     public void setupToolbar(Toolbar toolbar, String string, int menuId) {
-        
+
     }
 
     @Override
     public void onBeingStarted() {
-        
+
     }
 
     @Override
     public void onUserInteration() {
-        
+
     }
 
     @Override
@@ -135,8 +138,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         this.instance = this;
-		super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
+        this.INITIAL_THEME = ThemeConfig.getTheme(this);
 
         if (Build.VERSION.SDK_INT >= 21) { 
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
@@ -148,7 +152,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         navigationView.setNavigationItemSelectedListener(this);
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         calculatorStateEnabled = isCalculatorComponentEnabled();
-        
+
 		if (savedInstanceState != null) {
 			startActivity(new Intent(this, VerifyActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
@@ -265,7 +269,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	    this.lockFragment = new LockFragment();
         this.settingFragment = new SettingFragment();
         boolean startInSetting = ACTION_START_IN_PREFERENCES.equals(getIntent().getAction());
-        
+
         if (startInSetting) {
             settingFragment.setCalculatorEnabled(getIntent().getBooleanExtra("calculator_enabled", false));
         } else {
@@ -408,8 +412,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                 if (Storage.checkIfSDCardRoot(uri)) {
                     getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     Storage.storeExternalUri(uri.toString());
-                    
-			} 
+                } 
 
 			} else if (requestCode == IMPORT_FROM_GALLERY_CODE) {
 				position = data.getIntExtra("position", -1);
@@ -459,7 +462,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	private void getSdCardUri(int code) {
         getSdCardUriHandler.sendEmptyMessage(code);
-
 	}
 
     @Override
@@ -517,7 +519,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             unregisterReceiver(receiver);
             receiver = null;
         }
-        
+
         if (!restarting) {
             boolean enabled = settingFragment.isCalculatorEnabledInSettings();
             if (enabled != isCalculatorComponentEnabled()) {

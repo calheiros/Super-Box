@@ -11,7 +11,7 @@ import com.jefferson.application.br.App;
 import com.jefferson.application.br.LocaleManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.StringUtils;
-import com.jefferson.application.br.util.ThemeUtils;
+import com.jefferson.application.br.util.ThemeConfig;
 import com.jefferson.application.br.util.MyPreferences;
 
 public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
@@ -88,7 +88,7 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
     }
 
     protected void onApplyCustomTheme() {
-        setTheme(ThemeUtils.getTheme());
+        setTheme(ThemeConfig.getTheme(this));
     }
 
     @Override

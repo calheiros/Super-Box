@@ -49,7 +49,7 @@
 		<item name="colorAccent">#10D863</item>
 	</style>
     
-  <style name="LightTheme" parent="Theme.AppCompat.Light.NoActionBar">
+  <style name="LightGreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/turquoise</item>
         <item name="colorPrimaryDark">@color/turquoise</item>
@@ -148,7 +148,6 @@
         <item name="android:windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowBackground">#000</item> 
-
     </style>
 
     <style name="Theme.Transparent" parent="Theme.AppCompat"> 

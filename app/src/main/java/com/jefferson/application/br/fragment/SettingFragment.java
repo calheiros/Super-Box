@@ -39,7 +39,7 @@ import com.jefferson.application.br.util.ASCIIArt;
 import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.Storage;
-import com.jefferson.application.br.util.ThemeUtils;
+import com.jefferson.application.br.util.ThemeConfig;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -121,7 +121,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.type = PreferenceItem.ITEM_TYPE;
                     item.icon_res_id = R.drawable.ic_palette;
                     item.title = getString(R.string.tema_applicativo);
-                    item.description = ThemeUtils.THEME_LIST[ThemeUtils.getThemeIndex()];
+                    item.description = ThemeConfig.getThemeList(getContext())[ThemeConfig.getThemeIndex()];
                     break;
                 case 4:
                     item.type = item.SECTION_TYPE;
@@ -161,7 +161,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.title = getString(R.string.preferecias_sobre);
                     item.type = item.SECTION_TYPE;
                     break;
-
                 case 9:
                     item.id = PreferenceItem.ID.ABOUT;
                     item.icon_res_id = R.drawable.ic_about;
@@ -225,30 +224,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 window.addFlags(flags);
             }
             mySwitch.setChecked(checked);
-
-        } else if (itemId == PreferenceItem.ID.APP_ICON) {
-            /*
-             Switch mySwitch = (Switch) view.findViewById(R.id.my_switch);
-             //            if (!mySwitch.isChecked() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-             //                SimpleDialog alert = new SimpleDialog(getContext());
-             //                alert.setTitle("Unsupported!");
-             //                alert.setMessage("This feature is no longer supported on Android 10 or later.");
-             //                alert.setNegativeButton("okay", null);
-             //                alert.show();
-             //                return;
-             //            }
-             checked = !mySwitch.isChecked();
-             View layout = view.findViewById(R.id.steal_thexpandable_layout);
-
-             if (checked) {
-             MyAnimationUtils.expand(layout);
-             } else {
-             MyAnimationUtils.collapse(layout);
-             }
-
-             changeIconVisibility(checked);
-             mySwitch.setChecked(checked);
-             */
         } else if (itemId == PreferenceItem.ID.DIALER_CODE) {
             changeCodeDialog();
         } else if (itemId == PreferenceItem.ID.ABOUT) {
@@ -263,17 +238,17 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     private void showThemeDialog() {
-        final CharSequence[] itens = ThemeUtils.THEME_LIST;
+        final CharSequence[] itens = ThemeConfig.getThemeList(getContext());
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
-            .setTitle("Choose your theme")
+            .setTitle(getString(R.string.escolha_tema))
             .setItems(itens, new DialogInterface.OnClickListener(){
 
                 @Override
                 public void onClick(DialogInterface p1, int position) {
-                    int themeIndex = ThemeUtils.getThemeIndex();
+                    int themeIndex = ThemeConfig.getThemeIndex();
 
                     if (position != themeIndex) {
-                        ThemeUtils.setThemeIndex(position);
+                        ThemeConfig.setThemeIndex(position);
                         refreshActivity();
                     }
                 }

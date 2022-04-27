@@ -8,7 +8,7 @@
     <string name="codigo_calculadora_mensagem_1">スーパーボックスは電卓アプリに変装します:</string>
     <string name="codigo_calculadora_mensagem_2">アプリケーションに再度アクセスするには、電卓インターフェイスから入力コードを設定する必要があります。\nデフォルトのコードは 4321 です。新しいものを作成することを強くお勧めします</string>
     <string name="mudando_para_icone_padrao">標準アイコンのムンダンド</string>
-    <string name="usage_data_permission_message">この機能を正しく動作させるには、「使用状況データへのアクセス」権限を付与する必要があります</string>
+    <string name="usage_data_permission_message">この機能を正しく動作させるには、「使用状況データへのアクセス」権限を付与する必要があります。</string>
     <string name="calculadora">電卓</string>
     <string name="pasta_nome_muito_grande">最大文字数を超えました</string>
     <string name="pasta_nome_vazio">フォルダ名を空にすることはできません</string>
@@ -26,13 +26,13 @@
     <string name="galeria_vazia">それはかなり空っぽに見えます</string>
     <string name="pasta_ja_existe">フォルダはすでに存在します！</string>
     <string name="sem_nome">無名</string>
-    <string name="apagar_pasta_aviso">%s フォルダとそのすべての内容を完全に削除してもよろしいですか？</string>
+    <string name="apagar_pasta_aviso">「%s」フォルダとそのすべての内容を完全に削除してもよろしいですか？</string>
     <string name="criar_pasta">フォルダの作成</string>
     <string name="renomear_pasta">フォルダ名の変更</string>
     <string name="concluir">推す</string>
     <string name="modo_secreto">ステルスモード</string>
     <string name="codigo_discador">ダイヤラ コード</string>
-    <string name="minha_caixa">マイボックス</string>
+    <string name="minha_caixa">マイボックス</string> 
     <string name="galeria">プライベートギャラリー</string>
     <string name="preferecias_gerais">一般的に好ましい</string>
     <string name="preferecias_sobre">ほど</string>

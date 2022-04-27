@@ -68,6 +68,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         retrieveMediaTask.start();
 		setupToolbar();
 	}
+    
     @Override
     public void onRefresh() {
         if (retrieveMediaTask.getStatus() == JTask.Status.FINISHED) {

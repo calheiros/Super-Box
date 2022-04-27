@@ -369,7 +369,7 @@ public class AlbumFragment extends Fragment {
         if (model == null){
             return;
         }
-		String name = "\"" + model.getName() + "\"";
+		String name = model.getName();
 		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 		builder.setTitle(getString(R.string.apagar));
 		builder.setMessage(String.format(getString(R.string.apagar_pasta_aviso), name));

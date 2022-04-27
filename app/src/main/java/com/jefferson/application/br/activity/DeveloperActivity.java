@@ -128,7 +128,9 @@ public class DeveloperActivity extends MyCompatActivity {
     }
 
     public void quit(View v) {
-        finish();
+        
+        Intent intent = new Intent(this, ImportMediaActivity.class);
+        startActivity(intent);
     }
 
     private void fileObserver() {

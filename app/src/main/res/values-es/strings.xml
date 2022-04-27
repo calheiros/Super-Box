@@ -9,7 +9,7 @@
     <string name="codigo_calculadora_mensagem_1">La Super Box se disfrazará como una aplicación de calculadora:</string>
     <string name="codigo_calculadora_mensagem_2">Deberá establecer un código de entrada a través de la interfaz de la calculadora para acceder de nuevo a la aplicación.\nEl código predeterminado es 4321. Se recomienda encarecidamente crear un nuevo.</string>
     <string name="mudando_para_icone_padrao">Cambiar al icono predeterminado</string>
-    <string name="usage_data_permission_message">Debe conceder permiso \"Datos de uso de acceso\" para que esta función funcione correctamente</string>
+    <string name="usage_data_permission_message">Debe conceder permiso \"Datos de uso de acceso\" para que esta función funcione correctamente.</string>
     <string name="calculadora">Calculadora</string>
     <string name="pasta_nome_muito_grande">Número máximo de caracteres excedido</string>
     <string name="pasta_nome_vazio">El nombre de la carpeta no puede estar vacío</string>
@@ -24,8 +24,8 @@
     <string name="transferencia_sucesso">Transferencia completada correctamente.</string>
     <string name="resultado">Resultado</string>
     <string name="pasta_ja_existe">¡La carpeta ya existe!</string>
-    <string name="sem_nome">Desconocido</string>
-    <string name="apagar_pasta_aviso">¿Está seguro de que desea eliminar la carpeta %s y todo su contenido de forma permanente?</string>
+    <string name="sem_nome">Sin nombre</string>
+    <string name="apagar_pasta_aviso">¿Está seguro de que desea eliminar la carpeta \"%s\" y todo su contenido de forma permanente?</string>
     <string name="criar_pasta">Crear carpeta</string>
     <string name="renomear_pasta">Cambiar nombre de carpeta</string>
     <string name="concluir">Confirmar</string>
@@ -46,7 +46,7 @@
     <string name="selecionar_sdcard">Debe seleccionar la carpeta raíz de su tarjeta SD para continuar con la tarea.</string>
     <string name="video">video</string>
     <string name="imagem">imagen</string>
-    <string name="item">artículo</string>
+    <string name="item">Artículo</string>
     <string name="itens">Artículos</string>
     <string name="erro">Error</string>
     <string name="criar_album">Crear álbum</string>
@@ -55,9 +55,9 @@
     <string name="app_name">Super Box</string>
     <string name="excluir_aviso">This action cannot be undone.</string>
     <string name="selecionar_um">Debe seleccionar al menos uno.</string>
-    <string name="conceder">Subvención</string>
+    <string name="conceder">Conceder</string>
     <string name="salvar">Salvar</string>
-    <string name="renomear"> Rebautizar</string>
+    <string name="renomear">Renombrar</string>
     <string name="armazenamento">Almacenamiento</string>
     <string name="armaz_interno">Almacenamiento interno</string>
     <string name="armaz_externo">Micro SD</string>
@@ -67,8 +67,8 @@
     <string name="codigo_chamada">Call code</string>
     <string name="mover_galeria">¿Está seguro de que desea mover %s a la galería?</string>
     <string name="mover">Mover</string>
-    <string name="vazio">Por ahora vacío...</string>
-    <string name="movendo"> Conmovedor</string>
+    <string name="vazio">Por ahora vacío</string>
+    <string name="movendo">Moviendo</string>
     <string name="confirmacao">Confirmación</string>
     <string name="caixa_principal">Main box</string>
     <string name="nenhum_video">Sin video</string>
