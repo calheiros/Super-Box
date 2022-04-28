@@ -9,6 +9,7 @@
 	<color name="verdana">#875443</color>
     <color name="turquoise">#02CCB2</color>
     <color name="turquoiseDark">#09B29D</color>
+    <color name="pureGreen">#00D07C</color>
     <color name="bondiBlue">#FF03A8CE</color>
     <color name="bondiBlueDark">#FF0A94B4</color>
 	<color name="yellow">#FFDB00</color>
@@ -40,7 +41,7 @@
     <color name="blue_semi_transparent">#805677fc</color>
     <color name="blue_semi_transparent_pressed">#80738ffe</color>
     <color name="colorPrimary">#710BE7</color>
-    <color name="colorAccent">#00D07C</color>
+    <color name="colorAccent">@color/pureGreen</color>
     <color name="colorPrimaryDark">#640BCB</color>
     <color name="fab_pressed">#00b899</color>
     <color name="highLightColor">#11FFFFFF</color>

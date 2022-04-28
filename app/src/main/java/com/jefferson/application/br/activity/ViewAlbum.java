@@ -53,6 +53,8 @@ import java.util.List;
 
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.Listener {
 
+    private static final int IMPORT_FROM_VIEW_ALBUM_CODE = 9;
+
     @Override
     public void onBeingStarted() {
 
@@ -333,7 +335,14 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
                 ArrayList<String> paths = data.getStringArrayListExtra("selection");
                 String type = data.getStringExtra("type");
-                new MonoTypePrepareTask(this, paths, type, folder.getAbsolutePath(), this).start();
+              
+                Intent intent = new Intent(this, ImportMediaActivity.class);
+                intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths);
+                intent.putExtra(ImportMediaActivity.TYPE_KEY, type);
+                //intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
+                intent.putExtra(ImportMediaActivity.PARENT_KEY, folder.getAbsolutePath());
+                startActivityForResult(intent, IMPORT_FROM_VIEW_ALBUM_CODE);
+                //new MonoTypePrepareTask(this, paths, type, folder.getAbsolutePath(), this).start();
                 /*
                  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 

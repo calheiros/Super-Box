@@ -4,7 +4,7 @@ public class FileModel {
 	
     public static final String IMAGE_TYPE = "imagem";
     public static final String VIDEO_TYPE = "video";
-    private String dest_path;
+   
     private String source_path;
     private String type;
     private String parentPath = null;
@@ -16,17 +16,9 @@ public class FileModel {
     public void setParentPath(String path){
         this.parentPath = path;
     }
-    
-    public String getDestination() {
-        return this.dest_path;
-    }
 
     public String getResource() {
         return this.source_path;
-    }
-
-    public void setDestination(String str) {
-        this.dest_path = str;
     }
 
     public void setResource(String str) {

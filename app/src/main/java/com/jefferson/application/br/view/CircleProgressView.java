@@ -3,7 +3,6 @@ package com.jefferson.application.br.view;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
@@ -19,9 +18,9 @@ public class CircleProgressView extends View {
     private Paint backgroundPaint;
     private Paint textPaint;
     private int padding;
-
+    private long max;
     private float progressWidth;
-    
+
     public CircleProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
         defineVariables();
@@ -41,7 +40,7 @@ public class CircleProgressView extends View {
         // measure text height 
         bounds.bottom = textPaint.descent() - textPaint.ascent();
         bounds.left += (rect.width() - bounds.right) / 2.0f; bounds.top += (rect.height() - bounds.bottom) / 2.0f; 
-        
+
         canvas.drawText(progressText, bounds.left, bounds.top - textPaint.ascent(), textPaint);
 
     }
@@ -49,9 +48,9 @@ public class CircleProgressView extends View {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        resizeView(w,h);
+        resizeView(w, h);
     }
-    
+
     private int getAttrColor(int res) {
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = getContext().getTheme();
@@ -59,26 +58,26 @@ public class CircleProgressView extends View {
         int color = typedValue.data;
         return color;
     }
-    
+
     private void defineVariables() {
         int colorAccent = getAttrColor(R.attr.colorAccent);
         progressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         rect = new RectF();
-        
+
         backgroundPaint.setStyle(Paint.Style.STROKE);
         backgroundPaint.setColor(colorAccent);
         backgroundPaint.setStrokeCap(Paint.Cap.ROUND);
         backgroundPaint.setAlpha(55);
-        
+
         progressPaint.setColor(colorAccent);
         progressPaint.setStrokeCap(Paint.Cap.ROUND);
         progressPaint.setStyle(Paint.Style.STROKE);
-      
+
         textPaint.setColor(getAttrColor(R.attr.commonColorLight));
     }
-    
+
     private void resizeView(int w, int h) {
         padding = w / 16;
         progressWidth = padding * 1.5f;
@@ -87,13 +86,27 @@ public class CircleProgressView extends View {
         textPaint.setTextSize(w / 4);
         rect.set(padding, padding, w - padding, h - padding);
     }
-    
-    public void setProgress(float progress) {
-        this.progress = progress;
-        invalidate();
+
+    public void setProgress(long progress) {
+        
+        if (max == 0) {
+            this.progress = progress;
+            return;
+        }
+        
+        float newProgress = Math.round((100 / (double)max) * (double)progress) ;
+       
+        if (newProgress != this.progress) {
+            this.progress = newProgress;
+            invalidate();
+        }
     }
-    
+
     public float getProgress() {
         return progress;
+    }
+
+    public void setMax(long max) {
+        this.max = max;
     }
 }

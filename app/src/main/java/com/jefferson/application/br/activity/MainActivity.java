@@ -3,16 +3,17 @@ package com.jefferson.application.br.activity;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
@@ -26,7 +27,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -35,26 +35,21 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
-import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.fragment.LockFragment;
 import com.jefferson.application.br.fragment.MainFragment;
 import com.jefferson.application.br.fragment.SettingFragment;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.task.ImportTask;
 import com.jefferson.application.br.task.MonoTypePrepareTask;
+import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.util.IntentUtils;
+import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.ServiceUtils;
 import com.jefferson.application.br.util.Storage;
-import com.jefferson.application.br.widget.MyAlertDialog;
-import java.io.File;
-import java.util.ArrayList;
-import com.jefferson.application.br.util.DialogUtils;
-import android.content.pm.PackageManager;
-import android.content.ComponentName;
-import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.ThemeConfig;
+import com.jefferson.application.br.widget.MyAlertDialog;
+import java.util.ArrayList;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener {
 
@@ -388,7 +383,12 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         }
 
 		if (resultCode == RESULT_OK) {
-
+          
+            if (requestCode == 69) {
+                updateFragment(position);
+                return;
+            }
+            
             if (requestCode == SettingFragment.CALCULATOR_CREATE_CODE_RESULT) {
                 settingFragment.setCodeDescription(MyPreferences.getCalculatorCode());
                 return;
@@ -418,31 +418,36 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 				position = data.getIntExtra("position", -1);
                 String type = data.getStringExtra("type");
 				ArrayList<String> paths = data.getStringArrayListExtra("selection");
-                preparationTask = new MonoTypePrepareTask(MainActivity.this, paths, type, null, this);
-                preparationTask.setDestination(Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty()))
-                    preparationTask.setOnLoopListener(new MonoTypePrepareTask.onLoopListener() {
+                Intent intent = new Intent(this, ImportMediaActivity.class);
+                intent.putExtra(ImportMediaActivity.TYPE_KEY, type);
+                intent.putExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths);
+                intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
+                this.startActivityForResult(intent, 69);
 
-                            @Override
-                            public void onLoop(String path) {
-
-                                if (Environment.isExternalStorageRemovable(new File(path))) {
-                                    preparationTask.setOnLoopListener(null);
-                                    preparationTask.revokeFinish(true);
-                                    getSdCardUri(GET_URI_CODE_TASK);
-                                }
-                            }
-                        }
-                    );
-                preparationTask.start();
-			}
-
-            if (requestCode == GET_URI_CODE_TASK) {
-                preparationTask.proceed();
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty()))
+//                    preparationTask.setOnLoopListener(new MonoTypePrepareTask.onLoopListener() {
+//
+//                            @Override
+//                            public void onLoop(String path) {
+//
+//                                if (Environment.isExternalStorageRemovable(new File(path))) {
+//                                    preparationTask.setOnLoopListener(null);
+//                                    preparationTask.revokeFinish(true);
+//                                    getSdCardUri(GET_URI_CODE_TASK);
+//                                }
+//                            }
+//                        }
+//                    );
+//                preparationTask.start();
+//			}
+//
+//            if (requestCode == GET_URI_CODE_TASK) {
+//                preparationTask.proceed();
+//            }
             }
-		} else if (requestCode == GET_URI_CODE_TASK) {
-            preparationTask.cancelTask();
+        } else {
+            //Toast.makeText(this, "RESUKT_CANCELLED " + requestCode, 1).show();
         }
 		super.onActivityResult(requestCode, resultCode, data);
 	}
@@ -531,8 +536,5 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             }
         }
         super.onDestroy();
-
-
-
     }
 }

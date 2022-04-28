@@ -4,9 +4,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import com.jefferson.application.br.util.JDebug;
-import java.io.Serializable;
-import com.jefferson.application.br.task.JTask.OnFinishedListener;
 
 abstract public class JTask implements JTaskListener {
 
@@ -53,11 +50,12 @@ abstract public class JTask implements JTaskListener {
 
             switch (state) {
                 case STATE_FINISHED:
-                    status = Status.FINISHED;
-                    workThread.interrupt();
                     if (revokeFinish) {
                         break;
                     }
+                    status = Status.FINISHED;
+                    workThread.interrupt();
+                    
                     onFinished();
                     if (onFinishedListener != null) {
                         onFinishedListener.onFinished();

@@ -36,7 +36,16 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
     public void insertItem(FolderModel item) {
         models.add(item);
-        notifyItemInserted(getItemCount() - 1);
+        Collections.sort(models, new Comparator<FolderModel>() {
+                @Override public int compare(FolderModel o1, FolderModel o2) { 
+                    return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase()); 
+                } 
+            }
+        );
+        int position = models.indexOf(item);
+        fragment.scrollTo(position);
+        notifyItemInserted(position);
+        
     }
 
     public void insertItem(FolderModel model, int position) {

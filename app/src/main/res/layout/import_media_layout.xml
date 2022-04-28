@@ -24,8 +24,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Preparing"
-            android:textSize="15sp"
+            android:text="Preparation"
+            android:textSize="17sp"
             android:layout_marginTop="10dp"
             android:textColor="?commonColor"
             android:textStyle="bold"
@@ -37,8 +37,7 @@
             android:gravity="center"
             android:layout_marginTop="4dp"
             android:layout_height="wrap_content"
-            android:text="file/path/image.png"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:textColor="?commonColorDark"
             android:id="@+id/import_media_prepare_text_view"/>
         
@@ -46,8 +45,8 @@
             android:layout_below="@+id/import_media_prepare_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Moving..."
-            android:textSize="15sp"
+            android:text="Moving"
+            android:textSize="17sp"
             android:gravity="center"
             android:layout_marginTop="10dp"
             android:textColor="?commonColor"
@@ -60,12 +59,16 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginTop="4dp"
-            android:text="file/path/image.png"
-            android:textSize="15sp"
+            android:textSize="16sp"
             android:textColor="?commonColorDark"
-            android:id="@+id/import_media_move_text_view"/>
+            android:id="@+id/import_media_message_text_view"/>
         
     </RelativeLayout>
+    
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@android:string/ok"/>
     
 </LinearLayout>
 

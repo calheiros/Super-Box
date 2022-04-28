@@ -91,11 +91,10 @@ public class ReceiverMedia extends Activity implements ImportTask.Listener {
 		model.setResource(res);
 
 		if (MediaFilter.isImage(new File(res))) {
-			model.setDestination(Storage.getFolder(Storage.IMAGE).getAbsolutePath());
+			//model.setDestination(Storage.getFolder(Storage.IMAGE).getAbsolutePath());
 			model.setType(FileModel.IMAGE_TYPE);
 		} else if (MediaFilter.isVideo(new File(res))) {
-
-			model.setDestination(Storage.getFolder(Storage.VIDEO).getAbsolutePath());
+			//model.setDestination(Storage.getFolder(Storage.VIDEO).getAbsolutePath());
 			model.setType(FileModel.VIDEO_TYPE);
 		} else return null;
 

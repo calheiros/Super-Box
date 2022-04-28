@@ -34,10 +34,10 @@ import java.util.ArrayList;
 public class Storage extends DocumentUtil {
 
     public static final String EXTERNAL = "external";
-    public static final int IMAGE = 1;
+    public static final int IMAGE = 0;
     public static final String INTERNAL = "internal";
     public static final String STORAGE_LOCATION = "storage_loacation";
-    public static final int VIDEO = 2;
+    public static final int VIDEO = 1;
 	public static final String IMAGE_DIR_NAME = "b17rvm0891wgrqwoal5sg6rr";
 	public static final String VIDEO_DIR_NAME = "bpe8x1svi9jvhmprmawsy3d8";
     public static final String EXTERNAL_URI_KEY = "external_uri";

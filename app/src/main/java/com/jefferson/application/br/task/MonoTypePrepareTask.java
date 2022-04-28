@@ -17,37 +17,37 @@ public class MonoTypePrepareTask extends JTask {
     private ArrayList<String> paths;
     private String type;
     private ArrayList<FileModel> models = new ArrayList<>();
-    private SimpleDialog dialog;
+    
     private String parentPath;
     private Context context;
-    private ImportTask.Listener listener;
     private onLoopListener loopListener;
     private String destinationPath;
     
-    public  MonoTypePrepareTask(Context context, ArrayList<String> paths, String type, String parent, ImportTask.Listener listener) {
+    public  MonoTypePrepareTask(Context context, ArrayList<String> paths, String type, String parent) {
         this.paths = paths;
         this.type = type;
-        this.listener = listener;
         this.context = context;
         this.parentPath = parent;
+    }
+
+    public ArrayList<FileModel>  getData() {
+        return models;
     }
 
     @Override
     public void workingThread() {
         
-        for (String path : paths) {
-            if (loopListener != null) {
-                loopListener.onLoop(path);
-            }
+        for ( int i = 0; i < paths.size(); i++) {
             if (isCancelled()) {
                 break;
             }
+            String path = paths.get(i);
             FileModel model = new FileModel();
             model.setResource(path);
-            model.setDestination(destinationPath);
             model.setParentPath(parentPath);
             model.setType(type);
             models.add(model);
+            sendUpdate(1, i + 1, paths.size());
         }
     }
     
@@ -57,36 +57,29 @@ public class MonoTypePrepareTask extends JTask {
     
     @Override
     public void onBeingStarted() {
-        View view = ((LayoutInflater)App.getAppContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-            .inflate(R.layout.inderteminate_progress_layout, null);
-        dialog = new SimpleDialog(context);
-        dialog.setContentView(view);
-        dialog.setTitle("Preparing...");
-        dialog.setCancelable(false);
-        dialog.show();
+
     }
 
     @Override
     protected void onTaskCancelled() {
         super.onTaskCancelled();
-        dialog.cancel();
         Toast.makeText(context, "Cancelled", 0).show();
     }
     
     @Override
     public void onFinished() {
-        proceed();
+        //proceed();
     }
     
-    public void proceed() {
-        dialog.cancel();
-        
-        if (getStatus() == Status.FINISHED) {
-            new ImportTask(context, models, listener).start();
-        } else {
-            revokeFinish(false);
-        }
-    }
+//    public void proceed() {
+//        dialog.cancel();
+//        
+//        if (getStatus() == Status.FINISHED) {
+//            new ImportTask(context, models, listener).start();
+//        } else {
+//            revokeFinish(false);
+//        }
+//    }
     
     @Override
     public void onException(Exception e) {

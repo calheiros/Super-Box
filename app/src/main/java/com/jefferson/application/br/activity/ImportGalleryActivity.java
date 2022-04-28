@@ -56,6 +56,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 	    mySwipeRefreshLayout.setOnRefreshListener(this);
         mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+        
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = getTheme();
         theme.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true);
@@ -81,7 +82,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     }
 
 
-    public  String getType() {
+    public String getType() {
 		switch (position) {
 			case 0:
 				return FileModel.IMAGE_TYPE;

@@ -17,10 +17,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
-import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.FolderModel;
 import com.jefferson.application.br.R;
@@ -37,6 +35,8 @@ import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class AlbumFragment extends Fragment {
 
@@ -69,7 +69,11 @@ public class AlbumFragment extends Fragment {
     };
 
     public AlbumFragment() {
-        
+
+    }
+
+    public void scrollTo(int position) {
+        recyclerView.scrollToPosition(position);
     }
 
     public void putModels(ArrayList<FolderModel> models) {
@@ -165,7 +169,12 @@ public class AlbumFragment extends Fragment {
                 }
             }
         }
-
+        Collections.sort(models, new Comparator<FolderModel>() {
+                @Override public int compare(FolderModel o1, FolderModel o2) { 
+                    return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase()); 
+                } 
+            }
+        );
         if (sqldb != null)
             sqldb.close();
 
@@ -366,7 +375,7 @@ public class AlbumFragment extends Fragment {
     }
 
     public void deleteAlbum(final FolderModel model) {
-        if (model == null){
+        if (model == null) {
             return;
         }
 		String name = model.getName();
