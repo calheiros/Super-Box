@@ -238,22 +238,32 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     private void showThemeDialog() {
-        final CharSequence[] itens = ThemeConfig.getThemeList(getContext());
+        final CharSequence[] items = ThemeConfig.getThemeList(getContext());
         AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
             .setTitle(getString(R.string.escolha_tema))
-            .setItems(itens, new DialogInterface.OnClickListener(){
+            .setItems(items, new DialogInterface.OnClickListener(){
 
                 @Override
                 public void onClick(DialogInterface p1, int position) {
                     int themeIndex = ThemeConfig.getThemeIndex();
-
+                    int currentTheme = MainActivity.CURRENT_THEME;
+                    int newTheme = ThemeConfig.resolveTheme(getContext(), position);
+                    boolean needRefresh = newTheme != currentTheme;
                     if (position != themeIndex) {
                         ThemeConfig.setThemeIndex(position);
+                    }
+                   
+                    if (needRefresh) {
                         refreshActivity();
+                    } else {
+                        //"Need to update description"
+                        updateItemDescription(PreferenceItem.ID.APP_THEME, items[position].toString());
                     }
                 }
+                
             }
         );
+        //Toast.makeText(getContext(), "Dark mode " + ThemeConfig.isDarkThemeOn(getContext()), 1).show();
         configureRoundedDialog(b.show());
     }
 
@@ -386,6 +396,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             if (adapter.getItem(i).id == id) {
                 adapter.getItem(i).description = description;
                 adapter.notifyDataSetChanged();
+                //Toast.makeText(getContext(), "fount item to update! " + description, 1).show();
                 break;
             }
         }

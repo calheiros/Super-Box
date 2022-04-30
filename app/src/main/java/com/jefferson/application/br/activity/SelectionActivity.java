@@ -28,8 +28,8 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.gallery_selection_layout);
+        //applyParentViewPadding(findViewById(R.id.gallery_selection_parentLayout));
 		setupToolbar();
-        
 		View lockView = findViewById(R.id.gallery_selection_lock_view);
         mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
 		Intent intent = getIntent();
@@ -43,7 +43,6 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
         mRecyclerView.setAdapter(mAdapter);
 	    selectAllView = (ImageView)findViewById(R.id.ic_seletctAll);
         updateActionBarTitle();
-        applyParentViewPadding(mRecyclerView);
         
 		lockView.setOnClickListener(new OnClickListener(){
 

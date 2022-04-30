@@ -98,7 +98,7 @@
                     android:background="@drawable/bg_rounded"
                     android:layout_width="38pt"
                     android:layout_height="38pt"
-                    android:text="√"
+                    android:text="^"
                     android:onClick="onKeyPressed"
                     android:id="@+id/calculator_percentage"
                     android:includeFontPadding="false"

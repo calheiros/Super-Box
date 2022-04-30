@@ -3,6 +3,7 @@ package com.jefferson.application.br.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -33,7 +34,12 @@ public class VerifyActivity extends MyCompatActivity {
 		super.onCreate(savedInstanceState);
         checkPassword();
 		setContentView(R.layout.pattern);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        if (Build.VERSION.SDK_INT >= 21) { 
+            setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
+        
+        // getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
      
 //        View parent = findViewById(R.id.patternRelativeLayout);
 //        TypedValue typedValue = new TypedValue();
@@ -82,7 +88,7 @@ public class VerifyActivity extends MyCompatActivity {
             }
         );
 	}
-
+    
     @Override
     protected void onApplyCustomTheme() {
 

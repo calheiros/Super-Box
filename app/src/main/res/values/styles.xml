@@ -52,11 +52,12 @@
 	</style>
 
     <style name="LightGreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowTranslucentNavigation">true</item>
+        <!-- <item name="android:windowTranslucentNavigation">true</item>-->
+        <item name="android:navigationBarColor">@color/turquoiseDark</item>
         
         <item name="textShadowColor">#00FFFFFF</item>
-        <item name="colorPrimary">@color/turquoise</item>
-        <item name="colorPrimaryDark">@color/turquoise</item>
+        <item name="colorPrimary">@color/turquoiseDark</item>
+        <item name="colorPrimaryDark">@color/turquoiseDark</item>
         <item name="colorAccent">@color/colorAccentLight</item>
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
@@ -70,8 +71,8 @@
     </style>
 
     <style name="LightBlueTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowTranslucentNavigation">true</item>
-        
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@color/bondiBlue</item>
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/bondiBlue</item>
         <item name="colorPrimaryDark">@color/bondiBlue</item>
@@ -123,8 +124,9 @@
     </style>-->
 
     <style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowTranslucentNavigation">true</item>
-      
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorBackgroundLight">#FF1B1D1D</item>

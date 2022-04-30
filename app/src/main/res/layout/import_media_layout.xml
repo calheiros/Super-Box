@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:paddingTop="48dp"
     android:paddingBottom="48dp"
+    android:paddingRight="20dp"
+    android:paddingLeft="20dp"
 	android:gravity="center_horizontal">
 
 	<com.jefferson.application.br.view.CircleProgressView
 		android:layout_height="160dp"
 		android:layout_width="160dp"
+        android:layout_centerHorizontal="true"
 		android:id="@+id/circle_progress_view"
 		android:layout_marginBottom="10dp"/>
 
 	<RelativeLayout
+        android:layout_below="@+id/circle_progress_view"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
-        android:paddingRight="20dp"
-        android:paddingLeft="20dp">
-        
+        android:id="@+id/import_media_layoutRelativeLayout">
+
         <TextView
             android:layout_below="@+id/import_media_message_text_view"
             android:layout_width="match_parent"
@@ -41,7 +45,7 @@
             android:textSize="17sp"
             android:textColor="?commonColorDark"
             android:id="@+id/import_media_prepare_text_view"/>
-        
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +56,7 @@
             android:textColor="?commonColor"
             android:textStyle="bold"
             android:id="@+id/import_media_title_move_text_view"/>
-        
+
         <TextView
             android:layout_below="@+id/import_media_title_move_text_view"
             android:layout_width="match_parent"
@@ -62,18 +66,36 @@
             android:textSize="17sp"
             android:textColor="?commonColorDark"
             android:id="@+id/import_media_message_text_view"/>
-        
+
     </RelativeLayout>
     
-    <Button
+   
+    <com.google.android.gms.ads.AdView
+        android:layout_below="@+id/import_media_layoutRelativeLayout"
         android:layout_marginTop="20dp"
-        android:backgroundTint="?colorAccent"
-        android:onClick="buttonClick"
-        android:textColor="?colorBackground"
-        android:id="@+id/import_media_button"
-        android:layout_width="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/ad_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@android:string/ok"/>
+        android:gravity="center"
+        app:adSize="LARGE_BANNER"
+        android:layout_marginBottom="34dp"
+        app:adUnitId="ca-app-pub-3062666120925607/7395488498"/>
     
-</LinearLayout>
+    <Button
+        style="?android:attr/borderlessButtonStyle"
+        android:background="@drawable/bg_rounded_transparent_button"
+        android:onClick="buttonClick"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/red"
+        android:id="@+id/import_media_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@android:string/cancel"/>
+    
+</RelativeLayout>
 

@@ -56,7 +56,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 	    mySwipeRefreshLayout.setOnRefreshListener(this);
         mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-        applyParentViewPadding(myGridView);
+        // applyParentViewPadding(myGridView);
         
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = getTheme();

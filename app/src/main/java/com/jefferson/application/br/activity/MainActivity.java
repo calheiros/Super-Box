@@ -57,8 +57,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     public boolean calculatorStateEnabled;
     private boolean restarting;
 
-    public static int INITIAL_THEME;
-
+    public static int CURRENT_THEME;
+    
     public void setRestarting(boolean restarting) {
         this.restarting = restarting;
     }
@@ -135,8 +135,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         this.instance = this;
         super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
-        this.INITIAL_THEME = ThemeConfig.getTheme(this);
-
+        this.CURRENT_THEME = ThemeConfig.getTheme(this);
+        
         if (Build.VERSION.SDK_INT >= 21) { 
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
@@ -154,7 +154,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
         createFragments();
 		createAdView();
-		createInterstitial();
+		//createInterstitial();
         createReceiver();
 	}
 
@@ -168,17 +168,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         if (mainFragment != null) {
             mainFragment.removeFolder(folderPosition, pagerPostion);
         }
-    }
-
-    public static void setWindowFlag(Activity activity, final int bits, boolean on) { 
-        Window win = activity.getWindow(); 
-        WindowManager.LayoutParams winParams = win.getAttributes();
-        if (on) {
-            winParams.flags |= bits; 
-        } else { 
-            winParams.flags &= ~bits; 
-        } 
-        win.setAttributes(winParams); 
     }
 
     private void createReceiver() {
@@ -206,30 +195,30 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		return super.onCreateOptionsMenu(menu);
 	}
 
-	public void createInterstitial() {
-        interstitial = new InterstitialAd(this);
-		interstitial.setAdUnitId("ca-app-pub-3062666120925607/8580168530");
-		interstitial.setAdListener(new AdListener() {
-                @Override
-                public void onAdClosed() {
-                    prepareAd();
-                }
-            });
-		prepareAd();
-	}
+//	public void createInterstitial() {
+//        interstitial = new InterstitialAd(this);
+//		interstitial.setAdUnitId("ca-app-pub-3062666120925607/8580168530");
+//		interstitial.setAdListener(new AdListener() {
+//                @Override
+//                public void onAdClosed() {
+//                    prepareAd();
+//                }
+//            });
+//		prepareAd();
+//	}
 
-    public void prepareAd() {
-        if (interstitial.isLoading() == false && interstitial.isLoaded() == false) {
-			interstitial.loadAd(new AdRequest.Builder().build());
-		}
-	}
-
-    public void showAd() {
-        if (interstitial.isLoaded()) {
-			interstitial.show();
-		} 
-	}
-
+//    public void prepareAd() {
+//        if (interstitial.isLoading() == false && interstitial.isLoaded() == false) {
+//			interstitial.loadAd(new AdRequest.Builder().build());
+//		}
+//	}
+//
+//    public void showAd() {
+//        if (interstitial.isLoaded()) {
+//			interstitial.show();
+//		} 
+//	}
+//
     public void updateFragment(int position) {
         if (mainFragment != null) {
             mainFragment.updateFragment(position);

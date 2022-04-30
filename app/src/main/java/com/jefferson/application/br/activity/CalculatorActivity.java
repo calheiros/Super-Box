@@ -40,7 +40,7 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
     }
 
     private ArrayMap<Character, Character> operatorMap = new ArrayMap<>();
-    protected char[] operations = new char[] {'+','×','÷', '√', '-', ','};
+    protected char[] operations = new char[] {'+','×','÷', '-', ','};
     protected EditText editText;
     protected Button resultButton;
 
@@ -79,9 +79,6 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
         for (Character c : operations) {
             char value = '0';
             switch (c) {
-                case '√':
-                    value = '^';
-                    break;
                 case '×':
                     value = '*';
                     break;
@@ -182,7 +179,7 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
                 appendOperation("×");
                 return;
             case R.id.calculator_percentage:
-                appendOperation("√");
+                appendOperation("^");
                 return;
             case R.id.calculator_open_parenthesis:
                 key = "(";

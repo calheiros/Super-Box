@@ -104,7 +104,7 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
         this.position = getIntent().getIntExtra("position", -1);
         this.paths = getIntent().getStringArrayListExtra("selection");
         this.currentPath = getIntent().getStringExtra("current_path");
-        applyParentViewPadding(mListView);
+        // applyParentViewPadding(mListView);
         this.filePickerAdapter = new FilePickerAdapter(getModels(this.position), this);
         this.mListView.setAdapter(this.filePickerAdapter);
         this.mListView.setOnItemClickListener(this);

@@ -72,6 +72,12 @@ public class VideoPlayerActivity extends MyCompatActivity {
         pagerAdapter.getItem(choice).setPlayOnCreate(true);
         //hideNavigationBar();
         viewPager.requestFocus();
+        // applyParentViewPadding(viewPager);
+    }
+
+    @Override
+    protected void onApplyCustomTheme() {
+        //do nothing
     }
     
     public int dpToPx(int dp) { 

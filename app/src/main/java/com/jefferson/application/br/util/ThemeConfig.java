@@ -9,7 +9,7 @@ import com.jefferson.application.br.activity.MainActivity;
 public class ThemeConfig {
 
     public static int getDialogTheme(Context context) {
-        int theme = MainActivity.INITIAL_THEME;
+        int theme = MainActivity.CURRENT_THEME;
 
         if (theme == R.style.MainTheme) {
             return R.style.CustomAlertDialog;
@@ -24,6 +24,10 @@ public class ThemeConfig {
 
     public static int getTheme(Context context) {
         int index = getThemeIndex();
+        return resolveTheme(context, index);
+    }
+    
+    public static int resolveTheme(Context context, int index) {
         switch (index) {
             case 0:
                 return (isDarkThemeOn(context) ? R.style.MainTheme: R.style.LightBlueTheme);
@@ -37,13 +41,13 @@ public class ThemeConfig {
                 return R.style.MainTheme;
         }
     }
-
+    
     public static int getThemeIndex() {
         return MyPreferences.getSharedPreferences().getInt("app_theme", 1);
     }
 
-    public static void setThemeIndex(int themePosition) {
-        MyPreferences.getSharedPreferencesEditor().putInt("app_theme", themePosition).commit();
+    public static boolean setThemeIndex(int themePosition) {
+       return MyPreferences.getSharedPreferencesEditor().putInt("app_theme", themePosition).commit();
     }
 
     public static String[] getThemeList(Context context) {

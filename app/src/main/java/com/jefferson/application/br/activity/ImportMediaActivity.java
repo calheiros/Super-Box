@@ -1,6 +1,7 @@
 package com.jefferson.application.br.activity;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +15,8 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
@@ -23,7 +26,6 @@ import com.jefferson.application.br.task.MonoTypePrepareTask;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.view.CircleProgressView;
 import java.util.ArrayList;
-import android.content.res.Resources;
 
 public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpdatedListener, JTask.OnBeingStartedListener, JTask.OnFinishedListener {
 
@@ -47,18 +49,23 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
 
     private int flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
 
+    private AdView adview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.import_media_layout);
         getWindow().addFlags(flagKeepScreenOn);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        
         prepareTitleView = findViewById(R.id.import_media_title_preparation_text_view);
         prepareTextView = findViewById(R.id.import_media_prepare_text_view);
         messageTextView = findViewById(R.id.import_media_message_text_view);
         titleTextView = findViewById(R.id.import_media_title_move_text_view);
         progressView = findViewById(R.id.circle_progress_view);
         button = findViewById(R.id.import_media_button);
+        adview = (AdView)findViewById(R.id.ad_view);
+        adview.loadAd(new AdRequest.Builder().build());
 
         Intent intent = getIntent();
         mediaList = (ArrayList<String>) getIntent().getStringArrayListExtra(MEDIA_LIST_KEY);
@@ -93,10 +100,11 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     }
 
     public void buttonClick(View v) {
-        if (isTaskNotRunning()) {
-            setResult(RESULT_OK);
-            finish();
+        if (!isTaskNotRunning()) {
+            interruptTask();
         }
+        setResult(RESULT_OK);
+        finish();
     }
 
     private boolean isTaskNotRunning() {
@@ -114,17 +122,21 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     public void onFinished() {
         getWindow().clearFlags(flagKeepScreenOn);
         animateText.cancel();
-        
-        titleTextView.setText(getString(R.string.resultado));
+
         Resources res = getResources();
         boolean criticalError = importTask.error() != null;
         int failures = importTask.getFailuresCount();
-        int color = failures > 0  ? R.color.red : R.color.pureGreen;
+        int color = failures > 0  ? ContextCompat.getColor(this, R.color.red): getAttrColor(R.attr.commonColorDark) ;
         String msg = criticalError ? getString(R.string.erro_critico) : failures > 0 ? res.getQuantityString(
-            R.plurals.falha_plural, failures, failures) : getString(R.string.sucesso);
-        messageTextView.setTextColor(ContextCompat.getColor(this, color));
+            R.plurals.falha_plural, failures, failures) : getString(R.string.transferencia_sucesso);
+
+        titleTextView.setText(getString(R.string.resultado));
+        messageTextView.setTextColor(color);
         messageTextView.setText(msg);
-        
+
+        button.setTextColor(getAttrColor(R.attr.colorAccent));
+        button.setText(getString(android.R.string.ok));
+
     }
 
     @Override
@@ -157,17 +169,24 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                 break;
         }
     }
+    
+    @Override
+    public void onResume() {
+        super.onResume();
+        adview.resume();
+    }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        adview.pause();
+    }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
-        if (prepareTask != null && prepareTask.status == JTask.Status.STARTED) {
-            prepareTask.cancelTask();
-        }
-        if (importTask != null && importTask.status == JTask.Status.STARTED) {
-            importTask.cancelTask();
-        }
+        adview.destroy();
+        //interruptTask();
     }
 
     @Override
@@ -178,12 +197,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             super.onBackPressed();
         } else {
             if (allowCancel) {
-                if (importTask != null && importTask.status == JTask.Status.STARTED) {
-                    importTask.interrupt();
-                }
-                if (prepareTask != null && prepareTask.status == JTask.Status.STARTED) {
-                    prepareTask.cancelTask();
-                }
+                interruptTask();
                 setResult(RESULT_OK);
                 super.onBackPressed();
             } else {
@@ -197,6 +211,15 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                         }
                     }, 2000);
             }
+        }
+    }
+
+    private void interruptTask() {
+        if (importTask != null && importTask.status == JTask.Status.STARTED) {
+            importTask.interrupt();
+        }
+        if (prepareTask != null && prepareTask.status == JTask.Status.STARTED) {
+            prepareTask.cancelTask();
         }
     }
 

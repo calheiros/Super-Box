@@ -51,7 +51,7 @@ public class CreatePattern extends MyCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.create_pattern);
-       
+        // applyParentViewPadding(findViewById(R.id.create_pattern_parent_layout));
         passwordManager = new PasswordManager();
         oldPass = passwordManager.getInternalPassword();
         action = getIntent().getAction();

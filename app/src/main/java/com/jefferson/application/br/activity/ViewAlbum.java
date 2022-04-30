@@ -89,7 +89,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, mListItemsPath, this, position);
         mRecyclerView.setAdapter(mAdapter);
-        applyRecyclerViewPadding(mRecyclerView);
+        //applyParentViewPadding (mainLayout);
 
         fab = (FloatingActionButton) findViewById(R.id.view_album_fab_button);
 		menuLayout = findViewById(R.id.lock_layout);
@@ -104,13 +104,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		mViewMove.setOnClickListener(this);
 		mViewSelect.setOnClickListener(this);
         fab.setOnClickListener(this);
-        int padding = getNavigationBarHeight(this, Configuration.ORIENTATION_PORTRAIT);
-        
-        if (padding != 0){
-            LayoutParams parans = (RelativeLayout.LayoutParams) fab.getLayoutParams();
-            parans.setMargins(0, 0, 100, padding);
-            fab.setLayoutParams(parans);
-        }
         initToolbar();
 
         if (mListItemsPath.isEmpty()) {
@@ -149,14 +142,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             }
         );
 	}
-
-    private void applyRecyclerViewPadding(RecyclerView recyclerView) {
-        int navigationPadding = getNavigationBarHeight(this, Configuration.ORIENTATION_PORTRAIT);
-        if (navigationPadding != 0) {
-            int padding = recyclerView.getPaddingBottom();
-            recyclerView.setPadding(padding, padding, padding, padding + navigationPadding);
-        }
-    }
 
     @Override
     public void onClick(View view) {
@@ -759,7 +744,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 myThread.stopWork();
             }
 
-            MainActivity.getInstance().prepareAd();
+            //MainActivity.getInstance().prepareAd();
             mySimpleDialog.setStyle(SimpleDialog.PROGRESS_STYLE);
             mySimpleDialog.setTitle(getString(R.string.mover));
             mySimpleDialog.setMessage("");
@@ -816,7 +801,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
 		private void kill() {
-			MainActivity.getInstance().showAd();
+			//MainActivity.getInstance().showAd();
 			Storage.scanMediaFiles(mArrayPath.toArray(new String[mArrayPath.size()]));
 
 			mySimpleDialog.dismiss();
