@@ -3,6 +3,7 @@ package com.jefferson.application.br.activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
@@ -35,27 +36,27 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     private PhotosFolderAdapter obj_adapter;
 	private int position;
 	private Toolbar toolbar;
-    private GridView gv_folder;
+    private GridView myGridView;
 	private SharedPreferences sharedPrefrs;
     private static final int REQUEST_PERMISSIONS = 100;
 	public static final int GET_CODE = 5658;
-	private String title;
-    private static final String TAG = "GALERY ALBUM";
+    private static final String TAG = "ImportGalleryActivity";
 
+    private String title;
     private SwipeRefreshLayout mySwipeRefreshLayout;
-
     private ImportGalleryActivity.RetrieveMediaTask retrieveMediaTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.import_gallery);
-        gv_folder = (GridView)findViewById(R.id.gv_folder);
+        myGridView = (GridView)findViewById(R.id.gv_folder);
 		sharedPrefrs = MyPreferences.getSharedPreferences(this);
 	    position = getIntent().getExtras().getInt("position");
         mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 	    mySwipeRefreshLayout.setOnRefreshListener(this);
         mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+        applyParentViewPadding(myGridView);
         
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = getTheme();
@@ -81,7 +82,6 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         }
     }
 
-
     public String getType() {
 		switch (position) {
 			case 0:
@@ -98,7 +98,6 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle(title);
-
     }
 
     @Override
@@ -224,7 +223,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
             findViewById(R.id.gallery_album_empty_layout).setVisibility(View.VISIBLE);
         }
 		obj_adapter = new PhotosFolderAdapter(ImportGalleryActivity.this, list, position);
-		gv_folder.setAdapter(obj_adapter);
+		myGridView.setAdapter(obj_adapter);
 	}
 
 	@Override

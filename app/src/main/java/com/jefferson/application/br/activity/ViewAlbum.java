@@ -3,6 +3,7 @@ package com.jefferson.application.br.activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
@@ -22,6 +23,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.RelativeLayout.LayoutParams;
 import android.widget.Toast;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
@@ -33,9 +35,7 @@ import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsData;
 import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.DeleteFilesTask;
-import com.jefferson.application.br.task.ImportTask;
 import com.jefferson.application.br.task.JTask;
-import com.jefferson.application.br.task.MonoTypePrepareTask;
 import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
@@ -51,30 +51,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener, ImportTask.Listener {
+public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener {
 
     private static final int IMPORT_FROM_VIEW_ALBUM_CODE = 9;
-
-    @Override
-    public void onBeingStarted() {
-
-    }
-
-    @Override
-    public void onUserInteration() {
-
-    }
-
-    @Override
-    public void onInterrupted() {
-
-    }
-
-    @Override
-    public void onFinished() {
-        updateRecyclerView();
-        synchronizeMainActivity();
-    }
 
 	private boolean selectionMode;
 	private RelativeLayout mainLayout;
@@ -110,6 +89,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, mListItemsPath, this, position);
         mRecyclerView.setAdapter(mAdapter);
+        applyRecyclerViewPadding(mRecyclerView);
 
         fab = (FloatingActionButton) findViewById(R.id.view_album_fab_button);
 		menuLayout = findViewById(R.id.lock_layout);
@@ -124,6 +104,13 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		mViewMove.setOnClickListener(this);
 		mViewSelect.setOnClickListener(this);
         fab.setOnClickListener(this);
+        int padding = getNavigationBarHeight(this, Configuration.ORIENTATION_PORTRAIT);
+        
+        if (padding != 0){
+            LayoutParams parans = (RelativeLayout.LayoutParams) fab.getLayoutParams();
+            parans.setMargins(0, 0, 100, padding);
+            fab.setLayoutParams(parans);
+        }
         initToolbar();
 
         if (mListItemsPath.isEmpty()) {
@@ -162,6 +149,14 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             }
         );
 	}
+
+    private void applyRecyclerViewPadding(RecyclerView recyclerView) {
+        int navigationPadding = getNavigationBarHeight(this, Configuration.ORIENTATION_PORTRAIT);
+        if (navigationPadding != 0) {
+            int padding = recyclerView.getPaddingBottom();
+            recyclerView.setPadding(padding, padding, padding, padding + navigationPadding);
+        }
+    }
 
     @Override
     public void onClick(View view) {
@@ -315,42 +310,49 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == RESULT_OK) { 
-            if (requestCode == CHANGE_DIRECTORY_CODE) {
-                exitSelectionMode();
-                ArrayList<String> list = data.getStringArrayListExtra("moved_files");
-                Snackbar.make(mRecyclerView, list.size() + " file(s) moved", Snackbar.LENGTH_SHORT).show();
-                mAdapter.removeAll(list);
-                synchronizeMainActivity();
-            } else if (requestCode == VIDEO_PLAY_CODE) {
-                final int index = data.getIntExtra("index", 0);
-                mRecyclerView.post(new Runnable() { 
+            switch (requestCode) {
+                case CHANGE_DIRECTORY_CODE:
+                    exitSelectionMode();
+                    ArrayList<String> list = data.getStringArrayListExtra("moved_files");
+                    Snackbar.make(mRecyclerView, list.size() + " file(s) moved", Snackbar.LENGTH_SHORT).show();
+                    mAdapter.removeAll(list);
+                    synchronizeMainActivity();
+                    break;
+                case VIDEO_PLAY_CODE:
+                    final int index = data.getIntExtra("index", 0);
+                    mRecyclerView.post(new Runnable() { 
 
-                        @Override
-                        public void run() {
-                            mRecyclerView.smoothScrollToPosition(index);
+                            @Override
+                            public void run() {
+                                mRecyclerView.smoothScrollToPosition(index);
+                            }
                         }
-                    }
-                );
-            } else if (requestCode == IMPORT_FROM_GALLLERY_CODE) {
+                    );
+                    break;
+                case IMPORT_FROM_GALLLERY_CODE:
+                    ArrayList<String> paths = data.getStringArrayListExtra("selection");
+                    String type = data.getStringExtra("type");
 
-                ArrayList<String> paths = data.getStringArrayListExtra("selection");
-                String type = data.getStringExtra("type");
-              
-                Intent intent = new Intent(this, ImportMediaActivity.class);
-                intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths);
-                intent.putExtra(ImportMediaActivity.TYPE_KEY, type);
-                //intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
-                intent.putExtra(ImportMediaActivity.PARENT_KEY, folder.getAbsolutePath());
-                startActivityForResult(intent, IMPORT_FROM_VIEW_ALBUM_CODE);
-                //new MonoTypePrepareTask(this, paths, type, folder.getAbsolutePath(), this).start();
-                /*
-                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    Intent intent = new Intent(this, ImportMediaActivity.class);
+                    intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths);
+                    intent.putExtra(ImportMediaActivity.TYPE_KEY, type);
+                    //intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
+                    intent.putExtra(ImportMediaActivity.PARENT_KEY, folder.getAbsolutePath());
+                    startActivityForResult(intent, IMPORT_FROM_VIEW_ALBUM_CODE);
+                    //new MonoTypePrepareTask(this, paths, type, folder.getAbsolutePath(), this).start();
+                    /*
+                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
 
-                 if(hasExternalFile(paths) && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty())) {
-                 getSdCardUri(GET_URI_CODE_TASK);
-                 return;
-                 }
-                 */
+                     if(hasExternalFile(paths) && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty())) {
+                     getSdCardUri(GET_URI_CODE_TASK);
+                     return;
+                     }
+                     */
+                    break;
+                case IMPORT_FROM_VIEW_ALBUM_CODE:
+                    updateRecyclerView();
+                    synchronizeMainActivity();
+                    break;
             }
         }
 		super.onActivityResult(requestCode, resultCode, data);
@@ -796,7 +798,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 retrieveDataAndUpdate();
             }
         }
-        
+
         private String getAlternativePath(int type) {
 
             File file = new File(Environment.getExternalStoragePublicDirectory(type == 0 ?

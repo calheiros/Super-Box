@@ -4,29 +4,30 @@
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:padding="10dp"
+	android:paddingTop="48dp"
+    android:paddingBottom="48dp"
 	android:gravity="center_horizontal">
 
 	<com.jefferson.application.br.view.CircleProgressView
-		android:layout_height="145dp"
-		android:layout_width="145dp"
+		android:layout_height="160dp"
+		android:layout_width="160dp"
 		android:id="@+id/circle_progress_view"
-		android:layout_marginTop="40dp"
 		android:layout_marginBottom="10dp"/>
 
 	<RelativeLayout
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-        android:paddingRight="24dp"
-        android:paddingLeft="24dp">
+		android:layout_height="wrap_content"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp">
         
         <TextView
+            android:layout_below="@+id/import_media_message_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Preparation"
-            android:textSize="17sp"
-            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+            android:layout_marginTop="8dp"
             android:textColor="?commonColor"
             android:textStyle="bold"
             android:id="@+id/import_media_title_preparation_text_view"/>
@@ -37,16 +38,15 @@
             android:gravity="center"
             android:layout_marginTop="4dp"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:textSize="17sp"
             android:textColor="?commonColorDark"
             android:id="@+id/import_media_prepare_text_view"/>
         
         <TextView
-            android:layout_below="@+id/import_media_prepare_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Moving"
-            android:textSize="17sp"
+            android:textSize="20sp"
             android:gravity="center"
             android:layout_marginTop="10dp"
             android:textColor="?commonColor"
@@ -59,13 +59,18 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginTop="4dp"
-            android:textSize="16sp"
+            android:textSize="17sp"
             android:textColor="?commonColorDark"
             android:id="@+id/import_media_message_text_view"/>
         
     </RelativeLayout>
     
     <Button
+        android:layout_marginTop="20dp"
+        android:backgroundTint="?colorAccent"
+        android:onClick="buttonClick"
+        android:textColor="?colorBackground"
+        android:id="@+id/import_media_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@android:string/ok"/>

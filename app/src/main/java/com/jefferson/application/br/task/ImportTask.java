@@ -20,27 +20,24 @@ import java.util.ArrayList;
 
 public class ImportTask extends JTask {
 
-    public boolean isWaiting() {
-        return waiting;
-    }
+    private Exception error = null;
 
     @Override
     public void onException(Exception e) {
-        JDebug.writeLog(e.getCause());
-        err_message.append("Erro inesperado ocorrido!");
-        err_count = 1;
+        error = e;
+        failuresCount = 1;
         revokeFinish(false);
-        //synchronize();
+        errorMessage.append(e.getMessage());
     }
+    
     public static final int PREPARATION_UPDATE = 1;
     public static final int PROGRESS_UPDATE = 2;
     private ArrayList<String> importedFilesPath = new ArrayList<>();
 	private int maxProgress;
-
     private ArrayList<FileModel> models;
     private WatchTransference watchTransfer;
-	private StringBuilder err_message = new StringBuilder();
-	private int err_count = 0;
+	private StringBuilder errorMessage = new StringBuilder();
+	private int failuresCount = 0;
 	private FileTransfer mTransfer;
 	private boolean waiting = false;
     private Listener listener;
@@ -55,7 +52,15 @@ public class ImportTask extends JTask {
 		this.models = models;
 		this.mTransfer = new FileTransfer();
 	}
+    
+    public int getFailuresCount() {
+        return failuresCount;
+    }
 
+    public boolean isWaiting() {
+        return waiting;
+    }
+    
 	@Override
 	public void onBeingStarted() {
         if (listener != null) {
@@ -63,7 +68,9 @@ public class ImportTask extends JTask {
         }
 
     }
-
+    public Exception error(){
+        return error;
+    }
     @Override
     protected void onTaskCancelled() {
         super.onTaskCancelled();
@@ -105,7 +112,7 @@ public class ImportTask extends JTask {
                 File file = new File(resource.getResource());
                 max += file.length();
             }
-
+            
             File target = new File(Storage.getDefaultStorage());
 
             if ((target.getFreeSpace() < max)) {
@@ -129,8 +136,8 @@ public class ImportTask extends JTask {
                 File file = new File(model.getResource());
                 
                 if (!file.exists()) {
-                    err_count++;
-                    err_message.append("\n" + context.getString(R.string.erro) + " " + err_count + ": O arquivo \"" + file.getName() + "\" não existe!\n");
+                    failuresCount++;
+                    errorMessage.append("\n" + context.getString(R.string.erro) + " " + failuresCount + ": O arquivo \"" + file.getName() + "\" não existe!\n");
                     continue;
                 }
 
@@ -169,6 +176,7 @@ public class ImportTask extends JTask {
                         inputStream = new FileInputStream(file);
                         outputStream = new FileOutputStream(destFile);
                     } catch (FileNotFoundException e) {
+                        failuresCount++;
                         continue;
                     }
                     String response = mTransfer.transferStream(inputStream, outputStream);
@@ -182,16 +190,15 @@ public class ImportTask extends JTask {
                         }
                     } else {
                         destFile.delete();
-                        err_count++;
+                        failuresCount++;
                         if (FileTransfer.Error.NO_LEFT_SPACE.equals(response)) {
-                            err_message.append(no_left_space_error_message);
-                            break;
+                            errorMessage.append(no_left_space_error_message);
                         } else {
-                            err_message.append("\n" + context.getString(R.string.erro) + err_count + ": " + response + " when moving: " + file.getName() + "\n");
+                            errorMessage.append("\n" + context.getString(R.string.erro) + failuresCount + ": " + response + " when moving: " + file.getName() + "\n");
                         }
                     }
                 }
-                sendUpdate(PREPARATION_UPDATE, i + 1, models.size());
+                sendUpdate(PREPARATION_UPDATE, (i + 1) - failuresCount, models.size());
             }
             
         } finally {

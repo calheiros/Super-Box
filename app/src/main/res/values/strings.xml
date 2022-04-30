@@ -1,19 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="importar_preparacao_msg">%1$d of %2$d</string>
+    <string name="erro_critico">A critical error occurred!</string>
+    <plurals name="falha_plural">
+        <item quantity="one">%1$d failure</item>
+        <item quantity="other">%1$d failures</item>
+    </plurals>
+    
+    <plurals name="importar_prepare_imagem_msg">
+        <item quantity="one">&lt;b>%1$d&lt;/b> image of &lt;b>%2$d&lt;/b></item>
+        <item quantity="other">&lt;b>%1$d&lt;/b> images of &lt;b>%2$d&lt;/b></item>
+    </plurals>
+    <plurals name="importar_prepare_video_msg">
+        <item quantity="one" >&lt;b>%1$d&lt;/b> video of &lt;b>%2$d&lt;/b></item>
+        <item quantity="other">&lt;b>%1$d&lt;/b> videos of &lt;b>%2$d&lt;/b></item>
+    </plurals>
+
+    <string name="sucesso">Success!</string>
+    <string name="transferido">Transferred</string>
+    <!--<string name="importar_preparacao_msg">%1$d of %2$d</string>-->
     <string name="escolha_tema">Choose a theme</string>
     <string name="escuro">Dark</string>
     <string name="claro">Blue (Light)</string>
     <string name="claro_verde">Green (Light)</string>
     <string name="automatico">Automatic</string>
-    
+
     <string name="aplicando_configuracoes">Applying setting</string>
     <string name="mudar_codigo">Change code</string>
     <string name="tema_applicativo">App theme</string>
     <string name="menos_seguro_se_habilitado">Less secure if enabled</string>
     <string name="permitir_captura_tela">Allow screenshot</string>
     <string name="disfarce_calculadora">Calculator disguise</string>
-    
+
     <string name="padrao_do_sistema">Follow system</string>
     <string name="depois">After</string>
     <string name="antes">Before</string>
@@ -86,7 +103,7 @@
     <string name="nenhum_video">No video</string>
     <string name="nenhuma_imagem">No image</string>
     <string name="toque_mais_adicionar">Tap + to add.</string>
-    
+
     <string name="local_armazenamento">Storage location</string>
     <string name="importar_galeria">import from galery</string>
     <string name="mudar_senha_descricao">Set your language </string>
@@ -128,6 +145,7 @@
     <string name="excluir">Delete?</string>
     <string name="tentativa">attempt</string>
     <string name="tentativas">attempts</string>
+
     <string name="imagens">Images</string>
     <string name="videos">Videos</string>
     <string name="ocultar_switch">Hide icon</string>

@@ -77,6 +77,7 @@
     <application
         android:requestLegacyExternalStorage="true"
         android:name=".App"
+        android:fitsSystemWindows="true"
         android:resizeableActivity="false"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -130,7 +131,7 @@
 
         <activity
             android:excludeFromRecents="true"
-            android:theme="@style/MainTheme"
+            android:theme="@style/LauncherTheme"
             android:name=".activity.VerifyActivity">
 
             <intent-filter>

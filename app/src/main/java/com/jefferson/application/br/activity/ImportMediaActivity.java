@@ -1,23 +1,29 @@
 package com.jefferson.application.br.activity;
 
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
+import android.text.Html;
+import android.text.Spanned;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.task.ImportTask;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.task.MonoTypePrepareTask;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.view.CircleProgressView;
 import java.util.ArrayList;
-import android.support.design.widget.Snackbar;
+import android.content.res.Resources;
 
 public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpdatedListener, JTask.OnBeingStartedListener, JTask.OnFinishedListener {
 
@@ -36,22 +42,31 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     private ImportMediaActivity.AnimateProgressText animateText;
     private boolean allowCancel;
     private TextView prepareTitleView;
-    
+    private Button button;
+    private int typeQuatityRes;
+
+    private int flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.import_media_layout);
-        prepareTitleView =findViewById(R.id.import_media_title_preparation_text_view);
+        getWindow().addFlags(flagKeepScreenOn);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        prepareTitleView = findViewById(R.id.import_media_title_preparation_text_view);
         prepareTextView = findViewById(R.id.import_media_prepare_text_view);
         messageTextView = findViewById(R.id.import_media_message_text_view);
         titleTextView = findViewById(R.id.import_media_title_move_text_view);
         progressView = findViewById(R.id.circle_progress_view);
+        button = findViewById(R.id.import_media_button);
 
         Intent intent = getIntent();
         mediaList = (ArrayList<String>) getIntent().getStringArrayListExtra(MEDIA_LIST_KEY);
         String parent = intent.getStringExtra(PARENT_KEY);
         String type = intent.getStringExtra(TYPE_KEY);
-
+        if (type != null) {
+            typeQuatityRes = type.equals(FileModel.IMAGE_TYPE) ? R.plurals.importar_prepare_imagem_msg : R.plurals.importar_prepare_video_msg;
+        }
         prepareTask = new MonoTypePrepareTask(this, mediaList, type, parent);
 
         if (parent == null) {
@@ -75,23 +90,41 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             }
         );
         prepareTask.start();
-//        importTask = new ImportTask(this, null, null);
-//        importTask.setOnUpdatedListener(this);
+    }
+
+    public void buttonClick(View v) {
+        if (isTaskNotRunning()) {
+            setResult(RESULT_OK);
+            finish();
+        }
+    }
+
+    private boolean isTaskNotRunning() {
+        return (prepareTask != null && importTask != null) && prepareTask.status != JTask.Status.STARTED && importTask.status != JTask.Status.STARTED;
     }
 
     @Override
     public void onBeingStarted() {
-        prepareTitleView.setText("Transferred");
+        prepareTitleView.setText(getString(R.string.transferido));
         animateText = new AnimateProgressText(titleTextView, importTask);
         animateText.start();
     }
 
     @Override
     public void onFinished() {
+        getWindow().clearFlags(flagKeepScreenOn);
         animateText.cancel();
+        
         titleTextView.setText(getString(R.string.resultado));
-        messageTextView.setTextColor(ContextCompat.getColor(this, R.color.pureGreen));
-        messageTextView.setText("Success!");
+        Resources res = getResources();
+        boolean criticalError = importTask.error() != null;
+        int failures = importTask.getFailuresCount();
+        int color = failures > 0  ? R.color.red : R.color.pureGreen;
+        String msg = criticalError ? getString(R.string.erro_critico) : failures > 0 ? res.getQuantityString(
+            R.plurals.falha_plural, failures, failures) : getString(R.string.sucesso);
+        messageTextView.setTextColor(ContextCompat.getColor(this, color));
+        messageTextView.setText(msg);
+        
     }
 
     @Override
@@ -99,7 +132,9 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         int phrase = values[0];
         switch (phrase) {
             case 1:
-                prepareTextView.setText(String.format(getString(R.string.importar_preparacao_msg), values[1], values[2]));
+                String format = getResources().getQuantityString(typeQuatityRes, values[1], values[1], values[2]);
+                Spanned styledText = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(format, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(format);
+                prepareTextView.setText(styledText);
                 break;
             case 2:
                 if (values.length > 4) {
@@ -138,7 +173,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     @Override
     public void onBackPressed() {
 
-        if ((prepareTask != null && importTask != null) && prepareTask.status != JTask.Status.STARTED && importTask.status != JTask.Status.STARTED) {
+        if (isTaskNotRunning()) {
             setResult(RESULT_OK);
             super.onBackPressed();
         } else {
@@ -153,7 +188,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                 super.onBackPressed();
             } else {
                 allowCancel = true;
-                Snackbar.make(messageTextView,"Press back button again to cancel!", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(messageTextView, "Press back button again to cancel!", Snackbar.LENGTH_SHORT).show();
                 new Handler().postDelayed(new Runnable() {
 
                         @Override
@@ -164,32 +199,6 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             }
         }
     }
-
-//    private void showCancelDialog() {
-//        SimpleDialog dialog = new SimpleDialog(this);
-//        dialog.setTitle("Cancel");
-//        dialog.setMessage("Do you want to cancel task?");
-//        dialog.setPositiveButton(android.R.string.yes, new SimpleDialog.OnDialogClickListener(){
-//
-//                @Override
-//                public boolean onClick(SimpleDialog dialog) {
-//                    importTask.cancelTask();
-//                    return true;
-//                }
-//            }
-//        );
-//        dialog.setNegativeButton(android.R.string.no, new SimpleDialog.OnDialogClickListener(){
-//
-//                @Override
-//                public boolean onClick(SimpleDialog dialog) {
-//                    importTask.continueWork();
-//                    return true;
-//                }
-//            }
-//        );
-//        dialog.setCancelable(false);
-//        dialog.show();
-//    }
 
     private class AnimateProgressText extends Thread {
 

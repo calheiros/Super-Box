@@ -3,7 +3,6 @@ package com.jefferson.application.br.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,9 +11,9 @@ import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.PopupMenu;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.MaterialLockView;
@@ -34,7 +33,8 @@ public class VerifyActivity extends MyCompatActivity {
 		super.onCreate(savedInstanceState);
         checkPassword();
 		setContentView(R.layout.pattern);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+     
 //        View parent = findViewById(R.id.patternRelativeLayout);
 //        TypedValue typedValue = new TypedValue();
 //        Resources.Theme theme = getTheme();

@@ -29,6 +29,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.gallery_selection_layout);
 		setupToolbar();
+        
 		View lockView = findViewById(R.id.gallery_selection_lock_view);
         mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
 		Intent intent = getIntent();
@@ -42,7 +43,8 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
         mRecyclerView.setAdapter(mAdapter);
 	    selectAllView = (ImageView)findViewById(R.id.ic_seletctAll);
         updateActionBarTitle();
-
+        applyParentViewPadding(mRecyclerView);
+        
 		lockView.setOnClickListener(new OnClickListener(){
 
 				@Override
@@ -57,7 +59,8 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 						Toast.makeText(getApplicationContext(), "Você deve selecionar pelo menos um.", Toast.LENGTH_LONG).show();
 					}
 				}
-			});
+			}
+        );
 
 		selectAllView.setOnClickListener(new OnClickListener(){
 
@@ -75,7 +78,8 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
                     updateActionBarTitle();
 					toogleSelectViewIcon();
 				}
-			});
+			}
+       );
 	}
 
 	@Override

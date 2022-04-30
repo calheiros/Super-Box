@@ -2,17 +2,18 @@ package com.jefferson.application.br.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.TypedValue;
+import android.view.View;
 import android.view.WindowManager;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.LocaleManager;
-import com.jefferson.application.br.R;
+import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.StringUtils;
 import com.jefferson.application.br.util.ThemeConfig;
-import com.jefferson.application.br.util.MyPreferences;
 
 public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 
@@ -26,6 +27,7 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
 	public boolean isAlive() {
 		return running;
 	}
+    
     @Override
     protected void onResume() {
         super.onResume();
@@ -86,7 +88,27 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
         app.putActivity(this, KEY);
         initialized = true;
     }
+    
+    public int getNavigationBarHeight(Context context, int orientation) {
+        Resources resources = context.getResources(); 
+        int id = resources.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_height_landscape", "dimen", "android");
+        if (id > 0) { 
+            return resources.getDimensionPixelSize(id);
+        } return 0;
+    }
+    
+    public void applyParentViewPadding(View view) {
+        int navigationPadding = getNavigationBarHeight(this, Configuration.ORIENTATION_PORTRAIT);
+        if (navigationPadding != 0) {
+            int bottom = view.getPaddingBottom() + + navigationPadding;
+            int left = view.getPaddingLeft();
+            int right = view.getPaddingRight();
+            int top = view.getPaddingTop();
 
+            view.setPadding(left, top, right, bottom);
+        }
+    }
+    
     protected void onApplyCustomTheme() {
         setTheme(ThemeConfig.getTheme(this));
     }
