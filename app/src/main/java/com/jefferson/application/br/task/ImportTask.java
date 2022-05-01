@@ -202,8 +202,7 @@ public class ImportTask extends JTask {
             }
             
         } finally {
-            database.close();
-            folderDatabase.close();
+           database.close();
         }
 	}
 

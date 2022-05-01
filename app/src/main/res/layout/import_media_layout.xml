@@ -63,6 +63,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:layout_marginTop="4dp"
+            android:maxLines="1"
+            android:ellipsize="middle"
             android:textSize="17sp"
             android:textColor="?commonColorDark"
             android:id="@+id/import_media_message_text_view"/>

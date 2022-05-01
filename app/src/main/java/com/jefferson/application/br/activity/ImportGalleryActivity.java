@@ -30,6 +30,7 @@ import com.jefferson.application.br.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import com.jefferson.application.br.util.FileUtils;
 
 public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -46,6 +47,8 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ImportGalleryActivity.RetrieveMediaTask retrieveMediaTask;
 
+    private static final int PICK_CONTENT_FROM_EXTERNAL_APP = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,13 +59,12 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
 	    mySwipeRefreshLayout.setOnRefreshListener(this);
         mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-        // applyParentViewPadding(myGridView);
-        
+
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = getTheme();
         theme.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true);
         int color = typedValue.data;
-        
+
         mySwipeRefreshLayout.setProgressBackgroundColorSchemeColor(color);// .setProgressBackgroundColor(color);
 
         title = (position == 0 ? getString(R.string.importar_imagem) : getString(R.string.importar_video));
@@ -70,7 +72,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         retrieveMediaTask.start();
 		setupToolbar();
 	}
-    
+
     @Override
     public void onRefresh() {
         if (retrieveMediaTask.getStatus() == JTask.Status.FINISHED) {
@@ -88,7 +90,8 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 				return FileModel.IMAGE_TYPE;
 			case 1:
 				return FileModel.VIDEO_TYPE;
-		    default: throw new IllegalArgumentException();
+		    default: 
+                throw new IllegalArgumentException("can not find type for position: " + position);
 		}
 	}
 
@@ -110,17 +113,36 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 	public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_from_gallery:
-                notImplemented();
+                getContentFromExternalApp();
                 break;
-            case R.id.item_from_camera:
-                notImplemented();
-                break;
+                /*case R.id.item_from_camera:
+                 notImplemented();
+                 break;*/
             case android.R.id.home:
                 finish();
                 break;
         }
 		return super.onOptionsItemSelected(item);
 	}
+
+    private void getContentFromExternalApp() {
+        Intent intent = new Intent(); 
+        intent.setType(getIntentType()); 
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); 
+        intent.setAction(Intent.ACTION_GET_CONTENT); 
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_CONTENT_FROM_EXTERNAL_APP); 
+    }
+
+    private String getIntentType() {
+        switch (position) {
+            case 0: 
+                return "image/*";
+            case 1:
+                return "video/*";
+            default:
+                throw new RuntimeException("can not find intent type for position " + position);
+        }
+    }
 
     private void notImplemented() {
         Toast.makeText(this, "Not implemented!", 1).show();
@@ -228,14 +250,39 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if (resultCode == RESULT_OK) {
-			ArrayList paths =  (ArrayList) data.getExtras().get("selection");
-			Intent i = new Intent();
-			i.putExtra("selection", paths);
-			i.putExtra("type", getType());
-			i.putExtra("position", position);
-			setResult(RESULT_OK, (i));
-			finish();
+
+        if (resultCode == RESULT_OK) {
+            ArrayList<String>  mediaList = new ArrayList<String>();
+
+            if (requestCode == PICK_CONTENT_FROM_EXTERNAL_APP) {
+                FileUtils fileUtils = new FileUtils(this);
+
+                if (data.getClipData() != null) { 
+                    int count = data.getClipData().getItemCount(); 
+                    for (int i = 0; i < count; i++) { 
+                        Uri imageUri = data.getClipData().getItemAt(i).getUri(); //do what do you want to do
+                        String path = fileUtils.getPath(imageUri);
+                        mediaList.add(path);
+                    } 
+                } else if (data.getData() != null) { 
+                    Uri selectedImageUri = data.getData(); //do what do you want to do
+                    String path = fileUtils.getPath(selectedImageUri);
+                    mediaList.add(path);
+                } else {
+                    return;
+                }
+            } else {
+                mediaList = data.getExtras().getStringArrayList("selection");
+            }
+            if (mediaList.isEmpty()) {
+                return;
+            }
+            Intent i = new Intent();
+            i.putExtra("selection", mediaList);
+            i.putExtra("type", getType());
+            i.putExtra("position", position);
+            setResult(RESULT_OK, (i));
+            finish();
 		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}

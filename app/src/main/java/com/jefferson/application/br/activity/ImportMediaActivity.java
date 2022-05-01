@@ -26,6 +26,7 @@ import com.jefferson.application.br.task.MonoTypePrepareTask;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.view.CircleProgressView;
 import java.util.ArrayList;
+import android.text.TextUtils;
 
 public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpdatedListener, JTask.OnBeingStartedListener, JTask.OnFinishedListener {
 
@@ -33,12 +34,13 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     private CircleProgressView progressView;
     private TextView messageTextView;
     private ImportTask importTask;
-
     private ArrayList<String> mediaList;
+
     public static final String TYPE_KEY = "type_key";
     public static final String MEDIA_LIST_KEY = "media_list_key";
     public static final String POSITION_KEY = "position_key";
-    public static String PARENT_KEY;
+    public static final String PARENT_KEY = "parent_key";
+
     private MonoTypePrepareTask prepareTask;
     private TextView titleTextView;
     private ImportMediaActivity.AnimateProgressText animateText;
@@ -46,10 +48,10 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     private TextView prepareTitleView;
     private Button button;
     private int typeQuatityRes;
-
     private int flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
-
     private AdView adview;
+
+    public static final String MODELS_KEY = "models_key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +59,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         setContentView(R.layout.import_media_layout);
         getWindow().addFlags(flagKeepScreenOn);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        
+
         prepareTitleView = findViewById(R.id.import_media_title_preparation_text_view);
         prepareTextView = findViewById(R.id.import_media_prepare_text_view);
         messageTextView = findViewById(R.id.import_media_message_text_view);
@@ -68,35 +70,44 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         adview.loadAd(new AdRequest.Builder().build());
 
         Intent intent = getIntent();
-        mediaList = (ArrayList<String>) getIntent().getStringArrayListExtra(MEDIA_LIST_KEY);
-        String parent = intent.getStringExtra(PARENT_KEY);
-        String type = intent.getStringExtra(TYPE_KEY);
-        if (type != null) {
-            typeQuatityRes = type.equals(FileModel.IMAGE_TYPE) ? R.plurals.importar_prepare_imagem_msg : R.plurals.importar_prepare_video_msg;
-        }
-        prepareTask = new MonoTypePrepareTask(this, mediaList, type, parent);
+        ArrayList <FileModel> data = null;
 
-        if (parent == null) {
-            prepareTask.setDestination(Storage.getFolder(type == FileModel.IMAGE_TYPE ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
-        }
-
-        prepareTask.setOnUpdatedListener(this);
-        prepareTask.setOnFinishedListener(new JTask.OnFinishedListener() {
-
-                private ImportMediaActivity.AnimateProgressText animateText;
-
-                @Override
-                public void onFinished() {
-                    importTask = new ImportTask(ImportMediaActivity.this, prepareTask.getData() , null);
-                    importTask.setOnUpdatedListener(ImportMediaActivity.this);
-                    importTask.setOnbeingStartedListener(ImportMediaActivity.this);
-                    importTask.setOnFinishedListener(ImportMediaActivity.this);
-                    importTask.start();
-
-                }
+        if ((data = intent.getParcelableArrayListExtra(MODELS_KEY)) != null) {
+            typeQuatityRes = R.plurals.quantidade_arquivo_total;
+            startImportTask(data);
+        } else {
+            mediaList = (ArrayList<String>) getIntent().getStringArrayListExtra(MEDIA_LIST_KEY);
+            String parent = intent.getStringExtra(PARENT_KEY);
+            String type = intent.getStringExtra(TYPE_KEY);
+            prepareTask = new MonoTypePrepareTask(this, mediaList, type, parent);
+            
+            if (type != null) {
+                typeQuatityRes = type.equals(FileModel.IMAGE_TYPE) ? R.plurals.quantidade_imagem_total : R.plurals.quantidade_video_total;
             }
-        );
-        prepareTask.start();
+            if (parent == null) {
+                prepareTask.setDestination(Storage.getFolder(type == FileModel.IMAGE_TYPE ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
+            }
+            prepareTask.setOnUpdatedListener(this);
+            prepareTask.setOnFinishedListener(new JTask.OnFinishedListener() {
+
+                    private ImportMediaActivity.AnimateProgressText animateText;
+
+                    @Override
+                    public void onFinished() {
+                        startImportTask(prepareTask.getData());
+                    }
+                }
+            );
+            prepareTask.start();
+        }
+    }
+
+    private void startImportTask(ArrayList<FileModel> data) {
+        importTask = new ImportTask(this, data , null);
+        importTask.setOnUpdatedListener(this);
+        importTask.setOnbeingStartedListener(this);
+        importTask.setOnFinishedListener(this);
+        importTask.start();
     }
 
     public void buttonClick(View v) {
@@ -133,10 +144,11 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         titleTextView.setText(getString(R.string.resultado));
         messageTextView.setTextColor(color);
         messageTextView.setText(msg);
+        messageTextView.setMaxLines(5);
+        messageTextView.setEllipsize(TextUtils.TruncateAt.END);
 
         button.setTextColor(getAttrColor(R.attr.colorAccent));
         button.setText(getString(android.R.string.ok));
-
     }
 
     @Override
@@ -169,7 +181,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                 break;
         }
     }
-    
+
     @Override
     public void onResume() {
         super.onResume();
@@ -181,7 +193,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         super.onPause();
         adview.pause();
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();

@@ -9,9 +9,9 @@
         android:title="from gallery"
         app:showAsAction="ifRoom|withText"/>
     
-	<item
+	<!--<item
         android:icon="@drawable/ic_camera"
         android:id="@+id/item_from_camera"
         android:title="from camera"
-        app:showAsAction="ifRoom|withText"/>
+        app:showAsAction="ifRoom|withText"/>-->
 </menu>

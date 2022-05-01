@@ -21,6 +21,8 @@ public class CircleProgressView extends View {
     private long max;
     private float progressWidth;
 
+    private Paint percentPaint;
+
     public CircleProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
         defineVariables();
@@ -39,8 +41,10 @@ public class CircleProgressView extends View {
         bounds.right = textPaint.measureText(progressText, 0, progressText.length()); 
         // measure text height 
         bounds.bottom = textPaint.descent() - textPaint.ascent();
-        bounds.left += (rect.width() - bounds.right) / 2.0f; bounds.top += (rect.height() - bounds.bottom) / 2.0f; 
-
+        bounds.left += (rect.width() - bounds.right - percentPaint.measureText("%")) / 2.0f ; 
+        bounds.top += (rect.height() - bounds.bottom) / 2.0f;
+        
+        canvas.drawText("%", bounds.left + bounds.right, bounds.top - textPaint.ascent(), percentPaint);
         canvas.drawText(progressText, bounds.left, bounds.top - textPaint.ascent(), textPaint);
 
     }
@@ -61,6 +65,7 @@ public class CircleProgressView extends View {
 
     private void defineVariables() {
         int colorAccent = getAttrColor(R.attr.colorAccent);
+        int textColor = getAttrColor(R.attr.commonColorLight);
         progressPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -74,8 +79,9 @@ public class CircleProgressView extends View {
         progressPaint.setColor(colorAccent);
         progressPaint.setStrokeCap(Paint.Cap.ROUND);
         progressPaint.setStyle(Paint.Style.STROKE);
-
-        textPaint.setColor(getAttrColor(R.attr.commonColorLight));
+        percentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        percentPaint.setColor(textColor);
+        textPaint.setColor(textColor);
     }
 
     private void resizeView(int w, int h) {
@@ -84,6 +90,7 @@ public class CircleProgressView extends View {
         backgroundPaint.setStrokeWidth(progressWidth);
         progressPaint.setStrokeWidth(progressWidth);
         textPaint.setTextSize(w / 4);
+        percentPaint.setTextSize(w / 8);
         rect.set(padding, padding, w - padding, h - padding);
     }
 

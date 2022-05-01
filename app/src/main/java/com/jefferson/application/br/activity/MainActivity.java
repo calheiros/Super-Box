@@ -112,7 +112,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	private int position;
 	private static MainActivity instance;
 	private AdView adview;
-	private InterstitialAd interstitial;
+	//private InterstitialAd interstitial;
 
     public static MainActivity getInstance() {
 		return instance;
