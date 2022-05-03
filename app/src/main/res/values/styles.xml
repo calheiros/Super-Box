@@ -71,7 +71,7 @@
     </style>
 
     <style name="LightBlueTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="android:windowTranslucentNavigation">false</item>
+       
         <item name="android:navigationBarColor">@color/bondiBlue</item>
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/bondiBlue</item>
@@ -95,10 +95,8 @@
 
     <style name="CalculatorTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorBackground</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@color/colorPrimary</item> 
-        
+        <item name="android:statusBarColor">@color/colorBackground</item> 
         <item name="colorAccent">#00BCD4</item>
         <item name="colorBackgroundDark">@color/colorBackgroundDark</item>
         <item name="colorBackground">@color/colorBackground</item>
@@ -124,7 +122,6 @@
     </style>-->
 
     <style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:navigationBarColor">@color/colorPrimary</item>
         
         <item name="textShadowColor">#00FFFFFF</item>

@@ -52,7 +52,7 @@ public class AlbumFragment extends Fragment {
     private JTask retrieveMedia;
     private RecyclerView recyclerView;
     private View progressBar;
-    private View emptyView;
+    private View emptyView, storagePremissionView;
     private MainFragment mainFragment;
     private Handler corruptedWarnHandler = new Handler() {
 
@@ -123,6 +123,7 @@ public class AlbumFragment extends Fragment {
             view = inflater.inflate(R.layout.main_gallery, container, false);
             progressBar = view.findViewById(R.id.main_galery_progressBar);
             emptyView = view.findViewById(R.id.empty_linearLayout);
+            storagePremissionView = view.findViewById(R.id.storage_permission_layout);
             sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             root = Environment.getExternalStorageDirectory().getAbsolutePath();
             recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
