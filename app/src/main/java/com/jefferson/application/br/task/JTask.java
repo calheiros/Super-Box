@@ -55,7 +55,7 @@ abstract public class JTask implements JTaskListener {
                     }
                     status = Status.FINISHED;
                     workThread.interrupt();
-                    
+
                     onFinished();
                     if (onFinishedListener != null) {
                         onFinishedListener.onFinished();
@@ -99,7 +99,11 @@ abstract public class JTask implements JTaskListener {
     public boolean isCancelled() {
         return cancelled;
     }
-
+    
+    public Exception getException() {
+        return exception;
+    }
+    
     private class WorkThread extends Thread {
 
         @Override

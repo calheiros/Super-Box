@@ -1,11 +1,19 @@
 package com.jefferson.application.br.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
+import android.provider.Settings;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.TypedValue;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,10 +32,12 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
     private PowerManager pm;
 	private boolean running;
 
+    public static final int REQUEST_WRITE_READ_PERMSSION_CODE = 13;
+
 	public boolean isAlive() {
 		return running;
 	}
-    
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -75,12 +85,12 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
         theme.resolveAttribute(resId, typedValue, true);
         return typedValue.data;
     }
-    
-    public boolean hasNavBar (Resources resources) { 
+
+    public boolean hasNavBar(Resources resources) { 
         int id = resources.getIdentifier("config_showNavigationBar", "bool", "android");
         return id > 0 && resources.getBoolean(id);
     }
-    
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         onApplyCustomTheme();
@@ -93,7 +103,7 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
         app.putActivity(this, KEY);
         initialized = true;
     }
-    
+
 //    public int getNavigationBarHeight(Context context, int orientation) {
 //        Resources resources = context.getResources(); 
 //        int id = resources.getIdentifier(orientation == Configuration.ORIENTATION_PORTRAIT ? "navigation_bar_height" : "navigation_bar_height_landscape", "dimen", "android");
@@ -130,7 +140,38 @@ public class MyCompatActivity extends android.support.v7.app.AppCompatActivity {
     protected void onApplyCustomTheme() {
         setTheme(ThemeConfig.getTheme(this));
     }
+    
+    public boolean haveWriteReadPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            return Environment.isExternalStorageManager();
 
+        } else {
+            return (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED);
+        }
+
+    }
+    
+    public void requestWriteReadPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION); 
+            Uri uri = Uri.fromParts("package", getPackageName(), null);
+            intent.setData(uri);
+            startActivityForResult(intent, REQUEST_WRITE_READ_PERMSSION_CODE);
+        } else {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                Intent intent = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
+                startActivity(intent);
+            } else {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_READ_PERMSSION_CODE);
+            }
+        }
+    }
+    
     @Override
     protected void onDestroy() {
         super.onDestroy();

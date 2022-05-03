@@ -12,6 +12,7 @@ import android.os.SystemClock;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
+import com.google.android.gms.ads.MobileAds;
 import com.jefferson.application.br.activity.CrashActivity;
 import com.jefferson.application.br.activity.MyCompatActivity;
 import com.jefferson.application.br.service.AppLockService;
@@ -94,7 +95,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
 
-        //MobileAds.initialize(this, "ca-app-pub-3062666120925607~3930477089");
+        MobileAds.initialize(this, "ca-app-pub-3062666120925607~3930477089");
         ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
             .setProgressiveJpegConfig(new SimpleProgressiveJpegConfig())
             .setResizeAndRotateEnabledForNetwork(true)

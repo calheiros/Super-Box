@@ -21,6 +21,7 @@ import com.jefferson.application.br.MaterialLockView;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.PasswordManager;
 import java.util.List;
+import android.widget.Toast;
 
 public class VerifyActivity extends MyCompatActivity {  
 
@@ -29,18 +30,26 @@ public class VerifyActivity extends MyCompatActivity {
 	private MaterialLockView materialLockView;
 	private String password;
 
+    private static final int REQUEST_WRITE_READ_PERMSSION_CODE = 13;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+        password = new PasswordManager().getInternalPassword();
 		super.onCreate(savedInstanceState);
-        checkPassword();
-		setContentView(R.layout.pattern);
+
+        if (password.isEmpty()) {
+            startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+            overridePendingTransition(0, 0);
+            return;
+        }
+
         if (Build.VERSION.SDK_INT >= 21) { 
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-        
-        // getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-     
+
+        setContentView(R.layout.pattern);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 //        View parent = findViewById(R.id.patternRelativeLayout);
 //        TypedValue typedValue = new TypedValue();
 //        Resources.Theme theme = getTheme();
@@ -50,8 +59,6 @@ public class VerifyActivity extends MyCompatActivity {
 //
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
-
-	    requestPermission();
 
 		Handler = new Handler();
 		Runnable = new Runnable() {
@@ -72,15 +79,14 @@ public class VerifyActivity extends MyCompatActivity {
 				public void onPatternDetected(List<MaterialLockView.Cell>pattern, String SimplePattern) {
 					if (!SimplePattern.equals(password)) {
 						materialLockView.setDisplayMode(MaterialLockView.DisplayMode.Wrong);
-
 						Handler.postDelayed(Runnable, 2000);
 					} else {
-						materialLockView.setDisplayMode(MaterialLockView.DisplayMode.Correct);
-                        getWindow().setBackgroundDrawableResource(R.drawable.ic_super);
-                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-	                    startActivity(intent);
-                        overridePendingTransition(0, 0);
+                        materialLockView.setDisplayMode(MaterialLockView.DisplayMode.Correct);
+                        if (haveWriteReadPermission()) {
+                            startMainActivity();
+                        } else {
+                            requestWriteReadPermission();
+                        }
                     }
 					super.onPatternDetected(pattern, SimplePattern);
 
@@ -88,10 +94,10 @@ public class VerifyActivity extends MyCompatActivity {
             }
         );
 	}
-    
+
     @Override
     protected void onApplyCustomTheme() {
-
+        setTheme(R.style.LauncherTheme);
     }
 
     private boolean canProceed() {
@@ -126,70 +132,42 @@ public class VerifyActivity extends MyCompatActivity {
 		popMenu.show();
 	}
 
-	public void requestPermission() {
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            if (Environment.isExternalStorageManager()) { 
-                //todo when permission is granted 
-            } else { //request for the permission 
-                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION); 
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivity(intent);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_WRITE_READ_PERMSSION_CODE) {
+            if (haveWriteReadPermission()) {
+                startMainActivity();
+            } else {
+                materialLockView.clearPattern();
+                Toast.makeText(this, "Required permission not allowed!", Toast.LENGTH_SHORT).show();
             }
-            return;
         }
-
-		if (ContextCompat.checkSelfPermission(this,
-											  Manifest.permission.WRITE_EXTERNAL_STORAGE)
-			!= PackageManager.PERMISSION_GRANTED) {
-
-			// Should we show an explanation?
-			if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-																	Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-				// Show an explanation to the user *asynchronously* -- don't block
-				// this thread waiting for the user's response! After the user
-				// sees the explanation, try again to request the permission.
-                Intent intent = new Intent(Intent.ACTION_APPLICATION_PREFERENCES);
-                startActivity(intent);
-
-			} else {
-				// No explanation needed, we can request the permission.
-				ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 12);
-				// MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE is an
-				// app-defined int constant. The callback method gets the
-				// result of the request.
-			}
-		} else {
-			checkPassword();
-		}
-	}
-
-	public void checkPassword() {
-        password = new PasswordManager().getInternalPassword();
-
-		if (password.isEmpty()) {
-			startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-            overridePendingTransition(0, 0);
-		} 
-	}
+    }
 
 	@Override
 	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
 		for (int i = 0; i < permissions.length; i++) {
 			String permission = permissions[i];
 			int grantResult = grantResults[i];
 
 			if (permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 				if (grantResult == PackageManager.PERMISSION_GRANTED) {
-					checkPassword();
-				} else {
-					//requestPermission();
+					startMainActivity();
+                    break;
 				}
 			}
 		}
 	}
+
+    private void startMainActivity() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+    }
 
 	@Override
 	public void onBackPressed() {

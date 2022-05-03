@@ -3,13 +3,13 @@ package com.jefferson.application.br.activity;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -124,8 +124,12 @@ public class CreatePattern extends MyCompatActivity {
                     sendCommandService(password);
 
                     switch (action) {
-                        case ENTER_FIST_CREATE: 
-                            requestPermission();
+                        case ENTER_FIST_CREATE:
+                            if (haveWriteReadPermission()){
+                                startMainActivity();
+                            } else {
+                                requestWriteReadPermission();
+                            }
                             break;
                         case ENTER_RECREATE:
                             finish();
@@ -143,42 +147,36 @@ public class CreatePattern extends MyCompatActivity {
        
     }
     
-    public void requestPermission() {
+    private void startMainActivity() {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+    }
+    
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        if (ContextCompat.checkSelfPermission(this,
-                                              Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED) {
+        for (int i = 0; i < permissions.length; i++) {
+            String permission = permissions[i];
+            int grantResult = grantResults[i];
 
-            // Should we show an explanation?
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.putExtra("package", getPackageName());
-                startActivity(intent);
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 12);
-                // MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE is an
-                // app-defined int constant. The callback method gets the
-                // result of the request.
+            if (permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                    startMainActivity();
+                    break;
+                }
             }
-        } else {
-            Intent intent = new Intent(CreatePattern.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-            startActivity(intent);
-            overridePendingTransition(0,0);
-            
         }
 	}
-
+    
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(this, "on result " + requestCode,1).show();
         super.onActivityResult(requestCode, resultCode, data);
+        if (haveWriteReadPermission()) {
+            startMainActivity();
+        }
     }
 
     private void clearPattern() {

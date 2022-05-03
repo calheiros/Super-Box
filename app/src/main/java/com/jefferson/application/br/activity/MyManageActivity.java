@@ -1,12 +1,15 @@
 package com.jefferson.application.br.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import com.jefferson.application.br.R;
 
-public class ManageDataActivity extends AppCompatActivity {
+public class MyManageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main);
+      
     }
 }
