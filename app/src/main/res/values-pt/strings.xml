@@ -111,7 +111,7 @@
 	<string name="imagem">imagem</string>
 	<string name="senha_definida_como">Seu padrão de desbloqueio foi definido como:</string>
 	<string name="apagar_mensagem">Tem certeza que quer apagar %s permanentimente?</string>
-	<string name="reiniciar_para_aplicar">Reinicie a aplicação para as mudanças terem efeito</string>
+	<string name="reiniciar_para_aplicar">Reinicie a aplicação para as mudanças entrarem em vigor.</string>
 	<string name="vazio">Por enquanto nada aquí</string>
 	<string name="intruder_vazio">Tudo limpo! Nenhum intruso foi capturado.</string>
 	<string name="inserir">Insira a senha</string>

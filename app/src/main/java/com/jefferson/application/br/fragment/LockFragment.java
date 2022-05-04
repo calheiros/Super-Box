@@ -47,6 +47,7 @@ import com.jefferson.application.br.util.DialogUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import com.jefferson.application.br.widget.LockCheck;
 
 public class LockFragment extends Fragment implements OnItemClickListener, android.support.v7.widget.SearchView.OnQueryTextListener {
 
@@ -87,7 +88,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             Resources.Theme theme = getActivity().getTheme();
             theme.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true);
             int color = typedValue.data;
-           
+
             mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 			mySwipeRefreshLayout.setProgressBackgroundColorSchemeColor(color);// .setProgressBackgroundColor(color);
             mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -247,7 +248,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         lastClickedItemPosition = position;
         lastClickedParentView = view;
         boolean noNeedOverlayPermission = false;
-
+        //Toast.makeText(getContext(), "position " + lastClickedItemPosition, Toast.LENGTH_SHORT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) { 
             Log.v("App", "Requesting Permission" + Settings.canDrawOverlays(getContext())); // if not construct intent to request permission 
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName())); // request permission via start activity for result 
@@ -285,9 +286,10 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     }
 
     public void animateCheckView(View vi) {
-        View lockView = vi.findViewById(R.id.check1);
+        LockCheck lockView = vi.findViewById(R.id.check1);
         Animation animation = AnimationUtils.loadAnimation(getContext(), R.anim.checked);
         lockView.startAnimation(animation);
+        lockView.setChecked(!lockView.isChecked());
     }
 
     @Override
@@ -348,29 +350,24 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (Settings.canDrawOverlays(getContext()) && !CodeManager.needPermissionForGetUsages(getContext())) {
-                appsAdapter.toogleSelection(lastClickedItemPosition, parentView);
-                animateCheckView(lastClickedParentView);
+        if (!CodeManager.needPermissionForGetUsages(getContext())) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) {
+                return;
             }
+            appsAdapter.toogleSelection(lastClickedItemPosition, parentView);
+            animateCheckView(lastClickedParentView);
+        } 
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
-        } else {
-            if (!CodeManager.needPermissionForGetUsages(getContext())) {
-                appsAdapter.toogleSelection(lastClickedItemPosition, parentView);
-                animateCheckView(lastClickedParentView);
-            }
-        }
-		super.onActivityResult(requestCode, resultCode, data);
-	}
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_message_history, menu);
 
-	@Override
-	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-		inflater.inflate(R.menu.menu_message_history, menu);
-
-//        SearchManager searchManager =(SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
+//      SearchManager searchManager =(SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
         searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-//            searchView.setSearchableInfo(
-//        searchManager.getSearchableInfo(getActivity().getComponentName()));
+//      searchView.setSearchableInfo(
+//      searchManager.getSearchableInfo(getActivity().getComponentName()));
 //
         searchView.setOnQueryTextFocusChangeListener(new  OnFocusChangeListener() {
                 @Override public void onFocusChange(View view, boolean hasFocus) {
@@ -381,8 +378,8 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             }
         );
         searchView.setOnQueryTextListener(this);
-		super.onCreateOptionsMenu(menu, inflater);
-	}
+        super.onCreateOptionsMenu(menu, inflater);
+    }
 
     private void showInputMethod(View view) {
         InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
@@ -409,7 +406,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         return false;
     }
 
-	private class LoadApplicationsTask extends JTask {
+    private class LoadApplicationsTask extends JTask {
 
         private Context context;
         private double progress;
@@ -458,7 +455,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         public void onFinished() {
 
             if (parentView != null) {
-				doTaskFinalized();
+                doTaskFinalized();
             }
         }
 

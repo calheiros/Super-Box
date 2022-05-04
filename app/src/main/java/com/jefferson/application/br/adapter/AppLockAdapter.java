@@ -220,9 +220,8 @@ public class AppLockAdapter extends BaseAdapter {
 			selectionArray.put(position, true);
 			database.addLockedApp(pname);
 		}
-
-        LockCheck lockView = view.findViewById(R.id.check1);
-        lockView.setChecked(!hasSelected);
+//        LockCheck lockView = view.findViewById(R.id.check1);
+//        lockView.setChecked(!hasSelected);
 	}
 
 	public final int getCount() {
