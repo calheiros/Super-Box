@@ -103,6 +103,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     }
 
     private void startImportTask(ArrayList<FileModel> data) {
+        
         importTask = new ImportTask(this, data , null);
         importTask.setOnUpdatedListener(this);
         importTask.setOnbeingStartedListener(this);
@@ -131,10 +132,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
 
     @Override
     public void onFinished() {
-        if (progressView.getProgress() != 100) {
-            progressView.setProgress(100);
-        }
-        
+ 
         getWindow().clearFlags(flagKeepScreenOn);
         animateText.cancel();
 

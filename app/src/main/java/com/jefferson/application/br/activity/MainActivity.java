@@ -54,11 +54,55 @@ import java.util.ArrayList;
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener {
 
     private MonoTypePrepareTask preparationTask;
+
+    private void updateCurrentFragment() {
+        if (mainFragment != null) {
+            int pagerPosition =  mainFragment.getPagerPosition();
+            updateFragment(pagerPosition);
+        }
+    }
+
+	public static final String admob_key="ca-app-pub-3062666120925607/8250392170";
+    public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
+    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12;
+    private static final int GET_URI_CODE_TASK = 54;
+	private static final int GET_URI_CODE = 98;
+    public static final int IMPORT_FROM_GALLERY_CODE = 43;
+
+    private BroadcastReceiver receiver;
+    public MainFragment mainFragment;
+	private LockFragment lockFragment;
+	private DrawerLayout drawerLayout;
+	private SettingFragment settingFragment;
+	private NavigationView navigationView;
+	private Fragment oldFrag;
+    private SharedPreferences sharedPreferences;
+	private int position;
+	private static MainActivity instance;
+	private AdView adview;
     public boolean calculatorStateEnabled;
     private boolean restarting;
-
-    public static int CURRENT_THEME;
     
+	//private InterstitialAd interstitial;
+
+    public static MainActivity getInstance() {
+		return instance;
+	}
+
+    public static final String ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS";
+
+	public void setupToolbar(Toolbar toolbar, CharSequence title) {
+		setSupportActionBar(toolbar);
+		getSupportActionBar().setTitle(title);
+		getSupportActionBar().setDisplayShowHomeEnabled(false);
+
+		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.abc_action_bar_home_description);
+		toggle.syncState();
+		drawerLayout.setDrawerListener(toggle);
+	}
+    
+    public static int CURRENT_THEME;
+
     public void setRestarting(boolean restarting) {
         this.restarting = restarting;
     }
@@ -86,50 +130,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     public void onFinished() {
         updateCurrentFragment();
     }
-
-    private void updateCurrentFragment() {
-        if (mainFragment != null) {
-            int pagerPosition =  mainFragment.getPagerPosition();
-            updateFragment(pagerPosition);
-        }
-    }
-
-	public static final String admob_key="ca-app-pub-3062666120925607/8250392170";
-    public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
-    private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12;
-    private static final int GET_URI_CODE_TASK = 54;
-	private static final int GET_URI_CODE = 98;
-    public static final int IMPORT_FROM_GALLERY_CODE = 43;
-
-    private BroadcastReceiver receiver;
-    public MainFragment mainFragment;
-	private LockFragment lockFragment;
-	private DrawerLayout drawerLayout;
-	private SettingFragment settingFragment;
-	private NavigationView navigationView;
-	private Fragment oldFrag;
-    private SharedPreferences sharedPreferences;
-	private int position;
-	private static MainActivity instance;
-	private AdView adview;
-	//private InterstitialAd interstitial;
-
-    public static MainActivity getInstance() {
-		return instance;
-	}
-
-    public static final String ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS";
-
-	public void setupToolbar(Toolbar toolbar, CharSequence title) {
-		setSupportActionBar(toolbar);
-		getSupportActionBar().setTitle(title);
-		getSupportActionBar().setDisplayShowHomeEnabled(false);
-
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.abc_action_bar_home_description);
-		toggle.syncState();
-		drawerLayout.setDrawerListener(toggle);
-	}
-
+    
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         this.instance = this;

@@ -57,13 +57,13 @@ public class VideoPlayerActivity extends MyCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.video_view_activity);
+        setContentView(R.layout.view_pager_layout);
         Intent intent = getIntent();
         choice = intent.getExtras().getInt("position");
         ArrayList<String> filesPath = intent.getStringArrayListExtra("filepath");
         fullscreen();
         pagerAdapter = new VideoPagerAdapter(getSupportFragmentManager(), filesPath);
-        viewPager = (ViewPager) findViewById(R.id.video_view_pager);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setAdapter(pagerAdapter);
         viewPager.setOnPageChangeListener(new MyPageListerner(pagerAdapter, choice));
         viewPager.setCurrentItem(choice);

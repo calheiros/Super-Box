@@ -12,7 +12,7 @@ import com.jefferson.application.br.R;
 
 public class CircleProgressView extends View {
 
-    private float progress;
+    private double progress;
     private RectF rect;
     private Paint progressPaint;
     private Paint backgroundPaint;
@@ -33,7 +33,7 @@ public class CircleProgressView extends View {
         super.onDraw(canvas);
         //canvas.drawColor(Color.BLACK);
         canvas.drawArc(rect, 144, 252, false, backgroundPaint);
-        canvas.drawArc(rect, 144, progress * 2.52f , false, progressPaint);
+        canvas.drawArc(rect, 144, (float) progress * 2.52f , false, progressPaint);
         //draw progress text
         RectF bounds = new RectF(rect);
         // measure text width
@@ -101,7 +101,7 @@ public class CircleProgressView extends View {
             return;
         }
         
-        float newProgress = Math.round((100 / (double)max) * (double)progress) ;
+        float newProgress = Math.round((100 / (double)max) * progress) ;
        
         if (newProgress != this.progress) {
             this.progress = newProgress;
@@ -109,7 +109,7 @@ public class CircleProgressView extends View {
         }
     }
 
-    public float getProgress() {
+    public double getProgress() {
         return progress;
     }
 

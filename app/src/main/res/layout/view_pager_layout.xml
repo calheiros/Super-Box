@@ -12,6 +12,6 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
-        android:id="@+id/video_view_pager"/>
+        android:id="@+id/view_pager"/>
     
 </LinearLayout>
