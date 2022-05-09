@@ -66,7 +66,7 @@ public class Storage extends DocumentUtil {
     }
 
     public static String getRecycleBinPath() {
-        File file = new File(getDefaultStorage(), ".trashed");
+        File file = new File(getDefaultStoragePath(), ".trashed");
         file.mkdirs();
         return file.getAbsolutePath();
     }
@@ -157,9 +157,9 @@ public class Storage extends DocumentUtil {
 
         switch (type) {
             case IMAGE:
-                return new File(getDefaultStorage(), IMAGE_DIR_NAME);
+                return new File(getDefaultStoragePath(), IMAGE_DIR_NAME);
             case VIDEO:
-                return new File(getDefaultStorage(), VIDEO_DIR_NAME);
+                return new File(getDefaultStoragePath(), VIDEO_DIR_NAME);
             default:
                 return null;
         }
@@ -183,7 +183,7 @@ public class Storage extends DocumentUtil {
         return -1;
     }
 
-    public static String getDefaultStorage() {
+    public static String getDefaultStoragePath() {
 		String storageLocation = getStorageLocation();
         String extPath = getExternalStorage();
 

@@ -24,7 +24,7 @@ import android.view.View.*;
 
 public class ImageDetailFragment extends Fragment implements OnTouchListener {
 
-	Jview mImageView;
+	JPhotoView mImageView;
 	private static String IMAGE_DATA_EXTRA = "image_data";
     View view;
 	private String mImageUri;
@@ -56,11 +56,11 @@ public class ImageDetailFragment extends Fragment implements OnTouchListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
         // Inflate and locate the main ImageView
-        final View v = inflater.inflate(R.layout.view_image, container, false);
+        // final View v = inflater.inflate(R.layout.view_image, container, false);
 		/*SimpleDraweeView draweeView =(SimpleDraweeView) v.findViewById(R.id.my_image_view);
          draweeView.setImageURI(Uri.parse("file://" + mImageUri));
          draweeView.setOnTouchListener(this);*/
-        return v;
+        return null;
     }
     @Override
 	public boolean onTouch(View view, MotionEvent event) {
@@ -81,9 +81,9 @@ public class ImageDetailFragment extends Fragment implements OnTouchListener {
 		public boolean onScale(ScaleGestureDetector detector) {
 			mScaleFactor *= detector.getScaleFactor();
 
-			if (mScaleFactor > 3)
+			if  (mScaleFactor > 3)
 				mScaleFactor = 3f;
-			if (mScaleFactor < 1)
+			if  (mScaleFactor < 1)
 				mScaleFactor = 1f;
 
 //			draweeView.setScaleX(mScaleFactor);
@@ -93,16 +93,16 @@ public class ImageDetailFragment extends Fragment implements OnTouchListener {
 
 	}
 	public class loadImage extends AsyncTask<Void, Void, Bitmap> {   
-	    Jview imageView;
+	    JPhotoView imageView;
 		String path;
 		Context context;
         ProgressDialog progD;
 		ProgressBar mProgress;
-        public loadImage(String path, Jview imageView, Context context) {
+        public loadImage(String path, JPhotoView imageView, Context context) {
 			this.path = path;
 			this.imageView = imageView;
             this.context = context;
-			mProgress = (ProgressBar)view.findViewById(R.id.viewImageProgress);
+			//mProgress = (ProgressBar)view.findViewById(R.id.viewImageProgress);
 		}
 
 		@Override
@@ -129,8 +129,8 @@ public class ImageDetailFragment extends Fragment implements OnTouchListener {
 				int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
 				Log.d("EXIF", "Exif: " + orientation);
 				Matrix matrix = new Matrix();
-                
-				if (orientation == 6) {
+
+				if  (orientation == 6) {
 					matrix.postRotate(90);
 				} else if (orientation == 3) {
 					matrix.postRotate(180);
@@ -140,13 +140,11 @@ public class ImageDetailFragment extends Fragment implements OnTouchListener {
 				bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.getWidth(), bmp.getHeight(), matrix, true); 
 
 			} catch (OutOfMemoryError e) {
-                
+
 			} catch (Exception e) {
-                
+
 			}
 		   	return bmp;
-
 		}
 	}
-
 }

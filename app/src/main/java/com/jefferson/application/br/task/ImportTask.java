@@ -104,7 +104,7 @@ public class ImportTask extends JTask {
     @Override
 	public void workingThread() {
 		long max = 0;
-        PathsData database = PathsData.getInstance(context, Storage.getDefaultStorage());
+        PathsData database = PathsData.getInstance(context, Storage.getDefaultStoragePath());
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(context);
 
         try {
@@ -113,7 +113,7 @@ public class ImportTask extends JTask {
                 max += file.length();
             }
             
-            File target = new File(Storage.getDefaultStorage());
+            File target = new File(Storage.getDefaultStoragePath());
 
             if ((target.getFreeSpace() < max)) {
                 sendUpdate(-2, context.getString(R.string.sem_espaco_aviso));

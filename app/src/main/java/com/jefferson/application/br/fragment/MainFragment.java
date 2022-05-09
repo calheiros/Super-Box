@@ -44,7 +44,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	public static final int GET_FILE = 35;
 
     private View fab;
-   
+
 	public MainFragment() {
 
 	}
@@ -52,8 +52,8 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		MainActivity main = (MainActivity)getActivity();
-        
-		if (view == null) {
+
+		if  (view == null) {
 			view = inflater.inflate(R.layout.main_fragment, null);
 			pagerAdapter = new pagerAdapter(getActivity().getSupportFragmentManager());
 			toolbar = view.findViewById(R.id.toolbar);
@@ -75,7 +75,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 			//view.findViewById(R.id.fab_create).setOnClickListener(this);
 			toogleTabIcon(0);
 		}
-        
+
 		main.setupToolbar(toolbar, getToolbarName(viewPager.getCurrentItem()));
         //setHasOptionsMenu(true);
 		return view;
@@ -106,20 +106,20 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
         //inflater.inflate(R.menu.menu_main_album, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
-   
+
     @Override
     public boolean onLongClick(View view) {
         AlbumFragment fragment = (AlbumFragment) pagerAdapter.getItem(viewPager.getCurrentItem());
         fragment.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER);
         return true;
     }
-    
+
     public void showSnackBar(String message, int length) {
         Snackbar.make(fab, message, length);
     }
 
     public void removeFolder(int folderPosition, int pagerPostion) {
-        if (pagerAdapter != null) {
+        if  (pagerAdapter != null) {
             AlbumFragment fragment = pagerAdapter.getItem(pagerPostion);
             fragment.removeFolder(folderPosition);
         }
@@ -128,7 +128,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     public int getPagerPosition() {
         return viewPager.getCurrentItem();
     }
-    
+
 	public void importFromGallery() {
 		Intent intent = new Intent(getContext(), ImportGalleryActivity.class);
 		intent.putExtra("position", viewPager.getCurrentItem());
@@ -143,20 +143,20 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     }
 
 	public void updateFragment(int id) {
-        if (pagerAdapter != null) {
+        if  (pagerAdapter != null) {
             pagerAdapter.update(id);
         }
     }
 
     public void updateAllFragments() {
-        
-        if (pagerAdapter != null){
-            for (int i =0; i< pagerAdapter.getCount(); i++) {
+
+        if  (pagerAdapter != null) {
+            for (int i =0; i < pagerAdapter.getCount(); i++) {
                 pagerAdapter.update(i);
             }
         }
     }
-   
+
 	@Override
 	public void onPageScrolled(int p1, float p2, int p3) {
 
@@ -204,7 +204,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		@Override
 		public AlbumFragment getItem(int position) {
 
-            if (fragments[position] == null) {
+            if  (fragments[position] == null) {
 			    fragments[position] = new AlbumFragment(position, MainFragment.this);
             }
             return fragments[position];
@@ -213,7 +213,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
         public void update(int position) {
 			AlbumFragment fragment = fragments[position];
 
-            if (fragment != null) {
+            if  (fragment != null) {
                 fragment.update();
 			    //notifyDataSetChanged();
             }
@@ -221,7 +221,6 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 
 		@Override
 		public int getCount() {
-
 			return SIZE;
 		}
 	}

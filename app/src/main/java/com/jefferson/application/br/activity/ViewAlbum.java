@@ -40,7 +40,7 @@ import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
-import com.stfalcon.frescoimageviewer.ImageViewer;
+//import com.stfalcon.frescoimageviewer.ImageViewer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -401,19 +401,15 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     for (MediaModel model : mAdapter.mListItemsModels) {
                         path.add(model.getPath());
                     }
-					new ImageViewer.Builder(this, Storage.toArrayString(path, true))
-						.setStartPosition(item_position)
-						.show();
+                    startPreviewActivity(ImagePreviewActivity.class, item_position, v);
+//					new ImageViewer.Builder(this, Storage.toArrayString(path, true))
+//						.setStartPosition(item_position)
+//						.show();
 					break;
 				case 1:
 					mClass = VideoPlayerActivity.class;
-					Intent intent = new Intent(getApplicationContext(), mClass);
-
-					intent.putExtra("position", item_position);
-					intent.putExtra("filepath", mAdapter.getListItemsPath());
-                    ActivityOptions opts = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()); // Request the activity be started, using the custom animation options.
-                    startActivityForResult(intent, VIDEO_PLAY_CODE, opts.toBundle());
-					break;
+                    startPreviewActivity(mClass, item_position, v);
+			    	break;
 			}
 			return;
 		}
@@ -422,6 +418,15 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		invalidateOptionsMenu();
 		switchIcon();
 	}
+
+    private void startPreviewActivity(Class<?> previewActivity, int position, View v) {
+        Intent intent = new Intent(this, previewActivity);
+        intent.putExtra("position", position);
+        intent.putExtra("filepath", mAdapter.getListItemsPath());
+        ActivityOptions opts = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()); // Request the activity be started, using the custom animation options.
+        startActivityForResult(intent, VIDEO_PLAY_CODE, opts.toBundle());
+//		
+    }
 
 	@Override
 	public boolean onItemLongClicked(int position) {
@@ -578,7 +583,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
         @Override
         public void run() {
-            PathsData database = PathsData.getInstance(ViewAlbum.this, Storage.getDefaultStorage());
+            PathsData database = PathsData.getInstance(ViewAlbum.this, Storage.getDefaultStoragePath());
 
             try {
                 for (final MediaModel model: list) {
@@ -653,7 +658,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 			this.mySimpleDialog = progress;
 			this.selectedItens = itens;
 			this.mUpdate = new ProgressThreadUpdate(mTransfer, mySimpleDialog);
-            this.database = PathsData.getInstance(ViewAlbum.this, Storage.getDefaultStorage());
+            this.database = PathsData.getInstance(ViewAlbum.this, Storage.getDefaultStoragePath());
 
 		}
 

@@ -36,7 +36,7 @@ public class DeleteFilesTask extends JTask {
 
     @Override
     public void workingThread() {
-        PathsData database = PathsData.getInstance(context, Storage.getDefaultStorage());
+        PathsData database = PathsData.getInstance(context, Storage.getDefaultStoragePath());
         try {
             for (String path : items) {
                 if (isInterrupted()) {

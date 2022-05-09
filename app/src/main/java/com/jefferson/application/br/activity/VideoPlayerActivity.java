@@ -151,6 +151,5 @@ public class VideoPlayerActivity extends MyCompatActivity {
         intent.putExtra("index", viewPager.getCurrentItem());
         setResult(RESULT_OK, intent);
         super.onBackPressed();
-
     }
 }

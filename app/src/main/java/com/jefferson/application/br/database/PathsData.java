@@ -190,7 +190,7 @@ public class PathsData extends SQLiteOpenHelper {
 		}
 
 		public static Folder getInstance(Context context) {
-            File file = new File(Storage.getDefaultStorage(), "database.db");
+            File file = new File(Storage.getDefaultStoragePath(), "database.db");
 			file.getParentFile().mkdirs();
             return new Folder(file.getAbsolutePath(), context);
 		}

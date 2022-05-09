@@ -390,7 +390,7 @@
             android:name=".activity.DeveloperActivity"/>
 
         <activity
-            android:name=".activity.Gallery_selection"
+            android:name=".activity.ImagePreviewActivity"
             android:excludeFromRecents="true"
             android:screenOrientation="portrait"
             android:theme="@style/MainTheme"/>
