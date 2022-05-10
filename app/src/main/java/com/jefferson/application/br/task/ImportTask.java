@@ -29,7 +29,7 @@ public class ImportTask extends JTask {
         revokeFinish(false);
         errorMessage.append(e.getMessage());
     }
-    
+
     public static final int PREPARATION_UPDATE = 1;
     public static final int PROGRESS_UPDATE = 2;
     private ArrayList<String> importedFilesPath = new ArrayList<>();
@@ -52,7 +52,7 @@ public class ImportTask extends JTask {
 		this.models = models;
 		this.mTransfer = new FileTransfer();
 	}
-    
+
     public int getFailuresCount() {
         return failuresCount;
     }
@@ -60,7 +60,7 @@ public class ImportTask extends JTask {
     public boolean isWaiting() {
         return waiting;
     }
-    
+
 	@Override
 	public void onBeingStarted() {
         if (listener != null) {
@@ -68,7 +68,7 @@ public class ImportTask extends JTask {
         }
 
     }
-    public Exception error(){
+    public Exception error() {
         return error;
     }
     @Override
@@ -103,7 +103,7 @@ public class ImportTask extends JTask {
 
     @Override
 	public void workingThread() {
-		long max = 0;
+		double max = 0;
         PathsData database = PathsData.getInstance(context, Storage.getDefaultStoragePath());
         PathsData.Folder folderDatabase = PathsData.Folder.getInstance(context);
 
@@ -112,7 +112,7 @@ public class ImportTask extends JTask {
                 File file = new File(resource.getResource());
                 max += file.length();
             }
-            
+
             File target = new File(Storage.getDefaultStoragePath());
 
             if ((target.getFreeSpace() < max)) {
@@ -122,8 +122,7 @@ public class ImportTask extends JTask {
 
             max /= 1024;
             sendUpdate(PROGRESS_UPDATE, null, null, max);
-            //mUpdate.setMax(max);
-            //mUpdate.start();
+
             watchTransfer = new WatchTransference(this, mTransfer);
             watchTransfer.start();
 
@@ -131,10 +130,10 @@ public class ImportTask extends JTask {
                 if (isInterrupted()) {
                     break;
                 }
- 
+
                 FileModel model = models.get(i);
                 File file = new File(model.getResource());
-                
+
                 if (!file.exists()) {
                     failuresCount++;
                     errorMessage.append("\n" + context.getString(R.string.erro) + " " + failuresCount + ": O arquivo \"" + file.getName() + "\" não existe!\n");
@@ -167,7 +166,7 @@ public class ImportTask extends JTask {
                 if (file.renameTo(destFile)) {
                     database.insertData(randomString, model.getResource());
                     importedFilesPath.add(file.getAbsolutePath());
-                    mTransfer.increment(destFile.length() / 1024);
+                    mTransfer.increment((double)destFile.length() / 1024d);
                     //Log.i(TAG, "Succesfully moved to: " + destFile);
                 } else {
                     InputStream inputStream = null;
@@ -200,9 +199,9 @@ public class ImportTask extends JTask {
                 }
                 sendUpdate(PREPARATION_UPDATE, (i + 1) - failuresCount, models.size());
             }
-            
+
         } finally {
-           database.close();
+            database.close();
         }
 	}
 
@@ -269,12 +268,12 @@ public class ImportTask extends JTask {
             super.run();
 
             while (task.status == JTask.Status.STARTED) {
+                task.sendUpdate(PROGRESS_UPDATE, null, transfer.getTransferedKilobytes(), null);
                 try {
                     sleep(50);
                 } catch (InterruptedException e) {
                     break;
                 }
-                task.sendUpdate(PROGRESS_UPDATE, null, transfer.getTransferedKbs(), null);
             }
         }
     }

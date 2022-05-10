@@ -33,17 +33,17 @@ import android.view.Menu;
 import android.support.design.widget.Snackbar;
 
 public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener, OnLongClickListener {
-
+    
+    public static final String UNIT_TEST_ID="ca-app-pub-3940256099942544/6300978111";
+    public static final String UNIT_ID="ca-app-pub-3062666120925607/7395488498";
+    public static final int GET_FILE = 35;
+    
 	private ViewPager viewPager;
 	private Toolbar toolbar;
 	private View view = null;
 	private pagerAdapter pagerAdapter;
     private TabLayout tabLayout;
-	public static final String UNIT_TEST_ID="ca-app-pub-3940256099942544/6300978111";
-	public static final String UNIT_ID="ca-app-pub-3062666120925607/7395488498";
-	public static final int GET_FILE = 35;
-
-    private View fab;
+	private View fab;
 
 	public MainFragment() {
 

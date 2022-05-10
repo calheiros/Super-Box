@@ -18,9 +18,8 @@ public class CircleProgressView extends View {
     private Paint backgroundPaint;
     private Paint textPaint;
     private int padding;
-    private long max;
+    private double max;
     private float progressWidth;
-
     private Paint percentPaint;
 
     public CircleProgressView(Context context, AttributeSet attrs) {
@@ -94,14 +93,14 @@ public class CircleProgressView extends View {
         rect.set(padding, padding, w - padding, h - padding);
     }
 
-    public void setProgress(long progress) {
+    public void setProgress(double progress) {
         
         if (max == 0) {
             this.progress = progress;
             return;
         }
         
-        float newProgress = Math.round((100 / (double)max) * progress) ;
+        float newProgress = Math.round((100d / max) * progress);
        
         if (newProgress != this.progress) {
             this.progress = newProgress;
@@ -112,8 +111,12 @@ public class CircleProgressView extends View {
     public double getProgress() {
         return progress;
     }
-
-    public void setMax(long max) {
+    
+    public double getMax() {
+        return max;
+    }
+    
+    public void setMax(double max) {
         this.max = max;
     }
 }

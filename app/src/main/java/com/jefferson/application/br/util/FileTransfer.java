@@ -11,21 +11,20 @@ public class FileTransfer {
 
 	private boolean running = true;
     private double kilobytes = 0;
-
-    public void increment(long length) {
+    public static final String OK = "_Ok";
+    
+    public void increment(double length) {
         this.kilobytes += length;
     }
 
-	public long getTransferedKbs() {
-		return (long)kilobytes;
+	public double getTransferedKilobytes() {
+		return kilobytes;
 	}
 
 	public static final class Error {
 		public final static String NO_LEFT_SPACE = "java.io.IOException: write failed: ENOSPC (No space left on device)";
 	}
-
-	public static final String OK = "_Ok";
-
+    
 	public String transferStream(InputStream inputStream, OutputStream outputStream) {
 
         try {
@@ -39,7 +38,7 @@ public class FileTransfer {
                     return OK;
                 }
                 outputStream.write(bArr, 0, read);
-                kilobytes += read / 1024;
+                kilobytes += (double)read / 1024d;
             }
         } catch (IOException e) {
 			return e.toString();
@@ -52,7 +51,6 @@ public class FileTransfer {
 	}
 
 	public boolean moveFile(File source, File dest) {
-
 		FileChannel sourceChannel = null;
 		FileChannel destChannel = null;
 	    try {
@@ -99,7 +97,6 @@ public class FileTransfer {
 			return true;
 		}
 		public boolean decryptFile(File res, File dest) {
-
 			return true;
 		}
 	}

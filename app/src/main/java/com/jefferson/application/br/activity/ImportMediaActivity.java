@@ -30,17 +30,16 @@ import android.text.TextUtils;
 
 public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpdatedListener, JTask.OnBeingStartedListener, JTask.OnFinishedListener {
 
+    public static final String TYPE_KEY = "type_key";
+    public static final String MEDIA_LIST_KEY = "media_list_key";
+    public static final String POSITION_KEY = "position_key";
+    public static final String PARENT_KEY = "parent_key";
+    
     private TextView prepareTextView;
     private CircleProgressView progressView;
     private TextView messageTextView;
     private ImportTask importTask;
     private ArrayList<String> mediaList;
-
-    public static final String TYPE_KEY = "type_key";
-    public static final String MEDIA_LIST_KEY = "media_list_key";
-    public static final String POSITION_KEY = "position_key";
-    public static final String PARENT_KEY = "parent_key";
-
     private MonoTypePrepareTask prepareTask;
     private TextView titleTextView;
     private ImportMediaActivity.AnimateProgressText animateText;
@@ -80,7 +79,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             String parent = intent.getStringExtra(PARENT_KEY);
             String type = intent.getStringExtra(TYPE_KEY);
             prepareTask = new MonoTypePrepareTask(this, mediaList, type, parent);
-            
+
             if (type != null) {
                 typeQuatityRes = type.equals(FileModel.IMAGE_TYPE) ? R.plurals.quantidade_imagem_total : R.plurals.quantidade_video_total;
             }
@@ -103,7 +102,6 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     }
 
     private void startImportTask(ArrayList<FileModel> data) {
-        
         importTask = new ImportTask(this, data , null);
         importTask.setOnUpdatedListener(this);
         importTask.setOnbeingStartedListener(this);
@@ -132,10 +130,9 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
 
     @Override
     public void onFinished() {
- 
         getWindow().clearFlags(flagKeepScreenOn);
         animateText.cancel();
-
+        
         Resources res = getResources();
         boolean criticalError = importTask.error() != null;
         int failures = importTask.getFailuresCount();
@@ -173,13 +170,12 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                 }
                 Object progress = values[2];
                 if (progress != null) {
-                    progressView.setProgress(progress);
+                    progressView.setProgress((double)progress);
                 }
                 Object max = values[3];
                 if (max != null) {
-                    progressView.setMax(max);
+                    progressView.setMax((double)max);
                 }
-                //progressView.setProgress(values[1]);
                 break;
         }
     }

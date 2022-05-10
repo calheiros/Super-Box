@@ -1,11 +1,13 @@
 package com.jefferson.application.br.fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
-import android.widget.Toast;
+import android.widget.ImageView;
+import com.bumptech.glide.Glide;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.jefferson.application.br.R;
@@ -18,6 +20,7 @@ public class ImagePreviewFragment extends Fragment {
     private View parentView;
     private String path;
     private SubsamplingScaleImageView imageView;
+    private ImageView gifView;
 
     public ImagePreviewFragment(String path) {
         this.path = path;
@@ -28,18 +31,26 @@ public class ImagePreviewFragment extends Fragment {
         if (parentView == null)  {
             parentView = inflater.inflate(R.layout.image_preview_layout, null);
             imageView = parentView.findViewById(R.id.imageView);
+            gifView = parentView.findViewById(R.id.gif_view);
+            PathsData database = PathsData.getInstance(getContext(), Storage.getDefaultStoragePath());
+            String originPath = originPath = database.getPath(new File(path).getName());
+            database.close();
+
+            if (originPath != null) {
+                String mimeType = getMimeType(originPath);
+                if (mimeType != null && mimeType.endsWith("/gif")) {
+                    Glide.with(getContext()).load("file://" + path).skipMemoryCache(true).into(gifView);
+                    return parentView;
+                } 
+            }
             imageView.setImage(ImageSource.uri(path));
-        }
-        PathsData database = PathsData.getInstance(getContext(), Storage.getDefaultStoragePath());
-        String originPath = database.getPath(new File(path).getName());
-        if (originPath != null) {
-            Toast.makeText(getContext(), "Memi type " + getMimeType(originPath), 1).show();
         }
         return parentView;
     }
 
     public static String getMimeType(String url) { 
-        String type = null; String extension = MimeTypeMap.getFileExtensionFromUrl(url); 
+        String type = null; 
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url); 
         if (extension != null) {
             type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         }
