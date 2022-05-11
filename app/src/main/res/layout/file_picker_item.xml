@@ -31,7 +31,7 @@
                     android:layout_height="55dp"/>
 
                 <ImageView
-                    android:id="@+id/layoutOverlay"
+                    android:id="@+id/folder_picker_check_overlay"
                     android:background="#9D000000"
                     android:src="@drawable/item_checked"
                     android:padding="10dp"
@@ -49,18 +49,20 @@
             android:layout_marginLeft="10dp">
 
             <TextView
-                android:textColor="?commonColorLight"
+                android:textColor="?attr/commonColorLight"
                 android:id="@+id/item_name"
                 android:textSize="17sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"/>
+                android:maxLines="1"
+                android:ellipsize="end"/>
 
             <TextView
-                android:textSize="12sp"
-                android:textStyle="bold"
+                android:textSize="13sp"
                 android:id="@+id/item_size"
-                android:textColor="?commonColorDark"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:textColor="?attr/commonColorDark"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 

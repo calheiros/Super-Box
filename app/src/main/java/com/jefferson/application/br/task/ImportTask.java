@@ -19,17 +19,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class ImportTask extends JTask {
-
+    
     private Exception error = null;
-
-    @Override
-    public void onException(Exception e) {
-        error = e;
-        failuresCount = 1;
-        revokeFinish(false);
-        errorMessage.append(e.getMessage());
-    }
-
     public static final int PREPARATION_UPDATE = 1;
     public static final int PROGRESS_UPDATE = 2;
     private ArrayList<String> importedFilesPath = new ArrayList<>();
@@ -52,7 +43,15 @@ public class ImportTask extends JTask {
 		this.models = models;
 		this.mTransfer = new FileTransfer();
 	}
-
+    
+    @Override
+    public void onException(Exception e) {
+        error = e;
+        failuresCount = 1;
+        revokeFinish(false);
+        errorMessage.append(e.getMessage());
+    }
+    
     public int getFailuresCount() {
         return failuresCount;
     }
@@ -66,8 +65,8 @@ public class ImportTask extends JTask {
         if (listener != null) {
             listener.onBeingStarted();
         }
-
     }
+    
     public Exception error() {
         return error;
     }
@@ -268,12 +267,11 @@ public class ImportTask extends JTask {
             super.run();
 
             while (task.status == JTask.Status.STARTED) {
-                task.sendUpdate(PROGRESS_UPDATE, null, transfer.getTransferedKilobytes(), null);
                 try {
                     sleep(50);
                 } catch (InterruptedException e) {
-                    break;
                 }
+                task.sendUpdate(PROGRESS_UPDATE, null, transfer.getTransferedKilobytes(), null);
             }
         }
     }

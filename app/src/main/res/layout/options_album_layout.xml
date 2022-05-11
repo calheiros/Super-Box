@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="?colorBackgroundDark"
+    android:id="@+id/lock_layout"
+    android:layout_alignParentBottom="true"
+    android:visibility="gone"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent">
+
+    <LinearLayout
+        android:background="?attr/selectableItemBackground"
+        android:layout_height="wrap_content"
+        android:id="@+id/unlockView"
+        android:layout_width="0dp"
+        android:layout_weight="1.0"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="5dp">
+
+        <ImageView
+            android:tint="?commonColor"
+            android:layout_height="28dp"
+            android:layout_width="28dp"
+            android:src="@drawable/ic_export"/>
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Export"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:textColor="?commonColor"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="?attr/selectableItemBackground"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1.0"
+        android:id="@+id/deleteView"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="5dp">
+        
+        <ImageView
+            android:tint="?commonColor"
+            android:layout_height="28dp"
+            android:layout_width="28dp"
+            android:src="@drawable/ic_delete_outline"/>
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Delete"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:textColor="?commonColor"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="?attr/selectableItemBackground"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1.0"
+        android:orientation="vertical"
+        android:id="@+id/moveView"
+        android:gravity="center"
+        android:padding="5dp">
+        
+        <ImageView
+            android:tint="?commonColor"
+            android:layout_height="28dp"
+            android:layout_width="28dp"
+            android:src="@drawable/ic_folder_move_outline"/>
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Move to"
+            android:maxLines="1"
+            android:includeFontPadding="false"
+            android:ellipsize="end"
+            android:textColor="?commonColor"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1.0"
+        android:background="?attr/selectableItemBackground"
+        android:orientation="vertical"
+        android:id="@+id/selectView"
+        android:gravity="center"
+        android:padding="5dp">
+        
+        <ImageView
+            android:tint="?commonColor"
+            android:layout_height="28dp"
+            android:layout_width="28dp"
+            android:id="@+id/selectImageView"
+            android:src="@drawable/ic_select_all"/>
+
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Select all"
+            android:id="@+id/options_album_selectTextView"
+            android:maxLines="1"
+            android:textColor="?commonColor"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:textSize="12sp"/>
+    </LinearLayout>
+
+</LinearLayout>

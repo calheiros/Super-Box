@@ -49,7 +49,7 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
         }
         ArrayList<String> mMovedArray;
         String folder;
-        SimpleDialog progress;
+        SimpleDialog dialog;
 
         public MoveFilesTask(FolderPicker filePicker, String str) {
             this.mMovedArray = new ArrayList<>();
@@ -58,22 +58,21 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
 
         @Override
         public void onBeingStarted() {
-            this.progress = new SimpleDialog(FolderPicker.this);
-            this.progress.setMax(paths.size());
-            this.progress.setTitle("Movendo...");
-			this.progress.setProgress(0);
-            this.progress.show();
+            this.dialog = new SimpleDialog(FolderPicker.this, SimpleDialog.PROGRESS_STYLE);
+            this.dialog.setMax(paths.size());
+            this.dialog.setTitle("Movendo...");
+			this.dialog.setProgress(0);
+            this.dialog.show();
         }
 
         @Override
         protected void onUpdated(Object[] objArr) {
-            this.progress.setProgress(((Integer) objArr[0]).intValue());
-
+            this.dialog.setProgress(((Integer) objArr[0]).intValue());
         }
 
         @Override
         public void onFinished() {
-            this.progress.dismiss();
+            this.dialog.dismiss();
 			Intent intent = new Intent();
 			intent.putExtra("moved_files", mMovedArray);
             setResult(RESULT_OK, intent);
@@ -89,7 +88,7 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
                 if (file.renameTo(newFile)) {
 					mMovedArray.add(str);
                 }
-                sendUpdate(progress.getProgress() + 1);
+                sendUpdate(dialog.getProgress() + 1);
             }
         }
     }
@@ -105,7 +104,7 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
         this.paths = getIntent().getStringArrayListExtra("selection");
         this.currentPath = getIntent().getStringExtra("current_path");
         // applyParentViewPadding(mListView);
-        this.filePickerAdapter = new FilePickerAdapter(getModels(this.position), this);
+        this.filePickerAdapter = new FilePickerAdapter(getModels(this.position), this, position);
         this.mListView.setAdapter(this.filePickerAdapter);
         this.mListView.setOnItemClickListener(this);
         setSupportActionBar(this.mToolbar);
@@ -134,11 +133,14 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
             slideUpAnimation.setInterpolator(new DecelerateInterpolator());
             fab.startAnimation(slideUpAnimation);
         }
-
-        Animation anim = AnimationUtils.loadAnimation(FolderPicker.this, R.anim.fade_in);
-        anim.setDuration(250);
-        view.startAnimation(anim);
-        filePickerAdapter.setSelectedItem(i);
+        
+        if (selectedItem != i) {
+            View overlay = view.findViewById(R.id.folder_picker_check_overlay);
+            Animation anim = AnimationUtils.loadAnimation(FolderPicker.this, R.anim.fade_in);
+            anim.setDuration(250);
+            overlay.startAnimation(anim);
+            filePickerAdapter.setSelectedItem(i);
+        }
     }
 
     public void update() {

@@ -28,34 +28,70 @@
 		android:padding="1dp"/>
 
 	<LinearLayout
-		android:layout_height="45dp"
+		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
 		android:background="?colorBackgroundDark"
 		android:gravity="center_vertical">
 
-			<ImageView
-                android:background="?attr/selectableItemBackground"
-                android:tint="?commonColor"
-				android:layout_height="wrap_content"
-                android:gravity="center"
-                android:padding="6dp"
-                android:id="@+id/gallery_selection_lock_view"
-				android:layout_width="wrap_content"
-                android:layout_weight="1.0"
-				android:src="@drawable/ic_add_lock"/>
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1.0"
+            android:background="?attr/selectableItemBackground"
+            android:orientation="vertical"
+            android:id="@+id/importView"
+            android:gravity="center"
+            android:padding="5dp">
 
-			<ImageView
-                android:background="?attr/selectableItemBackground"
+            <ImageView
                 android:tint="?commonColor"
-				android:layout_height="wrap_content"
-				android:layout_width="wrap_content"
-                android:layout_weight="1.0"
-                android:gravity="center"
-                android:padding="6dp"
-				android:id="@+id/ic_seletctAll"
-				android:src="@drawable/ic_select_all"/>
+                android:layout_height="28dp"
+                android:layout_width="28dp"
+                android:id="@+id/importImageView"
+                android:src="@drawable/ic_import"/>
+            
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Import"
+                android:id="@+id/options_album_selectTextView"
+                android:maxLines="1"
+                android:textColor="?commonColor"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:textSize="12sp"/>
+        </LinearLayout>
 
-	</LinearLayout>
+        <LinearLayout
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1.0"
+            android:background="?attr/selectableItemBackground"
+            android:orientation="vertical"
+            android:id="@+id/selectView"
+            android:gravity="center"
+            android:padding="5dp">
+
+            <ImageView
+                android:tint="?commonColor"
+                android:layout_height="28dp"
+                android:layout_width="28dp"
+                android:id="@+id/selectImageView"
+                android:src="@drawable/ic_select_all"/>
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="Select all"
+                android:id="@+id/options_selectTextView"
+                android:maxLines="1"
+                android:textColor="?commonColor"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:textSize="12sp"/>
+        </LinearLayout>
+        
+    </LinearLayout>
 
 </LinearLayout>
 

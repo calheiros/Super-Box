@@ -3,7 +3,6 @@ package com.jefferson.application.br.activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
@@ -23,7 +22,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.RelativeLayout.LayoutParams;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
@@ -40,7 +39,6 @@ import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
-//import com.stfalcon.frescoimageviewer.ImageViewer;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -72,6 +70,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private static final int CHANGE_DIRECTORY_CODE = 3;
     private static final int IMPORT_FROM_GALLLERY_CODE = 6;
     private String baseNameDirectory = null;
+    private TextView selectAllTextView;
+    private ImageView selectImageView;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -96,6 +96,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		mViewUnlock = findViewById(R.id.unlockView);
 		mViewDelete = findViewById(R.id.deleteView);
 		mViewSelect = findViewById(R.id.selectView);
+        selectAllTextView = findViewById(R.id.options_album_selectTextView);
+        selectImageView = findViewById(R.id.selectImageView);
 		mViewMove = findViewById(R.id.moveView);
         emptyView = findViewById(R.id.view_album_empty_view);
 
@@ -453,7 +455,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 	}
 
 	private void switchIcon() {
-		((ImageView)mViewSelect).setImageResource(mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size() ? R.drawable.ic_select : R.drawable.ic_select_all);
+        boolean allSelected = mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size();
+        String text = allSelected ? "Unselect all" : "Select all";
+        selectAllTextView.setText(text);
+		selectImageView.setImageResource(allSelected ? R.drawable.ic_select : R.drawable.ic_select_all);
 	}
 
     public void enterSeletionMode() {

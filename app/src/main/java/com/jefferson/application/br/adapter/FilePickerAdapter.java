@@ -24,10 +24,12 @@ public class FilePickerAdapter extends BaseAdapter {
     private LayoutInflater mLayoutInflater;
     public List<PickerModel> models;
     private int selectedItem = -1;
+    private int itemType;
     
-    public FilePickerAdapter(List<PickerModel> list, Context context) {
+    public FilePickerAdapter(List<PickerModel> list, Context context, int itemType) {
         this.context = context;
         this.models = list;
+        this.itemType = itemType;
         this.mLayoutInflater = (LayoutInflater) context.getSystemService("layout_inflater");
             
     }
@@ -69,26 +71,27 @@ public class FilePickerAdapter extends BaseAdapter {
         ImageView imageView = view.findViewById(R.id.tumbView);
         TextView textView = view.findViewById(R.id.item_name);
         TextView textView2 = view.findViewById(R.id.item_size);
-        View overlay = view.findViewById(R.id.layoutOverlay);
+        View overlay = view.findViewById(R.id.folder_picker_check_overlay);
         PickerModel pickerModel = models.get(position);
         boolean selected = position == getSelectedItem();
         
-        int color = 0;
+        int color = selected ? ContextCompat.getColor(context, R.color.colorAccent) : getAttrCommonColor();
+        int size = pickerModel.getSize();
+        int resId = itemType == 1? R.plurals.video_total_plural: R.plurals.imagem_total_plural;
+        String folderSize = context.getResources().getQuantityString(resId, size, size);
         
-        if(selected) {
-           color = ContextCompat.getColor(context, R.color.colorAccent);
-        } else {
-            TypedValue typedValue = new TypedValue(); 
-            Resources.Theme theme = context.getTheme();
-            theme.resolveAttribute(R.attr.commonColor, typedValue, true);
-            color = typedValue.data; 
-        }
         overlay.setVisibility(selected ? View.VISIBLE : View.GONE);
-        
         textView.setTextColor(color);
         textView.setText(pickerModel.getName());
-        textView2.setText(String.valueOf(pickerModel.getSize()));
+        textView2.setText(String.valueOf(folderSize));
         Glide.with(context).load("file://" + pickerModel.getTumbPath()).centerCrop().into(imageView);
         return view;
+    }
+
+    private int getAttrCommonColor() {
+        TypedValue typedValue = new TypedValue();
+        Resources.Theme theme = context.getTheme();
+        theme.resolveAttribute(R.attr.commonColorLight, typedValue, true);
+        return typedValue.data; 
     }
 }

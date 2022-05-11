@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <resources>
     <string name="erro_critico">Um erro crítico ocorrido!</string>
+    <plurals name="imagem_total_plural">
+        <item quantity="one">%1$d imagem</item>
+        <item quantity="other">%1$d imagens</item>
+    </plurals>
+    
+    <plurals name="video_total_plural">
+        <item quantity="one">%1$d vídeo</item>
+        <item quantity="other">%1$d vídeos</item>
+    </plurals>
     
     <plurals name="falha_plural">
         <item quantity="one">%1$d falha</item>
