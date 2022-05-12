@@ -8,7 +8,6 @@ import android.view.View.*;
 import android.widget.*;
 import com.jefferson.application.br.activity.MyCompatActivity;
 import java.util.*;
-
 import android.support.v7.widget.Toolbar;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.model.MediaModel;

@@ -23,26 +23,24 @@ public class ImagePreviewActivity extends MyCompatActivity {
         Intent intent = getIntent();
         int position = intent.getExtras().getInt("position");
         filepath = intent.getStringArrayListExtra("filepath");
-        ImagePagerAdapter PagerAdapter = new ImagePagerAdapter(getSupportFragmentManager(), filepath.size());
+        ImagePagerAdapter PagerAdapter = new ImagePagerAdapter(getSupportFragmentManager());
         viewPager.setAdapter(PagerAdapter);
         viewPager.setOffscreenPageLimit(4);
         viewPager.setPageMargin(20);
         viewPager.setCurrentItem(position);
-
+        
         getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN);
     }
 
     private class ImagePagerAdapter extends FragmentStatePagerAdapter {
-        private final int mSize;
-
-        public ImagePagerAdapter(FragmentManager fm, int size) {
+        
+        public ImagePagerAdapter(FragmentManager fm) {
             super(fm);
-            mSize = size;
         }
 
         @Override
         public int getCount() {
-            return mSize;
+            return filepath.size();
         }
 
         @Override

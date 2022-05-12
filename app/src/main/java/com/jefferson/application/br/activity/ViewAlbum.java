@@ -496,7 +496,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 			mAdapter.clearSelection();
         }
 
-        menuLayout.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_down));
+        menuLayout.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_bottom));
 		menuLayout.setVisibility(View.GONE);
         int dimen = (int)getResources().getDimension(R.dimen.recycler_view_padding);
         mRecyclerView.setPadding(dimen, dimen, dimen, dimen);

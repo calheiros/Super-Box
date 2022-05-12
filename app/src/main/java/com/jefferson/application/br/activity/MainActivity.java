@@ -508,6 +508,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
     @Override
     public void onDestroy() {
+        instance = null;
         adview.destroy();
 
         if (receiver != null) {

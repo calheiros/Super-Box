@@ -33,30 +33,39 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
         }
         return null;
     }
-
-    public void insertItem(FolderModel item) {
-        models.add(item);
-        Collections.sort(models, new Comparator<FolderModel>() {
+    
+    public void sortModels(ArrayList<FolderModel> list) {
+        Collections.sort(list, new Comparator<FolderModel>() {
                 @Override public int compare(FolderModel o1, FolderModel o2) { 
                     return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase()); 
                 } 
             }
         );
-        int position = models.indexOf(item);
-        fragment.scrollTo(position);
-        notifyItemInserted(position);
+    }
+    
+    public void insertItem(FolderModel item) {
+        models.add(item);
+        sortModels(models);
+        notifyDataSetChanged();
         
+        int position = models.indexOf(item);
+        if (position != -1) {
+            fragment.scrollTo(position);
+        }
     }
 
-    public void insertItem(FolderModel model, int position) {
+    private void insertItem(FolderModel model, int position) {
         models.add(position, model);
         notifyItemInserted(position);
+        
     }
 
     public void removeItem(int position) {
         if (position >= 0 && position < getItemCount()) {
             models.remove(position);
             notifyItemRemoved(position);
+        } else {
+            Toast.makeText(App.getAppContext(), "Can not remove item at: " + position, 1).show();
         }
     }
 
@@ -78,7 +87,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
             models.remove(key);
             notifyItemRemoved(key);
         } else {
-            Toast.makeText(App.getAppContext(), "cannot find folder index!", 1).show();
+            Toast.makeText(App.getAppContext(), "Can not find folder index for item " + item.getName(), 1).show();
         }
     }
 
@@ -146,14 +155,14 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 							public void onClick(DialogInterface dInterface, int index) {
 
                                 if (index == 0) {
-									fragment.deleteAlbum(f_model);
+									fragment.deleteFolder(f_model);
 								} else {
                                     fragment.inputFolderDialog(f_model, fragment.ACTION_RENAME_FOLDER);
                                 }
 							}
 						}
                     );
-                    DialogUtils.configureRoudedDialog(builder.show());
+                    DialogUtils.configureDialog(builder.show());
 
 					return false;
 				}

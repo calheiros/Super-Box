@@ -375,7 +375,7 @@ public class AlbumFragment extends Fragment {
         }
     }
 
-    public void deleteAlbum(final FolderModel model) {
+    public void deleteFolder(final FolderModel model) {
         if (model == null) {
             return;
         }
@@ -407,7 +407,7 @@ public class AlbumFragment extends Fragment {
             }
         );
 		builder.setNegativeButton(getString(R.string.nao), null);
-        DialogUtils.configureRoudedDialog(builder.show());
+        DialogUtils.configureDialog(builder.show());
 	}
 
 	public void update() {

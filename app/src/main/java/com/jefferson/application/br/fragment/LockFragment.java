@@ -279,7 +279,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 
             alert.setNegativeButton(getString(android.R.string.cancel), null);
             AlertDialog alertDialog = alert.create();
-            DialogUtils.configureRoudedDialog(alertDialog);
+            DialogUtils.configureDialog(alertDialog);
             alertDialog.setCanceledOnTouchOutside(false);
             alertDialog.show();
         }

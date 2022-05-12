@@ -22,7 +22,7 @@ public class MyAlertDialog extends AlertDialog {
         @Override
         public AlertDialog create() {
             AlertDialog dialog = super.create();
-            DialogUtils.configureRoudedDialog(dialog);
+            DialogUtils.configureDialog(dialog);
             return dialog;
         }
     }

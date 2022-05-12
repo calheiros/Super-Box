@@ -239,7 +239,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
     private void showThemeDialog() {
         final CharSequence[] items = ThemeConfig.getThemeList(getContext());
-        AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
             .setTitle(getString(R.string.escolha_tema))
             .setItems(items, new DialogInterface.OnClickListener(){
 
@@ -252,19 +252,21 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     if (position != themeIndex) {
                         ThemeConfig.setThemeIndex(position);
                     }
-                   
+
                     if (needRefresh) {
                         refreshActivity();
-                    } else {
-                        //"Need to update description"
-                        updateItemDescription(PreferenceItem.ID.APP_THEME, items[position].toString());
-                    }
+                        return;
+                    } 
+                    //"Need to update description"
+                    updateItemDescription(PreferenceItem.ID.APP_THEME, items[position].toString());
                 }
-                
+
             }
         );
         //Toast.makeText(getContext(), "Dark mode " + ThemeConfig.isDarkThemeOn(getContext()), 1).show();
-        configureRoundedDialog(b.show());
+        AlertDialog dialog = builder.create();
+        configureDialog(dialog);
+        dialog.show();
     }
 
     @Override
@@ -278,8 +280,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         egg = 0;
     }
 
-    public void configureRoundedDialog(AlertDialog dialog) {
-        DialogUtils.configureRoudedDialog(dialog);
+    public void configureDialog(AlertDialog dialog) {
+        DialogUtils.configureDialog(dialog);
     }
 
     public void openGithub() {
@@ -328,7 +330,9 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             }
         );
         builder.setNegativeButton(getString(R.string.cancelar), null);
-        configureRoundedDialog(builder.show());
+        AlertDialog dialog = builder.create();
+        configureDialog(dialog);
+        dialog.show();
 	}
 
     private void refreshActivity() {
@@ -380,7 +384,9 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
 		builder.setNegativeButton(getString(R.string.cancelar), null);
 		builder.setView(view);
-        configureRoundedDialog(builder.show());
+        AlertDialog dialog = builder.create();
+        configureDialog(dialog);
+        dialog.show();
 	}
 
 	public int getComponentEnabledState(String componentName) {
@@ -467,9 +473,10 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 }
             );
         }
-        AlertDialog alert = build.show();
+        AlertDialog alert = build.create();
         alert.setCanceledOnTouchOutside(true);
-        configureRoundedDialog(alert);
+        configureDialog(alert);
+        alert.show();
     }
 
 	private void showWarning() {
@@ -495,7 +502,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
 	private void showLanguageDialog() {
         final CharSequence[] itens = { getString(R.string.padrao_do_sistema),"English", "Español", "Deutsch", "Português (Brasil)", "日本語"};
-        AlertDialog.Builder b = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
 			.setTitle(R.string.escolha_idioma)
 			.setItems(itens, new DialogInterface.OnClickListener(){
 
@@ -531,6 +538,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             }
         ); 
         //Toast.makeText(getContext(), Locale.getDefault().getLanguage(), 1).show();
-		configureRoundedDialog(b.show());
+		AlertDialog dialog = builder.create();
+        configureDialog(dialog);
+        dialog.show();
 	}
 }

@@ -25,7 +25,6 @@ public class SimpleDialog  {
 
 	public static final int PROGRESS_STYLE = 123;
 	public static final int ALERT_STYLE = 321;
-
     private ViewGroup parentView;
 	private NumberProgressBar progressBar;
 	private TextView contentText;
@@ -90,14 +89,12 @@ public class SimpleDialog  {
 	}
 
     public SimpleDialog setSingleLineMessage(boolean single) {
-        //contentText.setSingleLine(single);
-        if (single) { 
-            contentText.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-            contentText.setMaxLines(1);
-        } else {
-            contentText.setMaxLines(256);
-            contentText.setEllipsize(TextUtils.TruncateAt.END);
-        }
+        TextUtils.TruncateAt ellipsize = single ? TextUtils.TruncateAt.MIDDLE : TextUtils.TruncateAt.END;
+        int maxLines = single ? 1: 256;
+
+        contentText.setMaxLines(maxLines);
+        contentText.setEllipsize(ellipsize);
+        
         return this;
     }
 
@@ -159,12 +156,12 @@ public class SimpleDialog  {
         this.jdialog.setCancelable(false);
         return this;
     }
-    
+
     public void setPositiveButton(int stringId, OnDialogClickListener listener) {
-      setPositiveButton(context.getString(stringId), listener);
-        
+        setPositiveButton(context.getString(stringId), listener);
+
     }
-    
+
     public void setNegativeButton(int stringId, OnDialogClickListener listener) {
         setNegativeButton(context.getString(stringId), listener);
     }
@@ -289,7 +286,7 @@ public class SimpleDialog  {
             Window window = getWindow();
             window.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT)); 
             window.setBackgroundDrawableResource(R.drawable.dialog_bg_inset); 
-
+            window.getAttributes().windowAnimations = R.style.DialogAnimation;
             if (requestKeyboard) {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_ALT_FOCUSABLE_IM);
                 window.setSoftInputMode(LayoutParams.SOFT_INPUT_STATE_VISIBLE);
@@ -309,7 +306,7 @@ public class SimpleDialog  {
             dismissed = true;
         }
     }
-   
+
 	abstract public static class OnDialogClickListener {
 	    public abstract boolean onClick(SimpleDialog dialog);
 	}
