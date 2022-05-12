@@ -60,7 +60,7 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
         public void onBeingStarted() {
             this.dialog = new SimpleDialog(FolderPicker.this, SimpleDialog.PROGRESS_STYLE);
             this.dialog.setMax(paths.size());
-            this.dialog.setTitle("Movendo...");
+            this.dialog.setTitle(getString(R.string.movendo));
 			this.dialog.setProgress(0);
             this.dialog.show();
         }
@@ -145,6 +145,8 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
 
     public void update() {
         this.filePickerAdapter.update(getModels(this.position));
+        MainActivity mainActivity = MainActivity.getInstance();
+        mainActivity.updateFragment(position);
     }
 
     public void createFolder() {
