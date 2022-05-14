@@ -10,12 +10,15 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
@@ -26,7 +29,6 @@ import com.jefferson.application.br.task.MonoTypePrepareTask;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.view.CircleProgressView;
 import java.util.ArrayList;
-import android.text.TextUtils;
 
 public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpdatedListener, JTask.OnBeingStartedListener, JTask.OnFinishedListener {
 
@@ -34,7 +36,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     public static final String MEDIA_LIST_KEY = "media_list_key";
     public static final String POSITION_KEY = "position_key";
     public static final String PARENT_KEY = "parent_key";
-    
+
     private TextView prepareTextView;
     private CircleProgressView progressView;
     private TextView messageTextView;
@@ -65,9 +67,13 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         titleTextView = findViewById(R.id.import_media_title_move_text_view);
         progressView = findViewById(R.id.circle_progress_view);
         button = findViewById(R.id.import_media_button);
-        adview = (AdView)findViewById(R.id.ad_view);
+        //adview = (AdView) findViewById(R.id.ad_view);
+        adview = new AdView(this);
+        adview.setAdSize(new AdSize(300, 300));
+        adview.setAdUnitId("ca-app-pub-3062666120925607/7395488498");
+        ((FrameLayout)findViewById(R.id.ad_view_layout)).addView(adview);
         adview.loadAd(new AdRequest.Builder().build());
-
+        
         Intent intent = getIntent();
         ArrayList <FileModel> data = null;
 
@@ -132,7 +138,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     public void onFinished() {
         getWindow().clearFlags(flagKeepScreenOn);
         animateText.cancel();
-        
+
         Resources res = getResources();
         boolean criticalError = importTask.error() != null;
         int failures = importTask.getFailuresCount();
@@ -196,7 +202,6 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     protected void onDestroy() {
         super.onDestroy();
         adview.destroy();
-        //interruptTask();
     }
 
     @Override

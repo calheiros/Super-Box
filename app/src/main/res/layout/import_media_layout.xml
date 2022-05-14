@@ -71,19 +71,28 @@
 
     </RelativeLayout>
     
-   
-    <com.google.android.gms.ads.AdView
+    <FrameLayout
         android:layout_below="@+id/import_media_layoutRelativeLayout"
         android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
-        android:id="@+id/ad_view"
+        android:id="@+id/ad_view_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        app:adSize="LARGE_BANNER"
-        android:layout_marginBottom="34dp"
-        app:adUnitId="ca-app-pub-3062666120925607/7395488498"/>
-    
+        android:layout_marginBottom="34dp"/>
+
+    <!--<com.google.android.gms.ads.AdView
+    android:layout_below="@+id/import_media_layoutRelativeLayout"
+    android:layout_marginTop="20dp"
+    android:layout_centerHorizontal="true"
+    android:id="@+id/ad_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    app:adSize="LARGE_BANNER"
+    android:layout_marginBottom="34dp"
+    app:adUnitId="ca-app-pub-3062666120925607/7395488498"/>
+    -->   
     <Button
         style="?android:attr/borderlessButtonStyle"
         android:background="@drawable/bg_rounded_transparent_button"
@@ -98,6 +107,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@android:string/cancel"/>
-    
+
 </RelativeLayout>
 

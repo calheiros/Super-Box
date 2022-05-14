@@ -1,6 +1,5 @@
 package com.jefferson.application.br.activity;
 
-import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -27,14 +26,10 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.fragment.LockFragment;
 import com.jefferson.application.br.fragment.MainFragment;
@@ -53,8 +48,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener {
 
-    private MonoTypePrepareTask preparationTask;
-
     private void updateCurrentFragment() {
         if (mainFragment != null) {
             int pagerPosition =  mainFragment.getPagerPosition();
@@ -68,7 +61,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     private static final int GET_URI_CODE_TASK = 54;
 	private static final int GET_URI_CODE = 98;
     public static final int IMPORT_FROM_GALLERY_CODE = 43;
-
+    
     private BroadcastReceiver receiver;
     public MainFragment mainFragment;
 	private LockFragment lockFragment;
