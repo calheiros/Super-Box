@@ -288,7 +288,8 @@ public class AlbumFragment extends Fragment {
                     return success;
                 }
             }
-        ).setNegativeButton(getString(R.string.cancelar), null).show();
+        ).setNegativeButton(getString(R.string.cancelar), null)
+            .show();
     }
 
     public static boolean renameFolder(Context context, FolderModel model, String newName, int position) {

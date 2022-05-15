@@ -85,7 +85,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             String parent = intent.getStringExtra(PARENT_KEY);
             String type = intent.getStringExtra(TYPE_KEY);
             prepareTask = new MonoTypePrepareTask(this, mediaList, type, parent);
-
+            
             if (type != null) {
                 typeQuatityRes = type.equals(FileModel.IMAGE_TYPE) ? R.plurals.quantidade_imagem_total : R.plurals.quantidade_video_total;
             }
@@ -104,6 +104,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                 }
             );
             prepareTask.start();
+            prepareTitleView.setText("Checking");
         }
     }
 
