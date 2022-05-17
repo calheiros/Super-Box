@@ -282,9 +282,9 @@ public class AlbumFragment extends Fragment {
                     /* if (!success) {
                      //populateReciclerView();
                      }*/
-                    ((MainActivity)getActivity()).showSnackBar(message, Snackbar.LENGTH_SHORT);
+                    //((MainActivity)getActivity()).showSnackBar(message, Snackbar.LENGTH_SHORT);
                     notifyDataUpdated();
-                    Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
                     return success;
                 }
             }

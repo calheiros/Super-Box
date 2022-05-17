@@ -143,7 +143,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         Resources res = getResources();
         boolean criticalError = importTask.error() != null;
         int failures = importTask.getFailuresCount();
-        int color = failures > 0  ? ContextCompat.getColor(this, R.color.red): getAttrColor(R.attr.commonColorDark) ;
+        int color = failures > 0  ? ContextCompat.getColor(this, R.color.red): getAttrColor(R.attr.commonColor) ;
         String msg = criticalError ? getString(R.string.erro_critico) : failures > 0 ? res.getQuantityString(
             R.plurals.falha_plural, failures, failures) : getString(R.string.transferencia_sucesso);
 

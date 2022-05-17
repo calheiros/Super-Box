@@ -31,7 +31,7 @@
             android:gravity="center"
             android:textSize="20sp"
             android:layout_marginTop="8dp"
-            android:textColor="?commonColor"
+            android:textColor="?commonColorLight"
             android:textStyle="bold"
             android:id="@+id/import_media_title_preparation_text_view"/>
 
@@ -41,8 +41,8 @@
             android:gravity="center"
             android:layout_marginTop="4dp"
             android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:textColor="?commonColorDark"
+            android:textSize="16sp"
+            android:textColor="?commonColor"
             android:id="@+id/import_media_prepare_text_view"/>
 
         <TextView
@@ -51,8 +51,8 @@
             android:text="Moving"
             android:textSize="20sp"
             android:gravity="center"
-            android:layout_marginTop="10dp"
-            android:textColor="?commonColor"
+            android:layout_marginTop="12dp"
+            android:textColor="?commonColorLight"
             android:textStyle="bold"
             android:id="@+id/import_media_title_move_text_view"/>
 
@@ -64,8 +64,8 @@
             android:layout_marginTop="4dp"
             android:maxLines="1"
             android:ellipsize="middle"
-            android:textSize="17sp"
-            android:textColor="?commonColorDark"
+            android:textSize="16sp"
+            android:textColor="?commonColor"
             android:id="@+id/import_media_message_text_view"/>
 
     </RelativeLayout>
