@@ -178,7 +178,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     }
 
 	private void createAdView() {
-        
         adview = (AdView)findViewById(R.id.ad_view);
 		adview.loadAd(new AdRequest.Builder().build());
 	}

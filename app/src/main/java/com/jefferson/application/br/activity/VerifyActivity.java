@@ -22,6 +22,8 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.PasswordManager;
 import java.util.List;
 import android.widget.Toast;
+import android.hardware.biometrics.BiometricPrompt;
+import android.hardware.biometrics.BiometricPrompt.Builder;
 
 public class VerifyActivity extends MyCompatActivity {  
 
@@ -47,7 +49,6 @@ public class VerifyActivity extends MyCompatActivity {
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-
         setContentView(R.layout.pattern);
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
 //        View parent = findViewById(R.id.patternRelativeLayout);
@@ -56,7 +57,14 @@ public class VerifyActivity extends MyCompatActivity {
 //        theme.resolveAttribute(R.attr.colorPrimary, typedValue, true);
 //        int color = typedValue.data;
 //        parent.setBackgroundColor(color);
-//
+
+        
+//      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+//          
+//        BiometricPrompt.Builder promptInfo = new BiometricPrompt.Builder(this);
+//        promptInfo.setTitle("Unlock Super Box");
+//        promptInfo.build().authenticate(null);
+//        }
 		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
 
