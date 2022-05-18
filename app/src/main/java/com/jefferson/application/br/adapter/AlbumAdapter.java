@@ -107,11 +107,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 		holder.tv_foldersize.setText(String.valueOf(f_model.getItems().size()));
         boolean isEmpty = f_model.getItems().isEmpty();
 
-        /*if (pagerPosition == 1) {
-         holder.smallView.setVisibility(View.VISIBLE);
-         holder.smallView.setImageResource(R.drawable.ic_play_box_outline);
-         }*/
-
 		if (!isEmpty) {
             holder.smallView.setVisibility(View.GONE);
 			Glide.with(fragment).load("file://" + f_model.getItems().get(0).getPath())
@@ -162,8 +157,10 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 							}
 						}
                     );
-                    DialogUtils.configureDialog(builder.show());
-
+                    AlertDialog dialog =  builder.create();
+                    DialogUtils.configureDialog(dialog);
+                    dialog.show();
+                    
 					return false;
 				}
 			}

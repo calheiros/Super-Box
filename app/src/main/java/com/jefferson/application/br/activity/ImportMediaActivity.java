@@ -2,6 +2,7 @@ package com.jefferson.application.br.activity;
 
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -59,8 +60,11 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.import_media_layout);
         getWindow().addFlags(flagKeepScreenOn);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-
+        
+        if (Build.VERSION.SDK_INT >= 21) { 
+            setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         prepareTitleView = findViewById(R.id.import_media_title_preparation_text_view);
         prepareTextView = findViewById(R.id.import_media_prepare_text_view);
         messageTextView = findViewById(R.id.import_media_message_text_view);
