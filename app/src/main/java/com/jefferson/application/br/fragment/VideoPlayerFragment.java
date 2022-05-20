@@ -24,6 +24,7 @@ import java.io.File;
 import com.jefferson.application.br.util.JDebug;
 import com.bumptech.glide.Glide;
 import com.jefferson.application.br.ui.JVideoController;
+import android.view.animation.AnimationUtils;
 
 public class VideoPlayerFragment extends Fragment implements OnClickListener, JVideoController.OnButtonPressedListener {
 
@@ -141,6 +142,7 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
 
         if (mThumbView != null && mThumbView.getVisibility() != View.GONE) {
             mThumbView.setVisibility(View.GONE);
+            mThumbView.startAnimation(AnimationUtils.loadAnimation(getContext(), R.anim.fade_out));
         }
     }
 
