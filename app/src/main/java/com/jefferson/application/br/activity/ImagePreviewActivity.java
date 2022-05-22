@@ -56,5 +56,4 @@ public class ImagePreviewActivity extends MyCompatActivity {
         setResult(RESULT_OK, intent);
         super.onBackPressed();
     }
-    
 }

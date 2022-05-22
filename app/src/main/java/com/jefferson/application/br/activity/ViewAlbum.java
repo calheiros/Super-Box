@@ -301,7 +301,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 case CHANGE_DIRECTORY_CODE:
                     exitSelectionMode();
                     ArrayList<String> list = data.getStringArrayListExtra("moved_files");
-                    Snackbar.make(mRecyclerView, list.size() + " file(s) moved", Snackbar.LENGTH_SHORT).show();
+                    Toast.makeText(this, list.size() + " file(s) moved", Toast.LENGTH_SHORT).show();
                     mAdapter.removeAll(list);
                     synchronizeMainActivity();
                     break;
@@ -548,7 +548,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             if (threadInterrupted  && !mAdapter.mListItemsModels.isEmpty()) {
                 updateRecyclerView();
             }
-
 			synchronizeMainActivity();
 		}
 
@@ -646,6 +645,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
 	public class ExportTask extends JTask {
+        
+        private static final String ACTION_UPDATE_ADAPTER = "action_update";
+        
         private boolean allowListModification = true;
 		private SimpleDialog mySimpleDialog;
 		private List<String> selectedItens;
@@ -653,10 +655,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		private FileTransfer mTransfer = new FileTransfer();
 		private ProgressThreadUpdate mUpdate;
 		private ArrayList<String> junkList= new ArrayList<>();
-		private static final String ACTION_UPDATE_ADAPTER = "action_update";
-        //private static final String ACTION_ADD_JUNK = "action_add_junk";
-        private PathsData database;
-
+	    private PathsData database;
         private String TAG = "ExportTask";
 
 		public ExportTask(List<String> itens, SimpleDialog progress) {
@@ -753,7 +752,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             if (myThread != null && myThread.isWorking()) {
                 myThread.stopWork();
             }
-
             //MainActivity.getInstance().prepareAd();
             mySimpleDialog.setStyle(SimpleDialog.PROGRESS_STYLE);
             mySimpleDialog.setTitle(getString(R.string.mover));
@@ -773,7 +771,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
         @Override
         protected void onUpdated(Object[] get) {
-
             if (ACTION_UPDATE_ADAPTER.equals(get[0])) {
                 updateAdapter();
             } else {
@@ -795,7 +792,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         private String getAlternativePath(int type) {
-
             File file = new File(Environment.getExternalStoragePublicDirectory(type == 0 ?
                                                                                Environment.DIRECTORY_PICTURES: Environment.DIRECTORY_MOVIES), 
                                  StringUtils.getFormatedDate("yyyy.MM.dd 'at' HH:mm:ss z") + (type == 0 ? ".jpeg" : ".mp4"));

@@ -252,7 +252,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             settingFragment.setCalculatorEnabled(calculatorStateEnabled);
         }
 		changeFragment(startInSetting ? settingFragment: mainFragment);
-		//navigationView.getMenu().getItem(startInSetting ? 2 : 0).setChecked(true);
+		buttonNavigationView.getMenu().getItem(startInSetting ? 2 : 0).setChecked(true);
 	}
 
     private boolean isCalculatorComponentEnabled() {

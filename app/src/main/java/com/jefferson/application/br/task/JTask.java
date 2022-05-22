@@ -91,9 +91,8 @@ abstract public class JTask implements JTaskListener {
     }
 
     public void cancelTask() {
-        revokeFinish = true;
+        cancelled = true;
         workThread.interrupt();
-        sendState(STATE_TASK_CANCELLED);
     }
 
     public boolean isCancelled() {
@@ -115,7 +114,8 @@ abstract public class JTask implements JTaskListener {
                 revokeFinish(true);
                 sendState(STATE_EXCEPTION_CAUGHT);
             } finally {
-                sendState(STATE_FINISHED);
+                int state = cancelled ? STATE_TASK_CANCELLED : STATE_FINISHED;
+                sendState(state);
             }
         }
     }
@@ -141,8 +141,8 @@ abstract public class JTask implements JTaskListener {
     }
 
     public void interrupt() {
-        workThread.interrupt();
         interrupted = true;
+        workThread.interrupt();
         sendState(STATE_INTERRUPTED);
     }
 
