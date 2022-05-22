@@ -6,7 +6,17 @@
     android:gravity="center_horizontal|bottom"
     android:padding="5pt"
 	android:layout_height="match_parent">
-
+    
+    <TextView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:layout_marginBottom="5dp"
+        android:textSize="16sp"
+        android:textColor="@color/colorCommonLight"
+        android:id="@+id/calculator_hintTextView"
+        android:paddingTop="10dp"/>
+    
     <LinearLayout
         android:id="@+id/calculator_layoutLinearLayout"
         android:layout_width="match_parent"
@@ -24,17 +34,7 @@
             android:digits="1234567890+×÷-.,()"
             android:background="@android:color/transparent"/>
     </LinearLayout>
-
-    <TextView
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:gravity="center"
-        android:layout_marginBottom="5dp"
-        android:textSize="16sp"
-        android:textColor="@color/colorCommonLight"
-        android:id="@+id/calculator_hintTextView"
-        android:paddingHorizontal="10dp"/>
-
+    
     <TableLayout
         android:useDefaultMargins="true"
         android:layout_width="match_parent"

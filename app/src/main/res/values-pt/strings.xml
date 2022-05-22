@@ -71,7 +71,7 @@
     <string name="modo_secreto">Modo furtivo</string>
     <string name="codigo_discador">Código do discador</string>
     <string name="minha_caixa">Minha Caixa</string>
-    <string name="galeria">Galeria privada</string>
+    <string name="galeria">Galeria</string>
     <string name="preferecias_gerais">Preferecias gerais</string>
     <string name="preferecias_sobre">Sobre</string>
     <string name="preferecias_avancadas">Avançado</string>
@@ -86,7 +86,7 @@
 	<string name="erro">Erro</string>
 	<string name="confirmacao">Confirmação</string>
 	<string name="quer_realmente_sair">Você quer realmente sair?</string>
-	<string name="bloquear_apps">Bloquear apps</string>
+	<string name="bloquear_apps">Bloq. apps</string>
 	<string name="nao">Não</string>
 	<string name="salvar">Salvar</string>
     <string name="renomear">Renomear</string>
@@ -104,7 +104,7 @@
 	<string name="mudar_senha">Alterar senha</string>
 	<string name="escolha_idioma">Escolha seu idioma</string>
 	<string name="erro_info">Acima da versão de sistema operacional KITKAT o Safe Box pode não ter acesso nenhum ou ter acesso dificultado ao cartão de memória externo,  por isto, tenha certeza que as Imagens ou Videos que queira remover da galeria encontram-se na memória interna do dispositivo</string>
-	<string name="carregando">Carregando</string>
+	<string name="carregando">Carregando...</string>
 	<string name="Alert_obter_mais_seguranca">Obtenha mais segurança!</string>
 	<string name="Alert_mais_seguranca_corpo">Conceda a permissão PACKAGE_USAGE_STATS para maior segurança</string>
 	<string name="entre_em_contato">Entre em contato</string>

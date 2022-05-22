@@ -49,15 +49,15 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.calculator_layout);
         createCode = ACTION_CREATE_CODE.equals(getIntent().getAction());
-        editText = findViewById(R.id.calculator_layoutEditText);
-        resultButton = findViewById(R.id.calculator_result);
+        editText = (EditText) findViewById(R.id.calculator_layoutEditText);
+        resultButton = (Button) findViewById(R.id.calculator_result);
         resultButton.setOnLongClickListener(this);
         editText.setLongClickable(false);
         findViewById(R.id.calculator_backspaceButton).setOnLongClickListener(this);
         createOperatorMap();
 
         if (createCode) {
-            hintTextView = findViewById(R.id.calculator_hintTextView);
+            hintTextView = (TextView) findViewById(R.id.calculator_hintTextView);
             hintTextView.setText("Enter your code and press and hold the = button to confirm it.");
             //showTipDialog();
         }

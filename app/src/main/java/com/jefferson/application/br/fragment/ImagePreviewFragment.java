@@ -21,6 +21,7 @@ public class ImagePreviewFragment extends Fragment {
     private String path;
     private SubsamplingScaleImageView imageView;
     private ImageView gifView;
+    private View optionLayout;
 
     public ImagePreviewFragment(String path) {
         this.path = path;
@@ -32,6 +33,7 @@ public class ImagePreviewFragment extends Fragment {
             parentView = inflater.inflate(R.layout.image_preview_layout, null);
             imageView = parentView.findViewById(R.id.imageView);
             gifView = parentView.findViewById(R.id.gif_view);
+            optionLayout = parentView.findViewById(R.id.image_preview_options_layout);
             PathsData database = PathsData.getInstance(getContext(), Storage.getDefaultStoragePath());
             String originPath = originPath = database.getPath(new File(path).getName());
             database.close();
@@ -47,7 +49,12 @@ public class ImagePreviewFragment extends Fragment {
         }
         return parentView;
     }
-
+    
+    public void switchOptionsVisibility(View view) {
+        int visibility = optionLayout.getVisibility() == View.VISIBLE ? View.GONE: View.VISIBLE;
+        optionLayout.setVisibility(visibility);
+    }
+    
     public static String getMimeType(String url) { 
         String type = null; 
         String extension = MimeTypeMap.getFileExtensionFromUrl(url); 

@@ -65,12 +65,12 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-        prepareTitleView = findViewById(R.id.import_media_title_preparation_text_view);
-        prepareTextView = findViewById(R.id.import_media_prepare_text_view);
-        messageTextView = findViewById(R.id.import_media_message_text_view);
-        titleTextView = findViewById(R.id.import_media_title_move_text_view);
-        progressView = findViewById(R.id.circle_progress_view);
-        button = findViewById(R.id.import_media_button);
+        prepareTitleView = (TextView) findViewById(R.id.import_media_title_preparation_text_view);
+        prepareTextView = (TextView) findViewById(R.id.import_media_prepare_text_view);
+        messageTextView = (TextView) findViewById(R.id.import_media_message_text_view);
+        titleTextView = (TextView) findViewById(R.id.import_media_title_move_text_view);
+        progressView = (CircleProgressView) findViewById(R.id.circle_progress_view);
+        button = (Button) findViewById(R.id.import_media_button);
         //adview = (AdView) findViewById(R.id.ad_view);
         adview = new AdView(this);
         adview.setAdSize(new AdSize(300, 300));

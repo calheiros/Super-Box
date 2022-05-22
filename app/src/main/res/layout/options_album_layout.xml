@@ -19,19 +19,20 @@
         android:padding="5dp">
 
         <ImageView
-            android:tint="?commonColor"
+            android:tint="?commonColorLight"
             android:layout_height="28dp"
             android:layout_width="28dp"
             android:src="@drawable/ic_export"/>
 
         <TextView
+            android:layout_marginTop="2dp"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="Export"
             android:maxLines="1"
             android:ellipsize="end"
             android:includeFontPadding="false"
-            android:textColor="?commonColor"
+            android:textColor="?commonColorLight"
             android:textSize="12sp"/>
     </LinearLayout>
 
@@ -46,19 +47,20 @@
         android:padding="5dp">
         
         <ImageView
-            android:tint="?commonColor"
+            android:tint="?commonColorLight"
             android:layout_height="28dp"
             android:layout_width="28dp"
             android:src="@drawable/ic_delete_outline"/>
 
         <TextView
+            android:layout_marginTop="2dp"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="Delete"
             android:maxLines="1"
             android:ellipsize="end"
             android:includeFontPadding="false"
-            android:textColor="?commonColor"
+            android:textColor="?commonColorLight"
             android:textSize="12sp"/>
     </LinearLayout>
 
@@ -73,19 +75,20 @@
         android:padding="5dp">
         
         <ImageView
-            android:tint="?commonColor"
+            android:tint="?commonColorLight"
             android:layout_height="28dp"
             android:layout_width="28dp"
             android:src="@drawable/ic_folder_move_outline"/>
 
         <TextView
+            android:layout_marginTop="2dp"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="Move to"
             android:maxLines="1"
             android:includeFontPadding="false"
             android:ellipsize="end"
-            android:textColor="?commonColor"
+            android:textColor="?commonColorLight"
             android:textSize="12sp"/>
     </LinearLayout>
 
@@ -100,19 +103,20 @@
         android:padding="5dp">
         
         <ImageView
-            android:tint="?commonColor"
+            android:tint="?commonColorLight"
             android:layout_height="28dp"
             android:layout_width="28dp"
             android:id="@+id/selectImageView"
             android:src="@drawable/ic_select_all"/>
 
         <TextView
+            android:layout_marginTop="2dp"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:text="Select all"
             android:id="@+id/options_album_selectTextView"
             android:maxLines="1"
-            android:textColor="?commonColor"
+            android:textColor="?commonColorLight"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:textSize="12sp"/>

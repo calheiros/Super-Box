@@ -33,7 +33,7 @@
     <string name="unicode_look_of_disapproval">ಠ_ಠ</string>
     <string name="unicode_dead_face">(×_×)</string>
     <string name="unicode_shrug">¯\\_(ツ)_/¯</string>
-    <string name="galeria">Galería privada</string>
+    <string name="galeria">Galería</string>
     <string name="modo_secreto">Modo sigiloso</string>
     <string name="codigo_discador">Dialer code</string>
     <string name="apagar_mensagem">%s se eliminará de forma permanente. ¡Esta acción no se puede deshacer!</string>
@@ -61,7 +61,7 @@
     <string name="armazenamento">Almacenamiento</string>
     <string name="armaz_interno">Almacenamiento interno</string>
     <string name="armaz_externo">Micro SD</string>
-    <string name="bloquear_apps">Bloqueo de aplicaciones</string>
+    <string name="bloquear_apps">Bloqueo</string>
     <string name="configuracoes">Configuración</string>
     <string name="esconder_icone">Hide icon</string>
     <string name="codigo_chamada">Call code</string>

@@ -33,7 +33,7 @@
     <string name="modo_secreto">ステルスモード</string>
     <string name="codigo_discador">ダイヤラ コード</string>
     <string name="minha_caixa">マイボックス</string> 
-    <string name="galeria">プライベートギャラリー</string>
+    <string name="galeria">画廊</string>
     <string name="preferecias_gerais">一般的に好ましい</string>
     <string name="preferecias_sobre">ほど</string>
     <string name="preferecias_avancadas">アドバンスド</string>
@@ -48,7 +48,7 @@
     <string name="erro">エラー</string>
     <string name="confirmacao">確認</string>            
     <string name="quer_realmente_sair">本当に外出したいですか？</string>
-    <string name="bloquear_apps">アプリをブロック</string>
+    <string name="bloquear_apps">ロッカー</string>
     <string name="nao">いいえ</string>
     <string name="salvar">セーブ</string>
     <string name="renomear">改名する</string>

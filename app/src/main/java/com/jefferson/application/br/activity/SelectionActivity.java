@@ -31,7 +31,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 		setContentView(R.layout.gallery_selection_layout);
 		importLayout = findViewById(R.id.importView);
         mRecyclerView = (RecyclerView)findViewById(R.id.my_recycler_view);
-        selectAllTextView = findViewById(R.id.options_selectTextView);
+        selectAllTextView = (TextView) findViewById(R.id.options_selectTextView);
 
         Intent intent = getIntent();
 		name = intent.getStringExtra("name");
@@ -44,7 +44,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
         mAdapter = new MultiSelectRecyclerViewAdapter(SelectionActivity.this, data, this, position);
         mRecyclerView.setAdapter(mAdapter);
         selectAllLayout = findViewById(R.id.selectView);
-	    selectAllImageView = findViewById(R.id.selectImageView);
+	    selectAllImageView = (ImageView) findViewById(R.id.selectImageView);
 
 		importLayout.setOnClickListener(this);
 		selectAllLayout.setOnClickListener(this);

@@ -41,13 +41,27 @@
 		android:layout_height="match_parent"
         android:padding="8dp"/>
     
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:id="@+id/main_galery_progressBar"
+        android:layout_marginTop="-72dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminate="true"
-        android:layout_centerInParent="true"
-        android:id="@+id/main_galery_progressBar"/>
+        android:indeterminate="true"/>
     
-	
+    <TextView
+        android:textSize="13sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/carregando"/>
+    
+	</LinearLayout>
+    
 </RelativeLayout>
 

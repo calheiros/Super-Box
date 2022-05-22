@@ -96,8 +96,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 		mViewUnlock = findViewById(R.id.unlockView);
 		mViewDelete = findViewById(R.id.deleteView);
 		mViewSelect = findViewById(R.id.selectView);
-        selectAllTextView = findViewById(R.id.options_album_selectTextView);
-        selectImageView = findViewById(R.id.selectImageView);
+        selectAllTextView = (TextView) findViewById(R.id.options_album_selectTextView);
+        selectImageView = (ImageView) findViewById(R.id.selectImageView);
 		mViewMove = findViewById(R.id.moveView);
         emptyView = findViewById(R.id.view_album_empty_view);
 

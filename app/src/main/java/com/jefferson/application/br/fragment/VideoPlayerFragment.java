@@ -78,9 +78,7 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
                 Toast.makeText(getContext(), "File does not exists " + videoPath, 1).show();
                 return parentView;
             }
-            //loadThumbnail(videoPath);
-            //Glide.with(this).load(file).into(mThumbView);
-
+            
             jController = new JVideoController(mVideoView);
             jController.setAnchor((ViewGroup)parentView);
             jController.setOnButtonPressedListener(this);

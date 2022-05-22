@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -36,7 +37,6 @@ import com.jefferson.application.br.fragment.MainFragment;
 import com.jefferson.application.br.fragment.SettingFragment;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.task.ImportTask;
-import com.jefferson.application.br.task.MonoTypePrepareTask;
 import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.util.IntentUtils;
 import com.jefferson.application.br.util.MyPreferences;
@@ -46,15 +46,9 @@ import com.jefferson.application.br.util.ThemeConfig;
 import com.jefferson.application.br.widget.MyAlertDialog;
 import java.util.ArrayList;
 
-public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener {
+public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener, BottomNavigationView.OnNavigationItemSelectedListener {
 
-    private void updateCurrentFragment() {
-        if (mainFragment != null) {
-            int pagerPosition =  mainFragment.getPagerPosition();
-            updateFragment(pagerPosition);
-        }
-    }
-
+    private BottomNavigationView buttonNavigationView;
 	public static final String admob_key="ca-app-pub-3062666120925607/8250392170";
     public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12;
@@ -65,9 +59,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     private BroadcastReceiver receiver;
     public MainFragment mainFragment;
 	private LockFragment lockFragment;
-	private DrawerLayout drawerLayout;
 	private SettingFragment settingFragment;
-	private NavigationView navigationView;
+	
 	private Fragment oldFrag;
     private SharedPreferences sharedPreferences;
 	private int position;
@@ -75,13 +68,19 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	private AdView adview;
     public boolean calculatorStateEnabled;
     private boolean restarting;
-    
+    public static int CURRENT_THEME;
 	//private InterstitialAd interstitial;
 
     public static MainActivity getInstance() {
 		return instance;
 	}
-
+    private void updateCurrentFragment() {
+        if (mainFragment != null) {
+            int pagerPosition =  mainFragment.getPagerPosition();
+            updateFragment(pagerPosition);
+        }
+    }
+    
     public static final String ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS";
 
 	public void setupToolbar(Toolbar toolbar, CharSequence title) {
@@ -89,13 +88,11 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		getSupportActionBar().setTitle(title);
 		getSupportActionBar().setDisplayShowHomeEnabled(false);
 
-		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.abc_action_bar_home_description);
-		toggle.syncState();
-		drawerLayout.setDrawerListener(toggle);
+//		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.abc_action_bar_home_description);
+//		toggle.syncState();
+//		drawerLayout.setDrawerListener(toggle);
 	}
     
-    public static int CURRENT_THEME;
-
     public void setRestarting(boolean restarting) {
         this.restarting = restarting;
     }
@@ -131,24 +128,26 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		setContentView(R.layout.main_activity);
         this.CURRENT_THEME = ThemeConfig.getTheme(this);
         
-        if (Build.VERSION.SDK_INT >= 21) { 
-            setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
+//        if (Build.VERSION.SDK_INT >= 21) { 
+//            setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
+//            getWindow().setStatusBarColor(Color.TRANSPARENT);
+//        }
 
-		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
-		navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
+//		navigationView = (NavigationView) findViewById(R.id.nav_view); 
+//        navigationView.setNavigationItemSelectedListener(this);
+        buttonNavigationView = (BottomNavigationView) findViewById(R.id.navigationView);
+        buttonNavigationView.setOnNavigationItemSelectedListener(this);
+        
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         calculatorStateEnabled = isCalculatorComponentEnabled();
 
 		if (savedInstanceState != null) {
 			startActivity(new Intent(this, VerifyActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
-
+        //createInterstitial();
         createFragments();
 		createAdView();
-		//createInterstitial();
         createReceiver();
 	}
 
@@ -253,7 +252,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             settingFragment.setCalculatorEnabled(calculatorStateEnabled);
         }
 		changeFragment(startInSetting ? settingFragment: mainFragment);
-		navigationView.getMenu().getItem(startInSetting ? 2 : 0).setChecked(true);
+		//navigationView.getMenu().getItem(startInSetting ? 2 : 0).setChecked(true);
 	}
 
     private boolean isCalculatorComponentEnabled() {
@@ -337,8 +336,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                     activityNotFound();
                 }
 		}
-
-		drawerLayout.closeDrawer(GravityCompat.START);
+		//drawerLayout.closeDrawer(GravityCompat.START);
 		return true;
 	}
 
@@ -453,12 +451,12 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
     @Override
 	public void onBackPressed() {
-
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            showExitDialog();
-        } else {
-            drawerLayout.openDrawer(GravityCompat.START);
-        }
+        showExitDialog();
+//        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+//            showExitDialog();
+//        } else {
+//            drawerLayout.openDrawer(GravityCompat.START);
+//        }
 	}
 
 	private void showExitDialog() {

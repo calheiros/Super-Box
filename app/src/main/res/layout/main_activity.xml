@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout
+<LinearLayout
 	xmlns:app="http://schemas.android.com/apk/res-auto"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent"
-	android:fitsSystemWindows="true"
 	android:id="@+id/mainDrawerLayout">
 	
 	<LinearLayout
@@ -25,19 +24,20 @@
 			android:gravity="center"
 			app:adSize="FULL_BANNER"
 			app:adUnitId="ca-app-pub-3062666120925607/7395488498"/>
-		
+        
+		<android.support.design.widget.BottomNavigationView
+            android:id="@+id/navigationView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="0dp"
+            android:background="?android:attr/windowBackground"
+            app:itemBackground="?colorPrimary"
+            app:itemIconTint="@color/navigation_item_color"
+            app:itemTextColor="@color/navigation_item_color"
+            app:menu="@menu/navigation"/>
+        
 	</LinearLayout>
     
-	<android.support.design.widget.NavigationView
-		app:menu="@menu/main_drawer_view"
-		app:headerLayout="@layout/my_drawer"
-		app:itemIconTint="@color/drawer_item"
-		app:itemTextColor="@color/drawer_item"
-		android:fitsSystemWindows="true"
-		android:id="@+id/nav_view"
-		android:layout_gravity="start"
-		android:layout_width="wrap_content"
-		android:layout_height="match_parent"/>
-
-</android.support.v4.widget.DrawerLayout>
+</LinearLayout>
 

@@ -19,7 +19,7 @@ public class ImagePreviewActivity extends MyCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_pager_layout);
-        viewPager = findViewById(R.id.view_pager);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
         Intent intent = getIntent();
         int position = intent.getExtras().getInt("position");
         filepath = intent.getStringArrayListExtra("filepath");

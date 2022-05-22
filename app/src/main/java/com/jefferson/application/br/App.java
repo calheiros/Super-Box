@@ -9,9 +9,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.imagepipeline.core.ImagePipelineConfig;
-import com.facebook.imagepipeline.decoder.SimpleProgressiveJpegConfig;
+
 import com.google.android.gms.ads.MobileAds;
 import com.jefferson.application.br.activity.CrashActivity;
 import com.jefferson.application.br.activity.MyCompatActivity;
@@ -34,6 +32,11 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     private ArrayList<MyCompatActivity> activities = new ArrayList<>();
 	private boolean counting = false;
     public AppLockService appLockService;
+    
+    public static final String ACTION_OPEN_FROM_DIALER = "com.jefferson.application.action.ACTION_OPEN_FROM_DIALER";
+    public static final String ACTION_APPLOCK_SERVICE_UPDATE_DATA = "com.jefferson.application.action.UPDATA";
+    public static final String ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD = "com.jefferson.applicatiom.action.APPLOCK_SERVICE_UPDATE_PASSWORD";
+    
 	private Runnable mRunnable = new Runnable() {
 
 		@Override
@@ -45,10 +48,6 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         }
     };
 
-    public static final String ACTION_OPEN_FROM_DIALER = "com.jefferson.application.action.ACTION_OPEN_FROM_DIALER";
-    public static final String ACTION_APPLOCK_SERVICE_UPDATE_DATA = "com.jefferson.application.action.UPDATA";
-    public static final String ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD = "com.jefferson.applicatiom.action.APPLOCK_SERVICE_UPDATE_PASSWORD";
-    
     private boolean isAnyNotRunning() {
         for (MyCompatActivity activity : activities) {
             if (activity.isAlive()) return false;
@@ -96,12 +95,7 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         Thread.setDefaultUncaughtExceptionHandler(this);
 
         MobileAds.initialize(this, "ca-app-pub-3062666120925607~3930477089");
-        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
-            .setProgressiveJpegConfig(new SimpleProgressiveJpegConfig())
-            .setResizeAndRotateEnabledForNetwork(true)
-            .setDownsampleEnabled(true)
-            .build();
-        Fresco.initialize(this, config);
+        
         startServiceNotRunning();
     }
 
