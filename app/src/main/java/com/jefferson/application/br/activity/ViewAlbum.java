@@ -724,8 +724,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                                 }
                             } else {
                                 Storage.deleteFile(fileOut);
-                                if (FileTransfer.Error.NO_LEFT_SPACE.equals(response))
-                                    break;
                             }
                         }
 

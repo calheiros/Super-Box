@@ -53,7 +53,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12;
     private static final int GET_URI_CODE_TASK = 54;
-	private static final int GET_URI_CODE = 98;
+	private static final int GET_SDCARD_URI_CODE = 98;
     public static final int IMPORT_FROM_GALLERY_CODE = 43;
     
     private BroadcastReceiver receiver;
@@ -385,8 +385,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 				return;
 			}
 
-			if (requestCode == GET_URI_CODE || requestCode == GET_URI_CODE_TASK) {
-
+			if (requestCode == GET_SDCARD_URI_CODE) {
                 Uri uri = data.getData();
 
                 if (Storage.checkIfSDCardRoot(uri)) {
@@ -446,7 +445,11 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     };
 
 	private void getSdCardUri(int code) {
-        getSdCardUriHandler.sendEmptyMessage(code);
+        
+        Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), 1).show();
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        startActivityForResult(intent, 54);
+        
 	}
 
     @Override
