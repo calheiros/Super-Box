@@ -8,6 +8,7 @@
 	android:gravity="right|center_vertical">
 
 	<Button
+        android:background="@drawable/bg_dialog_negative"
         android:visibility="gone"
 		android:layout_width="wrap_content"
 		style="?android:attr/buttonBarButtonStyle"
@@ -24,7 +25,7 @@
 
 	<Button
         android:visibility="gone"
-		android:backgroundTint="?colorAccent"
+		android:background="@drawable/bg_dialog_positive"
 		android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minHeight="0dp"
