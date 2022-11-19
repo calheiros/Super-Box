@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingTop="14dp"
+    android:paddingBottom="14dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp">
+ 
+    <TextView
+        android:layout_height="wrap_content"
+        android:textSize="21sp"
+        android:layout_width="match_parent"
+        android:id="@+id/title_text_view"
+        android:singleLine="true"
+        android:textColor="?commonColorLight"
+        android:layout_marginBottom="8dp"/>
+
+    <com.jefferson.application.br.library.NumberProgressBar
+        android:id="@+id/number_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"/>
+
+    <ScrollView
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="1"
+        android:gravity="left"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+  
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:id="@+id/message_text_view"
+            android:textSize="16sp"
+            android:breakStrategy="simple"
+            android:hyphenationFrequency="full"
+            android:textColor="?commonColorLight"/>
+    </ScrollView>
+    
+    <include
+         layout="@layout/dialog_buttons"/>
+     
+</LinearLayout>

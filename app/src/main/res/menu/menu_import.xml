@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" 
+    tools:context=".activity.GalleryAlbum"> 
+    
+    <item
+        android:icon="@drawable/ic_folder_multiple_image"
+        android:id="@+id/item_from_gallery"
+        android:title="from gallery"
+        app:showAsAction="ifRoom|withText"/>
+    
+	<!--<item
+        android:icon="@drawable/ic_camera"
+        android:id="@+id/item_from_camera"
+        android:title="from camera"
+        app:showAsAction="ifRoom|withText"/>-->
+</menu>

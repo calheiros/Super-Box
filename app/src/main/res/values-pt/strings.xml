@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<resources>
+    <string name="erro_critico">Um erro crítico ocorrido!</string>
+    <plurals name="imagem_total_plural">
+        <item quantity="one">%1$d imagem</item>
+        <item quantity="other">%1$d imagens</item>
+    </plurals>
+    
+    <plurals name="video_total_plural">
+        <item quantity="one">%1$d vídeo</item>
+        <item quantity="other">%1$d vídeos</item>
+    </plurals>
+    
+    <plurals name="falha_plural">
+        <item quantity="one">%1$d falha</item>
+        <item quantity="other">%1$d falhas</item>
+    </plurals>
+    
+    <plurals name="quantidade_imagem_total">
+        <item quantity="one">&lt;b>%1$d&lt;/b> imagem de &lt;b>%2$d&lt;/b></item>
+        <item quantity="other">&lt;b>%1$d&lt;/b> imagens de &lt;b>%2$d&lt;/b></item>
+    </plurals>
+
+    <plurals name="quantidade_video_total">
+        <item quantity="one" >&lt;b>%1$d&lt;/b> vídeo de &lt;b>%2$d&lt;/b></item>
+        <item quantity="other">&lt;b>%1$d&lt;/b> vídeos de &lt;b>%2$d&lt;/b></item>
+    </plurals>
+    
+    <string name="sucesso">Sucesso!</string>
+    <string name="transferido">Transferido</string>
+    <string name="escolha_tema">Escolha um tema</string>
+    <string name="escuro">Escuro</string>
+    <string name="claro">Azul (Claro)</string>
+    <string name="claro_verde">Verde (Claro)</string>
+    <string name="automatico">Automático</string>
+    <string name="aplicando_configuracoes">Aplicando configuração</string>
+    <string name="mudar_codigo">Alterar codigo</string>
+    <string name="tema_applicativo">Tema do applicativo</string>
+    <string name="menos_seguro_se_habilitado">Menos seguro se habilitado</string>
+    <string name="permitir_captura_tela">Permitir captura de tela</string>
+    <string name="disfarce_calculadora">Disfarce de calculadora</string>
+    
+    <string name="padrao_do_sistema">Seguir o sistema</string>
+    <string name="depois">Depois</string>
+    <string name="antes">Antes</string>
+    <string name="aviso">Aviso</string>
+    <string name="codigo_calculadora_mensagem_1">O Super Box se disfarçará de um aplicativo de calculadora:</string>
+    <string name="codigo_calculadora_mensagem_2">Você precisará definir um código de entrada através da interface da calculadora para acessar o aplicativo novamente.\nO código padrão é 4321. É fortemente recomendado criar um novo.</string>
+    <string name="mudando_para_icone_padrao">Mundando para icone padrão.</string>
+    <string name="usage_data_permission_message">Você precisa conceder a permisão \"Acessar dados de uso\" para esta função funcionar corretamente.</string>
+    <string name="calculadora">Calculadora</string>
+    <string name="pasta_nome_muito_grande">Número máximo de caracteres excedido!</string>
+    <string name="pasta_nome_vazio">O nome da pasta não pode ficar vazio!</string>
+    <string name="nao_vejo_nada">Não consigo ler nada!</string>
+    <string name="poucas_fotos">Parece que você não gosta de tirar muitas fotos...</string>
+    <string name="alguem_viu_uma_pasta">Alguém viu uma pasta?</string>
+    <string name="falha_video">Falha ao reproduzir vídeo!</string>
+    <string name="pasta_mesmo_nome">Nada mudou.</string>
+    <string name="pasta_existe">Já existe uma pasta com este mesmo nome!</string>
+    <string name="sem_espaco_aviso">Pode não haver espaço livre no dispositivo para completar a tranfêrencia, quer tentar continuar mesmo assim?</string>
+    <string name="canceledo_usuario">Cancelado pelo usuário!</string>
+
+    <string name="transferencia_sucesso">Transferência concluída com sucesso.</string>
+    <string name="resultado">Resultado</string>
+    <string name="galeria_vazia">Parece bem vazio...</string>
+    <string name="pasta_ja_existe">Pasta já existe!</string>
+    <string name="sem_nome">Sem nome</string>
+    <string name="apagar_pasta_aviso">Tem certeza que deseja apagar a pasta \"%s\" e todo o seu conteúdo permanentimente?</string>
+    <string name="criar_pasta">Criar pasta</string>
+    <string name="renomear_pasta">Renomear pasta</string>
+    <string name="concluir">Concluir</string>
+    <string name="modo_secreto">Modo furtivo</string>
+    <string name="codigo_discador">Código do discador</string>
+    <string name="minha_caixa">Minha Caixa</string>
+    <string name="galeria">Galeria</string>
+    <string name="preferecias_gerais">Preferecias gerais</string>
+    <string name="preferecias_sobre">Sobre</string>
+    <string name="preferecias_avancadas">Avançado</string>
+	<string name="importar_imagem">Importar imagens</string>
+	<string name="importar_video">Importar vídeos</string>
+	<string name="selecionar_sdcard">Vocé precisa selecionar a pasta raiz do seu Cartão SD para continuar a tarefa.</string>
+	<string name="selecionar_um">Você deve selecionar pelo menos um.</string>
+
+	<string name="video">vídeo</string>
+	<string name="criar_album">Criar album</string>
+
+	<string name="erro">Erro</string>
+	<string name="confirmacao">Confirmação</string>
+	<string name="quer_realmente_sair">Você quer realmente sair?</string>
+	<string name="bloquear_apps">Bloq. apps</string>
+	<string name="nao">Não</string>
+	<string name="salvar">Salvar</string>
+    <string name="renomear">Renomear</string>
+    <string name="armazenamento">Armazenamento</string>
+	<string name="armaz_interno">Armazenamento interno</string>
+	<string name="armaz_externo">Cartão de memória</string>
+	<string name="local_armazenamento">Local de armazenamento</string>
+	<string name="item">item</string>
+	<string name="itens">itens</string>
+	<string name="mover_galeria">Tem certeza de que deseja mover %s para a galeria?</string>
+    <string name="mover">Mover</string>
+	<string name="importar_galeria">Importar da galeria</string>
+	<string name="mudar_senha_descricao">Defina seu idioma"</string>
+	<string name="idioma">Idioma</string>
+	<string name="mudar_senha">Alterar senha</string>
+	<string name="escolha_idioma">Escolha seu idioma</string>
+	<string name="erro_info">Acima da versão de sistema operacional KITKAT o Safe Box pode não ter acesso nenhum ou ter acesso dificultado ao cartão de memória externo,  por isto, tenha certeza que as Imagens ou Videos que queira remover da galeria encontram-se na memória interna do dispositivo</string>
+	<string name="carregando">Carregando...</string>
+	<string name="Alert_obter_mais_seguranca">Obtenha mais segurança!</string>
+	<string name="Alert_mais_seguranca_corpo">Conceda a permissão PACKAGE_USAGE_STATS para maior segurança</string>
+	<string name="entre_em_contato">Entre em contato</string>
+
+	<string name="comunicar">Comunicar</string>
+	<string name="configuracoes">Configurações</string>
+	<string name="desenhe_seu_padrao">Desenhe seu padrão de desbloqueio</string>
+	<string name="solte_para_terminar">Solte o dedo após terminar.</string>
+	<string name="desenhe_novamente">Desenhe o padrão novamente para confirma-lo.</string>
+	<string name="connect_mais">É necessário conectar pelo menos 4 pontos. Tente novamente.</string>
+	<string name="padrao_salvo">Padrão salvo.</string>
+	<string name="tente_de_novo">Tente novamente.</string>
+	<string name="imagem">imagem</string>
+	<string name="senha_definida_como">Seu padrão de desbloqueio foi definido como:</string>
+	<string name="apagar_mensagem">Tem certeza que quer apagar %s permanentimente?</string>
+	<string name="reiniciar_para_aplicar">Reinicie a aplicação para as mudanças entrarem em vigor.</string>
+	<string name="vazio">Por enquanto nada aquí</string>
+	<string name="intruder_vazio">Tudo limpo! Nenhum intruso foi capturado.</string>
+	<string name="inserir">Insira a senha</string>
+	<string name="criar">Definir senha</string>
+	<string name="hello_world">Hello world!</string>
+	<string name="descricao">descrição do aplicativo</string>
+	<string name="admin_receiver_status">recebido</string>
+	<string name="admin_receiver_status_enabled"> habilitado</string>
+	<string name="admin_receiver_status_disable_warning">Desabilitar adiminitrador?</string>
+	<string name="admin_receiver_status_disabled">desabled</string>
+	<string name="admin_receiver_status_pw_changed">mudou</string>
+	<string name="entrar">Entrar</string>
+	<string name="definir">Definir</string>
+	<string name="re_exibir">Tornar visível novamente</string>
+	<string name="compartilhar">Compartilhar</string>
+	<string name="sim">Sim</string>
+	<string name="uma_tentativa">1 tentativa</string>
+	<string name="duas_tentativas">2 tentativas</string>
+	<string name="tres_tentativas">3 tentativas</string>
+	<string name="quatro_tentativas">4 tentativas</string>
+	<string name="tentativa">tentativa</string>
+	<string name="tentativas">tentativas</string>
+	<string name="imagens">Imagens</string>
+	<string name="videos">Vídeos</string>
+	<string name="ocultar_switch">Ocultar ícone</string>
+	<string name="senha_phone">Senha de chamada: </string>
+	<string name="call_descricao">Após ocultar você pode abrir o app apartir do discador chamando o número acima</string>
+	<string name="intruso_switch">Capturar possíveis intrusos</string>
+	<string name="capturar_apos">Capturar foto após:</string>
+	<string name="capturar_descricao">A foto é capturada após um determinado número de falhas ao tentar desbloquear o dispositivo"</string>
+	<string name="intruso_descricao">Captura fotos de possiveis intrusos ao tentar desbloquear o dispositivo</string>
+	<string name="ocultar_descricao">Alterar ícone no launcher</string>
+	<string name="message_dialog_camera">É preciso a permission CAMERA para a aplicação funcionar</string>
+	<string name="apagar">Apagar</string>
+	<string name="dialog_permission_title">Permissão!</string>
+	<string name="excluir">Excluir?</string>
+	<string name="excluir_face_intruder">A foto será apagada, tem certeza que deseja continuar?</string>
+	<string name="excluir_aviso_imagem">A imagem será apagada para sempre e não poderá ser recuperada, tem certeza que deseja continuar?</string>
+	<string name="excluir_aviso_video">O video será apagado para sempre e não poderá ser recuperado, tem certeza que deseja continuar?</string>
+	<string name="cancelar">Cancelar</string>
+
+	<!--<string-array name="navigation_drawer_items_array">
+
+		<item>Imagens</item>
+		<item>Fixtures</item>
+		<item>Table</item>
+	</string-array>-->
+
+</resources>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content"
+	android:paddingLeft="8dp"
+	android:paddingRight="8dp"
+	android:gravity="center_vertical">
+
+	<LinearLayout
+		android:layout_height="60dp"
+		android:layout_width="match_parent"
+		android:orientation="horizontal"
+		android:gravity="center_vertical">
+
+		<ImageView
+			android:id="@+id/iconeApps"
+			android:layout_width="45dp"
+			android:layout_height="45dp"
+			android:layout_marginLeft="10dp"/>
+
+		<TextView
+			android:layout_height="wrap_content"
+			android:textSize="16sp"
+			android:layout_width="0dp"
+			android:layout_weight="1"
+			android:id="@+id/app_name"
+			android:textColor="?commonColorLight"
+			android:layout_marginLeft="16dp"
+			android:layout_marginRight="8dp"
+			android:singleLine="true"/>
+
+		<com.jefferson.application.br.widget.LockCheck
+			android:layout_width="34dp"
+			android:layout_height="34dp"
+			android:focusable="false"
+			android:clickable="false"
+            android:scaleType="fitCenter"
+			android:focusableInTouchMode="false"
+			android:button="@null"
+			android:id="@+id/check1"
+			android:layout_marginRight="8dp"/>
+
+	</LinearLayout>
+</LinearLayout>
+

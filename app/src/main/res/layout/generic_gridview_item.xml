@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:padding="1dp"
+	android:orientation="vertical"
+	android:gravity="center">
+
+	<RelativeLayout
+		android:layout_width="match_parent"
+		android:layout_height="110dp">
+
+		<ImageView
+			android:id="@+id/image"
+			android:background="?colorBackgroundDark"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:scaleType="centerCrop"/>
+
+        <ImageView
+			android:layout_width="35dp"
+			android:layout_gravity="center"
+			android:layout_height="35dp"
+			android:id="@+id/play_view"
+			android:src="@drawable/ic_play_circle"
+			android:visibility="gone"
+			android:layout_centerInParent="true"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_rectangle_rounded"
+            android:layout_margin="3dp"
+            android:id="@+id/timeViewLayout"
+            android:gravity="center"
+            android:visibility="gone"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
+            android:paddingTop="1dp"
+            android:paddingBottom="1dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true">
+
+            <TextView
+                android:minHeight="12sp"
+                android:textColor="@android:color/white"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:fontFamily="sans-serif"
+                android:includeFontPadding="false"
+                android:layout_gravity="center"
+                android:textSize="12sp"
+                android:id="@+id/gridview_itemTextView"/>
+            
+        </FrameLayout>
+
+		<FrameLayout
+			android:id="@+id/selected_overlay"
+			android:layout_width="match_parent"
+			android:layout_height="match_parent"
+			android:layout_centerHorizontal="true"
+			android:background="#50000000"
+			android:visibility="invisible"
+			android:layout_centerInParent="true">
+
+			<ImageView
+				android:layout_height="45dp"
+				android:layout_width="45dp"
+				android:src="@drawable/item_checked"
+				android:layout_gravity="center"/>
+
+		</FrameLayout>
+
+	</RelativeLayout>
+
+</LinearLayout>
+

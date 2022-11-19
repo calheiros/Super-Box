@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<resources>
+    <string name="app_name">スーパーボックス</string>
+    <string name="padrao_do_sistema">システムに従う</string>
+    <string name="depois">後</string>
+    <string name="antes">以前は</string>
+    <string name="aviso">告知</string>
+    <string name="codigo_calculadora_mensagem_1">スーパーボックスは電卓アプリに変装します:</string>
+    <string name="codigo_calculadora_mensagem_2">アプリケーションに再度アクセスするには、電卓インターフェイスから入力コードを設定する必要があります。\nデフォルトのコードは 4321 です。新しいものを作成することを強くお勧めします</string>
+    <string name="mudando_para_icone_padrao">標準アイコンのムンダンド</string>
+    <string name="usage_data_permission_message">この機能を正しく動作させるには、「使用状況データへのアクセス」権限を付与する必要があります。</string>
+    <string name="calculadora">電卓</string>
+    <string name="pasta_nome_muito_grande">最大文字数を超えました</string>
+    <string name="pasta_nome_vazio">フォルダ名を空にすることはできません</string>
+    <string name="nao_vejo_nada">私は何も読むことができません</string>
+    <string name="poucas_fotos">あなたはあまりにも多くの写真を撮るのが好きではないようです</string>
+    <string name="alguem_viu_uma_pasta">誰かがブリーフケースを見たことがありますか？</string>
+    <string name="falha_video">ビデオの再生に失敗しました！</string>
+    <string name="pasta_mesmo_nome">何も変わっていません</string>
+    <string name="pasta_existe">同じ名前のフォルダがすでにあります！</string>
+    <string name="sem_espaco_aviso">転送を完了するための空き領域がデバイスにない可能性がありますが、続行しますか？</string>
+    <string name="canceledo_usuario">ユーザーによってキャンセルされました！</string>
+
+    <string name="transferencia_sucesso">転送が正常に完了しました！</string>
+    <string name="resultado">結果</string>
+    <string name="galeria_vazia">それはかなり空っぽに見えます</string>
+    <string name="pasta_ja_existe">フォルダはすでに存在します！</string>
+    <string name="sem_nome">無名</string>
+    <string name="apagar_pasta_aviso">「%s」フォルダとそのすべての内容を完全に削除してもよろしいですか？</string>
+    <string name="criar_pasta">フォルダの作成</string>
+    <string name="renomear_pasta">フォルダ名の変更</string>
+    <string name="concluir">推す</string>
+    <string name="modo_secreto">ステルスモード</string>
+    <string name="codigo_discador">ダイヤラ コード</string>
+    <string name="minha_caixa">マイボックス</string> 
+    <string name="galeria">画廊</string>
+    <string name="preferecias_gerais">一般的に好ましい</string>
+    <string name="preferecias_sobre">ほど</string>
+    <string name="preferecias_avancadas">アドバンスド</string>
+    <string name="importar_imagem">画像のインポート</string>
+    <string name="importar_video">ビデオをインポートする</string>
+    <string name="selecionar_sdcard">タスクを続行するには、SDカードのルートフォルダを選択する必要があります。</string>
+    <string name="selecionar_um">少なくとも 1 つを選択する必要があります</string>
+    <string name="imagem">画像</string>
+    <string name="video">ビデオ</string>
+    <string name="criar_album">アルバムの作成</string>
+    <string name="configuracoes">設定</string>
+    <string name="erro">エラー</string>
+    <string name="confirmacao">確認</string>            
+    <string name="quer_realmente_sair">本当に外出したいですか？</string>
+    <string name="bloquear_apps">ロッカー</string>
+    <string name="nao">いいえ</string>
+    <string name="salvar">セーブ</string>
+    <string name="renomear">改名する</string>
+    <string name="armazenamento">貯蔵</string>
+    <string name="armaz_interno">内部ストレージ</string>
+    <string name="armaz_externo">メモリーカード</string>
+    <string name="local_armazenamento">保管場所</string>
+    <string name="item">アイテム</string>
+    <string name="itens">項目</string>
+    <string name="mover_galeria">%s をギャラリーに移動してもよろしいですか？</string>
+    <string name="mover">動く</string>
+    <string name="importar_galeria">ギャラリーからのインポート</string>
+    <string name="mudar_senha_descricao">言語を設定する</string>
+    <string name="idioma">言語</string>
+    <string name="mudar_senha">パスワードの変更</string>
+    <string name="escolha_idioma">言語を選択してください</string>
+    <string name="carregando">読み込み中</string>
+
+    <string name="entre_em_contato">お 問い合わせ</string>
+    <string name="compartilhar">共有</string>
+    <string name="comunicar">伝える</string>
+
+    <string name="desenhe_seu_padrao">ロック解除パターンを描画する</string>
+    <string name="solte_para_terminar">完了したら指を離します</string>
+    <string name="desenhe_novamente">パターンをもう一度描画して確認します</string>
+    <string name="connect_mais">少なくとも4つのポイントを接続する必要があります。もう一度やり直してください</string>
+    <string name="padrao_salvo">標準保存済み</string>
+    <string name="tente_de_novo">もう一度やり直してください</string>
+
+    <string name="senha_definida_como">ロック解除パターンは次のように設定されています</string>
+    <string name="apagar_mensagem">%s を完全に削除してもよろしいですか？</string>
+    <string name="reiniciar_para_aplicar">変更を有効にするにはアプリを再起動します。</string>
+    <string name="vazio">今のところ空です</string>
+
+    <string name="inserir">パスワードを入力してください</string>
+    <string name="criar">パスワードの設定</string>
+
+    <string name="descricao">アプリケーションの説明</string>
+    <string name="admin_receiver_status">受け</string>
+    <string name="admin_receiver_status_enabled">有資格の</string>
+    <string name="admin_receiver_status_disable_warning">アディミニトラドールを無効にしますか</string>
+    <string name="admin_receiver_status_disabled">デサブル</string>
+    <string name="admin_receiver_status_pw_changed">変更</string>
+    <string name="entrar">入る</string>
+    <string name="definir">定義する</string>
+    <string name="re_exibir">再び表示させる</string>
+    <string name="sim">はい</string>
+    <string name="uma_tentativa">1 回の試行</string>
+    <string name="duas_tentativas">2 回の試行</string>
+    <string name="tres_tentativas">3 回の試行</string>
+    <string name="quatro_tentativas">4 回の試行</string>
+    <string name="tentativa">企て</string>
+    <string name="tentativas">試み</string>
+    <string name="imagens">画像</string>
+    <string name="videos">ビデオ</string>
+    <string name="ocultar_switch">非表示アイコン</string>
+    <string name="senha_phone">通話パスワード: </string>
+    <string name="call_descricao">隠した後、上記の番号に電話してダイヤラからアプリを開くことができます</string>
+    <string name="intruso_switch">潜在的な侵入者を捕らえる</string>
+    <string name="capturar_apos">後に写真をキャプチャ:</string>
+    <string name="capturar_descricao">写真は、デバイスのロックを解除しようとしている間に一定数のクラッシュ後にキャプチャされます</string>
+    <string name="intruso_descricao">デバイスのロックを解除しようとしている間に侵入者の写真をキャプチャします</string>
+    <string name="ocultar_descricao">アプリ グリッドのアイコンを非表示にする</string>
+    <string name="message_dialog_camera">アプリケーションが動作するにはカメラの許可が必要です</string>
+    <string name="apagar">消去</string>
+    <string name="dialog_permission_title">許可</string>
+    <string name="excluir">削除</string>
+    <string name="excluir_face_intruder">写真は削除されますが、続行してもよろしいですか</string>
+    <string name="excluir_aviso_imagem">イメージは永久に削除され、回復できません。続行してもよろしいですか</string>
+    <string name="excluir_aviso_video">ビデオは永久に削除され、回復することはできません、続行してもよろしいですか</string>
+    <string name="cancelar">キャンセル</string>
+
+</resources>
+

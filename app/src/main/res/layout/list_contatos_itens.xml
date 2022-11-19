@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="horizontal">
+
+	<LinearLayout
+		android:layout_height="wrap_content"
+		android:layout_width="match_parent"
+		android:padding="8dp"
+		android:orientation="horizontal"
+		android:gravity="center">
+
+		<ImageView
+			android:layout_height="55dp"
+			android:id="@+id/imagePhoto"
+			android:layout_width="55dp"/>
+
+		<LinearLayout
+			android:layout_height="wrap_content"
+			android:layout_width="match_parent"
+			android:layout_weight="1"
+			android:padding="8dp"
+			android:orientation="vertical">
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:layout_width="match_parent"
+				android:text="Medium Text"
+				android:id="@+id/contatos_nome"/>
+
+			<TextView
+				android:layout_height="wrap_content"
+				android:textAppearance="?android:attr/textAppearanceMedium"
+				android:layout_width="match_parent"
+				android:text="Medium Text"
+				android:id="@+id/contatos_numero"/>
+
+		</LinearLayout>
+
+		<CheckBox
+			android:focusable="false"
+			android:clickable="false"
+			android:id="@+id/check_contacts"
+			android:layout_height="wrap_content"
+			android:layout_width="wrap_content"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+

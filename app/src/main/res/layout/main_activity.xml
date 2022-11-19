@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="match_parent"
+	android:layout_width="match_parent"
+	android:id="@+id/mainDrawerLayout">
+	
+	<LinearLayout
+		android:orientation="vertical"
+		android:layout_height="match_parent"
+		android:layout_width="match_parent">
+        
+		<FrameLayout
+			android:layout_height="0dp"
+			android:layout_weight="1"
+			android:layout_width="match_parent"
+			android:id="@+id/fragment_container"/>
+		
+		<com.google.android.gms.ads.AdView
+			android:id="@+id/ad_view"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:gravity="center"
+			app:adSize="FULL_BANNER"
+			app:adUnitId="ca-app-pub-3062666120925607/7395488498"/>
+        
+		<com.google.android.material.bottomnavigation.BottomNavigationView
+            android:id="@+id/navigationView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="0dp"
+            android:layout_marginStart="0dp"
+            android:background="?android:attr/windowBackground"
+            app:itemBackground="?colorPrimary"
+            app:itemIconTint="@color/navigation_item_color"
+            app:itemTextColor="@color/navigation_item_color"
+            app:menu="@menu/navigation"/>
+        
+	</LinearLayout>
+    
+</LinearLayout>
+

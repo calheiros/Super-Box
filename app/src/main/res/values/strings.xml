@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="erro_critico">A critical error occurred!</string>
+    
+    <plurals name="imagem_total_plural">
+        <item quantity="one">%1$d image</item>
+        <item quantity="other">%1$d images</item>
+    </plurals>
+    
+    <plurals name="video_total_plural">
+        <item quantity="one">%1$d video</item>
+        <item quantity="other">%1$d videos</item>
+    </plurals>
+
+    <plurals name="quantidade_video_total">
+        <item quantity="one" >&lt;b>%1$d&lt;/b> video of &lt;b>%2$d&lt;/b></item>
+        <item quantity="other">&lt;b>%1$d&lt;/b> videos of &lt;b>%2$d&lt;/b></item>
+    </plurals>
+
+    <plurals name="falha_plural">
+        <item quantity="one">%1$d failure</item>
+        <item quantity="other">%1$d failures</item>
+    </plurals>
+    
+    <plurals name="quantidade_arquivo_total">
+        <item quantity="one">&lt;b>%1$d&lt;/b> file of &lt;b>%2$d&lt;/b></item>
+        <item quantity="other">&lt;b>%1$d&lt;/b> files of &lt;b>%2$d&lt;/b></item>
+    </plurals>
+    
+    <plurals name="quantidade_imagem_total">
+        <item quantity="one">&lt;b>%1$d&lt;/b> image of &lt;b>%2$d&lt;/b></item>
+        <item quantity="other">&lt;b>%1$d&lt;/b> images of &lt;b>%2$d&lt;/b></item>
+    </plurals>
+
+    <string name="sucesso">Success!</string>
+    <string name="transferido">Transferred</string>
+    <!--<string name="importar_preparacao_msg">%1$d of %2$d</string>-->
+    <string name="escolha_tema">Choose a theme</string>
+    <string name="escuro">Dark</string>
+    <string name="claro">Blue (Light)</string>
+    <string name="claro_verde">Green (Light)</string>
+    <string name="automatico">Automatic</string>
+
+    <string name="aplicando_configuracoes">Applying setting</string>
+    <string name="mudar_codigo">Change code</string>
+    <string name="tema_applicativo">App theme</string>
+    <string name="menos_seguro_se_habilitado">Less secure if enabled</string>
+    <string name="permitir_captura_tela">Allow screenshot</string>
+    <string name="disfarce_calculadora">Calculator disguise</string>
+
+    <string name="padrao_do_sistema">Follow system</string>
+    <string name="depois">After</string>
+    <string name="antes">Before</string>
+    <string name="aviso">Notice</string>
+    <string name="codigo_calculadora_mensagem_1">The Super Box will disguise itself as a calculator app:</string>
+    <string name="codigo_calculadora_mensagem_2">You will need to set an input code through the calculator interface to access the application again.\nThe default code is 4321. It is strongly recommended to create a new.</string>
+    <string name="mudando_para_icone_padrao">Switching to default icon</string>
+    <string name="usage_data_permission_message">You need to grant permission \"Access usage data\" for this function to work correctly.</string>
+    <string name="calculadora">Calculator</string>
+    <string name="pasta_nome_muito_grande">Maximum number of characters exceeded!</string>
+    <string name="pasta_nome_vazio">The folder name can\'t be empty!</string>
+    <string name="nao_vejo_nada">I can\'t see a thing!</string>
+    <string name="poucas_fotos">It seems that you do not like to take many pictures...</string>
+    <string name="alguem_viu_uma_pasta">Has anyone seen a folder?</string>
+    <string name="falha_video">Failed to play video!</string>
+    <string name="pasta_mesmo_nome">The name cannot be the same ಠ_ಠ</string>
+    <string name="pasta_existe">There is already a folder with that name!</string>
+    <string name="sem_espaco_aviso">There may not be free space on the device to complete the transfer, do you want to try to continue anyway?</string>
+    <string name="canceledo_usuario">Canceled by the user!</string>
+    <string name="transferencia_sucesso">Transfer completed successfully.</string>
+    <string name="resultado">Result</string>
+    <string name="pasta_ja_existe">Folder already exists!</string>
+    <string name="sem_nome">Unnamed</string>
+    <string name="apagar_pasta_aviso">Are you sure you want to delete the \"%s\" folder and all your content permanently?</string>
+    <string name="criar_pasta">Create folder</string>
+    <string name="renomear_pasta">Rename folder</string>
+    <string name="concluir">Confirm</string>
+    <string name="galeria_vazia">It looks pretty empty...</string>
+    <string name="unicode_look_of_disapproval">ಠ_ಠ</string>
+    <string name="unicode_dead_face">(×_×)</string>
+    <string name="unicode_shrug">¯\\_(ツ)_/¯</string>
+    <string name="galeria">Gallery</string>
+    <string name="modo_secreto">Stealth mode</string>
+    <string name="codigo_discador">Dialer code</string>
+    <string name="apagar_mensagem">%s will be deleted permanently. This action can\'t be undone!</string>
+    <string name="minha_caixa">My Box</string>
+    <string name="preferecias_gerais">General management</string>
+    <string name="preferecias_sobre">About</string>
+    <string name="preferecias_avancadas">Advanced</string>
+	<string name="importar_imagem">Import images</string>
+	<string name="importar_video">Import videos</string>
+	<string name="selecionar_sdcard">You need to select the root folder of your SD card to continue the task.</string>
+	<string name="video">video</string>
+	<string name="imagem">image</string>
+	<string name="item">item</string>
+	<string name="itens">items</string>
+	<string name="erro">Error</string>
+	<string name="criar_album">Create album</string>
+	<string name="quer_realmente_sair">Do you really want to exit?</string>
+	<string name="nao">No</string>
+	<string name="app_name">Super Box</string>
+	<string name="excluir_aviso">This action cannot be undone.</string>
+    <string name="selecionar_um">You must select at least one.</string>
+    <string name="conceder">Grant</string>
+    <string name="salvar">Save</string>
+    <string name="renomear">Rename</string>
+    <string name="armazenamento">Storage</string>
+	<string name="armaz_interno">Internal storage</string>
+	<string name="armaz_externo">Micro SD</string>
+    <string name="bloquear_apps">App lock</string>
+    <string name="configuracoes">Settings</string>
+    <string name="esconder_icone">Hide icon</string>
+    <string name="codigo_chamada">Call code</string>
+    <string name="mover_galeria">Are you sure you want to move %s to the gallery?</string>
+    <string name="mover">Move</string>
+	<string name="vazio">Nothing here for now</string>
+    <string name="movendo">Moving</string>
+    <string name="confirmacao">Confirmation</string>
+    <string name="caixa_principal">Main box</string>
+    <string name="nenhum_video">No video</string>
+    <string name="nenhuma_imagem">No image</string>
+    <string name="toque_mais_adicionar">Tap + to add.</string>
+    <string name="local_armazenamento">Storage location</string>
+    <string name="importar_galeria">import from galery</string>
+    <string name="mudar_senha_descricao">Set your language </string>
+    <string name="idioma">Language</string>
+    <string name="galeria_privada">Private gallery</string>
+    <string name="mudar_senha">Change password</string>
+    <string name="escolha_idioma">Choose your language</string>
+    <string name="carregando">Loading...</string>
+    <string name="invasor">Invaders</string>
+    <string name="entre_em_contato">Contact us</string>
+    <string name="compartilhar">Share</string>
+    <string name="comunicar">Communicate</string>
+    <string name="desenhe_seu_padrao">Draw your unlock pattern</string>
+    <string name="solte_para_terminar">Release your finger after finishing.</string>
+    <string name="desenhe_novamente">Draw the pattern again to confirm it.</string>
+    <string name="connect_mais">At least 4 points must be connected. Please try again.</string>
+    <string name="tente_de_novo">Try again.</string>
+    <string name="padrao_salvo">Pattern saved.</string>
+    <string name="senha_definida_como">Your unlock pattern was set to:</string>
+    <string name="inserir">Enter password</string>
+    <string name="criar">Create</string>
+    <string name="descricao">description</string>
+    <string name="admin_receiver_status">admin receiver</string>
+    <string name="admin_receiver_status_enabled">enabled</string>
+    <string name="admin_receiver_status_disable_warning">disable admin?</string>
+    <string name="admin_receiver_status_disabled">disabled</string>
+    <string name="admin_receiver_status_pw_changed">changed</string>
+    <string name="entrar">Enter</string>
+    <string name="definir">Ok</string>
+    <string name="sim">Yes</string>
+    <string name="uma_tentativa">1 attempt</string>
+    <string name="duas_tentativas">2 attempts</string>
+    <string name="tres_tentativas">3 attempts</string>
+    <string name="quatro_tentativas">4 attempts</string>
+    <string name="re_exibir">Become visible again</string>
+    <string name="cancelar">Cancel</string>
+    <string name="apagar">Delete</string>
+    <string name="reiniciar_para_aplicar">Restart the application for the changes to take effect.</string>
+    <string name="excluir">Delete?</string>
+    <string name="tentativa">attempt</string>
+    <string name="tentativas">attempts</string>
+
+    <string name="imagens">Images</string>
+    <string name="videos">Videos</string>
+    <string name="ocultar_switch">Hide icon</string>
+    <string name="intruso_switch">Capture possible intruders</string>
+    <string name="intruso_descricao">Capture photos of potential intruders while trying to unlock the device</string>
+    <string name="capturar_apos">Capture photo after:</string>
+    <string name="capturar_descricao">The picture is captured after a certain number of failures when trying to unlock the device</string>
+    <string name="ocultar_descricao">Change icon in launcher</string>
+    <string name="senha_phone">Call password:</string>
+    <string name="call_descricao">After hiding, you can open the app from the dialer by calling the number above</string>
+    <string name="message_dialog_camera">you need to the permission camera for the application work</string>
+    <string name="dialog_permission_title">Permission!</string>
+    <string name="excluir_face_intruder">The photo will be deleted, are you sure you want to continue?</string>
+    <string name="excluir_aviso_imagem">the image will be deleted forever and can not be recovered, are you sure you want to continue?</string>
+    <string name="excluir_aviso_video">the video will be deleted forever and can not be recovered, are you sure you want to continue?</string>
+
+</resources>

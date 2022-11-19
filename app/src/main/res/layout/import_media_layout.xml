@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:paddingTop="48dp"
+    android:paddingRight="20dp"
+    android:paddingLeft="20dp"
+	android:gravity="center_horizontal">
+
+	<com.jefferson.application.br.view.CircleProgressView
+		android:layout_height="160dp"
+		android:layout_width="160dp"
+        android:layout_centerHorizontal="true"
+		android:id="@+id/circle_progress_view"
+		android:layout_marginBottom="10dp"/>
+
+	<RelativeLayout
+        android:layout_below="@+id/circle_progress_view"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+        android:id="@+id/import_media_layoutRelativeLayout">
+
+        <TextView
+            android:layout_below="@+id/import_media_message_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="20sp"
+            android:layout_marginTop="8dp"
+            android:textColor="?commonColorLight"
+            android:textStyle="bold"
+            android:id="@+id/import_media_title_preparation_text_view"/>
+
+        <TextView
+            android:layout_below="@+id/import_media_title_preparation_text_view"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_marginTop="4dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="?commonColor"
+            android:id="@+id/import_media_prepare_text_view"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Moving"
+            android:textSize="20sp"
+            android:gravity="center"
+            android:layout_marginTop="12dp"
+            android:textColor="?commonColorLight"
+            android:textStyle="bold"
+            android:id="@+id/import_media_title_move_text_view"/>
+
+        <TextView
+            android:layout_below="@+id/import_media_title_move_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="4dp"
+            android:maxLines="1"
+            android:ellipsize="middle"
+            android:textSize="16sp"
+            android:textColor="?commonColor"
+            android:id="@+id/import_media_message_text_view"/>
+
+    </RelativeLayout>
+    
+    <FrameLayout
+        android:layout_below="@+id/import_media_layoutRelativeLayout"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/ad_view_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginBottom="34dp"/>
+
+    <!--<com.google.android.gms.ads.AdView
+    android:layout_below="@+id/import_media_layoutRelativeLayout"
+    android:layout_marginTop="20dp"
+    android:layout_centerHorizontal="true"
+    android:id="@+id/ad_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    app:adSize="LARGE_BANNER"
+    android:layout_marginBottom="34dp"
+    app:adUnitId="ca-app-pub-3062666120925607/7395488498"/>
+    -->   
+    <Button
+        style="?android:attr/borderlessButtonStyle"
+        android:background="@drawable/bg_rounded_transparent_button"
+        android:onClick="buttonClick"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:layout_marginBottom="10dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="@color/red"
+        android:id="@+id/import_media_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@android:string/cancel"/>
+
+</RelativeLayout>
+

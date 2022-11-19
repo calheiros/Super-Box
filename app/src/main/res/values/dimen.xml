@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <dimen name="recycler_view_padding">1dp</dimen>
+    <dimen name="image_height">75dp</dimen> 
+    
+</resources>

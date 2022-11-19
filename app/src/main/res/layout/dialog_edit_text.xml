@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+    android:gravity="center"
+    android:id="@+id/dialog_edit_text_layout"
+	android:layout_width="match_parent"
+	android:layout_height="wrap_content">
+
+	<EditText
+		android:id="@+id/editTextInput"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:singleLine="true"
+		android:inputType="text"
+        android:focusable="true"
+        android:ems="50"
+        android:hint="Maximun 50 digits"
+        android:gravity="start"
+		android:textSize="18sp">
+
+		<requestFocus/>
+
+	</EditText>
+
+</LinearLayout>
+

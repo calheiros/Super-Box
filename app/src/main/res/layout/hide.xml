@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	android:gravity="center">
+
+	<TextView
+		android:layout_height="wrap_content"
+		android:textAppearance="?android:attr/textAppearanceLarge"
+		android:layout_width="wrap_content"
+		android:text="recuperar_senha"
+		android:layout_gravity="center"
+		android:id="@+id/senha_recuperar"
+		android:textIsSelectable="true"
+		android:layout_margin="30dp"/>
+
+	<Button
+		style="?android:attr/buttonBarButtonStyle"
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:text="Esquecer senha"
+		android:id="@+id/esquecer"/>
+
+	<RelativeLayout
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content">
+
+		<Button
+			android:id="@+id/progressButton"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:text="Download"/>
+
+		<ProgressBar
+			android:id="@+id/progressBar"
+			style="?android:attr/progressBarStyleSmall"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:visibility="visible"
+			android:layout_centerVertical="true"
+			android:layout_centerHorizontal="true"
+			android:elevation="10dp"/>
+
+	</RelativeLayout>
+
+</LinearLayout>
+

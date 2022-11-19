@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<TextView
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/ascii_text_view"
+		android:layout_centerHorizontal="true"
+		android:textSize="3.4pt"
+        android:lineHeight="4.0pt"
+        android:textStyle="normal"
+        android:fontFamily="sans-serif"
+		android:layout_gravity="center"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="Super Box by Jefferson Calheiros"
+		android:textSize="13sp"
+		android:layout_gravity="center"
+		android:textStyle="bold|italic"
+		android:layout_alignParentBottom="true"
+		android:layout_centerHorizontal="true"
+		android:id="@+id/creditslayoutTextView1"
+        android:layout_marginTop="10dp"
+		android:layout_marginBottom="10dp"/>
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:gravity="center_vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<ImageView
+            android:src="@drawable/ic_github"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+            android:clickable="true"
+            android:id="@+id/githubTextView"
+			android:layout_height="wrap_content"
+			android:text="github.com/calheiros"
+			android:layout_marginLeft="10dp"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+

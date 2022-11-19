@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<color name="colorBackground">#FF151414</color>-->
+    <color name="colorBackgroundDark">#FF0E0E0F</color>
+    <color name="colorBackground">#FF141515</color>
+    <color name="darkTransparent">#4E000000</color>
+    <!-- <color name="colorAccentLight">#FFECB500</color>-->
+    <color name="colorAccentLight">@color/darkGreen</color>
+	<color name="verdana">#875443</color>
+    <color name="turquoise">#02CCB2</color>
+    <color name="turquoiseDark">#09B29D</color>
+    <color name="pureGreen">#00D07C</color>
+    <color name="bondiBlue">#FF03A8CE</color>
+    <color name="bondiBlueDark">#FF0A94B4</color>
+	<color name="yellow">#FFDB00</color>
+	<color name="darkyellow">#FFC400</color>
+    <color name="blue">#ff33b5e5</color>
+    <color name="purple">#ffaa66cc</color>
+    <color name="green">#ff99cc00</color>
+    <color name="green_semi_transparent">#7899CC00</color>
+    <color name="orange">#ffffbb33</color>
+    <color name="red">#ffff4444</color>
+    <color name="darkblue">#ff0099cc</color>
+    <color name="darkpurple">#ff9933cc</color>
+    <color name="darkGreen">#68a500</color>
+    <color name="darkOrange">#ffff8800</color>
+    <color name="tab_selected">#ffffff</color>
+    <color name="tab_unsected">#dee6ea</color>
+    <color name="black">#ff000000</color>
+    <color name="cinza">#c7dbfc</color>
+    <color name="dark_grey">#424242</color>
+    <color name="medium_grey">#9e9e9e</color>
+    <color name="button_grey">#757575</color>
+    <color name="black_semi_transparent">#b2000000</color>
+    <color name="background">#e5e5e5</color>
+    <color name="half_black">#808080</color>
+    <color name="white">#fafafa</color>
+    <color name="white_pressed">#f1f1f1</color>
+    <color name="pink">#e91e63</color>
+    <color name="pink_pressed">#ec407a</color>
+    <color name="blue_semi_transparent">#805677fc</color>
+    <color name="blue_semi_transparent_pressed">#80738ffe</color>
+    <color name="colorPrimary">#710BE7</color>
+    <color name="colorAccent">@color/pureGreen</color>
+    <color name="colorPrimaryDark">#640BCB</color>
+    <color name="fab_pressed">#00b899</color>
+    <color name="highLightColor">#11FFFFFF</color>
+    <color name="colorCommonDark">#FF757B85</color>
+    <color name="colorCommon">#FFA0A8B5</color>
+    <color name="colorCommonLight">#FFC6D0DB</color>
+    <color name="blue_bt">#4dc9f7</color>
+    <color name="blue_bt_pressed">#88dcff</color>
+    <color name="red_bt">#f8584d</color>
+    <color name="red_bt_pressed">#ff8f88</color>
+    
+    <!-- BACKUP THIS! 
+    <color name="item_normal">#5d626c</color>
+    -->
+</resources>

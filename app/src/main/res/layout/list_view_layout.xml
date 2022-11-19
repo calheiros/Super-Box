@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:orientation="vertical" 
+	android:layout_width="match_parent" 
+	android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+		android:id="@+id/appBarLayout"
+		android:layout_width="match_parent" 
+		android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+			android:id="@+id/toolbar" 
+			android:background="?attr/colorPrimary"
+			android:layout_width="match_parent" 
+			android:layout_height="?attr/actionBarSize" 
+			app:layout_scrollFlags="scroll|enterAlways" 
+			android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <RelativeLayout
+		android:layout_width="match_parent" 
+		android:layout_height="match_parent">
+
+        <ListView 
+			android:scrollbarStyle="outsideOverlay" 
+			android:id="@+id/androidList"
+			android:padding="8dp"
+            android:clipToPadding="false"
+			android:layout_width="match_parent" 
+			android:layout_height="match_parent"
+			android:divider="@null" 
+			android:choiceMode="multipleChoice" />
+
+        <LinearLayout
+            android:visibility="gone"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:id="@+id/myOverlayLayout"
+            android:layout_width="match_parent" 
+			android:layout_height="match_parent">
+
+            <TextView
+                android:layout_marginTop="35dp"
+                android:text="(°ヘ°)?"
+                android:textSize="38dp"
+                android:textColor="?commonColorDark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:text="@string/alguem_viu_uma_pasta"
+                android:textColor="?commonColorDark"
+                android:id="@+id/emptyTextView"
+                android:layout_marginTop="15dp"/>
+
+
+        </LinearLayout>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/item_checked"
+            android:layout_margin="16dp" />
+    </RelativeLayout>
+
+</LinearLayout>

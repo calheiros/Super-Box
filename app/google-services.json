@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "434127760836",
+    "firebase_url": "https://apple-security-f3fa5.firebaseio.com",
+    "project_id": "apple-security-f3fa5",
+    "storage_bucket": "apple-security-f3fa5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:434127760836:android:6e682e66e90b9bf2",
+        "android_client_info": {
+          "package_name": "com.jefferson.application.br"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "434127760836-2nvi34idcmcho8ndp92mhoikvrsq1cn0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgtFXfYVHTN8Qfdw4zZyxo40pzdJ1iWPY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

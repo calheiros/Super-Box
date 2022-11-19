@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+    android:background="@color/colorPrimary"
+	android:gravity="center">
+
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:layout_width="match_parent"
+        android:gravity="center">
+        <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_super"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_height="wrap_content"
+        android:layout_weight="1.0"
+        android:layout_width="match_parent"
+        android:gravity="center">
+
+        <EditText
+            android:layout_height="wrap_content"
+            android:inputType="numberDecimal|numberPassword"
+            android:layout_width="wrap_content"
+            android:ems="7"
+            android:focusable="false"
+            android:textSize="25sp"
+            android:clickable="false"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_marginBottom="15dp"
+            android:id="@+id/pinActivityEditText"
+            android:layout_centerHorizontal="true"/>
+
+        <GridLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:columnCount="3"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal">
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="1"
+                android:onClick="one"
+                android:gravity="center"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:textColor="#FFFFFF"
+                android:textSize="38dp"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="2"
+                android:onClick="two"
+                android:gravity="center"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:textColor="#FFFFFF"
+                android:textSize="38dp"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="3"
+                android:gravity="center"
+                android:onClick="three"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:textColor="#FFFFFF"
+                android:textSize="38dp"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="4"
+                android:onClick="four"
+                android:gravity="center"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:textColor="#FFFFFF"
+                android:textSize="38dp"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="5"
+                android:gravity="center"
+                android:onClick="five"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:textColor="#FCFCFC"
+                android:textSize="38dp"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="6"
+                android:gravity="center"
+                android:onClick="six"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:textColor="#FFFFFF"
+                android:textSize="38dp"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="7"
+                android:gravity="center"
+                android:onClick="seven"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:textColor="#FFFFFF"
+                android:textSize="38dp"/>
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="8"
+                android:gravity="center"
+                android:onClick="eight"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:textColor="#FFFFFF"
+                android:textSize="38dp"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="9"
+                android:gravity="center"
+                android:onClick="nine"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:textColor="#FFFFFF"
+                android:textSize="38dp"/>
+
+            <Button
+                style="?android:attr/buttonBarButtonStyle"
+                android:text="0"
+                android:onClick="zero"
+                android:gravity="center"
+                android:padding="10dp"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:layout_row="3"
+                android:layout_column="1"
+                android:textColor="#FFFFFF"
+                android:textSize="38dp"/>
+
+            <ImageButton
+                style="?android:attr/buttonBarButtonStyle"
+                android:onClick="backspace"
+                android:id="@+id/pin_activityBackspaceButton"
+                android:layout_height="75dp"
+                android:layout_width="110dp"
+                android:padding="18dp"
+                android:layout_row="3"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_backspace_outline"
+                android:layout_column="2"/>
+
+        </GridLayout>
+    </RelativeLayout>
+</LinearLayout>
+

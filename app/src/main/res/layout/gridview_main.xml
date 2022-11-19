@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:orientation="vertical"
+	android:id="@+id/main_linear_layout"
+	android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/tabanim_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <include
+            layout="@layout/toolbar"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_below="@+id/tabanim_appbar"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:layout_width="match_parent">
+
+        <LinearLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:gravity="center_horizontal"
+            android:id="@+id/view_album_empty_view"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:layout_marginTop="40dp"
+                android:text="(•_•ヾ"
+                android:gravity="center"
+                android:textSize="40dp"
+                android:textColor="?commonColorDark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:textAllCaps="true"
+                android:layout_width="wrap_content"
+                android:text="@string/nao_vejo_nada"
+                android:textColor="?commonColorDark"
+                android:id="@+id/emptyTextView"
+                android:layout_marginTop="14dp"/>
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/my_recycler_view"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="1dp"/>
+
+    </RelativeLayout>
+    
+    <include
+        layout="@layout/options_album_layout"/>
+    
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/view_album_fab_button"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_plus"
+        android:layout_margin="16dp" />
+</RelativeLayout>
+
