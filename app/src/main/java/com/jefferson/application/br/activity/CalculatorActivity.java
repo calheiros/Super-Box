@@ -224,7 +224,7 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
         char lastChar = text.charAt(text.length() - 1);
         for (char op : operations) {
             if (lastChar == op) {
-                text = text.toString().substring(0, text.length() - 1);
+                text = text.substring(0, text.length() - 1);
                 break;
             }
         }
@@ -237,7 +237,7 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
 
         if (createCode) {
             if (input.length() > 50) {
-                Toast.makeText(this, "Too big! Maximum 50 characters", 0).show();
+                Toast.makeText(this, "Too big! Maximum 50 characters", Toast.LENGTH_SHORT).show();
                 return;
             } else if (input.length() < 3) {
                 showHint("Too short! Minimum 3 characters");
@@ -247,7 +247,7 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
             if (code != null) {
                 if (code.equals(input)) {
                     MyPreferences.putCalculatorCode(input);
-                    Toast.makeText(this, "Code confirmed!", 0).show();
+                    Toast.makeText(this, "Code confirmed!", Toast.LENGTH_SHORT).show();
                     setResult(RESULT_OK);
                     finish();
                 } else {
