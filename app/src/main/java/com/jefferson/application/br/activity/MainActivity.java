@@ -20,8 +20,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.core.view.GravityCompat;
-import androidx.appcompat.app.ActionBarDrawerToggle;
+
 import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -47,10 +46,10 @@ import java.util.Objects;
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener, BottomNavigationView.OnNavigationItemSelectedListener {
 
     private BottomNavigationView buttonNavigationView;
-	public static final String admob_key="ca-app-pub-3062666120925607/8250392170";
+	//public static final String admob_key="ca-app-pub-3062666120925607~5789743722";
     public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12;
-    private static final int GET_URI_CODE_TASK = 54;
+    //private static final int GET_URI_CODE_TASK = 54;
 	private static final int GET_SDCARD_URI_CODE = 98;
     public static final int IMPORT_FROM_GALLERY_CODE = 43;
     
@@ -101,12 +100,10 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
     @Override
     public void onBeingStarted() {
-
     }
 
     @Override
     public void onUserInteration() {
-
     }
 
     @Override
@@ -141,7 +138,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         calculatorStateEnabled = isCalculatorComponentEnabled();
 
 		if (savedInstanceState != null) {
-			startActivity(new Intent(this, VerifyActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+			startActivity(new Intent(this, VerifyActivity.class).addFlags(
+                    Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
 		}
         //createInterstitial();
         createFragments();
@@ -185,7 +183,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		return super.onCreateOptionsMenu(menu);
 	}
 
-//	public void createInterstitial() {
+/*	public void createInterstitial() {
 //        interstitial = new InterstitialAd(this);
 //		interstitial.setAdUnitId("ca-app-pub-3062666120925607/8580168530");
 //		interstitial.setAdListener(new AdListener() {
@@ -195,9 +193,10 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 //                }
 //            });
 //		prepareAd();
-//	}
+}
+*/
 
-//    public void prepareAd() {
+/*    public void prepareAd() {
 //        if (interstitial.isLoading() == false && interstitial.isLoaded() == false) {
 //			interstitial.loadAd(new AdRequest.Builder().build());
 //		}
@@ -208,7 +207,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 //			interstitial.show();
 //		} 
 //	}
-//
+*/
     public void updateFragment(int position) {
         if (mainFragment != null) {
             mainFragment.updateFragment(position);
@@ -231,7 +230,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     public boolean requestPermission() { 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getPackageName()));
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
                 startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE); 
                 return true; 
             } 
@@ -254,7 +254,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	}
 
     private boolean isCalculatorComponentEnabled() {
-        return PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getPackageManager().getComponentEnabledSetting(new ComponentName(this, "com.jefferson.application.br.CalculatorAlias"));
+        return PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getPackageManager().getComponentEnabledSetting(
+                new ComponentName(this, "com.jefferson.application.br.CalculatorAlias"));
     }
 
 //    private void sorryAlert() {
@@ -292,7 +293,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
 	private void changeFragment(Fragment fragment) {
 		if (fragment != getSupportFragmentManager().findFragmentById(R.id.fragment_container)) {
-
 			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
@@ -300,7 +300,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 				transaction.detach(oldFrag);
 			transaction.replace(R.id.fragment_container, fragment);
 			transaction.attach(fragment);
-
 			transaction.commit();
 			oldFrag = fragment;
 		}
@@ -355,8 +354,10 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
-            if (Settings.canDrawOverlays(this)) { 
-
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    Toast.makeText(instance, "Drawoverlay permision needed!", Toast.LENGTH_SHORT).show();
+                }
             }
         }
 
@@ -378,7 +379,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
                 if (data != null) {
 					uri = data.getData();
-					Toast.makeText(this, uri.getPath(), 1).show();
+					Toast.makeText(this, uri.getPath(), Toast.LENGTH_LONG).show();
 				}
 				return;
 			}
@@ -387,7 +388,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                 Uri uri = data.getData();
 
                 if (Storage.checkIfSDCardRoot(uri)) {
-                    getContentResolver().takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    getContentResolver().takePersistableUriPermission(uri,
+                            Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     Storage.storeExternalUri(uri.toString());
                 } 
 
@@ -423,10 +425,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 //                preparationTask.proceed();
 //            }
             }
-        } else {
-            //Toast.makeText(this, "RESUKT_CANCELLED " + requestCode, 1).show();
-        }
-		super.onActivityResult(requestCode, resultCode, data);
+        }  //Toast.makeText(this, "RESUKT_CANCELLED " + requestCode, 1).show();
+
+        super.onActivityResult(requestCode, resultCode, data);
 	}
 
     private Handler getSdCardUriHandler = new Handler() {
@@ -434,20 +435,16 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         @Override
         public void dispatchMessage(Message msg) {
             super.dispatchMessage(msg);
-            Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), 1).show();
+            Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), Toast.LENGTH_LONG).show();
             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
             startActivityForResult(intent, msg.what);
-
         }
-
     };
 
 	private void getSdCardUri(int code) {
-        
-        Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), 1).show();
+        Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         startActivityForResult(intent, 54);
-        
 	}
 
     @Override
@@ -489,7 +486,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     @Override
     public void onPause() {
         super.onPause();
-		adview.pause();
+        adview.pause();
     }
 
     @Override
@@ -514,7 +511,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                 settingFragment.disableLauncherActivity(enabled);
                 settingFragment.setCompomentEnabled(!enabled, "com.jefferson.application.br.CalculatorAlias");
 
-                Toast.makeText(this, getString(R.string.aplicando_configuracoes), 1).show();
+                Toast.makeText(this, getString(R.string.aplicando_configuracoes), Toast.LENGTH_SHORT).show();
             }
         }
         super.onDestroy();

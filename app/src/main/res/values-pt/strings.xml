@@ -104,12 +104,8 @@
 	<string name="idioma">Idioma</string>
 	<string name="mudar_senha">Alterar senha</string>
 	<string name="escolha_idioma">Escolha seu idioma</string>
-	<string name="erro_info">Acima da versão de sistema operacional KITKAT o Safe Box pode não ter acesso nenhum ou ter acesso dificultado ao cartão de memória externo,  por isto, tenha certeza que as Imagens ou Videos que queira remover da galeria encontram-se na memória interna do dispositivo</string>
 	<string name="carregando">Carregando...</string>
-	<string name="Alert_obter_mais_seguranca">Obtenha mais segurança!</string>
-	<string name="Alert_mais_seguranca_corpo">Conceda a permissão PACKAGE_USAGE_STATS para maior segurança</string>
 	<string name="entre_em_contato">Entre em contato</string>
-
 	<string name="comunicar">Comunicar</string>
 	<string name="configuracoes">Configurações</string>
 	<string name="desenhe_seu_padrao">Desenhe seu padrão de desbloqueio</string>
@@ -123,11 +119,9 @@
 	<string name="apagar_mensagem">Tem certeza que quer apagar %s permanentimente?</string>
 	<string name="reiniciar_para_aplicar">Reinicie a aplicação para as mudanças entrarem em vigor.</string>
 	<string name="vazio">Por enquanto nada aquí</string>
-	<string name="intruder_vazio">Tudo limpo! Nenhum intruso foi capturado.</string>
 	<string name="inserir">Insira a senha</string>
 	<string name="criar">Definir senha</string>
-	<string name="hello_world">Hello world!</string>
-	<string name="descricao">descrição do aplicativo</string>
+	<string name="description">descrição do aplicativo</string>
 	<string name="admin_receiver_status">recebido</string>
 	<string name="admin_receiver_status_enabled"> habilitado</string>
 	<string name="admin_receiver_status_disable_warning">Desabilitar adiminitrador?</string>

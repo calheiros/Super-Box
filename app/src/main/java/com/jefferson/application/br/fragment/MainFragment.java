@@ -32,7 +32,7 @@ import com.google.android.material.snackbar.Snackbar;
 public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener, OnLongClickListener {
     
     public static final String UNIT_TEST_ID="ca-app-pub-3940256099942544/6300978111";
-    public static final String UNIT_ID="ca-app-pub-3062666120925607/7395488498";
+    //public static final String UNIT_ID="ca-app-pub-3062666120925607/7395488498";
     public static final int GET_FILE = 35;
     
 	private ViewPager viewPager;
@@ -43,7 +43,6 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	private View fab;
 
 	public MainFragment() {
-
 	}
 
 	@Override
@@ -85,7 +84,8 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 		switch (v.getId()) {
 			case R.id.fab:
 				Intent intent = new Intent(getContext(), ImportGalleryActivity.class);
-				Objects.requireNonNull(getActivity()).startActivityForResult(intent.putExtra("position", viewPager.getCurrentItem()), MainActivity.IMPORT_FROM_GALLERY_CODE);
+				requireActivity().startActivityForResult(intent.putExtra("position",
+						viewPager.getCurrentItem()), MainActivity.IMPORT_FROM_GALLERY_CODE);
 				break;
 			case R.id.ad_view: // R.id.fab_create:
                 int position = getPagerPosition();
@@ -148,7 +148,6 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     }
 
     public void updateAllFragments() {
-
         if  (pagerAdapter != null) {
             for (int i =0; i < pagerAdapter.getCount(); i++) {
                 pagerAdapter.update(i);
@@ -169,8 +168,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 	@Override
     public void onPageSelected(int i) {
         toogleTabIcon(i);
-        ((MainActivity) Objects.requireNonNull(
-				getActivity())).setupToolbar(this.toolbar, getToolbarName(i));
+        ((MainActivity) requireActivity()).setupToolbar(this.toolbar, getToolbarName(i));
     }
 
 	private CharSequence getToolbarName(int i) {

@@ -31,8 +31,6 @@ public class ThemeConfig {
         switch (index) {
             case 0:
                 return (isDarkThemeOn(context) ? R.style.MainTheme: R.style.LightBlueTheme);
-            case 1:
-                return R.style.MainTheme;
             case 2:
                 return R.style.LightBlueTheme;
             case 3:

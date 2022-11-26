@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
     android:onClick="switchOptionsVisibility"
 	android:layout_height="fill_parent">
 
@@ -16,8 +17,8 @@
         android:layout_height="match_parent"/>
 
     <LinearLayout
-        android:paddingLeft="4dp"
-        android:paddingRight="4dp"
+        android:background="@drawable/bg_gradient_bottom"
+        android:padding="4dp"
         android:id="@+id/image_preview_options_layout"
         android:layout_gravity="bottom"
         android:layout_width="match_parent"
@@ -26,20 +27,22 @@
         <ImageButton
             android:background="@android:color/transparent"
             android:src="@drawable/ic_export"
-            android:tint="?commonColorLight"
             android:id="@+id/image_preview_move_gallery_button"
             android:layout_weight="1.0"
             android:layout_width="0dp"
-            android:layout_height="45dp"/>
+            android:layout_height="55dp"
+            app:tint="@android:color/white"
+            android:contentDescription="export" />
 
         <ImageButton
             android:background="@android:color/transparent"
-            android:tint="?commonColorLight"
             android:src="@drawable/ic_delete_outline"
             android:id="@+id/image_preview_delete_button"
             android:layout_weight="1.0"
             android:layout_width="0dp"
-            android:layout_height="45dp"/>
+            android:layout_height="55dp"
+            app:tint="@android:color/white"
+            android:contentDescription="delete" />
 
     </LinearLayout>
 

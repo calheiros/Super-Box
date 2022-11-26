@@ -141,7 +141,7 @@
     <string name="senha_definida_como">Your unlock pattern was set to:</string>
     <string name="inserir">Enter password</string>
     <string name="criar">Create</string>
-    <string name="descricao">description</string>
+    <string name="description">description</string>
     <string name="admin_receiver_status">admin receiver</string>
     <string name="admin_receiver_status_enabled">enabled</string>
     <string name="admin_receiver_status_disable_warning">disable admin?</string>

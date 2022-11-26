@@ -1,6 +1,8 @@
 package com.jefferson.application.br.activity;
 import android.content.Intent;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
@@ -43,6 +45,7 @@ public class ImagePreviewActivity extends MyCompatActivity {
             return filepath.size();
         }
 
+        @NonNull
         @Override
         public Fragment getItem(int position) {
             return new ImagePreviewFragment(filepath.get(position));

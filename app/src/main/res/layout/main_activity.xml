@@ -23,7 +23,7 @@
 			android:layout_height="wrap_content"
 			android:gravity="center"
 			app:adSize="FULL_BANNER"
-			app:adUnitId="ca-app-pub-3062666120925607/7395488498"/>
+			app:adUnitId="ca-app-pub-3062666120925607/7341255277"/>
         
 		<com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/navigationView"

@@ -297,7 +297,6 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
 
     @Override
     public void onBackPressed() {
-
         if (createCode && code != null) {
             code = null;
             showHint("Last code cleared!");

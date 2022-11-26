@@ -18,13 +18,12 @@ public class LockActivity extends MyCompatActivity {
 		getLayoutInflater().inflate(R.layout.lock_activity, conteiner);
         int frameId = R.id.lock_FrameLayout_conteiner;
 
-        if (conteiner.findViewById(frameId) != null) {
+		if (conteiner.findViewById(frameId) != null) {
 			getSupportFragmentManager().beginTransaction().add(frameId, new LockFragment()).commit();
 		} else {
 			return;
 		}
 		toolbar = (Toolbar) conteiner.findViewById(R.id.toolbar);
-
 	}
 
 	@Override
@@ -38,7 +37,6 @@ public class LockActivity extends MyCompatActivity {
 
 	private void setupToolbar() {
 		setSupportActionBar(toolbar);
-
 		getSupportActionBar().setTitle("Bloq. de aplicativos");
 	}
 }

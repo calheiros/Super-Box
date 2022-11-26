@@ -10,6 +10,9 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.jefferson.application.br.activity.CrashActivity;
 import com.jefferson.application.br.activity.MyCompatActivity;
@@ -22,22 +25,23 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
   
     public static String TAG;
     private static App application;
-	public static final String INTERSTICAL_ID = "ca-app-pub-3062666120925607/8580168530";
-	public static final String INTERSTICAL_TEST_ID = "ca-app-pub-3940256099942544/1033173712";
     public static final String ACTION_REPORT_CRASH = "com.jefferson.application.action.REPORT_CRASH";
     public static String PERMISSION_RECEIVE_BUS_DATA = "com.jefferson.application.RECEIVE_UPDATED_DATA";
     private Thread.UncaughtExceptionHandler mDefaultExceptionHandler;
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
     public static boolean localeConfigured = false;
     private ArrayList<MyCompatActivity> activities = new ArrayList<>();
 	private boolean counting = false;
     public AppLockService appLockService;
-    
+
+    private final String TESTE_ADS_ID = "ca-app-pub-3940256099942544/6300978111";
+    private final String ADS_ID = "ca-app-pub-3062666120925607/2904985113";
     public static final String ACTION_OPEN_FROM_DIALER = "com.jefferson.application.action.ACTION_OPEN_FROM_DIALER";
     public static final String ACTION_APPLOCK_SERVICE_UPDATE_DATA = "com.jefferson.application.action.UPDATA";
     public static final String ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD = "com.jefferson.applicatiom.action.APPLOCK_SERVICE_UPDATE_PASSWORD";
-    
-	private Runnable mRunnable = new Runnable() {
+
+    private static AdView adview = null;
+	private final Runnable mRunnable = new Runnable() {
 
 		@Override
 		public void run() {
@@ -47,6 +51,10 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
 			App.this.counting = false;
         }
     };
+
+    public static AdView getSquareAdView() {
+        return adview;
+    }
 
     private boolean isAnyNotRunning() {
         for (MyCompatActivity activity : activities) {
@@ -91,12 +99,18 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         application = this;
         super.onCreate();
        // mSharedPrefs = getSharedPreferences(EXCEPTION_LOG, MODE_PRIVATE);
+        MobileAds.initialize(this);
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
-
-        MobileAds.initialize(this, "ca-app-pub-3062666120925607~3930477089");
-        
         startServiceNotRunning();
+        createSquareAdview();
+    }
+
+    public void createSquareAdview() {
+        adview = new AdView(this);
+        adview.setAdSize(new AdSize(300, 300));
+        adview.setAdUnitId(ADS_ID);
+        adview.loadAd(new AdRequest.Builder().build());
     }
 
     private void startServiceNotRunning() {

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="disfarce_calculadora">Disfarce de calculadora</string>
-    
     <string name="padrao_do_sistema">Seguir sistema</string>
     <string name="depois">Después</string>
     <string name="antes">Antes</string>
@@ -95,7 +94,7 @@
     <string name="senha_definida_como">Su patrón de desbloqueo se definió como:</string>
     <string name="inserir">Introduzca la contraseña</string>
     <string name="criar">Crear</string>
-    <string name="descricao">descripción</string>
+    <string name="description">descripción</string>
     <string name="admin_receiver_status">admin receiver</string>
     <string name="admin_receiver_status_enabled">enabled</string>
     <string name="admin_receiver_status_disable_warning">disable admin?</string>
@@ -103,7 +102,6 @@
     <string name="admin_receiver_status_pw_changed">changed</string>
     <string name="entrar">Entrar</string>
     <string name="definir">Ok</string>
-    <string name="sair">¿Salir?</string>
     <string name="sim">Si</string>
     <string name="uma_tentativa">1 intento</string>
     <string name="duas_tentativas">2 intentos</string>

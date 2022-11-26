@@ -1,5 +1,6 @@
 package com.jefferson.application.br.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -47,6 +48,8 @@ import com.jefferson.application.br.util.DialogUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+
 import com.jefferson.application.br.widget.LockCheck;
 
 public class LockFragment extends Fragment implements OnItemClickListener, androidx.appcompat.widget.SearchView.OnQueryTextListener {
@@ -54,9 +57,8 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     private static final int REQUEST_OVERLAY_CODE = 9;
     private View lastClickedParentView;
     private int lastClickedItemPosition;
-    private SearchView searchView;
 
-	public LockFragment() {
+    public LockFragment() {
 		startLoadPackagesTask();
 	}
     private int firstVisibleItem = -1;
@@ -74,7 +76,8 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private String LOG_TAG = "LockFragment";
 
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	@SuppressLint("RestrictedApi")
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		MainActivity mActivity = ((MainActivity)getActivity());
 
         if (parentView == null) {
@@ -83,7 +86,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 			mTextView = parentView.findViewById(R.id.porcent);
 			mListView = parentView.findViewById(R.id.appList);
             mySwipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
-			mListView.setItemsCanFocus(true);
+            mListView.setItemsCanFocus(true);
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = getActivity().getTheme();
             theme.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true);
@@ -98,7 +101,8 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 
                     }
 
-                    @Override public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) { 
+                    @Override public void onScroll(AbsListView view, int firstVisibleItem,
+                                                   int visibleItemCount, int totalItemCount) {
                         LockFragment.this.lastVisibleItem = firstVisibleItem + visibleItemCount;
                         LockFragment.this.firstVisibleItem = firstVisibleItem;
                         LockFragment.this.visibleCount = visibleItemCount;
@@ -140,8 +144,10 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         }
 
 		Toolbar toolbar = parentView.findViewById(R.id.toolbar);
-		mActivity.setupToolbar(toolbar, getString(R.string.bloquear_apps));
-		mActivity.getSupportActionBar().dispatchMenuVisibilityChanged(true);
+        if (mActivity != null) {
+            mActivity.setupToolbar(toolbar, getString(R.string.bloquear_apps));
+            Objects.requireNonNull(mActivity.getSupportActionBar()).dispatchMenuVisibilityChanged(true);
+        }
         setHasOptionsMenu(true);
 		return parentView;
 	}
@@ -149,7 +155,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     private void applicationFound(int x) {
         mListView.smoothScrollToPositionFromTop(x, (mListView.getHeight() / 2) - (appsAdapter.getItemHeight() / 2));
         //mListView.smoothScrollToPosition(scrollPosition);
-        hideInputMethod(getActivity().getWindow().getCurrentFocus());
+        hideInputMethod(requireActivity().getWindow().getCurrentFocus());
 
         if (x >= firstVisibleItem && x < lastVisibleItem) {
             //Toast.makeText(getContext(), "It's a visible item!", 1).show();
@@ -192,27 +198,13 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             return true;
         }
 
-        Toast toast = Toast.makeText(getContext(), "No match found!", Toast.LENGTH_SHORT);
+        Toast.makeText(getContext(), "No match found!", Toast.LENGTH_SHORT).show();
         //showInputMethod(searchView);
         return false;
     }
 
-//    private Handler scrollHandler = new Handler();
-//    private Runnable scrollRunnbale = new Runnable() {
-//
-//        @Override
-//        public void run() {
-//
-//            if (totalItemCount - scrollPosition < visibleCount) {
-//            }
-//            //JDebug.toast("scroll ps " + scrollPosition + " total " + totalItemCount + " totalVisible " + visibleCount);
-//            //mListView.smoothScrollToPosition(scrollPosition);
-//        }
-//    };
-
     @Override
     public boolean onQueryTextChange(String input) {
-
 //        if (appsAdapter == null || input.isEmpty()) {
 //            return false;
 //        }
@@ -231,7 +223,6 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 //                return true;
 //            }
 //        }
-//
         return false;
     }
 
@@ -324,8 +315,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         } else {
             appsAdapter.putDataSet(appModels);
         }
-
-		mProgressBar.setVisibility(View.GONE);
+        mProgressBar.setVisibility(View.GONE);
 		mTextView.setVisibility(View.GONE);
 
         if (mySwipeRefreshLayout.isRefreshing()) {
@@ -365,7 +355,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         inflater.inflate(R.menu.menu_message_history, menu);
 
 //      SearchManager searchManager =(SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
 //      searchView.setSearchableInfo(
 //      searchManager.getSearchableInfo(getActivity().getComponentName()));
 //

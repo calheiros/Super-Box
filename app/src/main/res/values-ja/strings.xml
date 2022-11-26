@@ -86,7 +86,7 @@
     <string name="inserir">パスワードを入力してください</string>
     <string name="criar">パスワードの設定</string>
 
-    <string name="descricao">アプリケーションの説明</string>
+    <string name="description">アプリケーションの説明</string>
     <string name="admin_receiver_status">受け</string>
     <string name="admin_receiver_status_enabled">有資格の</string>
     <string name="admin_receiver_status_disable_warning">アディミニトラドールを無効にしますか</string>

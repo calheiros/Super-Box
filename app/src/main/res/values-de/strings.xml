@@ -99,7 +99,7 @@
     <string name="senha_definida_como">Ihr Entsperrungsmuster war eingestellt auf:</string>
     <string name="inserir">Passwort eingeben</string>
     <string name="criar">Schaffen</string>
-    <string name="descricao">Beschreibung</string>
+    <string name="description">Beschreibung</string>
     <string name="admin_receiver_status">admin receiver</string>
     <string name="admin_receiver_status_enabled">enabled</string>
     <string name="admin_receiver_status_disable_warning">Admin deaktivieren?</string>

@@ -18,8 +18,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
+
 import com.google.android.gms.ads.AdView;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
@@ -42,15 +41,14 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     private CircleProgressView progressView;
     private TextView messageTextView;
     private ImportTask importTask;
-    private ArrayList<String> mediaList;
     private MonoTypePrepareTask prepareTask;
     private TextView titleTextView;
     private ImportMediaActivity.AnimateProgressText animateText;
     private boolean allowCancel;
     private TextView prepareTitleView;
     private Button button;
-    private int typeQuatityRes;
-    private int flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+    private int typeQuantityRes;
+    private final int flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
     private AdView adview;
 
     public static final String MODELS_KEY = "models_key";
@@ -71,27 +69,27 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         titleTextView = (TextView) findViewById(R.id.import_media_title_move_text_view);
         progressView = (CircleProgressView) findViewById(R.id.circle_progress_view);
         button = (Button) findViewById(R.id.import_media_button);
-        //adview = (AdView) findViewById(R.id.ad_view);
-        adview = new AdView(this);
-        adview.setAdSize(new AdSize(300, 300));
-        adview.setAdUnitId("ca-app-pub-3062666120925607/7395488498");
+
+        App app = App.getInstance();
+        adview = App.getSquareAdView();
+        app.createSquareAdview();
+
         ((FrameLayout)findViewById(R.id.ad_view_layout)).addView(adview);
-        adview.loadAd(new AdRequest.Builder().build());
-        
+
         Intent intent = getIntent();
         ArrayList <FileModel> data = null;
 
         if ((data = intent.getParcelableArrayListExtra(MODELS_KEY)) != null) {
-            typeQuatityRes = R.plurals.quantidade_arquivo_total;
+            typeQuantityRes = R.plurals.quantidade_arquivo_total;
             startImportTask(data);
         } else {
-            mediaList = (ArrayList<String>) getIntent().getStringArrayListExtra(MEDIA_LIST_KEY);
+            ArrayList<String> mediaList = (ArrayList<String>) getIntent().getStringArrayListExtra(MEDIA_LIST_KEY);
             String parent = intent.getStringExtra(PARENT_KEY);
             String type = intent.getStringExtra(TYPE_KEY);
             prepareTask = new MonoTypePrepareTask(this, mediaList, type, parent);
             
             if (type != null) {
-                typeQuatityRes = type.equals(FileModel.IMAGE_TYPE) ? R.plurals.quantidade_imagem_total : R.plurals.quantidade_video_total;
+                typeQuantityRes = type.equals(FileModel.IMAGE_TYPE) ? R.plurals.quantidade_imagem_total : R.plurals.quantidade_video_total;
             }
             if (parent == null) {
                 prepareTask.setDestination(Storage.getFolder(type == FileModel.IMAGE_TYPE ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
@@ -166,7 +164,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         int phrase = (int) values[0];
         switch (phrase) {
             case 1:
-                String format = getResources().getQuantityString(typeQuatityRes, (int) values[1], values[1], values[2]);
+                String format = getResources().getQuantityString(typeQuantityRes, (int) values[1], values[1], values[2]);
                 Spanned styledText = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N ? Html.fromHtml(format, Html.FROM_HTML_MODE_LEGACY) : Html.fromHtml(format);
                 prepareTextView.setText(styledText);
                 break;
@@ -250,7 +248,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         private String sufix = "";
         private JTask task;
 
-        private Handler updateHandler = new Handler() {
+        private final Handler updateHandler = new Handler() {
 
             @Override
             public void dispatchMessage(Message msg) {

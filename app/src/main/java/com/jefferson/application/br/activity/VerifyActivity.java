@@ -17,6 +17,7 @@ import android.widget.PopupMenu;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.MaterialLockView;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.PasswordManager;
 import java.util.List;
 import android.widget.Toast;
@@ -33,8 +34,9 @@ public class VerifyActivity extends MyCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
         password = new PasswordManager().getInternalPassword();
-		super.onCreate(savedInstanceState);
-
+        super.onCreate(savedInstanceState);
+        if (JDebug.isDebugOn())
+            Toast.makeText( this, getIntent().getAction(), Toast.LENGTH_SHORT).show();
         if (password.isEmpty()) {
             startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
             overridePendingTransition(0, 0);
@@ -77,7 +79,7 @@ public class VerifyActivity extends MyCompatActivity {
                 public void onPatternStart() {
 					try {
 						Handler.removeCallbacks(Runnable);
-					} catch (Exception e) {}
+					} catch (Exception ignored) {}
 				}
 
 				public void onPatternDetected(List<MaterialLockView.Cell>pattern, String SimplePattern) {
@@ -111,7 +113,6 @@ public class VerifyActivity extends MyCompatActivity {
 
         switch (action) {
             case Intent.ACTION_MAIN:
-                return true;
             case App.ACTION_OPEN_FROM_DIALER:
                 return true;
             case App.ACTION_REPORT_CRASH:
