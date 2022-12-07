@@ -10,9 +10,6 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import androidx.fragment.app.Fragment;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,6 +25,11 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+
 import com.jefferson.application.br.LocaleManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.CreatePattern;
@@ -40,19 +42,19 @@ import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.ThemeConfig;
+
 import java.util.ArrayList;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
-	public String[] storages;
-	public String version;
-    private SettingAdapter adapter;
-	private Toolbar mToolbar;
-	private SharedPreferences mShared;
-	private SharedPreferences.Editor mEdit;
-	private int egg;
-    private int storageChoicePosition;
     public static final int CALCULATOR_CREATE_CODE_RESULT = 85;
+    public String[] storages;
+    public String version;
+    private SettingAdapter adapter;
+    private SharedPreferences mShared;
+    private SharedPreferences.Editor mEdit;
+    private int egg;
+    private int storageChoicePosition;
     private boolean calculatorEnabled = false;
 
     public void setCodeDescription(String calculatorCode) {
@@ -67,52 +69,52 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         this.calculatorEnabled = enabled;
     }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.config, null);
-		mToolbar = (Toolbar) view.findViewById(R.id.toolbar);
-		storages = new String[]{ getString(R.string.armaz_interno), getString(R.string.armaz_externo) };
+        Toolbar mToolbar = view.findViewById(R.id.toolbar);
+        storages = new String[]{getString(R.string.armaz_interno), getString(R.string.armaz_externo)};
 
-		((MainActivity)getActivity()).setupToolbar(mToolbar, getString(R.string.configuracoes));
+        ((MainActivity) requireActivity()).setupToolbar(mToolbar, getString(R.string.configuracoes));
         // calculatorEnabled = PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getComponentEnabledState(CalculatorActivity.class.getCanonicalName());
-		mShared = PreferenceManager.getDefaultSharedPreferences(getContext());
-		mEdit = mShared.edit();
-		ListView mListView = (ListView) view.findViewById(R.id.list_config);
-		mListView.setDivider(null);
+        mShared = PreferenceManager.getDefaultSharedPreferences(getContext());
+        mEdit = mShared.edit();
+        ListView mListView = view.findViewById(R.id.list_config);
+        mListView.setDivider(null);
 
         ArrayList<PreferenceItem> items = createItemsList();
-		adapter = new SettingAdapter(items, this);
-		mListView.setAdapter(adapter);
-		mListView.setOnItemClickListener(this);
+        adapter = new SettingAdapter(items, this);
+        mListView.setAdapter(adapter);
+        mListView.setOnItemClickListener(this);
         mListView.setOnItemLongClickListener(this);
-		return view;
-	}
+        return view;
+    }
 
-	private String getDialerCode() {
-		return mShared.getString("secret_code", "#4321");
-	}
+    private String getDialerCode() {
+        return mShared.getString("secret_code", "#4321");
+    }
 
     public ArrayList<PreferenceItem> createItemsList() {
         ArrayList<PreferenceItem> items = new ArrayList<>();
 
-        for (int i = 0; i <= 9; i++) {
+        for (int i = 0; i <= 10; i++) {
             PreferenceItem item = new PreferenceItem();
             switch (i) {
                 case 0:
                     item.title = getString(R.string.preferecias_gerais);
-                    item.type = item.SECTION_TYPE;
+                    item.type = PreferenceItem.SECTION_TYPE;
                     break;
                 case 1:
                     item.id = PreferenceItem.ID.PASSWORD;
                     item.icon_res_id = R.drawable.ic_key;
                     item.title = getString(R.string.mudar_senha);
-                    item.type = item.ITEM_TYPE;
+                    item.type = PreferenceItem.ITEM_TYPE;
                     break;
                 case 2:
                     item.id = PreferenceItem.ID.LANGUAGE;
                     item.icon_res_id = R.drawable.ic_language;
                     item.title = getString(R.string.idioma);
-                    item.type = item.ITEM_TYPE;
+                    item.type = PreferenceItem.ITEM_TYPE;
                     item.description = getLanguageDisplay();
                     break;
                 case 3:
@@ -120,15 +122,15 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.type = PreferenceItem.ITEM_TYPE;
                     item.icon_res_id = R.drawable.ic_palette;
                     item.title = getString(R.string.tema_applicativo);
-                    item.description = ThemeConfig.getThemeList(getContext())[ThemeConfig.getThemeIndex()];
+                    item.description = ThemeConfig.getThemeList(requireContext())[ThemeConfig.getThemeIndex()];
                     break;
                 case 4:
-                    item.type = item.SECTION_TYPE;
+                    item.type = PreferenceItem.SECTION_TYPE;
                     item.title = getString(R.string.preferecias_avancadas);
                     break;
                 case 5:
-                    item.id  = PreferenceItem.ID.STORAGE;
-                    item.type = item.ITEM_TYPE;
+                    item.id = PreferenceItem.ID.STORAGE;
+                    item.type = PreferenceItem.ITEM_TYPE;
                     item.icon_res_id = R.drawable.ic_micro_sd;
                     item.title = getString(R.string.local_armazenamento);
                     item.description = getStorageName();
@@ -141,13 +143,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.description = getString(R.string.ocultar_descricao);
                     item.checked = calculatorEnabled;
                     break;
-//                case 7:
-//                    item.id = PreferenceItem.ID.DIALER_CODE;
-//                    item.title = getString(R.string.codigo_discador);
-//                    item.type = item.ITEM_TYPE;
-//                    item.icon_res_id = R.drawable.ic_dialpad;
-//                    item.description = getDialerCode()
-//                    break;
                 case 7:
                     item.id = PreferenceItem.ID.SCREENSHOT;
                     item.icon_res_id = R.drawable.ic_cellphone_screenshot;
@@ -158,24 +153,32 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     break;
                 case 8:
                     item.title = getString(R.string.preferecias_sobre);
-                    item.type = item.SECTION_TYPE;
+                    item.type = PreferenceItem.SECTION_TYPE;
                     break;
                 case 9:
+                    item.id = PreferenceItem.ID.DISABLE_ADS;
+                    item.title = "Disable ADS";
+                    item.type = PreferenceItem.ITEM_SWITCH_TYPE;
+                    item.icon_res_id = R.drawable.ic_block;
+                    item.description = "Stop displaying ads for free";
+                    break;
+                case 10:
                     item.id = PreferenceItem.ID.ABOUT;
                     item.icon_res_id = R.drawable.ic_about;
                     item.title = getString(R.string.app_name);
-                    item.type = item.ITEM_TYPE;
+                    item.type = PreferenceItem.ITEM_TYPE;
                     try {
-                        item.description = getContext().getPackageManager().getPackageInfo(getContext().getPackageName(), 0).versionName;
-                    } catch (PackageManager.NameNotFoundException e) {}
+                        item.description = requireContext().getPackageManager().getPackageInfo(requireContext().getPackageName(), 0).versionName;
+                    } catch (PackageManager.NameNotFoundException ignored) {
+                    }
                     break;
             }
             items.add(item);
-		}
+        }
         return items;
     }
 
-    private void setAllEggsfound() {
+    private void setAllEggsFound() {
         MyPreferences.getSharedPreferencesEditor().putBoolean("eggs_found", true).commit();
     }
 
@@ -185,25 +188,22 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
     private void enterDebugActivity() {
         Intent intent = new Intent(getContext(), DeveloperActivity.class);
-        getActivity().startActivity(intent);
+        requireActivity().startActivity(intent);
     }
 
     @Override
     public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-        if (position == 8) {
-            return true;
-        }
-        return false;
+        return position == 8;
     }
 
-	@Override
-	public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
-        PreferenceItem.ID itemId  = SettingFragment.this.adapter.getItem(position).id;
+    @Override
+    public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+        PreferenceItem.ID itemId = SettingFragment.this.adapter.getItem(position).id;
 
         if (itemId == PreferenceItem.ID.PASSWORD) {
             Intent intent = new Intent(getContext(), CreatePattern.class);
             intent.setAction(CreatePattern.ENTER_RECREATE);
-            getActivity().startActivity(intent);
+            requireActivity().startActivity(intent);
         } else if (itemId == PreferenceItem.ID.LANGUAGE) {
             showLanguageDialog();
         } else if (itemId == PreferenceItem.ID.APP_THEME) {
@@ -214,8 +214,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             Switch mySwitch = view.findViewById(R.id.my_switch);
             boolean checked = !mySwitch.isChecked();
             MyPreferences.setAllowScreenshot(checked);
-            Window window = getActivity().getWindow();
-            int flags = WindowManager.LayoutParams.FLAG_SECURE | WindowManager.LayoutParams.FLAG_SECURE;
+            Window window = requireActivity().getWindow();
+            int flags = WindowManager.LayoutParams.FLAG_SECURE;
 
             if (checked) {
                 window.clearFlags(flags);
@@ -237,31 +237,29 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     private void showThemeDialog() {
-        final CharSequence[] items = ThemeConfig.getThemeList(getContext());
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
-            .setTitle(getString(R.string.escolha_tema))
-            .setItems(items, new DialogInterface.OnClickListener(){
+        final CharSequence[] items = ThemeConfig.getThemeList(requireContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), DialogUtils.getTheme()).
+                setTitle(getString(R.string.escolha_tema)).setItems(items, new DialogInterface.OnClickListener() {
 
-                @Override
-                public void onClick(DialogInterface p1, int position) {
-                    int themeIndex = ThemeConfig.getThemeIndex();
-                    int currentTheme = MainActivity.CURRENT_THEME;
-                    int newTheme = ThemeConfig.resolveTheme(getContext(), position);
-                    boolean needRefresh = newTheme != currentTheme;
-                    if (position != themeIndex) {
-                        ThemeConfig.setThemeIndex(position);
-                    }
-
-                    if (needRefresh) {
-                        refreshActivity();
-                        return;
-                    } 
-                    //"Need to update description"
-                    updateItemDescription(PreferenceItem.ID.APP_THEME, items[position].toString());
+            @Override
+            public void onClick(DialogInterface p1, int position) {
+                int themeIndex = ThemeConfig.getThemeIndex();
+                int currentTheme = MainActivity.CURRENT_THEME;
+                int newTheme = ThemeConfig.resolveTheme(getContext(), position);
+                boolean needRefresh = newTheme != currentTheme;
+                if (position != themeIndex) {
+                    ThemeConfig.setThemeIndex(position);
                 }
 
+                if (needRefresh) {
+                    refreshActivity();
+                    return;
+                }
+                //"Need to update description"
+                updateItemDescription(PreferenceItem.ID.APP_THEME, items[position].toString());
             }
-        );
+
+        });
         //Toast.makeText(getContext(), "Dark mode " + ThemeConfig.isDarkThemeOn(getContext()), 1).show();
         AlertDialog dialog = builder.create();
         configureDialog(dialog);
@@ -299,101 +297,94 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         String[] options = new String[]{getString(R.string.armaz_interno), getString(R.string.armaz_externo)};
 
         if (Storage.getExternalStorage() == null) {
-            options = new String[] { getString(R.string.armaz_interno) };
+            options = new String[]{getString(R.string.armaz_interno)};
         }
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), DialogUtils.getTheme());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), DialogUtils.getTheme());
         builder.setTitle(getString(R.string.armazenamento));
         builder.setSingleChoiceItems(options, storagePosition, new DialogInterface.OnClickListener() {
 
-                @Override
-                public void onClick(DialogInterface dialog, int position) {
-                    storageChoicePosition = position;
-                }
+            @Override
+            public void onClick(DialogInterface dialog, int position) {
+                storageChoicePosition = position;
             }
-        );
+        });
 
         builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener() {
 
-                @Override
-                public void onClick(DialogInterface dialog, int p2) {
+            @Override
+            public void onClick(DialogInterface dialog, int p2) {
 
-                    if (storageChoicePosition == storagePosition) {
-                        return;
-                    }
-                    Storage.setNewLocalStorage(storageChoicePosition);
-
-                    ((MainActivity) getActivity()).
-                        mainFragment.updateAllFragments();
-                    updateItemDescription(PreferenceItem.ID.STORAGE, getStorageName());
+                if (storageChoicePosition == storagePosition) {
+                    return;
                 }
+                Storage.setNewLocalStorage(storageChoicePosition);
+                ((MainActivity) requireActivity()).mainFragment.reloadFragments();
+                updateItemDescription(PreferenceItem.ID.STORAGE, getStorageName());
             }
-        );
+        });
         builder.setNegativeButton(getString(R.string.cancelar), null);
         AlertDialog dialog = builder.create();
         configureDialog(dialog);
         dialog.show();
-	}
+    }
 
     private void refreshActivity() {
-        ((MainActivity)getActivity()).setRestarting(true);
-        Intent intent = new Intent(getContext(), MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        MainActivity activity = (MainActivity) requireActivity();
+        activity.setRestarting(true);
+        final Intent intent = new Intent(getContext(), MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(MainActivity.ACTION_START_IN_PREFERENCES);
         intent.putExtra("calculator_enabled", calculatorEnabled);
         startActivity(intent);
-        getActivity().overridePendingTransition(0, 0);
+        activity.overridePendingTransition(0, 0);
     }
 
-	public void disableLauncherActivity(boolean disable) {
-		getActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), "com.jefferson.application.br.LuancherAlias"), 
-																	 disable ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED: PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-	}
-
-    public void setCompomentEnabled(boolean enabled, String component) {
-        getActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), component),
-                                                                     enabled ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED: PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+    public void disableLauncherActivity(boolean disable) {
+        requireActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), "com.jefferson.application.br.LuancherAlias"), disable ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED : PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
     }
 
-	public void changeCodeDialog() {
-        final View view = getLayoutInflater(null).inflate(R.layout.dialog_call, null);
-		final EditText editText = view.findViewById(R.id.editTextDialogUserInput);
-		editText.append(getDialerCode());
+    public void setComponentEnabled(boolean enabled, String component) {
+        requireActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), component), enabled ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED : PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+    }
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(getContext(), DialogUtils.getTheme());
-		builder.setTitle("New code");
-		builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener(){
+    public void changeCodeDialog() {
+        final View view = requireActivity().getLayoutInflater().inflate(R.layout.dialog_call, null);
+        final EditText editText = view.findViewById(R.id.editTextDialogUserInput);
+        editText.append(getDialerCode());
 
-				@Override
-				public void onClick(DialogInterface p1, int p2) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), DialogUtils.getTheme());
+        builder.setTitle("New code");
+        builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener() {
 
-                    String code = editText.getText().toString();
+            @Override
+            public void onClick(DialogInterface p1, int p2) {
+                String code = editText.getText().toString();
 
-                    if (code.length() < 3) {
-						Toast.makeText(getContext(), "O Código não pode ser menor que 3 caractéres.", 1).show();
-					} else if (code.length() > 15) {
-						Toast.makeText(getContext(), "O código não pode ter mais que 15 caractéres.", 1).show();
-					} else {
-						mEdit.putString("secret_code", code).commit();
-						updateItemDescription(PreferenceItem.ID.DIALER_CODE, code);
-						adapter.notifyDataSetChanged();
-					}
-				}
-			}
-        );
+                if (code.length() < 3) {
+                    Toast.makeText(getContext(), "O Código não pode ser menor que 3 caractéres.", Toast.LENGTH_LONG).show();
+                } else if (code.length() > 15) {
+                    Toast.makeText(getContext(), "O código não pode ter mais que 15 caractéres.", Toast.LENGTH_LONG).show();
+                } else {
+                    mEdit.putString("secret_code", code).commit();
+                    updateItemDescription(PreferenceItem.ID.DIALER_CODE, code);
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
 
-		builder.setNegativeButton(getString(R.string.cancelar), null);
-		builder.setView(view);
+        builder.setNegativeButton(getString(R.string.cancelar), null);
+        builder.setView(view);
         AlertDialog dialog = builder.create();
         configureDialog(dialog);
         dialog.show();
-	}
+    }
 
-	public int getComponentEnabledState(String componentName) {
-		return getActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(getContext(), componentName));
-	}
+    public int getComponentEnabledState(String componentName) {
+        return requireActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(getContext(), componentName));
+    }
 
-	private String getStorageName() {
-		return Storage.getStorageLocation().equals(Storage.INTERNAL) ? getString(R.string.armaz_interno) : getString(R.string.armaz_externo);
+    private String getStorageName() {
+        return Storage.getStorageLocation().equals(Storage.INTERNAL) ? getString(R.string.armaz_interno) : getString(R.string.armaz_externo);
     }
 
     public void updateItemDescription(PreferenceItem.ID id, String description) {
@@ -405,31 +396,31 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 break;
             }
         }
-	}
+    }
 
     private String getLanguageDisplay() {
         String locale = MyPreferences.getSharedPreferences().getString(LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE);
 
-		switch (locale) {
+        switch (locale) {
             case LocaleManager.SYSTEM_LOCALE:
                 return getString(R.string.padrao_do_sistema);
-			case "en":
-				return "English";
-			case "pt":
+            case "en":
+                return "English";
+            case "pt":
                 return "Portugu\u00eas";
             case "de":
                 return "Deutsch";
-			case "es":
-				return "Espa\u00f1ol";
+            case "es":
+                return "Espa\u00f1ol";
             case "ja":
                 return "日本語";
         }
-		return null;
+        return null;
     }
 
-	private void showAbout() {
-        AlertDialog.Builder build = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme());
-		View view = LayoutInflater.from(getContext()).inflate(R.layout.credits_layout, null, false);
+    private void showAbout() {
+        AlertDialog.Builder build = new AlertDialog.Builder(requireActivity(), DialogUtils.getTheme());
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.credits_layout, null, false);
         TextView asciiTextView = view.findViewById(R.id.ascii_text_view);
         Typeface font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Raleway-Regular.ttf");
 
@@ -438,39 +429,36 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         asciiTextView.setText(ASCIIArt.CHIKA_ART);
         view.findViewById(R.id.githubTextView).setOnClickListener(this);
 
-		build.setView(view);
+        build.setView(view);
         build.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
 
-                @Override
-                public void onClick(DialogInterface dialogInterface, int id) {
-                    dialogInterface.cancel();
-                    egg = 0;
-                }
+            @Override
+            public void onClick(DialogInterface dialogInterface, int id) {
+                dialogInterface.cancel();
+                egg = 0;
             }
-        );
+        });
 
         if (!allEggsFound()) {
             build.setOnDismissListener(new DialogInterface.OnDismissListener() {
 
-                    @Override
-                    public void onDismiss(DialogInterface dialog) {
-                        if (++egg == 7) {
-                            setAllEggsfound();
-                        }
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    if (++egg == 7) {
+                        setAllEggsFound();
                     }
                 }
-            );
+            });
         }
 
         if (allEggsFound()) {
             build.setNegativeButton("DEV", new DialogInterface.OnClickListener() {
 
-                    @Override 
-                    public void onClick(DialogInterface dialog, int id) {
-                        enterDebugActivity();
-                    }
+                @Override
+                public void onClick(DialogInterface dialog, int id) {
+                    enterDebugActivity();
                 }
-            );
+            });
         }
         AlertDialog alert = build.create();
         alert.setCanceledOnTouchOutside(true);
@@ -478,67 +466,57 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         alert.show();
     }
 
-	private void showWarning() {
-        View view = getLayoutInflater(null).inflate(R.layout.dialog_check_box_view, null);
-		final CheckBox mCheckBox = (CheckBox) view.findViewById(R.id.dialogcheckbox);
-		new AlertDialog.Builder(getActivity())
-            .setTitle("Informação")
-            .setIcon(R.drawable.ic_information)
-            .setMessage(String.format("Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", getDialerCode()))
-            .setPositiveButton("fechar", null)
-            .setView(view)
-			.show().setOnDismissListener(new DialogInterface.OnDismissListener(){
+    private void showWarning() {
+        View view = requireActivity().getLayoutInflater().inflate(R.layout.dialog_check_box_view, null);
+        final CheckBox mCheckBox = view.findViewById(R.id.dialogcheckbox);
+        new AlertDialog.Builder(requireActivity()).setTitle(getString(R.string.information)).setIcon(R.drawable.ic_information).setMessage(String.format("Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", getDialerCode())).setPositiveButton("fechar", null).setView(view).show().setOnDismissListener(new DialogInterface.OnDismissListener() {
 
-				@Override
-				public void onDismiss(DialogInterface dInterface) {
-					if (mCheckBox.isChecked()) {
-						mEdit.putBoolean("dont_show_info_on_hidden", true);
-					}
-				}
-            }
-        );
-	}
-
-	private void showLanguageDialog() {
-        final CharSequence[] itens = { getString(R.string.padrao_do_sistema),"English", "Español", "Deutsch", "Português (Brasil)", "日本語"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity(), DialogUtils.getTheme())
-			.setTitle(R.string.escolha_idioma)
-			.setItems(itens, new DialogInterface.OnClickListener(){
-
-				@Override
-				public void onClick(DialogInterface p1, int position) {
-					String locale;
-					switch (position) {
-                        case 1:
-                            locale = "en";
-							break;
-						case 2:
-							locale = "es";
-							break;
-                        case 3:
-                            locale = "de";
-                            break;
-                        case 4:
-                            locale = "pt";
-							break;
-                        case 5:
-                            locale = "ja";
-                            break;
-                        default:
-                            locale = LocaleManager.SYSTEM_LOCALE;
-                            break;
-					}
-
-                    if (!locale.equals(MyPreferences.getSharedPreferences().getString(LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE))) {
-					    LocaleManager.setNewLocale(getContext(), locale);
-                        refreshActivity();
-                    }
+            @Override
+            public void onDismiss(DialogInterface dInterface) {
+                if (mCheckBox.isChecked()) {
+                    mEdit.putBoolean("dont_show_info_on_hidden", true);
                 }
             }
-        ); 
-        //Toast.makeText(getContext(), Locale.getDefault().getLanguage(), 1).show();
-		AlertDialog dialog = builder.create();
+        });
+    }
+
+    private void showLanguageDialog() {
+        final CharSequence[] items = {getString(R.string.padrao_do_sistema), "English", "Español", "Deutsch", "Português (Brasil)", "日本語"};
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(), DialogUtils.getTheme()).setTitle(R.string.escolha_idioma).setItems(items, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface p1, int position) {
+                String locale;
+                switch (position) {
+                    case 1:
+                        locale = "en";
+                        break;
+                    case 2:
+                        locale = "es";
+                        break;
+                    case 3:
+                        locale = "de";
+                        break;
+                    case 4:
+                        locale = "pt";
+                        break;
+                    case 5:
+                        locale = "ja";
+                        break;
+                    default:
+                        locale = LocaleManager.SYSTEM_LOCALE;
+                        break;
+                }
+
+                if (!locale.equals(MyPreferences.getSharedPreferences().getString(LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE))) {
+                    LocaleManager.setNewLocale(getContext(), locale);
+                    refreshActivity();
+                }
+            }
+        });
+
+        AlertDialog dialog = builder.create();
         configureDialog(dialog);
         dialog.show();
-	}
+    }
 }

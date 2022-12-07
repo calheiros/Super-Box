@@ -42,8 +42,8 @@ public class CreatePattern extends MyCompatActivity {
         intent.setAction(App.ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD);
         intent.putExtra("key", key);
         startService(intent);
-        //stopService(intent);
-    }
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

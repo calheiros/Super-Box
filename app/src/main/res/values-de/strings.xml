@@ -134,5 +134,6 @@
     <string name="excluir_face_intruder">The photo will be deleted, are you sure you want to continue?</string>
     <string name="excluir_aviso_imagem">the image will be deleted forever and can not be recovered, are you sure you want to continue?</string>
     <string name="excluir_aviso_video">the video will be deleted forever and can not be recovered, are you sure you want to continue?</string>
+    <string name="apagar_image_mensagem">This image will be deleted forever. Are you sure?</string>
 
 </resources>

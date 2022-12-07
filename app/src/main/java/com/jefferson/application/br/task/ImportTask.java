@@ -8,7 +8,6 @@ import com.jefferson.application.br.R;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsData;
 import com.jefferson.application.br.util.FileTransfer;
-import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
 import java.io.File;
@@ -271,7 +270,7 @@ public class ImportTask extends JTask {
                     sleep(50);
                 } catch (InterruptedException e) {
                 }
-                task.sendUpdate(PROGRESS_UPDATE, null, transfer.getTransferedKilobytes(), null);
+                task.sendUpdate(PROGRESS_UPDATE, null, transfer.getTransferredKilobytes(), null);
             }
         }
     }

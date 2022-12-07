@@ -120,6 +120,7 @@
     <string name="excluir_aviso_imagem">イメージは永久に削除され、回復できません。続行してもよろしいですか</string>
     <string name="excluir_aviso_video">ビデオは永久に削除され、回復することはできません、続行してもよろしいですか</string>
     <string name="cancelar">キャンセル</string>
+    <string name="apagar_image_mensagem">This image will be deleted forever. Are you sure?</string>
 
 </resources>
 

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent">
+
+	<TextView
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="14dp"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:id="@+id/ascii_text_view"
+		android:textSize="3.4pt"
+        android:lineHeight="4.0pt"
+        android:textStyle="normal"
+        android:fontFamily="sans-serif"
+		android:layout_gravity="center"/>
+
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:text="@string/super_box_by_jefferson_calheiros"
+		android:textSize="13sp"
+		android:layout_gravity="center"
+		android:textStyle="bold|italic"
+		android:id="@+id/creditslayoutTextView1"
+        android:layout_marginTop="10dp"
+		android:layout_marginBottom="10dp"/>
+
+	<LinearLayout
+		android:orientation="horizontal"
+		android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:gravity="center_vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<ImageView
+            android:src="@drawable/ic_github"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:contentDescription="@string/github_icon" />
+
+		<TextView
+			android:layout_width="wrap_content"
+            android:clickable="true"
+			android:focusable="true"
+            android:id="@+id/githubTextView"
+			android:layout_height="wrap_content"
+			android:text="@string/github_com_calheiros"
+			android:layout_marginStart="10dp"/>
+
+	</LinearLayout>
+
+</LinearLayout>
+

@@ -156,12 +156,14 @@
 	<string name="excluir_aviso_imagem">A imagem será apagada para sempre e não poderá ser recuperada, tem certeza que deseja continuar?</string>
 	<string name="excluir_aviso_video">O video será apagado para sempre e não poderá ser recuperado, tem certeza que deseja continuar?</string>
 	<string name="cancelar">Cancelar</string>
+    <string name="apagar_image_mensagem">This image will be deleted forever. Are you sure?</string>
+	<string name="select_all">Select all</string>
 
 	<!--<string-array name="navigation_drawer_items_array">
 
-		<item>Imagens</item>
-		<item>Fixtures</item>
-		<item>Table</item>
-	</string-array>-->
+        <item>Imagens</item>
+        <item>Fixtures</item>
+        <item>Table</item>
+    </string-array>-->
 
 </resources>

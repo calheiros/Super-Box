@@ -1,6 +1,8 @@
 package com.jefferson.application.br.fragment;
-import android.app.AlertDialog;
+
+import android.graphics.Color;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,14 +11,12 @@ import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.Toast;
-
 import com.bumptech.glide.Glide;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsData;
-import com.jefferson.application.br.util.PreferencesManager;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.ThemeConfig;
 
@@ -33,7 +33,7 @@ public class ImagePreviewFragment extends Fragment implements View.OnClickListen
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if (parentView == null)  {
             parentView = inflater.inflate(R.layout.image_preview_layout, null);
             SubsamplingScaleImageView imageView = parentView.findViewById(R.id.imageView);
@@ -95,11 +95,20 @@ public class ImagePreviewFragment extends Fragment implements View.OnClickListen
     }
 
     private void  dialogDeletionConfirmation() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext(),
-                ThemeConfig.getTheme(getContext()));
-        builder.setIcon(android.R.drawable.ic_delete);
+        SimpleDialog builder = new SimpleDialog(getContext(), ThemeConfig.getTheme(getContext()));
+        builder.setIconColor(Color.argb(255, 255, 0, 0));
+        builder.setIcon(android.R.drawable.ic_dialog_alert);
         builder.setTitle(getString(R.string.apagar));
-        builder.setMessage(getString(R.string.apagar_mensagem));
-        builder.create().show();
+        builder.setMessage(getString(R.string.apagar_image_mensagem));
+        builder.setPositiveButton(getString(android.R.string.yes), new SimpleDialog.OnDialogClickListener() {
+
+            @Override
+            public boolean onClick(SimpleDialog dialog) {
+                return true;
+            }
+        });
+        builder.setNegativeButton(getString(android.R.string.cancel), null);
+        builder.show();
+
     }
 }

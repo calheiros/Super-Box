@@ -71,6 +71,7 @@ public class Storage extends DocumentUtil {
 
     public static boolean writeFile(byte[] content, File target) {
         File parent = target.getParentFile();
+        assert parent != null;
         if (!parent.exists()) {
             parent.mkdirs();
         }
@@ -101,8 +102,6 @@ public class Storage extends DocumentUtil {
                 builder.append(buff, 0, c);
             }
             result = builder.toString();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -125,8 +124,6 @@ public class Storage extends DocumentUtil {
             out.flush();
             out.close();
             result = out.toByteArray();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -200,12 +197,11 @@ public class Storage extends DocumentUtil {
 			if (externalFilesDirs == null) 
 				return null;
 
-            for (int i = 0; i < externalFilesDirs.length; i ++) {
-                File file = externalFilesDirs[i];
+            for (File file : externalFilesDirs) {
                 if (Environment.isExternalStorageRemovable(file)) {
-					return file.getAbsolutePath();
+                    return file.getAbsolutePath();
                 }
-				Log.i("SD PATH", file.toString());
+                Log.i("SD PATH", file.toString());
             }
         } catch (Exception e) {
 			//Toast.makeText(App.getAppContext(), e.toString(), 1).show();
@@ -219,7 +215,7 @@ public class Storage extends DocumentUtil {
 
         for (int i = 0; i < arrayList.size(); i ++) {
 
-            StringBuffer stringBuffer = new StringBuffer();
+            StringBuilder stringBuffer = new StringBuilder();
             strArr[i] = stringBuffer.append(str).append(arrayList.get(i)).toString();
         }
 

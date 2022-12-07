@@ -1,11 +1,9 @@
 package com.jefferson.application.br.ui;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,7 +22,6 @@ import android.view.MotionEvent;
 import android.view.animation.AnimationUtils;
 import android.view.animation.Animation;
 import com.jefferson.application.br.util.JDebug;
-//import com.jefferson.application.br.ui.JVideoController.ButtonState;
 
 public class JVideoController implements OnSeekBarChangeListener, OnClickListener, OnTouchListener {
 
@@ -264,7 +261,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
                     duration = mVideoView.getDuration();
                     mSeekBar.setVisibility(View.VISIBLE);
                     mSeekBar.setMax(duration);
-                    max = StringUtils.getFormatedVideoDuration(String.valueOf(duration));
+                    max = StringUtils.getFormattedVideoDuration(String.valueOf(duration));
                     endTextView.setText(max);
                 }
 
@@ -278,7 +275,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
                         mSeekBar.setProgress(position);
                     }
                 }
-                String current = StringUtils.getFormatedVideoDuration(String.valueOf(position));
+                String current = StringUtils.getFormattedVideoDuration(String.valueOf(position));
                 startTextView.setText(current);
             }
 

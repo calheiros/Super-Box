@@ -7,20 +7,23 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.PopupMenu;
-import com.jefferson.application.br.App;
 import com.jefferson.application.br.MaterialLockView;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.PasswordManager;
 import java.util.List;
+import java.util.concurrent.Executor;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricPrompt;
+import androidx.core.content.ContextCompat;
 
 public class VerifyActivity extends MyCompatActivity {  
 
@@ -29,7 +32,7 @@ public class VerifyActivity extends MyCompatActivity {
 	private MaterialLockView materialLockView;
 	private String password;
 
-    private static final int REQUEST_WRITE_READ_PERMSSION_CODE = 13;
+    private static final int REQUEST_WRITE_READ_PERMISSION_CODE = 13;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +50,8 @@ public class VerifyActivity extends MyCompatActivity {
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
-        setContentView(R.layout.pattern);
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-//        View parent = findViewById(R.id.patternRelativeLayout);
-//        TypedValue typedValue = new TypedValue();
-//        Resources.Theme theme = getTheme();
-//        theme.resolveAttribute(R.attr.colorPrimary, typedValue, true);
-//        int color = typedValue.data;
-//        parent.setBackgroundColor(color);
 
+        setContentView(R.layout.pattern);
         
 //      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 //          
@@ -63,17 +59,13 @@ public class VerifyActivity extends MyCompatActivity {
 //        promptInfo.setTitle("Unlock Super Box");
 //        promptInfo.build().authenticate(null);
 //        }
-		materialLockView = (MaterialLockView) findViewById(R.id.pattern);
+        //
+        checkBiometricSupport();
+        materialLockView = (MaterialLockView) findViewById(R.id.pattern);
 		materialLockView.setTactileFeedbackEnabled(false);
 
 		Handler = new Handler();
-		Runnable = new Runnable() {
-
-			@Override
-			public void run() {
-				materialLockView.clearPattern();
-			}
-		};
+		Runnable = () -> materialLockView.clearPattern();
 
 		materialLockView.setOnPatternListener(new MaterialLockView.OnPatternListener() {
                 public void onPatternStart() {
@@ -86,6 +78,7 @@ public class VerifyActivity extends MyCompatActivity {
 					if (!SimplePattern.equals(password)) {
 						materialLockView.setDisplayMode(MaterialLockView.DisplayMode.Wrong);
 						Handler.postDelayed(Runnable, 2000);
+                        wrongPasswdAnimation();
 					} else {
                         materialLockView.setDisplayMode(MaterialLockView.DisplayMode.Correct);
                         if (haveWriteReadPermission()) {
@@ -95,39 +88,51 @@ public class VerifyActivity extends MyCompatActivity {
                         }
                     }
 					super.onPatternDetected(pattern, SimplePattern);
-
 				}
             }
         );
 	}
 
+    void checkBiometricSupport() {
+        Executor executor = ContextCompat.getMainExecutor(this);
+        BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle(getString(R.string.biometric_title))
+                .setSubtitle(getString(R.string.biometric_subtitle))
+                .setDescription(getString(R.string.biometric_desc))
+                .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK | BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+                .setConfirmationRequired(false)
+                .build();
+
+        BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                Toast.makeText(VerifyActivity.this, errString, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+                startMainActivity();
+            }
+
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                Toast.makeText(VerifyActivity.this, "authentication failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        biometricPrompt.authenticate(promptInfo);
+    }
     @Override
     protected void onApplyCustomTheme() {
         setTheme(R.style.LauncherTheme);
     }
 
-    private boolean canProceed() {
-        String action = getIntent().getAction();
-
-        if (action == null) return false;
-
-        switch (action) {
-            case Intent.ACTION_MAIN:
-            case App.ACTION_OPEN_FROM_DIALER:
-                return true;
-            case App.ACTION_REPORT_CRASH:
-                startActivity(new Intent(this, CrashActivity.class).
-                              addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK).
-                              putExtra("message", getIntent().getStringExtra("message")));
-                return false;
-        }
-        return false;
-    }
-
 	private void startPopupMenu(View view) {
 		PopupMenu popMenu = new PopupMenu(this, view);
 		popMenu.getMenuInflater().inflate(R.menu.menu_recovery_pass, popMenu.getMenu());
-		popMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener(){
+		popMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
 				@Override
 				public boolean onMenuItemClick(MenuItem p1) {
@@ -140,7 +145,7 @@ public class VerifyActivity extends MyCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_WRITE_READ_PERMSSION_CODE) {
+        if (requestCode == REQUEST_WRITE_READ_PERMISSION_CODE) {
             if (haveWriteReadPermission()) {
                 startMainActivity();
             } else {
@@ -150,8 +155,16 @@ public class VerifyActivity extends MyCompatActivity {
         }
     }
 
+    private void wrongPasswdAnimation() {
+        Animation shakeAnim = AnimationUtils.loadAnimation(this, R.anim.shake_anim);
+        View view = findViewById(R.id.icon_super_view);
+        if (view != null) {
+            view.startAnimation(shakeAnim);
+        }
+    }
+
 	@Override
-	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+	public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 		super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
 		for (int i = 0; i < permissions.length; i++) {

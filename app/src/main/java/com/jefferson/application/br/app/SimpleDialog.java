@@ -17,6 +17,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.library.NumberProgressBar;
@@ -48,6 +49,7 @@ public class SimpleDialog  {
 
     private Context context;
     private View editTextLayout;
+    private ImageView iconView;
     public static final int INPUT_STYLE = 444;
 
 	public SimpleDialog(Context context, int style) {
@@ -108,7 +110,7 @@ public class SimpleDialog  {
 		positiveButton = parentView.findViewById(R.id.dialogPositiveButton);
 		negativeButton = parentView.findViewById(R.id.dialogNegativebutton);
         editTextLayout = parentView.findViewById(R.id.dialog_edit_text_layout);
-
+        iconView = parentView.findViewById(R.id.dialog_icon);
         this.jdialog = new JDialog(context, style == INPUT_STYLE);
 
         int color = ContextCompat.getColor(context, R.color.colorAccent);
@@ -144,7 +146,7 @@ public class SimpleDialog  {
     }
 
 	public SimpleDialog setContentView(View view) {
-        parentView.addView(view, 3, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        ((ViewGroup)parentView.findViewById(R.id.dialog_layout_container)).addView(view);
 		return this;
 	}
 
@@ -157,13 +159,14 @@ public class SimpleDialog  {
         return this;
     }
 
-    public void setPositiveButton(int stringId, OnDialogClickListener listener) {
+    public SimpleDialog setPositiveButton(int stringId, OnDialogClickListener listener) {
         setPositiveButton(context.getString(stringId), listener);
-
+        return this;
     }
 
-    public void setNegativeButton(int stringId, OnDialogClickListener listener) {
+    public SimpleDialog setNegativeButton(int stringId, OnDialogClickListener listener) {
         setNegativeButton(context.getString(stringId), listener);
+        return this;
     }
     public void setOnDismissListener(DialogInterface.OnDismissListener listener) {
         this.jdialog.setOnDismissListener(listener);
@@ -241,7 +244,7 @@ public class SimpleDialog  {
 	public SimpleDialog setPositiveButton(String buttonText, OnDialogClickListener listener) {
         if (positiveButton.getVisibility() != View.VISIBLE)
             positiveButton.setVisibility(View.VISIBLE);
-		positiveButton.setText(buttonText);
+        positiveButton.setText(buttonText);
 		positiveButton.setOnClickListener(new OnClickListener(listener));
 		return this;
 	}
@@ -254,7 +257,15 @@ public class SimpleDialog  {
 		return this;
 	}
 
-	private class OnClickListener implements View.OnClickListener {
+    public void setIcon(int ic_resid) {
+        iconView.setVisibility(View.VISIBLE);
+        iconView.setImageResource(ic_resid);
+    }
+    public void setIconColor(int color) {
+        iconView.setColorFilter(color);
+    }
+
+    private class OnClickListener implements View.OnClickListener {
 
 		private OnDialogClickListener listener;
         public OnClickListener(OnDialogClickListener listener) {

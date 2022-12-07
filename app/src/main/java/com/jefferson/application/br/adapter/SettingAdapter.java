@@ -1,5 +1,6 @@
 package com.jefferson.application.br.adapter;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,13 +30,12 @@ public class SettingAdapter extends BaseAdapter {
 	public SettingFragment settingFragment;
     private TextView calculatorDescText;
     private boolean switchCancelled = false;
-
     private Switch mySwitch;
     
     public SettingAdapter(ArrayList<PreferenceItem> arrayList, SettingFragment fragment) {
 		this.settingFragment = fragment;
         this.items = arrayList;
-        this.inflater = (LayoutInflater) fragment.getActivity().getSystemService("layout_inflater");
+        this.inflater = (LayoutInflater) fragment.requireActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     public ArrayList<PreferenceItem> getPreferenceItems() {
@@ -146,7 +146,8 @@ public class SettingAdapter extends BaseAdapter {
                     boolean checked = mySwitch.isChecked();
 
                     if (!checked && MyPreferences.getCalculatorCode().equals("4321")) {
-                        View contentView = settingFragment.getActivity().getLayoutInflater().inflate(R.layout.calculator_tip_dialog_layout, null);
+                        View contentView = settingFragment.requireActivity().getLayoutInflater().
+                                inflate(R.layout.calculator_tip_dialog_layout, null);
                         SimpleDialog dialog = new SimpleDialog(settingFragment.getActivity());
                         dialog.setContentView(contentView);
                         dialog.setTitle(R.string.aviso);

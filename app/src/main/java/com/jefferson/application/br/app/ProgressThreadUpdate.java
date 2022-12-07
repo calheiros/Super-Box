@@ -74,7 +74,7 @@ public class ProgressThreadUpdate extends Thread {
             } catch (InterruptedException e) {
                 
             }
-			double kilobytes = mTransfer.getTransferedKilobytes();
+			double kilobytes = mTransfer.getTransferredKilobytes();
 			long progress = Math.round(((100 / (double)max) * kilobytes));
 			dialog.setProgress((int)progress);
 		}

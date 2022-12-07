@@ -16,17 +16,23 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationView;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.fragment.LockFragment;
 import com.jefferson.application.br.fragment.MainFragment;
@@ -40,56 +46,75 @@ import com.jefferson.application.br.util.ServiceUtils;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.ThemeConfig;
 import com.jefferson.application.br.widget.MyAlertDialog;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener, BottomNavigationView.OnNavigationItemSelectedListener {
 
-    private BottomNavigationView buttonNavigationView;
-	//public static final String admob_key="ca-app-pub-3062666120925607~5789743722";
+    //public static final String admob_key="ca-app-pub-3062666120925607~5789743722";
     public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
+    public static final int IMPORT_FROM_GALLERY_CODE = 43;
+    public static final String ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS";
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12;
     //private static final int GET_URI_CODE_TASK = 54;
-	private static final int GET_SDCARD_URI_CODE = 98;
-    public static final int IMPORT_FROM_GALLERY_CODE = 43;
-    
-    private BroadcastReceiver receiver;
-    public MainFragment mainFragment;
-	private LockFragment lockFragment;
-	private SettingFragment settingFragment;
-	
-	private Fragment oldFrag;
-    private SharedPreferences sharedPreferences;
-	private int position;
-	private static MainActivity instance;
-	private AdView adview;
-    public boolean calculatorStateEnabled;
-    private boolean restarting;
+    private static final int GET_SDCARD_URI_CODE = 98;
+    private static final String ADS_ID = "ca-app-pub-3062666120925607/2904985113";
     public static int CURRENT_THEME;
-	//private InterstitialAd interstitial;
+    private static MainActivity instance;
+    public MainFragment mainFragment;
+    public boolean calculatorStateEnabled;
+    private BottomNavigationView buttonNavigationView;
+    private BroadcastReceiver receiver;
+    private LockFragment lockFragment;
+    private SettingFragment settingFragment;
+    private Fragment oldFrag;
+    private SharedPreferences sharedPreferences;
+    private int position;
+    private AdView adview;
+    private boolean restarting;
+    //private InterstitialAd interstitial;
+    private AdView squareAdview;
+    private final Handler getSdCardUriHandler = new Handler() {
+
+        @Override
+        public void dispatchMessage(Message msg) {
+            super.dispatchMessage(msg);
+            Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, msg.what);
+        }
+    };
 
     public static MainActivity getInstance() {
-		return instance;
-	}
+        return instance;
+    }
+
+    public static AdView createSquareAdview(Context context) {
+        AdView squareAdview = new AdView(context);
+        squareAdview.setAdSize(new AdSize(300, 250));
+        squareAdview.setAdUnitId(ADS_ID);
+        squareAdview.loadAd(new AdRequest.Builder().build());
+        return squareAdview;
+    }
+
     private void updateCurrentFragment() {
         if (mainFragment != null) {
-            int pagerPosition =  mainFragment.getPagerPosition();
+            int pagerPosition = mainFragment.getPagerPosition();
             updateFragment(pagerPosition);
         }
     }
-    
-    public static final String ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS";
 
-	public void setupToolbar(Toolbar toolbar, CharSequence title) {
-		setSupportActionBar(toolbar);
-		Objects.requireNonNull(getSupportActionBar()).setTitle(title);
-		getSupportActionBar().setDisplayShowHomeEnabled(false);
+    public void setupToolbar(Toolbar toolbar, CharSequence title) {
+        setSupportActionBar(toolbar);
+        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
 
 //		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.abc_action_bar_home_description);
 //		toggle.syncState();
 //		drawerLayout.setDrawerListener(toggle);
-	}
-    
+    }
+
     public void setRestarting(boolean restarting) {
         this.restarting = restarting;
     }
@@ -115,11 +140,17 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     public void onFinished() {
         updateCurrentFragment();
     }
-    
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-        instance = this;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        instance = this;
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
+                squareAdview = createSquareAdview(MainActivity.this);
+            }
+        });
         setContentView(R.layout.main_activity);
         CURRENT_THEME = ThemeConfig.getTheme(this);
 /*
@@ -131,21 +162,27 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 		navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 */
-        buttonNavigationView = (BottomNavigationView) findViewById(R.id.navigationView);
+        buttonNavigationView = findViewById(R.id.navigationView);
         buttonNavigationView.setOnNavigationItemSelectedListener(this);
-        
+
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         calculatorStateEnabled = isCalculatorComponentEnabled();
-
-		if (savedInstanceState != null) {
-			startActivity(new Intent(this, VerifyActivity.class).addFlags(
+        if (savedInstanceState != null) {
+            startActivity(new Intent(this, VerifyActivity.class).addFlags(
                     Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
-		}
+        }
         //createInterstitial();
         createFragments();
-		createAdView();
+        createAdView();
         createReceiver();
-	}
+    }
+
+    public AdView getSquareAdView() {
+        if (squareAdview == null) {
+            createSquareAdview(this);
+        }
+        return squareAdview;
+    }
 
     public void showSnackBar(String message, int length) {
         if (mainFragment != null) {
@@ -172,16 +209,10 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         registerReceiver(receiver, filter);
     }
 
-	private void createAdView() {
-        adview = (AdView)findViewById(R.id.ad_view);
-		adview.loadAd(new AdRequest.Builder().build());
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-        // getMenuInflater().inflate(R.menu.main_menu, menu);
-		return super.onCreateOptionsMenu(menu);
-	}
+    private void createAdView() {
+        adview = findViewById(R.id.ad_view);
+        adview.loadAd(new AdRequest.Builder().build());
+    }
 
 /*	public void createInterstitial() {
 //        interstitial = new InterstitialAd(this);
@@ -196,51 +227,51 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 }
 */
 
-/*    public void prepareAd() {
-//        if (interstitial.isLoading() == false && interstitial.isLoaded() == false) {
-//			interstitial.loadAd(new AdRequest.Builder().build());
-//		}
-//	}
-//
-//    public void showAd() {
-//        if (interstitial.isLoaded()) {
-//			interstitial.show();
-//		} 
-//	}
-*/
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    /*    public void prepareAd() {
+    //        if (interstitial.isLoading() == false && interstitial.isLoaded() == false) {
+    //			interstitial.loadAd(new AdRequest.Builder().build());
+    //		}
+    //	}
+    //
+    //    public void showAd() {
+    //        if (interstitial.isLoaded()) {
+    //			interstitial.show();
+    //		}
+    //	}
+    */
     public void updateFragment(int position) {
         if (mainFragment != null) {
             mainFragment.updateFragment(position);
         }
     }
 
-	public void updateAllFragments() {
+    public void updateAllFragments() {
         if (mainFragment != null) {
             mainFragment.updateAllFragments();
         }
     }
 
-    @Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.ads_item_menu) {
-		}
-		return super.onOptionsItemSelected(item);
-	}
-
-    public boolean requestPermission() { 
+    public boolean requestPermission() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                         Uri.parse("package:" + getPackageName()));
-                startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE); 
-                return true; 
-            } 
-        } return false;
+                startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE);
+                return true;
+            }
+        }
+        return false;
     }
 
-	private void createFragments() {
+    private void createFragments() {
         this.mainFragment = new MainFragment();
-	    this.lockFragment = new LockFragment();
+        this.lockFragment = new LockFragment();
         this.settingFragment = new SettingFragment();
         boolean startInSetting = ACTION_START_IN_PREFERENCES.equals(getIntent().getAction());
 
@@ -249,13 +280,8 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         } else {
             settingFragment.setCalculatorEnabled(calculatorStateEnabled);
         }
-		changeFragment(startInSetting ? settingFragment: mainFragment);
-		buttonNavigationView.getMenu().getItem(startInSetting ? 2 : 0).setChecked(true);
-	}
-
-    private boolean isCalculatorComponentEnabled() {
-        return PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getPackageManager().getComponentEnabledSetting(
-                new ComponentName(this, "com.jefferson.application.br.CalculatorAlias"));
+        changeFragment(startInSetting ? settingFragment : mainFragment);
+        buttonNavigationView.getMenu().getItem(startInSetting ? 2 : 0).setChecked(true);
     }
 
 //    private void sorryAlert() {
@@ -291,22 +317,27 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 //        );
 //	}
 
-	private void changeFragment(Fragment fragment) {
-		if (fragment != getSupportFragmentManager().findFragmentById(R.id.fragment_container)) {
-			FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+    private boolean isCalculatorComponentEnabled() {
+        return PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getPackageManager().getComponentEnabledSetting(
+                new ComponentName(this, "com.jefferson.application.br.CalculatorAlias"));
+    }
+
+    private void changeFragment(Fragment fragment) {
+        if (fragment != getSupportFragmentManager().findFragmentById(R.id.fragment_container)) {
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 
-			if (oldFrag != null)
-				transaction.detach(oldFrag);
-			transaction.replace(R.id.fragment_container, fragment);
-			transaction.attach(fragment);
-			transaction.commit();
-			oldFrag = fragment;
-		}
-	}
+            if (oldFrag != null)
+                transaction.detach(oldFrag);
+            transaction.replace(R.id.fragment_container, fragment);
+            transaction.attach(fragment);
+            transaction.commit();
+            oldFrag = fragment;
+        }
+    }
 
-	@Override
-	public boolean onNavigationItemSelected(MenuItem item) {
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         switch (id) {
@@ -332,26 +363,26 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                 } catch (ActivityNotFoundException e) {
                     activityNotFound();
                 }
-		}
-		//drawerLayout.closeDrawer(GravityCompat.START);
-		return true;
-	}
+        }
+        //drawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
 
-	public void activityNotFound() {
-		Toast.makeText(this, "Nenhum app encontrado!", Toast.LENGTH_LONG).show();
-	}
+    public void activityNotFound() {
+        Toast.makeText(this, "Nenhum app encontrado!", Toast.LENGTH_LONG).show();
+    }
 
-	@Override
-	protected void onPostCreate(Bundle savedInstanceState) {
-		super.onPostCreate(savedInstanceState);
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
 
-        if (!ServiceUtils.isMyServiceRunning(AppLockService.class)) {
-			startService(new Intent(this, AppLockService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-		}
-	}
+        if (ServiceUtils.isMyServiceRunning(AppLockService.class)) {
+            startService(new Intent(this, AppLockService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        }
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -361,13 +392,13 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             }
         }
 
-		if (resultCode == RESULT_OK) {
-          
+        if (resultCode == RESULT_OK) {
+
             if (requestCode == 69) {
                 updateFragment(position);
                 return;
             }
-            
+
             if (requestCode == SettingFragment.CALCULATOR_CREATE_CODE_RESULT) {
                 settingFragment.setCodeDescription(MyPreferences.getCalculatorCode());
                 return;
@@ -378,25 +409,25 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
                 Uri uri = null;
 
                 if (data != null) {
-					uri = data.getData();
-					Toast.makeText(this, uri.getPath(), Toast.LENGTH_LONG).show();
-				}
-				return;
-			}
+                    uri = data.getData();
+                    Toast.makeText(this, uri.getPath(), Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
 
-			if (requestCode == GET_SDCARD_URI_CODE) {
+            if (requestCode == GET_SDCARD_URI_CODE) {
                 Uri uri = data.getData();
 
                 if (Storage.checkIfSDCardRoot(uri)) {
                     getContentResolver().takePersistableUriPermission(uri,
                             Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                     Storage.storeExternalUri(uri.toString());
-                } 
+                }
 
-			} else if (requestCode == IMPORT_FROM_GALLERY_CODE) {
-				position = data.getIntExtra("position", -1);
+            } else if (requestCode == IMPORT_FROM_GALLERY_CODE) {
+                position = data.getIntExtra("position", -1);
                 String type = data.getStringExtra("type");
-				ArrayList<String> paths = data.getStringArrayListExtra("selection");
+                ArrayList<String> paths = data.getStringArrayListExtra("selection");
 
                 Intent intent = new Intent(this, ImportMediaActivity.class);
                 intent.putExtra(ImportMediaActivity.TYPE_KEY, type);
@@ -428,49 +459,38 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         }  //Toast.makeText(this, "RESUKT_CANCELLED " + requestCode, 1).show();
 
         super.onActivityResult(requestCode, resultCode, data);
-	}
+    }
 
-    private Handler getSdCardUriHandler = new Handler() {
-
-        @Override
-        public void dispatchMessage(Message msg) {
-            super.dispatchMessage(msg);
-            Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            startActivityForResult(intent, msg.what);
-        }
-    };
-
-	private void getSdCardUri(int code) {
+    private void getSdCardUri(int code) {
         Toast.makeText(MainActivity.this, getString(R.string.selecionar_sdcard), Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
         startActivityForResult(intent, 54);
-	}
+    }
 
     @Override
-	public void onBackPressed() {
+    public void onBackPressed() {
         showExitDialog();
 //        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
 //            showExitDialog();
 //        } else {
 //            drawerLayout.openDrawer(GravityCompat.START);
 //        }
-	}
+    }
 
-	private void showExitDialog() {
-	    MyAlertDialog.Builder builder = new MyAlertDialog.Builder(this, DialogUtils.getTheme());
+    private void showExitDialog() {
+        MyAlertDialog.Builder builder = new MyAlertDialog.Builder(this, DialogUtils.getTheme());
         builder.setTitle(getString(R.string.confirmacao));
         builder.setMessage(getString(R.string.quer_realmente_sair));
-        builder.setPositiveButton(getString(R.string.sim), new DialogInterface.OnClickListener(){
+        builder.setPositiveButton(getString(R.string.sim), new DialogInterface.OnClickListener() {
 
-                @Override
-                public void onClick(DialogInterface face, int i) {
-                    finish();
+                    @Override
+                    public void onClick(DialogInterface face, int i) {
+                        finish();
+                    }
                 }
-            }
         );
         builder.setNegativeButton(getString(R.string.nao), null).show();
-	}
+    }
 
     @Override
     public void onStart() {
@@ -480,7 +500,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     @Override
     public void onResume() {
         super.onResume();
-		adview.resume();
+        adview.resume();
     }
 
     @Override
@@ -496,6 +516,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
     @Override
     public void onDestroy() {
+        if (!restarting)
         instance = null;
         adview.destroy();
 
@@ -509,7 +530,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             if (enabled != isCalculatorComponentEnabled()) {
 
                 settingFragment.disableLauncherActivity(enabled);
-                settingFragment.setCompomentEnabled(!enabled, "com.jefferson.application.br.CalculatorAlias");
+                settingFragment.setComponentEnabled(!enabled, "com.jefferson.application.br.CalculatorAlias");
 
                 Toast.makeText(this, getString(R.string.aplicando_configuracoes), Toast.LENGTH_SHORT).show();
             }

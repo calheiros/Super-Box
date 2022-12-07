@@ -209,11 +209,11 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
     }
 
     public void backspace(View v) {
-        int lenght = editText.getText().length();
-        if (lenght == 0) {
+        int length = editText.getText().length();
+        if (length == 0) {
             return;
         }
-        editText.getText().delete(lenght - 1, lenght);
+        editText.getText().delete(length - 1, length);
     }
 
     private void appendOperation(String operation) {
@@ -263,12 +263,14 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
             startActivity(intent);
             overridePendingTransition(0, 0);
-            return;
-        } 
-        return;
+        }
     }
 
     private void showHint(final String message) {
+        if (hintTextView.getVisibility() != View.VISIBLE) {
+            hintTextView.setVisibility(View.VISIBLE);
+        }
+
         Animation fadeOut = AnimationUtils.loadAnimation(this, R.anim.fade_out);
         fadeOut.setDuration(200);
         fadeOut.setAnimationListener(new Animation.AnimationListener() {
@@ -291,8 +293,16 @@ public class CalculatorActivity extends MyCompatActivity implements OnLongClickL
                 }
             }
         );
+        startHintFadeInAnim(message);
         hintTextView.startAnimation(fadeOut);
         //Snackbar.make(editText, message, Snackbar.LENGTH_SHORT).show();
+    }
+
+    private void startHintFadeInAnim(String message) {
+        Animation fadeIn = AnimationUtils.loadAnimation(CalculatorActivity.this, R.anim.fade_in);
+        fadeIn.setDuration(200);
+        hintTextView.setText(message);
+        hintTextView.startAnimation(fadeIn);
     }
 
     @Override

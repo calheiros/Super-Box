@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:lockview="http://schemas.android.com/apk/res-auto"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent"
     android:id="@+id/patternRelativeLayout"
@@ -14,16 +15,19 @@
 		android:orientation="vertical">
 
 		<com.jefferson.application.br.MaterialLockView
-			xmlns:lockview="http://schemas.android.com/apk/res-auto"
 			android:id="@+id/pattern"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_alignParentBottom="true"
-			lockview:LOCK_COLOR="#fff"
+			android:layout_centerHorizontal="true"
+			android:layout_marginBottom="16dp"
+			android:layout_marginLeft="16dp"
+			android:layout_marginRight="16dp"
+			android:layout_gravity="center"
 			android:padding="25dp"
-			lockview:WRONG_COLOR="#ff0000"
 			lockview:CORRECT_COLOR="#11DD61"
-			android:layout_gravity="bottom"/>
+			lockview:LOCK_COLOR="#fff"
+			lockview:WRONG_COLOR="#ff0000" />
 
 		<FrameLayout
 			android:layout_height="match_parent"
@@ -35,11 +39,8 @@
 			<ImageView
 				android:layout_height="50dp"
 				android:layout_width="50dp"
-				android:id="@+id/iconApp"
+				android:id="@+id/icon_super_view"
 				android:src="@drawable/ic_super"
-				android:layout_centerHorizontal="true"
-				android:layout_centerInParent="true"
-				android:layout_centerVertical="true"
 				android:layout_gravity="center"
 				android:layout_margin="15dp"/>
 
@@ -47,11 +48,10 @@
 				android:layout_height="40dp"
 				android:src="@drawable/ic_menu"
 				android:layout_gravity="top|right"
-				android:layout_alignParentTop="true"
 				android:id="@+id/ic_menu_view"
 				android:layout_width="35dp"
 				android:layout_marginTop="20dp"
-				android:layout_marginRight="10dp"
+				android:layout_marginEnd="10dp"
 				android:visibility="gone"/>
 
 		</FrameLayout>

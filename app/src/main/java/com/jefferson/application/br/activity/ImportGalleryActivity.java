@@ -199,7 +199,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
                 MediaModel mm = new MediaModel(absolutePathOfImage);
 
                 if (position == 1)
-                    mm.setDuration(StringUtils.getFormatedVideoDuration(duration));
+                    mm.setDuration(StringUtils.getFormattedVideoDuration(duration));
 
                 model.setName(cursor.getString(column_index_folder_name));
                 model.addItem(mm);
@@ -208,7 +208,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
                 MediaModel mm = new MediaModel(absolutePathOfImage);
 
                 if (position == 1) {
-                    String formatedTime = StringUtils.getFormatedVideoDuration(duration);
+                    String formatedTime = StringUtils.getFormattedVideoDuration(duration);
                     mm.setDuration(formatedTime);
                 }
 

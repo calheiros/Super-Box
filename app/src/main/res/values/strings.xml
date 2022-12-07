@@ -177,5 +177,15 @@
     <string name="excluir_face_intruder">The photo will be deleted, are you sure you want to continue?</string>
     <string name="excluir_aviso_imagem">the image will be deleted forever and can not be recovered, are you sure you want to continue?</string>
     <string name="excluir_aviso_video">the video will be deleted forever and can not be recovered, are you sure you want to continue?</string>
+    <string name="super_box_by_jefferson_calheiros">Super Box by Jefferson Calheiros</string>
+    <string name="github_com_calheiros">github.com/calheiros</string>
+    <string name="github_icon">github icon</string>
+    <string name="apagar_image_mensagem">This image will be deleted forever. Are you sure?</string>
+    <string name="dialog_icon">dialog icon</string>
+    <string name="select_all">Select all</string>
+    <string name="information">Information</string>
+    <string name="biometric_title">Biometric Auth</string>
+    <string name="biometric_subtitle">Please anable to enter</string>
+    <string name="biometric_desc">"biometric "</string>
 
 </resources>

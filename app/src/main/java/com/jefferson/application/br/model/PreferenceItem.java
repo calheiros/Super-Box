@@ -23,7 +23,7 @@ public class PreferenceItem {
         APP_ICON,
         DIALER_CODE,
         SCREENSHOT,
-        ABOUT,
+        ABOUT, DISABLE_ADS,
     }
     
     public PreferenceItem(ID id) {

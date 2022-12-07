@@ -2,6 +2,8 @@ package com.jefferson.application.br.util;
 import android.util.ArrayMap;
 import android.util.Log;
 import android.util.Patterns;
+
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,10 +53,10 @@ public class StringUtils {
         } return links.toArray(new String[links.size()]); 
     }
 
-    public static String getFormatedVideoDuration(String millis) {
+    public static String getFormattedVideoDuration(String millis) {
         int duration = 0;
         try {
-            duration = Integer.valueOf(millis);
+            duration = Integer.parseInt(millis);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
@@ -63,20 +65,30 @@ public class StringUtils {
         long hours =  TimeUnit.MINUTES.toHours(minutes);
         minutes = minutes - (hours * 60);
         //long secunds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
-        final String fmt = hours > 0 ? String.format("%d:%02d:%02d", hours, minutes, seconds) : String.format("%d:%02d", minutes, seconds);
 
-        return fmt;
+        return hours > 0 ? String.format("%d:%02d:%02d", hours, minutes, seconds) : String.format("%d:%02d", minutes, seconds);
     }
 
     public static String getFormatedDate() {
-        return getFormatedDate("dd-MM-yyyy_HH-mm-ss");
+        return getFormattedDate("dd-MM-yyyy_HH-mm-ss");
     }
     
-    public static String getFormatedDate(String format) {
+    public static String getFormattedDate(String format) {
         Calendar calendar = Calendar.getInstance();
         Date now = calendar.getTime(); 
         SimpleDateFormat simpleDate = new SimpleDateFormat(format);
-        String timestamp = simpleDate.format(now);
-        return timestamp;
+        return simpleDate.format(now);
+    }
+    public static String getFormattedFileSize(long fileSize) {
+        DecimalFormat fmt = new DecimalFormat("0.00");
+        float kb = (float)fileSize / 1024;
+
+        if (kb < 1.0) {
+            return fmt.format(fileSize ) + " Bytes";
+        }
+        if (kb / 1024 < 1.0) {
+            return fmt.format(kb ) + " Kilobytes";
+        }
+        return fmt.format (kb / 1024) + " Megabytes";
     }
 }

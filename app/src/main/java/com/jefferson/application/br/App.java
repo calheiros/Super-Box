@@ -10,10 +10,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
-import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.jefferson.application.br.activity.CrashActivity;
 import com.jefferson.application.br.activity.MyCompatActivity;
 import com.jefferson.application.br.service.AppLockService;
@@ -35,12 +31,11 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
     public AppLockService appLockService;
 
     private final String TESTE_ADS_ID = "ca-app-pub-3940256099942544/6300978111";
-    private final String ADS_ID = "ca-app-pub-3062666120925607/2904985113";
+
     public static final String ACTION_OPEN_FROM_DIALER = "com.jefferson.application.action.ACTION_OPEN_FROM_DIALER";
     public static final String ACTION_APPLOCK_SERVICE_UPDATE_DATA = "com.jefferson.application.action.UPDATA";
     public static final String ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD = "com.jefferson.applicatiom.action.APPLOCK_SERVICE_UPDATE_PASSWORD";
 
-    private static AdView adview = null;
 	private final Runnable mRunnable = new Runnable() {
 
 		@Override
@@ -51,10 +46,6 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
 			App.this.counting = false;
         }
     };
-
-    public static AdView getSquareAdView() {
-        return adview;
-    }
 
     private boolean isAnyNotRunning() {
         for (MyCompatActivity activity : activities) {
@@ -92,29 +83,20 @@ public class App extends Application implements Thread.UncaughtExceptionHandler 
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent pending = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT);
         AlarmManager am = (AlarmManager) getSystemService(ALARM_SERVICE);
-        am.set(am.ELAPSED_REALTIME_WAKEUP, 200, pending);
+        am.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, 200, pending);
     }
 
     public void onCreate() {
         application = this;
         super.onCreate();
        // mSharedPrefs = getSharedPreferences(EXCEPTION_LOG, MODE_PRIVATE);
-        MobileAds.initialize(this);
         mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         Thread.setDefaultUncaughtExceptionHandler(this);
         startServiceNotRunning();
-        createSquareAdview();
-    }
-
-    public void createSquareAdview() {
-        adview = new AdView(this);
-        adview.setAdSize(new AdSize(300, 300));
-        adview.setAdUnitId(ADS_ID);
-        adview.loadAd(new AdRequest.Builder().build());
     }
 
     private void startServiceNotRunning() {
-        if (!ServiceUtils.isMyServiceRunning(AppLockService.class)) {
+        if (ServiceUtils.isMyServiceRunning(AppLockService.class)) {
             Intent intent = new Intent(this, AppLockService.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 

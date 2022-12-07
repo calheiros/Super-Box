@@ -13,6 +13,8 @@ import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -29,6 +31,7 @@ import com.jefferson.application.br.task.MonoTypePrepareTask;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.view.CircleProgressView;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpdatedListener, JTask.OnBeingStartedListener, JTask.OnFinishedListener {
 
@@ -50,6 +53,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     private int typeQuantityRes;
     private final int flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
     private AdView adview;
+    FrameLayout parent;
 
     public static final String MODELS_KEY = "models_key";
 
@@ -70,11 +74,12 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         progressView = (CircleProgressView) findViewById(R.id.circle_progress_view);
         button = (Button) findViewById(R.id.import_media_button);
 
-        App app = App.getInstance();
-        adview = App.getSquareAdView();
-        app.createSquareAdview();
-
-        ((FrameLayout)findViewById(R.id.ad_view_layout)).addView(adview);
+        MainActivity mainActivity = MainActivity.getInstance();
+        adview = Objects.requireNonNull(mainActivity == null?
+                MainActivity.createSquareAdview(this) : mainActivity.getSquareAdView());
+        removeParent(adview);
+        parent = findViewById(R.id.ad_view_layout);
+        parent.addView(adview);
 
         Intent intent = getIntent();
         ArrayList <FileModel> data = null;
@@ -109,7 +114,13 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             prepareTitleView.setText("Checking");
         }
     }
-
+    public static void removeParent(View v) {
+        ViewParent parent = v.getParent();
+        if (parent instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) parent;
+            group.removeView(v);// w  w w .j  a  va  2  s.co m
+        }
+    }
     private void startImportTask(ArrayList<FileModel> data) {
         importTask = new ImportTask(this, data , null);
         importTask.setOnUpdatedListener(this);
@@ -204,7 +215,8 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        adview.destroy();
+        //parent.removeView(adview);
+        //adview.destroy();
     }
 
     @Override
@@ -241,11 +253,11 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         }
     }
 
-    private class AnimateProgressText extends Thread {
+    private static class AnimateProgressText extends Thread {
 
         private TextView textView;
         private String text;
-        private String sufix = "";
+        private String suffix = "";
         private JTask task;
 
         private final Handler updateHandler = new Handler() {
@@ -254,7 +266,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             public void dispatchMessage(Message msg) {
                 super.dispatchMessage(msg);
                 if (textView != null) {
-                    textView.setText(text + sufix);
+                    textView.setText(text + suffix);
                 }
             }
         };
@@ -281,7 +293,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                     break;
                 }
                 updateHandler.sendEmptyMessage(0);
-                sufix = sufix.length() > 2 ? "" : (sufix += ".");
+                suffix = suffix.length() > 2 ? "" : (suffix += ".");
             }
         }
     }
