@@ -117,9 +117,9 @@ public class AppLockWindow {
 	}
 
 	private void createView() {
-        lastView = view;
+		lastView = view;
 		view = createParentView();
-	    iconImageView = (ImageView) view.findViewById(R.id.iconApp);
+	    iconImageView = (ImageView) view.findViewById(R.id.icon_super_view);
         materialLockView = (MaterialLockView) view.findViewById(R.id.pattern);
 
 		if (currentApp != null) 

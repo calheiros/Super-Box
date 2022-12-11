@@ -93,7 +93,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             int color = typedValue.data;
 
             mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
-			mySwipeRefreshLayout.setProgressBackgroundColorSchemeColor(color);// .setProgressBackgroundColor(color);
+            mySwipeRefreshLayout.setProgressBackgroundColorSchemeColor(color);// .setProgressBackgroundColor(color);
             mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
                     @Override

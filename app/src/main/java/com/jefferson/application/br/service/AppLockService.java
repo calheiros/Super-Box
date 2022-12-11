@@ -54,7 +54,7 @@ public class AppLockService extends Service {
 	@Override
 	public void onCreate() {
         startForeground();
-		AppLockAdapter.service = this;
+        AppLockAdapter.service = this;
 		database = new AppLockDatabase(this);
 		appLockWindow = new AppLockWindow(getApplicationContext(), database);
         usageStats = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
@@ -86,7 +86,7 @@ public class AppLockService extends Service {
             }
         }
         JDebug.toast("stat command " + intent);
-		return START_STICKY;
+        return START_STICKY;
 	}
 
   /*  private void createDataBusReceiver() {

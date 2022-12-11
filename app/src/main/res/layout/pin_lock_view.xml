@@ -18,7 +18,7 @@
 		<ImageView
 			android:layout_height="65dp"
 			android:layout_width="65dp"
-			android:id="@+id/iconApp"
+			android:id="@+id/icon_super_view"
 			android:src="@drawable/ic_super"
 			android:layout_centerHorizontal="true"
 			android:layout_centerInParent="true"

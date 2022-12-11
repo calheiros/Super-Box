@@ -417,7 +417,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         } else if (item.getItemId() == R.id.info_item_menu) {
             showFilesInfo();
         }
-		return false;
+        return false;
 	}
 
 	@Override

@@ -110,7 +110,7 @@ public class DeleteFilesTask extends JTask {
     protected void onUpdated(Object[] get) {
         super.onUpdated(get);
         dialog.setProgress(progress);
-		dialog.setMessage((String)get[1]);
+        dialog.setMessage((String)get[1]);
     }
 
 	private void deleteFolder(File file) {
