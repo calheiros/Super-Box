@@ -16,7 +16,7 @@ import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.app.SimpleDialog;
-import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.ThemeConfig;
 
@@ -41,7 +41,7 @@ public class ImagePreviewFragment extends Fragment implements View.OnClickListen
             ImageButton deleteButton = parentView.findViewById(R.id.image_preview_delete_button);
             ImageView gifView = parentView.findViewById(R.id.gif_view);
             optionLayout = parentView.findViewById(R.id.image_preview_options_layout);
-            PathsData database = PathsData.getInstance(getContext(), Storage.getDefaultStoragePath());
+            PathsDatabase database = PathsDatabase.getInstance(getContext(), Storage.getDefaultStoragePath());
             String originPath = originPath = database.getPath(new File(path).getName());
             database.close();
 

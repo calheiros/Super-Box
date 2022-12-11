@@ -1,7 +1,11 @@
 package com.jefferson.application.br.fragment;
 
+import static androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG;
+import static androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL;
+
 import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
+
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +14,9 @@ import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+
+import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,8 +33,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
+import androidx.biometric.BiometricManager;
 import androidx.fragment.app.Fragment;
 
 import com.jefferson.application.br.LocaleManager;
@@ -48,6 +57,7 @@ import java.util.ArrayList;
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
     public static final int CALCULATOR_CREATE_CODE_RESULT = 85;
+    private static final int REQUEST_CODE = 109;
     public String[] storages;
     public String version;
     private SettingAdapter adapter;
@@ -71,7 +81,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.config, null);
+        View view = inflater.inflate(R.layout.config, container, false);
         Toolbar mToolbar = view.findViewById(R.id.toolbar);
         storages = new String[]{getString(R.string.armaz_interno), getString(R.string.armaz_externo)};
 
@@ -151,16 +161,20 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.description = getString(R.string.menos_seguro_se_habilitado);
                     item.checked = MyPreferences.getAllowScreenshot();
                     break;
-                case 8:
+                case 9:
                     item.title = getString(R.string.preferecias_sobre);
                     item.type = PreferenceItem.SECTION_TYPE;
                     break;
-                case 9:
-                    item.id = PreferenceItem.ID.DISABLE_ADS;
-                    item.title = "Disable ADS";
+                case 8:
+                    SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences();
+                    boolean checked = sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false);
+
+                    item.id = PreferenceItem.ID.FINGERPRINT;
+                    item.title = "Use fingerprint";
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE;
-                    item.icon_res_id = R.drawable.ic_block;
-                    item.description = "Stop displaying ads for free";
+                    item.icon_res_id = R.drawable.ic_fingerprint;
+                    item.description = "Enable fingerprint unlock";
+                    item.checked = checked;
                     break;
                 case 10:
                     item.id = PreferenceItem.ID.ABOUT;
@@ -197,7 +211,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     @Override
-    public void onItemClick(AdapterView<?> adapter, View view, int position, long id) {
+    public void onItemClick(AdapterView adapter, View view, int position, long id) {
         PreferenceItem.ID itemId = SettingFragment.this.adapter.getItem(position).id;
 
         if (itemId == PreferenceItem.ID.PASSWORD) {
@@ -222,12 +236,26 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             } else {
                 window.addFlags(flags);
             }
-            mySwitch.setChecked(checked);
+            setItemChecked(this.adapter, mySwitch, position, checked);
         } else if (itemId == PreferenceItem.ID.DIALER_CODE) {
             changeCodeDialog();
         } else if (itemId == PreferenceItem.ID.ABOUT) {
             showAbout();
+        } else if(itemId == PreferenceItem.ID.FINGERPRINT) {
+            Switch mySwitch = view.findViewById(R.id.my_switch);
+            SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences();
+            boolean checked = !mySwitch.isChecked();
+            if (supportFingerprint()) {
+                if (sharedPrefs.edit().putBoolean(MyPreferences.KEY_FINGERPRINT, checked).commit())
+                    setItemChecked(this.adapter, mySwitch, position, checked);
+            }
         }
+    }
+
+    private void setItemChecked(@NonNull SettingAdapter adapter,Switch mySwitch, int position, boolean checked) {
+        PreferenceItem item = adapter.getItem(position);
+        mySwitch.setChecked(checked);
+        item.checked = checked;
     }
 
     @Override
@@ -341,6 +369,33 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
     public void disableLauncherActivity(boolean disable) {
         requireActivity().getPackageManager().setComponentEnabledSetting(new ComponentName(getContext(), "com.jefferson.application.br.LuancherAlias"), disable ? PackageManager.COMPONENT_ENABLED_STATE_DISABLED : PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+    }
+
+    public boolean supportFingerprint() {
+        BiometricManager biometricManager = BiometricManager.from(requireContext());
+        switch (biometricManager.canAuthenticate(BIOMETRIC_STRONG | DEVICE_CREDENTIAL)) {
+            case BiometricManager.BIOMETRIC_SUCCESS:
+                Log.d("MY_APP_TAG", "App can authenticate using biometrics.");
+                return true;
+            case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
+                Toast.makeText( requireContext(),"Nenhum hardware de biometria detectado! \nConsidere adquirir um smartphone melhor.", Toast.LENGTH_LONG).show();
+                Log.e("MY_APP_TAG", "No biometric features available on this device.");
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE:
+                Log.e("MY_APP_TAG", "Biometric features are currently unavailable.");
+                break;
+            case BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED:
+                // Prompts the user to create credentials that your app accepts.
+                Intent enrollIntent = null;
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                    enrollIntent = new Intent(Settings.ACTION_BIOMETRIC_ENROLL);
+                    enrollIntent.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
+                            BIOMETRIC_STRONG | DEVICE_CREDENTIAL);
+                }
+                requireActivity().startActivityForResult(enrollIntent, REQUEST_CODE);
+                break;
+        }
+        return false;
     }
 
     public void setComponentEnabled(boolean enabled, String component) {

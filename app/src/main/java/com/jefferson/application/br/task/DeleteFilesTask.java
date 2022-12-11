@@ -1,7 +1,6 @@
 package com.jefferson.application.br.task;
 
 import android.content.*;
-import android.os.*;
 import android.widget.*;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.app.*;
@@ -9,8 +8,6 @@ import com.jefferson.application.br.database.*;
 import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
-import com.jefferson.application.br.task.JTask.OnFinishedListener;
-import com.jefferson.application.br.database.PathsData.Folder;
 
 public class DeleteFilesTask extends JTask {
 
@@ -36,7 +33,7 @@ public class DeleteFilesTask extends JTask {
 
     @Override
     public void workingThread() {
-        PathsData database = PathsData.getInstance(context, Storage.getDefaultStoragePath());
+        PathsDatabase database = PathsDatabase.getInstance(context, Storage.getDefaultStoragePath());
         try {
             for (String path : items) {
                 if (isInterrupted()) {
@@ -100,13 +97,13 @@ public class DeleteFilesTask extends JTask {
 
     @Override
     public void onException(Exception e) {
-        Toast.makeText(context, "Error", 1).show();
+        Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onInterrupted() {
         super.onInterrupted();
-        Toast.makeText(context, context.getString(R.string.canceledo_usuario), 1).show();
+        Toast.makeText(context, context.getString(R.string.canceledo_usuario), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -117,7 +114,7 @@ public class DeleteFilesTask extends JTask {
     }
 
 	private void deleteFolder(File file) {
-        PathsData.Folder database = PathsData.Folder.getInstance(context);
+        PathsDatabase.Folder database = PathsDatabase.Folder.getInstance(context);
         try {
             if (file.delete()) {
                 database.delete(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);

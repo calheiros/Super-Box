@@ -18,7 +18,7 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.jefferson.application.br.FileModel;
-import com.jefferson.application.br.FolderModel;
+import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.adapter.PhotosFolderAdapter;
 import com.jefferson.application.br.model.MediaModel;
@@ -143,7 +143,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     }
 
     private void notImplemented() {
-        Toast.makeText(this, "Not implemented!", 1).show();
+        Toast.makeText(this, "Not implemented!", Toast.LENGTH_SHORT).show();
     }
 
     public ArrayList<FolderModel> fn_imagespath() {

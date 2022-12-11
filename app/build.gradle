@@ -7,8 +7,8 @@ android {
         applicationId "com.jefferson.application.br"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 12
-        versionName "1.9.1 alpha"
+        versionCode 13
+        versionName "1.9.2 alpha"
     }
     
     buildTypes {

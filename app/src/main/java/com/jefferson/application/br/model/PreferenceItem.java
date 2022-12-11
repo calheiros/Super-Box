@@ -1,6 +1,4 @@
 package com.jefferson.application.br.model;
-import com.jefferson.application.br.fragment.SettingFragment;
-import com.jefferson.application.br.model.PreferenceItem.ID;
 
 public class PreferenceItem {
 
@@ -23,7 +21,7 @@ public class PreferenceItem {
         APP_ICON,
         DIALER_CODE,
         SCREENSHOT,
-        ABOUT, DISABLE_ADS,
+        ABOUT, FINGERPRINT,
     }
     
     public PreferenceItem(ID id) {

@@ -20,7 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.jefferson.application.br.App;
-import com.jefferson.application.br.FolderModel;
+import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.ViewAlbum;
 import com.jefferson.application.br.fragment.AlbumFragment;
@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> {
+public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
 
     private final AlbumFragment fragment;
     private final int pagerPosition;
@@ -92,10 +92,20 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
     @NonNull
     @Override
-    public viewHolder onCreateViewHolder(ViewGroup parent, int p2) {
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int p2) {
         group = parent;
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.adapter_photosfolder, parent, false);
-        return new viewHolder(view);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.adapter_photosfolder, parent, false);
+        return new ViewHolder(view);
+    }
+
+    public void notifyItemChanged(FolderModel f_model) {
+        for(int i = 0; i < getItemCount(); i++) {
+            if (f_model.getName().equals(getItem(i).getName())) {
+                notifyItemChanged(i);
+                break;
+            }
+        }
     }
 
     public void removeItem(FolderModel item) {
@@ -119,17 +129,17 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(final viewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         final FolderModel f_model = models.get(position);
         holder.tv_foldern.setText(f_model.getName());
         holder.tv_foldersize.setText(String.valueOf(f_model.getItems().size()));
         boolean isEmpty = f_model.getItems().isEmpty();
+        holder.favoriteView.setVisibility(f_model.isFavorite() ? View.VISIBLE: View.GONE);
 
         if (!isEmpty) {
-            holder.smallView.setVisibility(View.GONE);
             Glide.with(fragment.requireContext()).load("file://" + f_model.getItems().get(0).getPath()).skipMemoryCache(true).into(holder.iv_image);
         } else {
-            holder.iv_image.setImageResource(0);
+            holder.iv_image.setImageBitmap(null);
             holder.smallView.setImageResource(R.drawable.ic_image_broken_variant);
         }
 
@@ -158,7 +168,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
             public boolean onLongClick(final View view) {
                 Context context = view.getContext();
                 View menuView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.dialog_list_view_layout, null);
-                final String[] options = {context.getString(R.string.renomear), context.getString(R.string.apagar), "Add to Favorites"};
+                final String[] options = {context.getString(R.string.renomear), context.getString(R.string.apagar), f_model.isFavorite() ? "Remove from favorites": "Add to Favorites"};
                 final int[] icons = {R.drawable.ic_rename, R.drawable.ic_delete_all, R.drawable.ic_bookmark};
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
@@ -174,7 +184,6 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
 
                 return false;
             }
-
         });
 
     }
@@ -184,24 +193,25 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
         return models.size();
     }
 
-    public class viewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
 
         TextView tv_foldern, tv_foldersize;
-        ImageView iv_image;
+        ImageView iv_image, favoriteView;
         RelativeLayout cd_layout;
         ImageView smallView;
 
-        public viewHolder(View view) {
+        public ViewHolder(View view) {
             super(view);
             tv_foldern = view.findViewById(R.id.tv_folder);
             tv_foldersize = view.findViewById(R.id.tv_folder2);
             iv_image = view.findViewById(R.id.iv_image);
             cd_layout = view.findViewById(R.id.adapter_photosfolderParentView);
             smallView = view.findViewById(R.id.folder_small_icon_view);
+            favoriteView = view.findViewById(R.id.folder_favorite_icon_view);
         }
     }
 
-    public class DialogAdapter extends BaseAdapter {
+    public static class DialogAdapter extends BaseAdapter {
         private final Context context;
         private final CharSequence[] options;
         private final int[] icons;
@@ -233,7 +243,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
         public View getView(int position, View convertView, ViewGroup parent) {
             View view = null;
             if (convertView == null) {
-                view = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.dialog_menu_item_layout, null);
+                view = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                        .inflate(R.layout.dialog_menu_item_layout, parent, false);
                 TextView textView = view.findViewById(R.id.dialog_item_text_view);
                 ImageView imageView = view.findViewById(R.id.dialog_item_image_view);
 
@@ -265,9 +276,29 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.viewHolder> 
                     fragment.deleteFolder(f_model);
                     break;
                 case 2:
-                    fragment.addToFavorites(f_model);
+                    int startPosition = getItemPosition(f_model);
+
+                    if (f_model.isFavorite())
+                        fragment.removeFromFavorites(f_model);
+                    else
+                        fragment.addToFavorites(f_model);
+
+                    FolderModel.sort(models);
+                    int endPosition = getItemPosition(f_model);
+                    notifyItemMoved(startPosition, endPosition);
+                    break;
             }
             dialog.dismiss();
         }
+    }
+
+    private int getItemPosition(FolderModel f_model) {
+        for (int i = 0; i < getItemCount(); i++) {
+            if (getItem(i).equals(f_model)) {
+                notifyItemChanged(i);
+               return i;
+            }
+        }
+        return -1;
     }
 }

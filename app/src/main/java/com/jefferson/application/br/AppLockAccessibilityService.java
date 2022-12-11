@@ -12,7 +12,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Toast;
-import com.jefferson.application.br.database.AppsDatabase;
+import com.jefferson.application.br.database.AppLockDatabase;
 import com.jefferson.application.br.util.JDebug;
 import java.util.ArrayList;
 
@@ -21,7 +21,7 @@ public class AppLockAccessibilityService extends android.accessibilityservice.Ac
     private static String TAG = AppLockAccessibilityService.class.getName();
 	private String activityOnTop;
 
-	AppsDatabase database;
+	AppLockDatabase database;
 	private AppLockWindow appLockWindow;
 
 	private ScreenOnOff mybroadcast;
@@ -32,7 +32,7 @@ public class AppLockAccessibilityService extends android.accessibilityservice.Ac
 	public void onCreate() {
 		super.onCreate();
 
-		database = new AppsDatabase(this);
+		database = new AppLockDatabase(this);
 		appLockWindow = new AppLockWindow(this, database);
 		mybroadcast = new ScreenOnOff();
 

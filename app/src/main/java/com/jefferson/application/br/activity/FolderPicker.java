@@ -19,7 +19,7 @@ import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.adapter.FilePickerAdapter;
 import com.jefferson.application.br.app.SimpleDialog;
-import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.fragment.AlbumFragment;
 import com.jefferson.application.br.model.PickerModel;
 import com.jefferson.application.br.task.JTask;
@@ -44,7 +44,7 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
 
         @Override
         public void onException(Exception e) {
-            Toast.makeText(FolderPicker.this, "Error!", 1).show();
+            Toast.makeText(FolderPicker.this, "Error!", Toast.LENGTH_SHORT).show();
         }
         ArrayList<String> mMovedArray;
         String folder;
@@ -200,7 +200,7 @@ public class FolderPicker extends MyCompatActivity implements OnItemClickListene
     public List<PickerModel> getModels(int i) {
         ArrayList<PickerModel> arrayList = new ArrayList<>();
         File storageAndFolder = Storage.getFolder(i == 0 ? Storage.IMAGE : Storage.VIDEO);
-        PathsData.Folder instance = PathsData.Folder.getInstance(this);
+        PathsDatabase.Folder instance = PathsDatabase.Folder.getInstance(this);
         File[] listFiles = storageAndFolder.listFiles();
 
         for (File file : listFiles) {

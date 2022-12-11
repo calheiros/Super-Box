@@ -6,7 +6,7 @@ import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.app.SimpleDialog;
-import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
@@ -93,7 +93,7 @@ public class ImportTask extends JTask {
         if (listener != null) {
             listener.onInterrupted();
         }
-		Toast.makeText(context, context.getString(R.string.canceledo_usuario), 1).show();
+		Toast.makeText(context, context.getString(R.string.canceledo_usuario), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -102,8 +102,8 @@ public class ImportTask extends JTask {
     @Override
 	public void workingThread() {
 		double max = 0;
-        PathsData database = PathsData.getInstance(context, Storage.getDefaultStoragePath());
-        PathsData.Folder folderDatabase = PathsData.Folder.getInstance(context);
+        PathsDatabase database = PathsDatabase.getInstance(context, Storage.getDefaultStoragePath());
+        PathsDatabase.Folder folderDatabase = PathsDatabase.Folder.getInstance(context);
 
         try {
             for (FileModel resource : models) {

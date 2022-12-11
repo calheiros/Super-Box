@@ -2,6 +2,7 @@ package com.jefferson.application.br.activity;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
@@ -16,6 +17,7 @@ import android.widget.PopupMenu;
 import com.jefferson.application.br.MaterialLockView;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.JDebug;
+import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.PasswordManager;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -40,6 +42,7 @@ public class VerifyActivity extends MyCompatActivity {
         super.onCreate(savedInstanceState);
         if (JDebug.isDebugOn())
             Toast.makeText( this, getIntent().getAction(), Toast.LENGTH_SHORT).show();
+
         if (password.isEmpty()) {
             startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
             overridePendingTransition(0, 0);
@@ -60,12 +63,14 @@ public class VerifyActivity extends MyCompatActivity {
 //        promptInfo.build().authenticate(null);
 //        }
         //
-        checkBiometricSupport();
-        materialLockView = (MaterialLockView) findViewById(R.id.pattern);
-		materialLockView.setTactileFeedbackEnabled(false);
+        SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences();
+        if (sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false))
+            openBiometricPrompt();
 
-		Handler = new Handler();
-		Runnable = () -> materialLockView.clearPattern();
+        materialLockView = (MaterialLockView) findViewById(R.id.pattern);
+        materialLockView.setTactileFeedbackEnabled(false);
+        Handler = new Handler();
+        Runnable = () -> materialLockView.clearPattern();
 
 		materialLockView.setOnPatternListener(new MaterialLockView.OnPatternListener() {
                 public void onPatternStart() {
@@ -93,7 +98,7 @@ public class VerifyActivity extends MyCompatActivity {
         );
 	}
 
-    void checkBiometricSupport() {
+    void openBiometricPrompt() {
         Executor executor = ContextCompat.getMainExecutor(this);
         BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
                 .setTitle(getString(R.string.biometric_title))

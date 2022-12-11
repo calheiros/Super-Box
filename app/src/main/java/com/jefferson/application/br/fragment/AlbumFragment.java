@@ -20,23 +20,26 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.jefferson.application.br.FileModel;
-import com.jefferson.application.br.FolderModel;
+import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MainActivity;
 import com.jefferson.application.br.adapter.AlbumAdapter;
 import com.jefferson.application.br.app.SimpleDialog;
-import com.jefferson.application.br.database.PathsData;
+import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.DeleteFilesTask;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.util.JDebug;
+import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 
 public class AlbumFragment extends Fragment {
 
@@ -119,7 +122,7 @@ public class AlbumFragment extends Fragment {
             view = inflater.inflate(R.layout.main_gallery, container, false);
             progressBar = view.findViewById(R.id.main_galery_progressBar);
             emptyView = view.findViewById(R.id.empty_linearLayout);
-            View storagePremissionView = view.findViewById(R.id.storage_permission_layout);
+            View storagePermissionView = view.findViewById(R.id.storage_permission_layout);
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String root = Environment.getExternalStorageDirectory().getAbsolutePath();
             recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
@@ -127,20 +130,22 @@ public class AlbumFragment extends Fragment {
             recyclerView.setLayoutManager(layoutManager);
             populateRecyclerView();
         }
-		return view;
+        return view;
 	}
 
     public ArrayList<FolderModel> getModels(int position) {
-        PathsData.Folder sqldb = null;
+        PathsDatabase.Folder sqldb = null;
         ArrayList<FolderModel> models = new ArrayList<FolderModel>();
         File root = Storage.getFolder(position == 0 ? Storage.IMAGE: Storage.VIDEO);
         root.mkdirs();
 
         try {
-            sqldb = PathsData.Folder.getInstance(getContext());
+            sqldb = PathsDatabase.Folder.getInstance(getContext());
         } catch (android.database.sqlite.SQLiteDatabaseCorruptException e ) {
             //do something
         }
+        SharedPreferences preferences = MyPreferences.getSharedPreferences();
+        Set<String> bookmark = preferences.getStringSet(MyPreferences.KEY_BOOKMARK, null);
 
         if (root.exists()) {
             String[] files = root.list();
@@ -151,13 +156,20 @@ public class AlbumFragment extends Fragment {
                 if (file.isDirectory()) {
                     File[] folder_list = file.listFiles();
                     String folder_name = null;
+                    boolean favorite = false;
+
                     if (sqldb != null) {
                         folder_name = sqldb.getFolderName(s, position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
                     }
-                    FolderModel model = new FolderModel();
 
+                    if (bookmark != null) {
+                        favorite = bookmark.contains(file.getName());
+                    }
+
+                    FolderModel model = new FolderModel();
                     model.setName(folder_name == null ? s : folder_name);
                     model.setPath(file.getAbsolutePath());
+                    model.setFavorite(favorite);
 
                     assert folder_list != null;
                     for (File value : folder_list) {
@@ -168,15 +180,9 @@ public class AlbumFragment extends Fragment {
                 }
             }
         }
-        Collections.sort(models, new Comparator<FolderModel>() {
-                @Override public int compare(FolderModel o1, FolderModel o2) {
-                    return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-                }
-            }
-        );
+        FolderModel.sort(models);
         if (sqldb != null)
             sqldb.close();
-
         return models;
     }
 
@@ -206,9 +212,7 @@ public class AlbumFragment extends Fragment {
                 Toast.makeText(getContext(), "Unknown error occurred! " + e.getMessage(), Toast.LENGTH_LONG).show();
                 JDebug.writeLog(e.getCause());
             }
-            public void  run() {
 
-            }
         };
         retrieveMedia.setThreadPriority(Thread.MAX_PRIORITY);
         retrieveMedia.start();
@@ -286,11 +290,11 @@ public class AlbumFragment extends Fragment {
     }
 
     public static boolean renameFolder(Context context, FolderModel model, String newName, int position) {
-        PathsData.Folder folderDatabase = null;
+        PathsDatabase.Folder folderDatabase = null;
 
         try {
             String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
-            folderDatabase = PathsData.Folder.getInstance(context);
+            folderDatabase = PathsDatabase.Folder.getInstance(context);
             File file = new File(model.getPath());
             String id = file.getName();
             String folderName = folderDatabase.getFolderName(id, folderType);
@@ -326,12 +330,12 @@ public class AlbumFragment extends Fragment {
     }
 
     public static FolderModel createFolder(Context context, @NonNull String name, int position) {
-        PathsData.Folder folderDatabase = null;
+        PathsDatabase.Folder folderDatabase = null;
         FolderModel folder = null;
 
         try {
             String type = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
-            folderDatabase = PathsData.Folder.getInstance(context);
+            folderDatabase = PathsDatabase.Folder.getInstance(context);
             String id = folderDatabase.getFolderId(name, type);
             String randomStr = StringUtils.getRandomString(24);
 
@@ -410,6 +414,18 @@ public class AlbumFragment extends Fragment {
 	}
 
     public void addToFavorites(FolderModel f_model) {
+        SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences();
+        Set<String> bookmark = new HashSet<>(sharedPrefs.getStringSet(MyPreferences.KEY_BOOKMARK, new HashSet<String>()));
+        File file = new File(f_model.getPath());
+        String name = file.getName();
+
+        boolean success = bookmark.add(name) && sharedPrefs.edit().
+                putStringSet(MyPreferences.KEY_BOOKMARK, bookmark).commit();
+        if (!success) {
+            Toast.makeText(requireContext(), "failed to ADD to bookmark", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        f_model.setFavorite(true);
         Toast.makeText(requireContext(), "Added to Favorites", Toast.LENGTH_LONG).show();
     }
 
@@ -427,5 +443,21 @@ public class AlbumFragment extends Fragment {
            albumAdapter.setUpdatedData(new ArrayList<FolderModel>());
 
        populateRecyclerView();
+    }
+
+    public void removeFromFavorites(FolderModel f_model) {
+        SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences();
+        Set<String> bookmark = new HashSet<>(sharedPrefs.getStringSet(MyPreferences.KEY_BOOKMARK,
+                new HashSet<String>()));
+        File file = new File(f_model.getPath());
+        String name = file.getName();
+
+        if ( bookmark.remove(name)) {
+            sharedPrefs.edit().putStringSet(MyPreferences.KEY_BOOKMARK, bookmark).apply();
+        } else {
+            Toast.makeText(requireContext(), "failed to remove from bookmark", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        f_model.setFavorite(false);
     }
 }

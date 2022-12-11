@@ -35,7 +35,15 @@
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
                 android:background="@drawable/gradient_bg"/>
-            
+            <ImageView
+                android:src="@drawable/ic_favorite"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:id="@+id/folder_favorite_icon_view"
+                android:visibility="gone"
+                android:layout_margin="10dp"
+                android:layout_gravity="top|end"
+                android:scaleType="centerCrop"/>
             <ImageView
                 android:layout_width="15dp"
                 android:layout_height="15dp"
@@ -52,7 +60,7 @@
                 android:singleLine="true"
                 android:gravity="center"
                 android:layout_marginBottom="8dp"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:shadowColor="#8B000000"
                 android:shadowRadius="2"
                 android:textColor="#f0f0f0"

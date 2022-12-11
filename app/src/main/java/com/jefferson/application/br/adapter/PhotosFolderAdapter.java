@@ -9,7 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.bumptech.glide.Glide;
-import com.jefferson.application.br.FolderModel;
+import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.ImportGalleryActivity;
 import com.jefferson.application.br.activity.SelectionActivity;

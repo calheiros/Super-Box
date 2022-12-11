@@ -7,7 +7,6 @@ import android.app.Service;
 import android.app.usage.UsageStatsManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -16,12 +15,15 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
+
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.AppLockWindow;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.ScreenOnOff;
 import com.jefferson.application.br.adapter.AppLockAdapter;
-import com.jefferson.application.br.database.AppsDatabase;
+import com.jefferson.application.br.database.AppLockDatabase;
 import com.jefferson.application.br.receiver.KeyWatcher;
 import com.jefferson.application.br.util.JDebug;
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ public class AppLockService extends Service {
 	public static final String ACTION_RESTART_SERVICE ="RestartBlockService";
 	private AppLockWindow appLockWindow;
 	private ScreenOnOff mybroadcast;
-	private AppsDatabase database;
+	private AppLockDatabase database;
 	public static Handler toastHandler;
 	public static AppLockService self;
 	public static boolean toast = false;
@@ -53,7 +55,7 @@ public class AppLockService extends Service {
 	public void onCreate() {
         startForeground();
 		AppLockAdapter.service = this;
-		database = new AppsDatabase(this);
+		database = new AppLockDatabase(this);
 		appLockWindow = new AppLockWindow(getApplicationContext(), database);
         usageStats = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
         lockedApps = database.getLockedPackages();
@@ -145,6 +147,7 @@ public class AppLockService extends Service {
         startForeground(9999, notification);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private String getNotificationChannelId(String id, String name) {
         NotificationChannel chan = new NotificationChannel(id, name, NotificationManager.IMPORTANCE_NONE);
         chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);

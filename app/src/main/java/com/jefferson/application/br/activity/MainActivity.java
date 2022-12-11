@@ -1,5 +1,6 @@
 package com.jefferson.application.br.activity;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -73,8 +74,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     private int position;
     private AdView adview;
     private boolean restarting;
-    //private InterstitialAd interstitial;
     private AdView squareAdview;
+
+    @SuppressLint("HandlerLeak")
     private final Handler getSdCardUriHandler = new Handler() {
 
         @Override
@@ -190,9 +192,9 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         }
     }
 
-    public void removeFolder(int folderPosition, int pagerPostion) {
+    public void removeFolder(int folderPosition, int pagerPosition) {
         if (mainFragment != null) {
-            mainFragment.removeFolder(folderPosition, pagerPostion);
+            mainFragment.removeFolder(folderPosition, pagerPosition);
         }
     }
 
@@ -226,25 +228,12 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 //		prepareAd();
 }
 */
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // getMenuInflater().inflate(R.menu.main_menu, menu);
+        //getMenuInflater().inflate(R.menu.main_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
-    /*    public void prepareAd() {
-    //        if (interstitial.isLoading() == false && interstitial.isLoaded() == false) {
-    //			interstitial.loadAd(new AdRequest.Builder().build());
-    //		}
-    //	}
-    //
-    //    public void showAd() {
-    //        if (interstitial.isLoaded()) {
-    //			interstitial.show();
-    //		}
-    //	}
-    */
     public void updateFragment(int position) {
         if (mainFragment != null) {
             mainFragment.updateFragment(position);
@@ -283,39 +272,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         changeFragment(startInSetting ? settingFragment : mainFragment);
         buttonNavigationView.getMenu().getItem(startInSetting ? 2 : 0).setChecked(true);
     }
-
-//    private void sorryAlert() {
-//		View view = getLayoutInflater().inflate(R.layout.dialog_check_box_view, null);
-//        SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.ALERT_STYLE);
-//		dialog.setTitle("Erro detectado!");
-//		dialog.setMessage("Lamento pelo erro ocorrido anteriormente. Por favor, relate o erro ocorrido para que ele seja corrigido o mais rápido possível.");
-//		dialog.setCanceledOnTouchOutside(false);
-//		dialog.setContentView(view);
-//		dialog.setPositiveButton("Relatar", new SimpleDialog.OnDialogClickListener(){
-//				@Override
-//				public boolean onClick(SimpleDialog dialog) {
-//
-//					if (ServiceUtils.isConnected(MainActivity.this))
-//						Toast.makeText(getApplicationContext(), "obrigado! relatório de erro enviado.", 1).show();
-//					else 
-//						Toast.makeText(getApplicationContext(), "obrigado! relatório de será enviado quando estiver conectado.", 1).show();
-//					return true;
-//				}
-//            }
-//        );
-//
-//        dialog.setNegativeButton(getString(R.string.cancelar), null);
-//		dialog.show();
-//		dialog.setOnDismissListener(new DialogInterface.OnDismissListener(){
-//
-//				@Override
-//				public void onDismiss(DialogInterface dInterface) {
-//					//sharedPreferences.edit().putBoolean(app.EXCEPTION_FOUND, false).commit();
-//
-//				}
-//			}
-//        );
-//	}
 
     private boolean isCalculatorComponentEnabled() {
         return PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getPackageManager().getComponentEnabledSetting(
@@ -451,7 +407,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 //                    );
 //                preparationTask.start();
 //			}
-//
 //            if (requestCode == GET_URI_CODE_TASK) {
 //                preparationTask.proceed();
 //            }
@@ -470,11 +425,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     @Override
     public void onBackPressed() {
         showExitDialog();
-//        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-//            showExitDialog();
-//        } else {
-//            drawerLayout.openDrawer(GravityCompat.START);
-//        }
     }
 
     private void showExitDialog() {
@@ -516,8 +466,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
 
     @Override
     public void onDestroy() {
-        if (!restarting)
-        instance = null;
         adview.destroy();
 
         if (receiver != null) {
@@ -526,12 +474,12 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         }
 
         if (!restarting) {
+            instance = null;
             boolean enabled = settingFragment.isCalculatorEnabledInSettings();
-            if (enabled != isCalculatorComponentEnabled()) {
 
+            if (enabled != isCalculatorComponentEnabled()) {
                 settingFragment.disableLauncherActivity(enabled);
                 settingFragment.setComponentEnabled(!enabled, "com.jefferson.application.br.CalculatorAlias");
-
                 Toast.makeText(this, getString(R.string.aplicando_configuracoes), Toast.LENGTH_SHORT).show();
             }
         }

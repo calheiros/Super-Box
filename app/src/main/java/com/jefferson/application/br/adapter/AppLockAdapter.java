@@ -13,7 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.database.AppsDatabase;
+import com.jefferson.application.br.database.AppLockDatabase;
 import com.jefferson.application.br.model.AppModel;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.util.JDebug;
@@ -28,7 +28,7 @@ public class AppLockAdapter extends BaseAdapter {
 	private Activity activity;
 	private LayoutInflater inflater = null;
     public ArrayList<AppModel> models;
-    public AppsDatabase database;
+    public AppLockDatabase database;
     public static AppLockService service;
     private boolean mutable;
     private HashMap<Integer, View> cachedViews;
@@ -39,7 +39,7 @@ public class AppLockAdapter extends BaseAdapter {
         this.activity = mActivity;
 		this.models = models; 
         this.cachedViews = new HashMap<>();
-		this.database = new AppsDatabase(mActivity);
+		this.database = new AppLockDatabase(mActivity);
         syncSelection();
 
 		inflater = (LayoutInflater) mActivity

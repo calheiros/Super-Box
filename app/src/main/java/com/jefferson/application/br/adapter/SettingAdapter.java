@@ -94,7 +94,7 @@ public class SettingAdapter extends BaseAdapter {
             return view;
         } 
 
-        if (preferenceItem.type == preferenceItem.ITEM_TYPE) {
+        if (preferenceItem.type == PreferenceItem.ITEM_TYPE) {
             view = inflater.inflate(R.layout.preference_common_item, (ViewGroup) null);
 
             TextView descriptionText = view.findViewById(R.id.description_text_view);
@@ -135,7 +135,6 @@ public class SettingAdapter extends BaseAdapter {
                 @Override
                 public void onClick(View view) {
                     startCalculatorActivity();
-                    //Toast.makeText(settingFragment.getContext(), "clicked!", Toast.LENGTH_SHORT).show();
                 }
             }
         );
@@ -177,7 +176,7 @@ public class SettingAdapter extends BaseAdapter {
                 @Override
                 public void onCheckedChanged(CompoundButton button, boolean checked) {
                     settingFragment.setCalculatorEnabled(checked);
-                    MainActivity main = (MainActivity) settingFragment.getActivity();
+                    MainActivity main = (MainActivity) settingFragment.requireActivity();
 
                     if (main.calculatorStateEnabled != checked) {
                         Toast.makeText(settingFragment.getContext(), settingFragment.getString(R.string.reiniciar_para_aplicar), Toast.LENGTH_SHORT).show();

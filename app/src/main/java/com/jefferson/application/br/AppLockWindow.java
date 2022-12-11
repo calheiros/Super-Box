@@ -8,11 +8,9 @@ import android.os.*;
 import android.view.*;
 import android.widget.*;
 import com.jefferson.application.br.database.*;
-import com.jefferson.application.br.widget.*;
+
 import java.util.*;
 import com.jefferson.application.br.util.*;
-import android.app.AlertDialog;
-import com.jefferson.application.br.activity.FakeDialogActivity;
 
 public class AppLockWindow {
 
@@ -24,13 +22,13 @@ public class AppLockWindow {
 	private String currentApp;
 	private MaterialLockView materialLockView;
     private boolean locked;
-	private AppsDatabase database;
+	private AppLockDatabase database;
 	private ImageView iconImageView;
     private String passedApp = "";
     private String password;
     private View lastView;
     
-	public AppLockWindow(final Context context, final AppsDatabase db) {
+	public AppLockWindow(final Context context, final AppLockDatabase db) {
 
 	    this.context = context;
         this.database = db;

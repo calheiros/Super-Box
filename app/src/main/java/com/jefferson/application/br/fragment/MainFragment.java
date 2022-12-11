@@ -22,7 +22,7 @@ import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-import com.jefferson.application.br.FolderModel;
+import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.ImportGalleryActivity;
 import com.jefferson.application.br.activity.MainActivity;
