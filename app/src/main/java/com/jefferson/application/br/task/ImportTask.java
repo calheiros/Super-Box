@@ -1,6 +1,6 @@
 package com.jefferson.application.br.task;
 
-import android.content.Context;
+import android.app.Activity;
 import android.widget.Toast;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
@@ -32,11 +32,11 @@ public class ImportTask extends JTask {
 	private boolean waiting = false;
     private Listener listener;
 	private String no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n";
-    private Context context;
+    private Activity activity;
     private static final String TAG = "ImportTask";
 
-	public ImportTask(Context context, ArrayList<FileModel> models, Listener listener) {
-        this.context = context;
+	public ImportTask(Activity activity, ArrayList<FileModel> models, Listener listener) {
+        this.activity = activity;
 		this.listener = listener;
 		this.maxProgress = models.size();
 		this.models = models;
@@ -93,7 +93,7 @@ public class ImportTask extends JTask {
         if (listener != null) {
             listener.onInterrupted();
         }
-		Toast.makeText(context, context.getString(R.string.canceledo_usuario), Toast.LENGTH_SHORT).show();
+		Toast.makeText(activity, activity.getString(R.string.canceledo_usuario), Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -102,8 +102,8 @@ public class ImportTask extends JTask {
     @Override
 	public void workingThread() {
 		double max = 0;
-        PathsDatabase database = PathsDatabase.getInstance(context, Storage.getDefaultStoragePath());
-        PathsDatabase.Folder folderDatabase = PathsDatabase.Folder.getInstance(context);
+        PathsDatabase database = PathsDatabase.getInstance(activity, Storage.getDefaultStoragePath());
+        PathsDatabase.Folder folderDatabase = PathsDatabase.Folder.getInstance(activity);
 
         try {
             for (FileModel resource : models) {
@@ -114,7 +114,7 @@ public class ImportTask extends JTask {
             File target = new File(Storage.getDefaultStoragePath());
 
             if ((target.getFreeSpace() < max)) {
-                sendUpdate(-2, context.getString(R.string.sem_espaco_aviso));
+                sendUpdate(-2, activity.getString(R.string.sem_espaco_aviso));
                 waitForResponse();
             }
 
@@ -134,7 +134,7 @@ public class ImportTask extends JTask {
 
                 if (!file.exists()) {
                     failuresCount++;
-                    errorMessage.append("\n" + context.getString(R.string.erro) + " " + failuresCount + ": O arquivo \"" + file.getName() + "\" não existe!\n");
+                    errorMessage.append("\n" + activity.getString(R.string.erro) + " " + failuresCount + ": O arquivo \"" + file.getName() + "\" não existe!\n");
                     continue;
                 }
 
@@ -191,7 +191,7 @@ public class ImportTask extends JTask {
                         if (FileTransfer.Error.NO_LEFT_SPACE.equals(response)) {
                             errorMessage.append(no_left_space_error_message);
                         } else {
-                            errorMessage.append("\n" + context.getString(R.string.erro) + failuresCount + ": " + response + " when moving: " + file.getName() + "\n");
+                            errorMessage.append("\n" + activity.getString(R.string.erro) + failuresCount + ": " + response + " when moving: " + file.getName() + "\n");
                         }
                     }
                 }
@@ -219,7 +219,7 @@ public class ImportTask extends JTask {
     }
 
     private void warningAlert(String msg) {
-		SimpleDialog dialog = new SimpleDialog(context, SimpleDialog.ALERT_STYLE);
+		SimpleDialog dialog = new SimpleDialog(activity, SimpleDialog.STYLE_ALERT);
 		dialog.setTitle("Aviso");
 		dialog.setMessage(msg);
 		dialog.setCancelable(false);
@@ -232,7 +232,7 @@ public class ImportTask extends JTask {
 				}
 			});
 
-		dialog.setNegativeButton(context.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
+		dialog.setNegativeButton(activity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
 
 				@Override
 				public boolean onClick(SimpleDialog dialog) {

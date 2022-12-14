@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<eightbitlab.com.blurview.BlurView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/blurView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_background"
+    app:blurOverlayColor="?colorDialogBackground">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:paddingLeft="16dp"
+        android:paddingTop="13dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="13dp">
+
+        <ImageView
+            android:id="@+id/dialog_icon"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:contentDescription="@string/dialog_icon"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/title_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone"
+            android:gravity="start"
+            android:singleLine="true"
+            android:textColor="@color/white"
+            android:textSize="21sp" />
+
+        <com.jefferson.application.br.library.NumberProgressBar
+            android:id="@+id/number_progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:visibility="gone" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="start">
+
+            <TextView
+                android:visibility="gone"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:id="@+id/message_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="16sp" />
+
+        </ScrollView>
+
+        <FrameLayout
+            android:id="@+id/dialog_layout_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible" />
+
+        <include layout="@layout/dialog_buttons" />
+    </LinearLayout>
+</eightbitlab.com.blurview.BlurView>

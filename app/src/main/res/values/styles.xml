@@ -1,19 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<!-- Styles -->
-
 	<style name="menu_labels_style">
 		<item name="android:background">@drawable/fab_label_background</item>
 		<item name="android:textColor">@color/white</item>
 	</style>
 
 	<style name="ThemeOverlay.AppCompat.navTheme">
-
 		<item name="colorPrimary">@color/green</item> 
 		<item name="colorAccent">@color/green</item> 
         <!-- Background color when SELECTED -->
-        <item name="colorControlHighlight">@color/blue_semi_transparent</item> 
-
+        <item name="colorControlHighlight">@color/blue_semi_transparent</item>
     </style>
 
     <style name="LauncherTheme" parent="Theme.AppCompat.NoActionBar">
@@ -33,7 +30,6 @@
     </style>
     <style name="CustomAlertDialogLight" parent="Theme.AppCompat.Light.Dialog.Alert">
         <!--<item name="android:background">@drawable/alert_background</item>
-
         <item name="colorControlHighlight">@android:color/transparent</item>
         -->
         <item name="colorAccent">@color/colorAccentLight</item>
@@ -66,7 +62,7 @@
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
         <item name="colorBackgroundDark">#FFE9E9EA</item>
-       
+        <item name="colorDialogBackground">#B313AC9E</item>
         <item name="commonColorDark">#FF9DA0A6</item>
         <item name="commonColor">#FF4D4D51</item>
         <item name="commonColorLight">#FF3D3D41</item>
@@ -83,7 +79,7 @@
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
         <item name="colorBackgroundDark">#FFE9E9EA</item>
-        
+        <item name="colorDialogBackground">#B3057BB1</item>
         <!--BACKUP
         <item name="commonColorDark">#FFA6AAB1</item>
         <item name="commonColor">#FF38383A</item>
@@ -139,7 +135,7 @@
         <item name="commonColorLight">@color/colorCommonLight</item>
         <item name="android:windowBackground">@color/colorBackground</item>
         <item name="colorControlHighlight">@color/highLightColor</item>
-
+        <item name="colorDialogBackground">#9A3A245E</item>
         <!-- specify shared element transitions -->
         <!--<item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
         <item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>

@@ -122,7 +122,7 @@ public class AppLockWindow {
 	    iconImageView = (ImageView) view.findViewById(R.id.icon_super_view);
         materialLockView = (MaterialLockView) view.findViewById(R.id.pattern);
 
-		if (currentApp != null) 
+		if (currentApp != null)
 			iconImageView.setImageDrawable(getIconDrawable(currentApp));
 
         if (materialLockView != null) {

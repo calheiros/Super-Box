@@ -95,7 +95,7 @@ public class ImagePreviewFragment extends Fragment implements View.OnClickListen
     }
 
     private void  dialogDeletionConfirmation() {
-        SimpleDialog builder = new SimpleDialog(getContext(), ThemeConfig.getTheme(getContext()));
+        SimpleDialog builder = new SimpleDialog(requireActivity(), ThemeConfig.getTheme(getContext()));
         builder.setIconColor(Color.argb(255, 255, 0, 0));
         builder.setIcon(android.R.drawable.ic_dialog_alert);
         builder.setTitle(getString(R.string.apagar));

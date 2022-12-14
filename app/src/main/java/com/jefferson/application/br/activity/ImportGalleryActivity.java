@@ -8,8 +8,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.widget.Toolbar;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,45 +15,48 @@ import android.view.View;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.jefferson.application.br.FileModel;
-import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.adapter.PhotosFolderAdapter;
+import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.JTask;
+import com.jefferson.application.br.util.FileUtils;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import com.jefferson.application.br.util.FileUtils;
 
 public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
-    private PhotosFolderAdapter obj_adapter;
-	private int position;
-	private Toolbar toolbar;
-    private GridView myGridView;
-	private SharedPreferences sharedPrefrs;
+    public static final int GET_CODE = 5658;
     private static final int REQUEST_PERMISSIONS = 100;
-	public static final int GET_CODE = 5658;
     private static final String TAG = "ImportGalleryActivity";
-
+    private static final int PICK_CONTENT_FROM_EXTERNAL_APP = 1;
+    private PhotosFolderAdapter obj_adapter;
+    private int position;
+    private Toolbar toolbar;
+    private GridView myGridView;
+    private SharedPreferences sharedPrefrs;
     private String title;
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ImportGalleryActivity.RetrieveMediaTask retrieveMediaTask;
-
-    private static final int PICK_CONTENT_FROM_EXTERNAL_APP = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.import_gallery);
-        myGridView = (GridView)findViewById(R.id.gv_folder);
-		sharedPrefrs = MyPreferences.getSharedPreferences(this);
-	    position = getIntent().getExtras().getInt("position");
-        mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
-	    mySwipeRefreshLayout.setOnRefreshListener(this);
+        myGridView = (GridView) findViewById(R.id.gv_folder);
+        sharedPrefrs = MyPreferences.getSharedPreferences(this);
+        position = getIntent().getExtras().getInt("position");
+        mySwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        mySwipeRefreshLayout.setOnRefreshListener(this);
         mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
         TypedValue typedValue = new TypedValue();
@@ -68,8 +69,8 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         title = (position == 0 ? getString(R.string.importar_imagem) : getString(R.string.importar_video));
         retrieveMediaTask = new RetrieveMediaTask();
         retrieveMediaTask.start();
-		setupToolbar();
-	}
+        setupToolbar();
+    }
 
     @Override
     public void onRefresh() {
@@ -83,22 +84,22 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     }
 
     public String getType() {
-		switch (position) {
-			case 0:
-				return FileModel.IMAGE_TYPE;
-			case 1:
-				return FileModel.VIDEO_TYPE;
-		    default: 
+        switch (position) {
+            case 0:
+                return FileModel.IMAGE_TYPE;
+            case 1:
+                return FileModel.VIDEO_TYPE;
+            default:
                 throw new IllegalArgumentException("can not find type for position: " + position);
-		}
-	}
+        }
+    }
 
-	private void setupToolbar() {
+    private void setupToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		getSupportActionBar().setTitle(title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(title);
     }
 
     @Override
@@ -107,8 +108,8 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         return super.onCreateOptionsMenu(menu);
     }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_from_gallery:
                 getContentFromExternalApp();
@@ -120,20 +121,20 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
                 finish();
                 break;
         }
-		return super.onOptionsItemSelected(item);
-	}
+        return super.onOptionsItemSelected(item);
+    }
 
     private void getContentFromExternalApp() {
-        Intent intent = new Intent(); 
-        intent.setType(getIntentType()); 
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true); 
-        intent.setAction(Intent.ACTION_GET_CONTENT); 
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_CONTENT_FROM_EXTERNAL_APP); 
+        Intent intent = new Intent();
+        intent.setType(getIntentType());
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_CONTENT_FROM_EXTERNAL_APP);
     }
 
     private String getIntentType() {
         switch (position) {
-            case 0: 
+            case 0:
                 return "image/*";
             case 1:
                 return "video/*";
@@ -147,41 +148,41 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     }
 
     public ArrayList<FolderModel> fn_imagespath() {
-	    ArrayList<FolderModel> al_images = new ArrayList<FolderModel>();
+        ArrayList<FolderModel> al_images = new ArrayList<FolderModel>();
 
         Uri uri = null;
         Cursor cursor;
-		String orderBy = null;
-		String index_fname = null;
-		String Bucket = null;
+        String orderBy = null;
+        String index_fname = null;
+        String Bucket = null;
 
         int column_index_data, column_index_folder_name;
 
-		if (position == 0) {
-			Bucket = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
-			uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-			index_fname = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
-			orderBy = MediaStore.Images.Media.DATE_TAKEN;
-		} else if (position == 1) {
-			Bucket = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
-			uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-			index_fname = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
-			orderBy = MediaStore.Video.Media.DATE_TAKEN;
-		} else {
+        if (position == 0) {
+            Bucket = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
+            uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+            index_fname = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
+            orderBy = MediaStore.Images.Media.DATE_TAKEN;
+        } else if (position == 1) {
+            Bucket = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
+            uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+            index_fname = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
+            orderBy = MediaStore.Video.Media.DATE_TAKEN;
+        } else {
             return null;
         }
 
         String absolutePathOfImage = "";
-        String[] projection = { MediaStore.MediaColumns.DATA, Bucket };
+        String[] projection = {MediaStore.MediaColumns.DATA, Bucket};
 
         if (position == 1) {
-            projection = new String[] {MediaStore.Video.VideoColumns.DURATION, MediaStore.MediaColumns.DATA, Bucket};
+            projection = new String[]{MediaStore.Video.VideoColumns.DURATION, MediaStore.MediaColumns.DATA, Bucket};
         }
 
         cursor = getApplicationContext().getContentResolver().query(uri, projection, null, null, orderBy + " DESC");
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
         column_index_folder_name = cursor.getColumnIndexOrThrow(index_fname);
-        int column_index_duration  = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
+        int column_index_duration = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
 
         while (cursor.moveToNext()) {
             String duration = null;
@@ -218,10 +219,11 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         cursor.close();
 
         Collections.sort(al_images, new Comparator<FolderModel>() {
-                @Override public int compare(FolderModel o1, FolderModel o2) { 
-                    return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase()); 
-                } 
-            }
+                    @Override
+                    public int compare(FolderModel o1, FolderModel o2) {
+                        return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+                    }
+                }
         );
         return al_images;
     }
@@ -232,7 +234,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 
         for (int i = 0; i < list.size(); i++) {
             String folderName = list.get(i).getName();
-            if (name.equals(folderName)) 
+            if (name.equals(folderName))
                 return i;
         }
         return -1;
@@ -242,27 +244,27 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         if (list.isEmpty()) {
             findViewById(R.id.gallery_album_empty_layout).setVisibility(View.VISIBLE);
         }
-		obj_adapter = new PhotosFolderAdapter(ImportGalleryActivity.this, list, position);
-		myGridView.setAdapter(obj_adapter);
-	}
+        obj_adapter = new PhotosFolderAdapter(ImportGalleryActivity.this, list, position);
+        myGridView.setAdapter(obj_adapter);
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == RESULT_OK) {
-            ArrayList<String>  mediaList = new ArrayList<String>();
+            ArrayList<String> mediaList = new ArrayList<String>();
 
             if (requestCode == PICK_CONTENT_FROM_EXTERNAL_APP) {
                 FileUtils fileUtils = new FileUtils(this);
 
-                if (data.getClipData() != null) { 
-                    int count = data.getClipData().getItemCount(); 
-                    for (int i = 0; i < count; i++) { 
+                if (data.getClipData() != null) {
+                    int count = data.getClipData().getItemCount();
+                    for (int i = 0; i < count; i++) {
                         Uri imageUri = data.getClipData().getItemAt(i).getUri(); //do what do you want to do
                         String path = fileUtils.getPath(imageUri);
                         mediaList.add(path);
-                    } 
-                } else if (data.getData() != null) { 
+                    }
+                } else if (data.getData() != null) {
                     Uri selectedImageUri = data.getData(); //do what do you want to do
                     String path = fileUtils.getPath(selectedImageUri);
                     mediaList.add(path);
@@ -281,9 +283,9 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
             i.putExtra("position", position);
             setResult(RESULT_OK, (i));
             finish();
-		}
-		super.onActivityResult(requestCode, resultCode, data);
-	}
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
@@ -291,18 +293,18 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 
         switch (requestCode) {
             case REQUEST_PERMISSIONS: {
-					for (int i = 0; i < grantResults.length; i++) {
-						if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-							fn_imagespath();
-						} else {
-							Toast.makeText(ImportGalleryActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
-						}
-					}
-				}
-		}
-	}
+                for (int i = 0; i < grantResults.length; i++) {
+                    if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                        fn_imagespath();
+                    } else {
+                        Toast.makeText(ImportGalleryActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
+                    }
+                }
+            }
+        }
+    }
 
-	private class RetrieveMediaTask extends JTask  {
+    private class RetrieveMediaTask extends JTask {
 
         private ArrayList<FolderModel> result;
         private ProgressBar myProgress;
@@ -324,7 +326,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 
             if (result != null) {
                 setAdapter(result);
-			}
+            }
             mySwipeRefreshLayout.setRefreshing(false);
         }
 
@@ -332,5 +334,5 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         public void onException(Exception e) {
 
         }
-	}
+    }
 }

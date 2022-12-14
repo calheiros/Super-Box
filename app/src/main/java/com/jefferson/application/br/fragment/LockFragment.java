@@ -11,12 +11,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -36,6 +30,12 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.widget.SearchView;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.CodeManager;
 import com.jefferson.application.br.R;
@@ -45,50 +45,48 @@ import com.jefferson.application.br.model.AppModel;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.DialogUtils;
+import com.jefferson.application.br.widget.LockCheck;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import com.jefferson.application.br.widget.LockCheck;
 
 public class LockFragment extends Fragment implements OnItemClickListener, androidx.appcompat.widget.SearchView.OnQueryTextListener {
 
     private static final int REQUEST_OVERLAY_CODE = 9;
     private View lastClickedParentView;
     private int lastClickedItemPosition;
-
-    public LockFragment() {
-		startLoadPackagesTask();
-	}
     private int firstVisibleItem = -1;
     private int lastVisibleItem = -1;
     private int visibleCount = -1;
     private int totalItemCount = -1;
-	private ProgressBar mProgressBar;
-	private TextView mTextView;
-	private ArrayList<AppModel> appModels;
-	private AppLockAdapter appsAdapter;
-	private ListView mListView;
-	private Intent intent;
-	private View parentView;
-	private LoadApplicationsTask mTask;
+    private ProgressBar mProgressBar;
+    private TextView mTextView;
+    private ArrayList<AppModel> appModels;
+    private AppLockAdapter appsAdapter;
+    private ListView mListView;
+    private Intent intent;
+    private View parentView;
+    private LoadApplicationsTask mTask;
     private SwipeRefreshLayout mySwipeRefreshLayout;
-    private String LOG_TAG = "LockFragment";
 
-	@SuppressLint("RestrictedApi")
+    public LockFragment() {
+        startLoadPackagesTask();
+    }
+
+    @SuppressLint("RestrictedApi")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		MainActivity mActivity = ((MainActivity)getActivity());
+        MainActivity mActivity = ((MainActivity) getActivity());
 
         if (parentView == null) {
-			parentView = inflater.inflate(R.layout.list_view_app, container, false);
-			mProgressBar = parentView.findViewById(R.id.progressApps);            
-			mTextView = parentView.findViewById(R.id.porcent);
-			mListView = parentView.findViewById(R.id.appList);
+            parentView = inflater.inflate(R.layout.list_view_app, container, false);
+            mProgressBar = parentView.findViewById(R.id.progressApps);
+            mTextView = parentView.findViewById(R.id.porcent);
+            mListView = parentView.findViewById(R.id.appList);
             mySwipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
             mListView.setItemsCanFocus(true);
             TypedValue typedValue = new TypedValue();
-            Resources.Theme theme = getActivity().getTheme();
+            Resources.Theme theme = requireActivity().getTheme();
             theme.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true);
             int color = typedValue.data;
 
@@ -96,61 +94,58 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             mySwipeRefreshLayout.setProgressBackgroundColorSchemeColor(color);// .setProgressBackgroundColor(color);
             mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
-                    @Override
-                    public void onScrollStateChanged(AbsListView p1, int p2) {
+                @Override
+                public void onScrollStateChanged(AbsListView p1, int p2) {
 
-                    }
-
-                    @Override public void onScroll(AbsListView view, int firstVisibleItem,
-                                                   int visibleItemCount, int totalItemCount) {
-                        LockFragment.this.lastVisibleItem = firstVisibleItem + visibleItemCount;
-                        LockFragment.this.firstVisibleItem = firstVisibleItem;
-                        LockFragment.this.visibleCount = visibleItemCount;
-                        LockFragment.this.totalItemCount = totalItemCount;
-                    }
                 }
-            );
+
+                @Override
+                public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                    LockFragment.this.lastVisibleItem = firstVisibleItem + visibleItemCount;
+                    LockFragment.this.firstVisibleItem = firstVisibleItem;
+                    LockFragment.this.visibleCount = visibleItemCount;
+                    LockFragment.this.totalItemCount = totalItemCount;
+                }
+            });
 
             if (mTask != null) {
-				JTask.Status status = mTask.getStatus();
-				if (status == JTask.Status.FINISHED) {
-					doTaskFinalized();
-				} else {
-					showProgressView();
-				} 
-			}
+                JTask.Status status = mTask.getStatus();
+                if (status == JTask.Status.FINISHED) {
+                    doTaskFinalized();
+                } else {
+                    showProgressView();
+                }
+            }
 
-			intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-			mListView.setOnItemClickListener(this);
-            mySwipeRefreshLayout.setOnRefreshListener(
-                new SwipeRefreshLayout.OnRefreshListener() {
+            intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
+            mListView.setOnItemClickListener(this);
+            mySwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
-                    @Override
-                    public void onRefresh() {
-                        if (mTask.getStatus() == JTask.Status.STARTED) {
-                            mySwipeRefreshLayout.setRefreshing(false);
-                        } else {
-                            appsAdapter.clear();
-                            showProgressView();
-                            startLoadPackagesTask();
-                        }
+                @Override
+                public void onRefresh() {
+                    if (mTask.getStatus() == JTask.Status.STARTED) {
+                        mySwipeRefreshLayout.setRefreshing(false);
+                    } else {
+                        appsAdapter.clear();
+                        showProgressView();
+                        startLoadPackagesTask();
                     }
                 }
-            );
+            });
         } else {
             if (mySwipeRefreshLayout.isRefreshing()) {
                 mySwipeRefreshLayout.setRefreshing(false);
             }
         }
 
-		Toolbar toolbar = parentView.findViewById(R.id.toolbar);
+        Toolbar toolbar = parentView.findViewById(R.id.toolbar);
         if (mActivity != null) {
             mActivity.setupToolbar(toolbar, getString(R.string.bloquear_apps));
             Objects.requireNonNull(mActivity.getSupportActionBar()).dispatchMenuVisibilityChanged(true);
         }
         setHasOptionsMenu(true);
-		return parentView;
-	}
+        return parentView;
+    }
 
     private void applicationFound(int x) {
         mListView.smoothScrollToPositionFromTop(x, (mListView.getHeight() / 2) - (appsAdapter.getItemHeight() / 2));
@@ -172,7 +167,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             return false;
         }
 
-        AppModel model = null;
+        AppModel model;
         ArrayList<AppModel> models = appsAdapter.models;
         int firstContains = -1;
 
@@ -205,24 +200,6 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 
     @Override
     public boolean onQueryTextChange(String input) {
-//        if (appsAdapter == null || input.isEmpty()) {
-//            return false;
-//        }
-//
-//        AppModel model = null;
-//        ArrayList<AppModel> models = appsAdapter.models;
-//        scrollHandler.removeCallbacks(scrollRunnbale);
-//
-//        for (int x = 0; x < models.size(); x++) {
-//            model = models.get(x);
-//
-//            if (model.appname.toLowerCase().startsWith(input.toLowerCase())) {
-//                //JDebug.toast("match + " + models.get(x).appname);
-//                scrollPosition = x;
-//                scrollHandler.postDelayed(scrollRunnbale, 1000);
-//                return true;
-//            }
-//        }
         return false;
     }
 
@@ -240,7 +217,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         lastClickedParentView = view;
         boolean noNeedOverlayPermission = false;
         //Toast.makeText(getContext(), "position " + lastClickedItemPosition, Toast.LENGTH_SHORT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) { 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) {
             Log.v("App", "Requesting Permission" + Settings.canDrawOverlays(getContext())); // if not construct intent to request permission 
             Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + getContext().getPackageName())); // request permission via start activity for result 
             startActivityForResult(intent, REQUEST_OVERLAY_CODE); //It will call onActivityResult Function After you press Yes/No and go Back after giving permission 
@@ -257,16 +234,15 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                 animateCheckView(lastClickedParentView);
             }
         } else {
-            AlertDialog.Builder alert = new AlertDialog.Builder(getContext(), DialogUtils.getTheme());
+            AlertDialog.Builder alert = new AlertDialog.Builder(requireContext(), DialogUtils.getTheme());
             alert.setMessage(getString(R.string.usage_data_permission_message));
-            alert.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener(){
+            alert.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface p1, int p2) {
-                        startActivityForResult(intent, 0);
-                    }
+                @Override
+                public void onClick(DialogInterface p1, int p2) {
+                    startActivityForResult(intent, 0);
                 }
-            );
+            });
 
             alert.setNegativeButton(getString(android.R.string.cancel), null);
             AlertDialog alertDialog = alert.create();
@@ -286,10 +262,8 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     @Override
     public void onPause() {
         super.onPause();
-        //mySwipeRefreshLayout.setRefreshing(false);
         if (appsAdapter != null && appsAdapter.isMutable()) {
-            getContext().startService(new Intent(getContext(), AppLockService.class)
-                                      .setAction(App.ACTION_APPLOCK_SERVICE_UPDATE_DATA));
+            requireContext().startService(new Intent(getContext(), AppLockService.class).setAction(App.ACTION_APPLOCK_SERVICE_UPDATE_DATA));
         }
     }
 
@@ -302,10 +276,10 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         }
     }
 
-	public void startLoadPackagesTask() {
-		mTask = new LoadApplicationsTask(App.getAppContext());
-		mTask.start();
-	}
+    public void startLoadPackagesTask() {
+        mTask = new LoadApplicationsTask(App.getAppContext());
+        mTask.start();
+    }
 
     public void doTaskFinalized() {
 
@@ -316,29 +290,29 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             appsAdapter.putDataSet(appModels);
         }
         mProgressBar.setVisibility(View.GONE);
-		mTextView.setVisibility(View.GONE);
+        mTextView.setVisibility(View.GONE);
 
         if (mySwipeRefreshLayout.isRefreshing()) {
             mySwipeRefreshLayout.setRefreshing(false);
         }
         appModels = null;
-	}
+    }
 
     private boolean needPermissionForBlocking(Context context) {
-		return CodeManager.needPermissionForGetUsages(context);
-	}
+        return CodeManager.needPermissionForGetUsages(context);
+    }
 
-	@Override
-	public void onDestroy() {
-		if (mTask.getStatus() != JTask.Status.FINISHED) {
+    @Override
+    public void onDestroy() {
+        if (mTask.getStatus() != JTask.Status.FINISHED) {
             mTask.revokeFinish(true);
             mTask.interrupt();
-        }    
-		super.onDestroy();
-	}
+        }
+        super.onDestroy();
+    }
 
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (!CodeManager.needPermissionForGetUsages(getContext())) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) {
@@ -346,12 +320,12 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             }
             appsAdapter.toogleSelection(lastClickedItemPosition, parentView);
             animateCheckView(lastClickedParentView);
-        } 
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_message_history, menu);
 
 //      SearchManager searchManager =(SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
@@ -359,28 +333,28 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 //      searchView.setSearchableInfo(
 //      searchManager.getSearchableInfo(getActivity().getComponentName()));
 //
-        searchView.setOnQueryTextFocusChangeListener(new  OnFocusChangeListener() {
-                @Override public void onFocusChange(View view, boolean hasFocus) {
-                    if (hasFocus) { 
-                        showInputMethod(view.findFocus());
-                    }
+        searchView.setOnQueryTextFocusChangeListener(new OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus) {
+                    showInputMethod(view.findFocus());
                 }
             }
-        );
+        });
         searchView.setOnQueryTextListener(this);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void showInputMethod(View view) {
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         if (imm != null) {
             imm.showSoftInput(view, 0);
-        } 
+        }
     }
 
     private void hideInputMethod(@NonNull View view) {
-        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+        InputMethodManager imm = (InputMethodManager) requireContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         if (imm != null) {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -388,17 +362,13 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        /*if (item.getItemId() == R.id.item_message_history) {
-         Toast.makeText(getContext(), "Not implemented!", Toast.LENGTH_LONG).show();
-         }
-         */
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         return false;
     }
 
     private class LoadApplicationsTask extends JTask {
 
-        private Context context;
+        private final Context context;
         private double progress;
 
         public LoadApplicationsTask(Context context) {
@@ -413,9 +383,9 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 
             PackageManager pm = context.getPackageManager();
             List<ResolveInfo> apps = pm.queryIntentActivities(launch, 0);
-            Collections.sort(apps, new ResolveInfo.DisplayNameComparator(pm)); 
+            Collections.sort(apps, new ResolveInfo.DisplayNameComparator(pm));
 
-            for (int i = 0;i < apps.size();i++) {
+            for (int i = 0; i < apps.size(); i++) {
 
                 if (this.isInterrupted()) {
                     break;
@@ -431,7 +401,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                 newInfo.icon = p.activityInfo.loadIcon(pm);
                 appModels.add(newInfo);
 
-                progress = (double)100 / apps.size() * i;
+                progress = (double) 100 / apps.size() * i;
                 sendUpdate();
             }
         }
@@ -458,7 +428,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
         protected void onUpdated(Object[] get) {
 
             if (mTextView != null) {
-                mTextView.setText(String.valueOf((int)progress) + "%");
+                mTextView.setText((int) progress + "%");
             }
 
             if (mProgressBar != null) {
@@ -467,7 +437,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                     mProgressBar.setIndeterminate(false);
                     mProgressBar.setMax(100);
                 }
-                mProgressBar.setProgress((int)progress);
+                mProgressBar.setProgress((int) progress);
             }
         }
     }

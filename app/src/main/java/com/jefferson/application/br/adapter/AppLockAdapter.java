@@ -33,11 +33,10 @@ public class AppLockAdapter extends BaseAdapter {
     private boolean mutable;
     private HashMap<Integer, View> cachedViews;
     private int searchedItemPosition = -1;
-    private volatile View view;
 
 	public AppLockAdapter(Activity mActivity, ArrayList<AppModel> models) {
         this.activity = mActivity;
-		this.models = models; 
+        this.models = models;
         this.cachedViews = new HashMap<>();
 		this.database = new AppLockDatabase(mActivity);
         syncSelection();
@@ -85,29 +84,24 @@ public class AppLockAdapter extends BaseAdapter {
         return mutable;
     }
 
-    public int getItemHeight() {
-        int height = 1;
-        if (view != null) {
-            height = view.getHeight();
-        }
-        return height;
-    }
 	public View getView(final int position, View convertView, ViewGroup parent) {
-        view = convertView;
+        Holder holder = null;
 
-        if (view == null) {
-			view = inflater.inflate(R.layout.list_item, null);
+        if (convertView == null) {
+            convertView = inflater.inflate(R.layout.list_item, null);
+            holder = new Holder();
+            holder.imageView = (ImageView) convertView.findViewById(R.id.iconeApps);
+            holder.textView = (TextView) convertView.findViewById(R.id.app_name);
+            holder.lockCheck = (LockCheck) convertView.findViewById(R.id.check1);
+            convertView.setTag(holder);
+        } else {
+            holder = (Holder) convertView.getTag();
         }
-
-	    AppModel info = models.get(position);
-		ImageView imageView = (ImageView) view.findViewById(R.id.iconeApps);
-		TextView textView = (TextView) view.findViewById(R.id.app_name);
-		LockCheck checkView = (LockCheck) view.findViewById(R.id.check1);
-
+        AppModel info = models.get(position);
         @NonNull Drawable icon = info.icon;
-		imageView.setImageDrawable(icon);
-		textView.setText(info.appname);
-		checkView.setChecked(selectionArray.get(position, false));
+		holder.imageView.setImageDrawable(icon);
+		holder.textView.setText(info.appname);
+		holder.lockCheck.setChecked(selectionArray.get(position, false));
         Animation animation = AnimationUtils.loadAnimation(activity, R.anim.zoom_in);
         animation.setAnimationListener(new Animation.AnimationListener() {
 
@@ -128,12 +122,22 @@ public class AppLockAdapter extends BaseAdapter {
                 }
             }
         );
-        view.startAnimation(animation);
-        cachedViews.put(position, view);
+        convertView.startAnimation(animation);
+        cachedViews.put(position, convertView);
 
-        return view;
+        return convertView;
     }
 
+    public int getItemHeight() {
+        View item = cachedViews.get(0);
+        return item == null ? 0 : item.getHeight();
+    }
+
+    static class Holder {
+        ImageView imageView;
+        TextView textView;
+        LockCheck lockCheck;
+    }
 //    private Drawable getResizedDrawable(int position, View view) {
 //
 //        Drawable drawable = models.get(position).icon;

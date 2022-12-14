@@ -35,6 +35,7 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.fragment.LockFragment;
 import com.jefferson.application.br.fragment.MainFragment;
 import com.jefferson.application.br.fragment.SettingFragment;
@@ -111,10 +112,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setTitle(title);
         getSupportActionBar().setDisplayShowHomeEnabled(false);
-
-//		ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.app_name, R.string.abc_action_bar_home_description);
-//		toggle.syncState();
-//		drawerLayout.setDrawerListener(toggle);
     }
 
     public void setRestarting(boolean restarting) {
@@ -428,18 +425,19 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     }
 
     private void showExitDialog() {
-        MyAlertDialog.Builder builder = new MyAlertDialog.Builder(this, DialogUtils.getTheme());
-        builder.setTitle(getString(R.string.confirmacao));
-        builder.setMessage(getString(R.string.quer_realmente_sair));
-        builder.setPositiveButton(getString(R.string.sim), new DialogInterface.OnClickListener() {
+        SimpleDialog dialog = new SimpleDialog(this);
+        dialog.setTitle(getString(R.string.confirmacao));
+        dialog.setMessage(getString(R.string.quer_realmente_sair));
+        dialog.setPositiveButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener() {
 
                     @Override
-                    public void onClick(DialogInterface face, int i) {
+                    public boolean onClick(SimpleDialog dialog) {
                         finish();
+                        return true;
                     }
                 }
         );
-        builder.setNegativeButton(getString(R.string.nao), null).show();
+        dialog.setNegativeButton(getString(R.string.nao), null).show();
     }
 
     @Override

@@ -1,10 +1,9 @@
 package com.jefferson.application.br.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityOptions;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
@@ -14,6 +13,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
@@ -37,6 +38,7 @@ import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.DeleteFilesTask;
 import com.jefferson.application.br.task.JTask;
+import com.jefferson.application.br.util.BlurViewUtils;
 import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
@@ -52,62 +54,66 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import eightbitlab.com.blurview.BlurAlgorithm;
+import eightbitlab.com.blurview.BlurView;
+
 public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener {
 
     private static final int IMPORT_FROM_VIEW_ALBUM_CODE = 9;
-
-	private boolean selectionMode;
-    private Toolbar mToolbar;
-	private MultiSelectRecyclerViewAdapter mAdapter;
-	private int position;
-	private View menuLayout;
-    private RecyclerView mRecyclerView ;
-    private String title;
-	private File folder;
-    private View emptyView;
-    private FloatingActionButton fab;
     private static final int VIDEO_PLAY_CODE = 7;
-    private RetrieverDataTask myThread;
     private static final int CHANGE_DIRECTORY_CODE = 3;
     private static final int IMPORT_FROM_GALLERY_CODE = 6;
+    private boolean selectionMode;
+    private Toolbar mToolbar;
+    private MultiSelectRecyclerViewAdapter mAdapter;
+    private int position;
+    private View menuLayout;
+    private RecyclerView mRecyclerView;
+    private String title;
+    private File folder;
+    private View emptyView;
+    private FloatingActionButton fab;
+    private RetrieverDataTask myThread;
     private String baseNameDirectory = null;
     private TextView selectAllTextView;
     private ImageView selectImageView;
 
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.gridview_main);
-        RelativeLayout mainLayout = (RelativeLayout) findViewById(R.id.main_linear_layout);
-	    Intent intent = getIntent();
-		position = intent.getIntExtra("position", -1);
-	    title = intent.getStringExtra("name");
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.view_album_layout);
+        RelativeLayout mainLayout = findViewById(R.id.main_linear_layout);
+        Intent intent = getIntent();
+        position = intent.getIntExtra("position", -1);
+        title = intent.getStringExtra("name");
         folder = new File(intent.getStringExtra("folder"));
-		ArrayList<MediaModel> mListItemsPath = intent.getParcelableArrayListExtra("data");
-        mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
+        ArrayList<MediaModel> mListItemsPath = intent.getParcelableArrayListExtra("data");
+        mRecyclerView = findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         GridLayoutManager mLayoutManager = new GridLayoutManager(this, 3);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, mListItemsPath, this, position);
         mRecyclerView.setAdapter(mAdapter);
 
-        fab = (FloatingActionButton) findViewById(R.id.view_album_fab_button);
+        fab = findViewById(R.id.view_album_fab_button);
         menuLayout = findViewById(R.id.lock_layout);
 
         View mViewUnlock = findViewById(R.id.unlockView);
         View mViewDelete = findViewById(R.id.deleteView);
         View mViewSelect = findViewById(R.id.selectView);
-        selectAllTextView = (TextView) findViewById(R.id.options_album_selectTextView);
-        selectImageView = (ImageView) findViewById(R.id.selectImageView);
+        selectAllTextView = findViewById(R.id.options_album_selectTextView);
+        selectImageView = findViewById(R.id.selectImageView);
         View mViewMove = findViewById(R.id.moveView);
         emptyView = findViewById(R.id.view_album_empty_view);
 
-		mViewUnlock.setOnClickListener(this);
-		mViewDelete.setOnClickListener(this);
-		mViewMove.setOnClickListener(this);
-		mViewSelect.setOnClickListener(this);
+        mViewUnlock.setOnClickListener(this);
+        mViewDelete.setOnClickListener(this);
+        mViewMove.setOnClickListener(this);
+        mViewSelect.setOnClickListener(this);
         fab.setOnClickListener(this);
+
         initToolbar();
+        configureBlurView(mRecyclerView);
 
         if (mListItemsPath.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);
@@ -117,34 +123,44 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             updateDatabase(mListItemsPath, mAdapter);
         }
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() { 
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
-                @Override 
-                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                    super.onScrolled(recyclerView, dx, dy); 
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
 
-                    if (selectionMode) {
-                        return;
+                if (selectionMode) {
+                    return;
+                }
+
+                if (dy > 0) {
+                    // Scroll Down
+                    if (fab.isShown()) {
+
+                        fab.hide();
                     }
+                } else if (dy < 0) { // Scroll Up
 
-                    if (dy > 0) {
-                        // Scroll Down 
-                        if (fab.isShown()) { 
+                    if (!fab.isShown()) {
 
-                            fab.hide(); 
-                        } 
-                    } else if (dy < 0) { // Scroll Up 
-
-                        if (!fab.isShown()) { 
-
-                            fab.show(); 
-                        } 
-                    } 
-                } 
+                        fab.show();
+                    }
+                }
             }
-        );
-	}
+        });
+    }
+    private void configureBlurView(ViewGroup view) {
+        BlurView blurView = findViewById(R.id.blurView);
+        float radius = 20f;
+        View decorView = getWindow().getDecorView();
+        blurView.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
+        blurView.setClipToOutline(true);
 
+        BlurAlgorithm render = BlurViewUtils.getRenderAlgorithm(this);
+        blurView.setupWith(view, render) // or RenderEffectBlur
+                .setBlurRadius(radius);
+
+    }
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View view) {
@@ -157,7 +173,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 changeFilesDirectory();
                 break;
             case R.id.unlockView:
-                exportGallery();
+                exportToGallery();
                 break;
             case R.id.selectView:
                 toggleSelection();
@@ -174,7 +190,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private void updateDatabase(final ArrayList<MediaModel> list, final MultiSelectRecyclerViewAdapter adapter) {
-        myThread =  new RetrieverDataTask(list, adapter);
+        myThread = new RetrieverDataTask(list, adapter);
         myThread.setPriority(Thread.MAX_PRIORITY);
         myThread.start();
     }
@@ -183,17 +199,17 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         if (mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size()) {
             mAdapter.clearSelection();
         } else {
-            for (int i = 0; i < mAdapter.mListItemsModels.size();i++) {
+            for (int i = 0; i < mAdapter.mListItemsModels.size(); i++) {
                 if (!mAdapter.isSelected(i)) {
                     mAdapter.toggleSelection(i);
                 }
             }
         }
         invalidateOptionsMenu();
-        switchIcon();
+        switchSelectButtonIcon();
     }
 
-    private void exportGallery() {
+    private void exportToGallery() {
 
         if (mAdapter.getSelectedItemCount() == 0) {
             Toast.makeText(getApplicationContext(), getString(R.string.selecionar_um), Toast.LENGTH_LONG).show();
@@ -202,23 +218,19 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             String item = count + " " + getItemName(count);
             String message = String.format(getString(R.string.mover_galeria), item);
 
-            SimpleDialog dialog = new SimpleDialog(ViewAlbum.this, SimpleDialog.ALERT_STYLE);
-            dialog
-                .setTitle(getString(R.string.mover))
-                .setMessage(message)
-                .setPositiveButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener(){
+            SimpleDialog dialog = new SimpleDialog(ViewAlbum.this, SimpleDialog.STYLE_ALERT);
+            dialog.setIcon(R.drawable.ic_info_twotone);
+            dialog.setTitle(getString(R.string.mover)).setMessage(message).setPositiveButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener() {
 
-                    @Override
-                    public boolean onClick(SimpleDialog dialog) {
+                @Override
+                public boolean onClick(SimpleDialog dialog) {
 
-                        ViewAlbum.ExportTask task = new ExportTask(getSelectedItemsPath(), dialog);
-                        exitSelectionMode();
-                        task.start();
-                        return false;
-                    }
-                })
-                .setNegativeButton(getString(R.string.cancelar), null)
-                .show();
+                    ViewAlbum.ExportTask task = new ExportTask(getSelectedItemsPath(), dialog);
+                    exitSelectionMode();
+                    task.start();
+                    return false;
+                }
+            }).setNegativeButton(getString(R.string.cancelar), null).show();
         }
     }
 
@@ -234,23 +246,20 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         String message = String.format(getString(R.string.apagar_mensagem), item);
 
         SimpleDialog dialog = new SimpleDialog(ViewAlbum.this);
-        dialog.setIconColor(Color.argb(255, 255, 0, 0));
-        dialog.setIcon(android.R.drawable.ic_dialog_alert);
+        dialog.setIcon(R.drawable.ic_warning_twotone);
         dialog.showProgressBar(false);
         dialog.setTitle(getString(R.string.excluir));
         dialog.setMessage(message);
-        dialog.setPositiveButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener(){
+        dialog.setPositiveButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener() {
 
-                @Override
-                public boolean onClick(SimpleDialog dialog) {
-                    dialog.dismiss();
-                    ViewAlbum.DeleteFiles task =  new DeleteFiles(ViewAlbum.this,
-                            getSelectedItemsPath(), position, folder);
-                    task.start();
-                    return true;
-                }
+            @Override
+            public boolean onClick(SimpleDialog dialog) {
+                dialog.dismiss();
+                ViewAlbum.DeleteFiles task = new DeleteFiles(ViewAlbum.this, getSelectedItemsPath(), position, folder);
+                task.start();
+                return true;
             }
-        );
+        });
         dialog.setNegativeButton(getString(R.string.cancelar), null);
         dialog.show();
     }
@@ -262,18 +271,18 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             return;
         }
 
-        final Intent intent = new Intent(ViewAlbum.this, FolderPicker.class);
+        final Intent intent = new Intent(ViewAlbum.this, FolderPickerActivity.class);
         intent.putExtra("selection", getSelectedItemsPath());
         intent.putExtra("position", position);
         intent.putExtra("current_path", folder.getAbsolutePath());
         startActivityForResult(intent, CHANGE_DIRECTORY_CODE);
     }
 
-	private String getItemName(int count) {
-		return (position == 0 ? count > 1 ? getString(R.string.imagens) : getString(R.string.imagem) : count > 1 ? getString(R.string.videos) : getString(R.string.video)).toLowerCase();
-	}
+    private String getItemName(int count) {
+        return (position == 0 ? count > 1 ? getString(R.string.imagens) : getString(R.string.imagem) : count > 1 ? getString(R.string.videos) : getString(R.string.video)).toLowerCase();
+    }
 
-    private void showFilesInfo () {
+    private void showFilesInfo() {
         ArrayList<String> files = mAdapter.getSelectedItemsPath();
         int size = files.size();
         int resId = 0;
@@ -295,40 +304,36 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             sizeText.setText(StringUtils.getFormattedFileSize(file.length()));
             originText.setText(filePath);
         } else return;
-        new SimpleDialog(this)
-        .setTitle(getString(R.string.information))
-        .setContentView(view)
-        .setPositiveButton(android.R.string.ok, null)
-        .show();
+        new SimpleDialog(this).setTitle(getString(R.string.information)).setContentView(view).setPositiveButton(android.R.string.ok, null).show();
 
         database.close();
     }
 
-	public String getType() {
-		switch (position) {
-			case 0:
-				return FileModel.IMAGE_TYPE;
-			case 1:
-				return FileModel.VIDEO_TYPE;
-			default:
+    public String getType() {
+        switch (position) {
+            case 0:
+                return FileModel.IMAGE_TYPE;
+            case 1:
+                return FileModel.VIDEO_TYPE;
+            default:
                 return null;
-		}
-	}
+        }
+    }
 
-	private void synchronizeMainActivity() {
-        int visibility = (mAdapter.getItemCount() == 0) ? View.VISIBLE: View.GONE;
-		MainActivity mActivity = MainActivity.getInstance();
+    private void synchronizeMainActivity() {
+        int visibility = (mAdapter.getItemCount() == 0) ? View.VISIBLE : View.GONE;
+        MainActivity mActivity = MainActivity.getInstance();
         emptyView.setVisibility(visibility);
 
         if (mActivity != null) {
-			mActivity.updateFragment(position);
-		} else {
+            mActivity.updateFragment(position);
+        } else {
             Toast.makeText(this, "Can't synchronize MainActivity!", Toast.LENGTH_SHORT).show();
         }
-	}
+    }
 
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             switch (requestCode) {
                 case CHANGE_DIRECTORY_CODE:
@@ -340,14 +345,13 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     break;
                 case VIDEO_PLAY_CODE:
                     final int index = data.getIntExtra("index", 0);
-                    mRecyclerView.post(new Runnable() { 
+                    mRecyclerView.post(new Runnable() {
 
-                            @Override
-                            public void run() {
-                                mRecyclerView.smoothScrollToPosition(index);
-                            }
+                        @Override
+                        public void run() {
+                            mRecyclerView.smoothScrollToPosition(index);
                         }
-                    );
+                    });
                     break;
                 case IMPORT_FROM_GALLERY_CODE:
                     ArrayList<String> paths = data.getStringArrayListExtra("selection");
@@ -367,7 +371,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
-	}
+    }
 
     public void updateRecyclerView() {
         ArrayList<MediaModel> mListItemsPath = new ArrayList<MediaModel>();
@@ -393,21 +397,21 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
     }
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		if (selectionMode) {
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (selectionMode) {
             getMenuInflater().inflate(R.menu.view_album_menu, menu);
             if (baseNameDirectory == null) {
                 baseNameDirectory = (title.length() <= 20) ? title + " ( %s )" : title.substring(0, 20) + "... ( %s )";
             }
-			String count = String.valueOf(mAdapter.getSelectedItemCount());
+            String count = String.valueOf(mAdapter.getSelectedItemCount());
             mToolbar.setTitle(String.format(baseNameDirectory, count));
-		}
-		return super.onCreateOptionsMenu(menu);
-	}
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             if (selectionMode) {
                 exitSelectionMode();
@@ -418,31 +422,31 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             showFilesInfo();
         }
         return false;
-	}
+    }
 
-	@Override
-	public void onItemClicked(int item_position, View v) {
+    @Override
+    public void onItemClicked(int item_position, View v) {
         if (!selectionMode) {
-			Class<?> mClass = null;
-			switch (position) {
-				case 0:
+            Class<?> mClass = null;
+            switch (position) {
+                case 0:
                     ArrayList<String> path = new ArrayList<>();
                     for (MediaModel model : mAdapter.mListItemsModels) {
                         path.add(model.getPath());
                     }
                     startPreviewActivity(ImagePreviewActivity.class, item_position, v);
-					break;
-				case 1:
-					mClass = VideoPlayerActivity.class;
+                    break;
+                case 1:
+                    mClass = VideoPlayerActivity.class;
                     startPreviewActivity(mClass, item_position, v);
-			    	break;
-			}
-			return;
-		}
+                    break;
+            }
+            return;
+        }
         toggleSelection(item_position);
-		invalidateOptionsMenu();
-		switchIcon();
-	}
+        invalidateOptionsMenu();
+        switchSelectButtonIcon();
+    }
 
     private void startPreviewActivity(Class<?> previewActivity, int position, View v) {
         Intent intent = new Intent(this, previewActivity);
@@ -452,105 +456,106 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         startActivityForResult(intent, VIDEO_PLAY_CODE, opts.toBundle());
     }
 
-	@Override
-	public boolean onItemLongClicked(int position) {
-		toggleSelection(position);
-		invalidateOptionsMenu();
-		switchIcon();
+    @Override
+    public boolean onItemLongClicked(int position) {
+        toggleSelection(position);
+        invalidateOptionsMenu();
+        switchSelectButtonIcon();
 
-		if (!selectionMode) {
-			enterSelectionMode();
-		}
-		return true;
-	}
+        if (!selectionMode) {
+            enterSelectionMode();
+        }
+        return true;
+    }
 
-	private ArrayList<String> getSelectedItemsPath() {
-		ArrayList<String> selectedItems = new ArrayList<String>();
-		for (int i : mAdapter.getSelectedItems()) {
-			selectedItems.add(mAdapter.mListItemsModels.get(i).getPath());
-		}
-		return selectedItems;
-	}
+    private ArrayList<String> getSelectedItemsPath() {
+        ArrayList<String> selectedItems = new ArrayList<String>();
 
-	private void toggleSelection(int position) {
-		mAdapter.toggleSelection(position);
-	}
+        for (int i : mAdapter.getSelectedItems()) {
+            selectedItems.add(mAdapter.mListItemsModels.get(i).getPath());
+        }
+        return selectedItems;
+    }
 
-	private void switchIcon() {
+    private void toggleSelection(int position) {
+        mAdapter.toggleSelection(position);
+    }
+
+    private void switchSelectButtonIcon() {
         boolean allSelected = mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size();
         String text = allSelected ? "Unselect all" : "Select all";
         selectAllTextView.setText(text);
-		selectImageView.setImageResource(allSelected ? R.drawable.ic_select : R.drawable.ic_select_all);
-	}
+        selectImageView.setImageResource(allSelected ? R.drawable.ic_select : R.drawable.ic_select_all);
+    }
 
     public void enterSelectionMode() {
         selectionMode = true;
         invalidateOptionsMenu();
         menuLayout.setVisibility(View.VISIBLE);
         Animation anim = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_up);
-        anim.setAnimationListener(new Animation.AnimationListener(){
+        anim.setAnimationListener(new Animation.AnimationListener() {
 
-                @Override
-                public void onAnimationStart(Animation anim) {
+            @Override
+            public void onAnimationStart(Animation anim) {
 
-                }
-
-                @Override
-                public void onAnimationEnd(Animation anim) {
-                    int base = (int) getResources().getDimension(R.dimen.recycler_view_padding);
-                    int button = menuLayout.getHeight();
-                    mRecyclerView.setPadding(base, base, base, button);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation p1) {
-
-                }
             }
-        );
+
+            @Override
+            public void onAnimationEnd(Animation anim) {
+                int base = (int) getResources().getDimension(R.dimen.recycler_view_padding);
+                int button = menuLayout.getHeight();
+                mRecyclerView.setPadding(base, base, base, button);
+                mRecyclerView.setClipToPadding(false);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation p1) {
+
+            }
+        });
         menuLayout.setAnimation(anim);
         fab.hide();
     }
 
-	public void exitSelectionMode() {
-		selectionMode = false;
+    public void exitSelectionMode() {
+        selectionMode = false;
         invalidateOptionsMenu();
+
         if (!mAdapter.mListItemsModels.isEmpty()) {
-			mAdapter.clearSelection();
+            mAdapter.clearSelection();
         }
 
         menuLayout.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_bottom));
         menuLayout.setVisibility(View.GONE);
-        int dimen = (int)getResources().getDimension(R.dimen.recycler_view_padding);
+        int dimen = (int) getResources().getDimension(R.dimen.recycler_view_padding);
         mRecyclerView.setPadding(dimen, dimen, dimen, dimen);
-		mToolbar.setTitle(title);
+        mToolbar.setTitle(title);
         fab.show();
     }
 
-	@Override
-	public void onBackPressed() {
-		if (selectionMode) {
-			exitSelectionMode();
-			return;
-		}
-		super.onBackPressed();
-	}
+    @Override
+    public void onBackPressed() {
+        if (selectionMode) {
+            exitSelectionMode();
+            return;
+        }
+        super.onBackPressed();
+    }
 
-	private void initToolbar() {
-		mToolbar = (Toolbar) findViewById(R.id.toolbar);
-		setSupportActionBar(mToolbar);
-		mToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
-		getSupportActionBar().setTitle(title);
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	}
+    private void initToolbar() {
+        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        mToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        getSupportActionBar().setTitle(title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
-	public class DeleteFiles extends DeleteFilesTask {
-
+    public class DeleteFiles extends DeleteFilesTask {
         private boolean threadInterrupted;
 
-		public DeleteFiles(Context context, ArrayList<String> p1, int p3, File p4) {
-			super(context, p1, p3, p4);
-		}
+        public DeleteFiles(Activity activity, ArrayList<String> p1, int p3, File p4) {
+            super(activity, p1, p3, p4);
+        }
 
         @Override
         public void onBeingStarted() {
@@ -560,44 +565,44 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 myThread.stopWork();
                 threadInterrupted = true;
             }
-			exitSelectionMode();
-		}
+            exitSelectionMode();
+        }
 
         @Override
         protected void onInterrupted() {
             super.onInterrupted();
 
-            if (threadInterrupted  && !mAdapter.mListItemsModels.isEmpty()) {
+            if (threadInterrupted && !mAdapter.mListItemsModels.isEmpty()) {
                 updateRecyclerView();
             }
-			synchronizeMainActivity();
-		}
+            synchronizeMainActivity();
+        }
 
         @Override
         public void onFinished() {
             super.onFinished();
 
             if (mAdapter.mListItemsModels.isEmpty()) {
-				finish();
-			} else if (threadInterrupted) {
+                finish();
+            } else if (threadInterrupted) {
                 updateRecyclerView();
             }
-			synchronizeMainActivity();
-		}
+            synchronizeMainActivity();
+        }
 
         @Override
         protected void onUpdated(Object[] get) {
             super.onUpdated(get);
-			mAdapter.removeItem((String)get[0]);
-		}
-	}
+            mAdapter.removeItem((String) get[0]);
+        }
+    }
 
     public class RetrieverDataTask extends Thread {
 
         private boolean running;
         private boolean cancelled;
-        private ArrayList<MediaModel> list;
-        private MultiSelectRecyclerViewAdapter adapter;
+        private final ArrayList<MediaModel> list;
+        private final MultiSelectRecyclerViewAdapter adapter;
 
         public RetrieverDataTask(ArrayList<MediaModel> list, MultiSelectRecyclerViewAdapter adapter) {
             this.list = list;
@@ -631,12 +636,11 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         final String time = StringUtils.getFormattedVideoDuration(String.valueOf(duration));
                         runOnUiThread(new Runnable() {
 
-                                          @Override
-                                          public void run() {
-                                              adapter.updateItemDuration(model.getPath(), time);
-                                          }
-                                      }
-                        );
+                            @Override
+                            public void run() {
+                                adapter.updateItemDuration(model.getPath(), time);
+                            }
+                        });
                     } catch (Exception e) {
                         e.printStackTrace();
                         JDebug.writeLog(e.getCause());
@@ -661,32 +665,32 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
     }
 
-	public class ExportTask extends JTask {
-        
+    public class ExportTask extends JTask {
+
         private static final String ACTION_UPDATE_ADAPTER = "action_update";
         private boolean allowListModification = true;
-		private SimpleDialog mySimpleDialog;
-		private List<String> selectedItens;
-		private ArrayList<String> mArrayPath = new ArrayList<>();
-		private FileTransfer mTransfer = new FileTransfer();
-		private ProgressThreadUpdate mUpdate;
-		private ArrayList<String> junkList= new ArrayList<>();
-	    private PathsDatabase database;
-        private String TAG = "ExportTask";
+        private final SimpleDialog mySimpleDialog;
+        private final List<String> selectedItems;
+        private final ArrayList<String> mArrayPath = new ArrayList<>();
+        private final FileTransfer mTransfer = new FileTransfer();
+        private final ProgressThreadUpdate mUpdate;
+        private final ArrayList<String> junkList = new ArrayList<>();
+        private final PathsDatabase database;
+        private final String TAG = "ExportTask";
 
-		public ExportTask(List<String> items, SimpleDialog progress) {
-			this.mySimpleDialog = progress;
-			this.selectedItens = items;
-			this.mUpdate = new ProgressThreadUpdate(mTransfer, mySimpleDialog);
+        public ExportTask(List<String> items, SimpleDialog progress) {
+            this.mySimpleDialog = progress;
+            this.selectedItems = items;
+            this.mUpdate = new ProgressThreadUpdate(mTransfer, mySimpleDialog);
             this.database = PathsDatabase.getInstance(ViewAlbum.this, Storage.getDefaultStoragePath());
-		}
+        }
 
         @Override
         public void workingThread() {
             try {
                 long max = 0;
 
-                for (String item : selectedItens) {
+                for (String item : selectedItems) {
                     File file = new File(item);
                     max += file.length();
                 }
@@ -696,7 +700,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 mUpdate.start();
 
                 long start = System.currentTimeMillis();
-                for (String item :selectedItens) {
+                for (String item : selectedItems) {
                     try {
                         if (this.isInterrupted()) {
                             break;
@@ -712,8 +716,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
                         File fileOut = new File(path);
 
-                        if (fileOut.exists())
-                            fileOut = new File(getNewFileName(fileOut));
+                        if (fileOut.exists()) fileOut = new File(getNewFileName(fileOut));
 
                         fileOut.getParentFile().mkdirs();
                         sendUpdate(null, fileOut.getName());
@@ -746,7 +749,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                             sendUpdate(ACTION_UPDATE_ADAPTER);
                             start = System.currentTimeMillis();
                         }
-                    } catch ( Exception e) {
+                    } catch (Exception e) {
 
                     }
                 }
@@ -764,20 +767,20 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             if (myThread != null && myThread.isWorking()) {
                 myThread.stopWork();
             }
-            mySimpleDialog.setStyle(SimpleDialog.PROGRESS_STYLE);
+            mySimpleDialog.resetDialog();
+            mySimpleDialog.showProgressBar(true);
             mySimpleDialog.setTitle(getString(R.string.mover));
             mySimpleDialog.setMessage("");
             mySimpleDialog.setSingleLineMessage(true);
             mySimpleDialog.setCancelable(false);
-            mySimpleDialog.setNegativeButton(getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
-                    @Override
-                    public boolean onClick(SimpleDialog dialog) {
-                        mTransfer.cancel();
-                        interrupt();
-                        return true;
-                    }
-				}
-            );
+            mySimpleDialog.setNegativeButton(getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener() {
+                @Override
+                public boolean onClick(SimpleDialog dialog) {
+                    mTransfer.cancel();
+                    interrupt();
+                    return true;
+                }
+            });
         }
 
         @Override
@@ -785,9 +788,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             if (ACTION_UPDATE_ADAPTER.equals(get[0])) {
                 updateAdapter();
             } else {
-                String name = (String)get[1];
+                String name = (String) get[1];
                 mySimpleDialog.setMessage(name);
-			}
+            }
         }
 
         @Override
@@ -803,9 +806,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         private String getAlternativePath(int type) {
-            File file = new File(Environment.getExternalStoragePublicDirectory(type == 0 ?
-                                                                               Environment.DIRECTORY_PICTURES: Environment.DIRECTORY_MOVIES), 
-                                 StringUtils.getFormattedDate("yyyy.MM.dd 'at' HH:mm:ss z") + (type == 0 ? ".jpeg" : ".mp4"));
+            File file = new File(Environment.getExternalStoragePublicDirectory(type == 0 ? Environment.DIRECTORY_PICTURES : Environment.DIRECTORY_MOVIES), StringUtils.getFormattedDate("yyyy.MM.dd 'at' HH:mm:ss z") + (type == 0 ? ".jpeg" : ".mp4"));
             if (file.exists()) {
                 file = new File(getNewFileName(file));
             }
@@ -817,16 +818,16 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             Toast.makeText(ViewAlbum.this, "Finished with error!", Toast.LENGTH_SHORT).show();
         }
 
-		private void kill() {
-			Storage.scanMediaFiles(mArrayPath.toArray(new String[mArrayPath.size()]));
-			mySimpleDialog.dismiss();
+        private void kill() {
+            Storage.scanMediaFiles(mArrayPath.toArray(new String[mArrayPath.size()]));
+            mySimpleDialog.dismiss();
 
-			if (mAdapter.mListItemsModels.isEmpty()) {
-				deleteFolder();
-				finish();
-			}
-			synchronizeMainActivity();
-		}
+            if (mAdapter.mListItemsModels.isEmpty()) {
+                deleteFolder();
+                finish();
+            }
+            synchronizeMainActivity();
+        }
 
         private void updateAdapter() {
             allowListModification = false;
@@ -840,45 +841,45 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             allowListModification = true;
         }
 
-		public void deleteFolder() {
-			PathsDatabase.Folder database = PathsDatabase.Folder.getInstance(App.getInstance());
+        public void deleteFolder() {
+            PathsDatabase.Folder database = PathsDatabase.Folder.getInstance(App.getInstance());
 
             if (folder.delete()) {
-				database.delete(folder.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
-			}
-			database.close();
-		}
+                database.delete(folder.getName(), position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
+            }
+            database.close();
+        }
 
         private void addJunkItem(String item, Thread t) {
             while (!allowListModification) {
                 try {
                     Thread.sleep(10);
-                } catch (InterruptedException ignored) {}
+                } catch (InterruptedException ignored) {
+                }
             }
             junkList.add(item);
         }
 
-		private String getNewFileName(File file) {
-			String path = file.getAbsolutePath();
-			int lasIndexOf = path.lastIndexOf(".");
-			return lasIndexOf != -1 ? concatenateParts(path.substring(0, lasIndexOf), path.substring(lasIndexOf), 1) : concatenateParts(path, "", 1);
-		}
+        private String getNewFileName(File file) {
+            String path = file.getAbsolutePath();
+            int lasIndexOf = path.lastIndexOf(".");
+            return lasIndexOf != -1 ? concatenateParts(path.substring(0, lasIndexOf), path.substring(lasIndexOf), 1) : concatenateParts(path, "", 1);
+        }
 
-		private String concatenateParts(String part1, String part2, int time) {
-			File file = new File(part1 + "(" + time + ")" + part2);
-			return file.exists() ? concatenateParts(part1, part2, time + 1) : file.getAbsolutePath();
-		}
+        private String concatenateParts(String part1, String part2, int time) {
+            File file = new File(part1 + "(" + time + ")" + part2);
+            return file.exists() ? concatenateParts(part1, part2, time + 1) : file.getAbsolutePath();
+        }
 
-		public OutputStream getOutputStream(File file) throws FileNotFoundException {
+        public OutputStream getOutputStream(File file) throws FileNotFoundException {
 
-            if (Build.VERSION.SDK_INT >= 21) 
-				if (Environment.isExternalStorageRemovable(file)) {
-					return App.getAppContext().getContentResolver().openOutputStream(Storage.getDocumentFile(file, true).getUri());
-				}
+            if (Build.VERSION.SDK_INT >= 21) if (Environment.isExternalStorageRemovable(file)) {
+                return App.getAppContext().getContentResolver().openOutputStream(Storage.getDocumentFile(file, true).getUri());
+            }
 
-			file.getParentFile().mkdirs();
+            file.getParentFile().mkdirs();
             return new FileOutputStream(file);
         }
-	}
+    }
 }
 	

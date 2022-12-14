@@ -20,15 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.jefferson.application.br.App;
+import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.ViewAlbum;
 import com.jefferson.application.br.fragment.AlbumFragment;
-import com.jefferson.application.br.util.DialogUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.List;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
 
@@ -50,18 +49,9 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         return null;
     }
 
-    public void sortModels(ArrayList<FolderModel> list) {
-        Collections.sort(list, new Comparator<FolderModel>() {
-            @Override
-            public int compare(FolderModel o1, FolderModel o2) {
-                return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-            }
-        });
-    }
-
     public void insertItem(FolderModel item) {
         models.add(item);
-        sortModels(models);
+        FolderModel.sort(models);
         notifyDataSetChanged();
 
         int position = models.indexOf(item);
@@ -137,7 +127,8 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         holder.favoriteView.setVisibility(f_model.isFavorite() ? View.VISIBLE: View.GONE);
 
         if (!isEmpty) {
-            Glide.with(fragment.requireContext()).load("file://" + f_model.getItems().get(0).getPath()).skipMemoryCache(true).into(holder.iv_image);
+            Glide.with(fragment.requireContext()).load("file://" + f_model.getItems().get(0)
+                    .getPath()).skipMemoryCache(true).into(holder.iv_image);
         } else {
             holder.iv_image.setImageBitmap(null);
             holder.smallView.setImageResource(R.drawable.ic_image_broken_variant);
@@ -158,7 +149,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
                 intent.putExtra("name", f_model.getName());
                 intent.putExtra("data", f_model.getItems());
                 intent.putExtra("folder", f_model.getPath());
-                fragment.getActivity().startActivity(intent);
+                fragment.requireActivity().startActivity(intent);
             }
         });
 
@@ -167,20 +158,14 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
             @Override
             public boolean onLongClick(final View view) {
                 Context context = view.getContext();
-                View menuView = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(R.layout.dialog_list_view_layout, null);
+
                 final String[] options = {context.getString(R.string.renomear), context.getString(R.string.apagar), f_model.isFavorite() ? "Remove from favorites": "Add to Favorites"};
-                final int[] icons = {R.drawable.ic_rename, R.drawable.ic_delete_all, R.drawable.ic_bookmark};
+                final int[] icons = {R.drawable.ic_rename, R.drawable.ic_delete_outline,
+                        f_model.isFavorite() ? R.drawable.ic_bookmark_remove_outline: R.drawable.ic_bookmark_add_outline};
 
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                builder.setView(menuView);
-                AlertDialog dialog = builder.create();
-                DialogUtils.configureDialog(dialog);
+                SimpleDialog dialog = new SimpleDialog(fragment.requireActivity());
+                dialog.setMenuItems(SimpleDialog.getMenuItems(options,icons), new DialogMenuListener(f_model, dialog));
                 dialog.show();
-
-                DialogAdapter adapter = new DialogAdapter(options, icons, context);
-                ListView listView = (ListView) menuView.findViewById(R.id.dialog_list_view);
-                listView.setAdapter(adapter);
-                listView.setOnItemClickListener(new DialogMenuListener(f_model, dialog));
 
                 return false;
             }
@@ -211,56 +196,12 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         }
     }
 
-    public static class DialogAdapter extends BaseAdapter {
-        private final Context context;
-        private final CharSequence[] options;
-        private final int[] icons;
-
-        public DialogAdapter(CharSequence[] options, int[] icons, Context context) {
-            this.options = options;
-            this.icons = icons;
-            this.context = context;
-            if (options.length != icons.length)
-                throw new IllegalArgumentException("'Icons' and 'Options' must to have the same length");
-        }
-
-        @Override
-        public int getCount() {
-            return options.length;
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return options[position];
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View view = null;
-            if (convertView == null) {
-                view = ((LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-                        .inflate(R.layout.dialog_menu_item_layout, parent, false);
-                TextView textView = view.findViewById(R.id.dialog_item_text_view);
-                ImageView imageView = view.findViewById(R.id.dialog_item_image_view);
-
-                textView.setText(options[position]);
-                imageView.setImageResource(icons[position]);
-            }
-
-            return view;
-        }
-    }
     private class DialogMenuListener implements AdapterView.OnItemClickListener {
 
         FolderModel f_model;
-        AlertDialog dialog;
+        SimpleDialog dialog;
 
-        public DialogMenuListener(FolderModel f_model, AlertDialog dialog) {
+        public DialogMenuListener(FolderModel f_model, SimpleDialog dialog) {
             this.dialog = dialog;
             this.f_model = f_model;
         }

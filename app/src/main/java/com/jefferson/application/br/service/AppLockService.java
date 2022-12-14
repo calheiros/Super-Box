@@ -7,6 +7,7 @@ import android.app.Service;
 import android.app.usage.UsageStatsManager;
 import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
@@ -15,9 +16,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.widget.Toast;
-
 import androidx.annotation.RequiresApi;
-
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.AppLockWindow;
 import com.jefferson.application.br.R;
@@ -36,7 +35,7 @@ public class AppLockService extends Service {
 	public static String pActivity = null;
 	public static final String ACTION_RESTART_SERVICE ="RestartBlockService";
 	private AppLockWindow appLockWindow;
-	private ScreenOnOff mybroadcast;
+	private ScreenOnOff myBroadcast;
 	private AppLockDatabase database;
 	public static Handler toastHandler;
 	public static AppLockService self;
@@ -48,23 +47,23 @@ public class AppLockService extends Service {
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		throw new UnsupportedOperationException("operação não implementada");
+		throw new UnsupportedOperationException("operation not implemented!");
 	}
 
 	@Override
 	public void onCreate() {
         startForeground();
         AppLockAdapter.service = this;
-		database = new AppLockDatabase(this);
+        database = new AppLockDatabase(this);
 		appLockWindow = new AppLockWindow(getApplicationContext(), database);
-        usageStats = (UsageStatsManager) getSystemService(USAGE_STATS_SERVICE);
+        usageStats = (UsageStatsManager) getSystemService(Context.USAGE_STATS_SERVICE);
         lockedApps = database.getLockedPackages();
 
 		startService();
 
-        mybroadcast = new ScreenOnOff();
-		registerReceiver(mybroadcast, new IntentFilter(Intent.ACTION_SCREEN_ON));
-        registerReceiver(mybroadcast, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        myBroadcast = new ScreenOnOff();
+		registerReceiver(myBroadcast, new IntentFilter(Intent.ACTION_SCREEN_ON));
+        registerReceiver(myBroadcast, new IntentFilter(Intent.ACTION_SCREEN_OFF));
 
 		super.onCreate();
 	}
@@ -126,7 +125,6 @@ public class AppLockService extends Service {
     }
 */
     private void startForeground() {
-
         String ChannelId = "";
         Notification.Builder builder = null;
 
@@ -178,19 +176,12 @@ public class AppLockService extends Service {
             unregisterReceiver(dataBusReceiver);
         }
         //mHomeWatcher.stopWatch();
-        if (mybroadcast != null) {
-            unregisterReceiver(mybroadcast);
+        if (myBroadcast != null) {
+            unregisterReceiver(myBroadcast);
         }
 		sendBroadcast(new Intent(ACTION_RESTART_SERVICE));
 		super.onDestroy();
 	}
-
-    private void recentsPressed() {
-
-        if (appLockWindow.isLocked()) {
-            appLockWindow.unlock();
-        }
-    }
 
     private void startLauncher() {
 
@@ -209,7 +200,7 @@ public class AppLockService extends Service {
         timer.scheduleAtFixedRate(new MainTask(), 0, 400);
     }
 
-    public class MainTask extends TimerTask { 
+    public class MainTask extends TimerTask {
 
         public void run() {
 			toastHandler.sendEmptyMessage(0);
@@ -245,9 +236,6 @@ public class AppLockService extends Service {
                         startLauncher();
                     }
 					appLockWindow.lock(activityOnTop);
-                    /*Intent intent = new Intent(App.getAppContext(), VerifyActivity.class);
-                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);    
-                     startActivity(intent);*/
 				} else {
 
                     if (appLockWindow.isLocked() && !activityOnTop.isEmpty()) {

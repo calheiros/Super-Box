@@ -5,7 +5,7 @@
 		app:showAsAction="always"
         android:id="@+id/info_item_menu"
 		app:iconTint="@color/white"
-		android:icon="@drawable/ic_information"
+		android:icon="@drawable/ic_info_24"
 		android:title="@string/information" />
     
 </menu>

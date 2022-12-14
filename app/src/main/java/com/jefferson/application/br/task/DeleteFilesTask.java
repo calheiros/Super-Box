@@ -1,5 +1,6 @@
 package com.jefferson.application.br.task;
 
+import android.app.Activity;
 import android.content.*;
 import android.widget.*;
 import com.jefferson.application.br.*;
@@ -14,17 +15,17 @@ public class DeleteFilesTask extends JTask {
     public int progress;
     private List<String> items;
     public SimpleDialog dialog;
-    private Context context;
+    private Activity activity;
     private int position;
     private File rootFile;
     private boolean deletedAll;
     private JTask.OnFinishedListener listener;
 
-    public DeleteFilesTask(Context context, ArrayList<String> items, int position, File rootFile) {
+    public DeleteFilesTask(Activity activity, ArrayList<String> items, int position, File rootFile) {
         this.items = items;
         this.position = position;
         this.rootFile = rootFile;
-        this.context = context;
+        this.activity = activity;
     }
 
     public boolean deletedAll() {
@@ -33,7 +34,7 @@ public class DeleteFilesTask extends JTask {
 
     @Override
     public void workingThread() {
-        PathsDatabase database = PathsDatabase.getInstance(context, Storage.getDefaultStoragePath());
+        PathsDatabase database = PathsDatabase.getInstance(activity, Storage.getDefaultStoragePath());
         try {
             for (String path : items) {
                 if (isInterrupted()) {
@@ -57,13 +58,13 @@ public class DeleteFilesTask extends JTask {
 
     @Override
     public void onBeingStarted() {
-        dialog = new SimpleDialog(context);
+        dialog = new SimpleDialog(activity);
         dialog.showProgressBar(!items.isEmpty())
             .setTitle("Excluindo")
             .setMax(items.size())
             .setProgress(0)
             .showPositiveButton(false)
-            .setNegativeButton(context.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
+            .setNegativeButton(activity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
                 @Override
                 public boolean onClick(SimpleDialog dialog) {
                     interrupt();
@@ -97,13 +98,13 @@ public class DeleteFilesTask extends JTask {
 
     @Override
     public void onException(Exception e) {
-        Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onInterrupted() {
         super.onInterrupted();
-        Toast.makeText(context, context.getString(R.string.canceledo_usuario), Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, activity.getString(R.string.canceledo_usuario), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -114,7 +115,7 @@ public class DeleteFilesTask extends JTask {
     }
 
 	private void deleteFolder(File file) {
-        PathsDatabase.Folder database = PathsDatabase.Folder.getInstance(context);
+        PathsDatabase.Folder database = PathsDatabase.Folder.getInstance(activity);
         try {
             if (file.delete()) {
                 database.delete(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);

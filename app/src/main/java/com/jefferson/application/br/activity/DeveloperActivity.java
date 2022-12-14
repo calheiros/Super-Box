@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.provider.Settings;
+
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationManagerCompat;
 import android.util.Log;
 import android.view.View;
@@ -34,7 +36,7 @@ public class DeveloperActivity extends MyCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
+        wifi = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
         setContentView(R.layout.developer_layout);
         Switch switchView = (Switch) findViewById(R.id.developerlayoutSwitch);
@@ -80,7 +82,7 @@ public class DeveloperActivity extends MyCompatActivity {
     }
 
     public void showProgressDialog(View v) {
-        SimpleDialog simple = new SimpleDialog(this, SimpleDialog.PROGRESS_STYLE);
+        SimpleDialog simple = new SimpleDialog(this, SimpleDialog.STYLE_PROGRESS);
         simple.setTitle(R.string.unicode_shrug);
         simple.setMessage("Mensagem de teste");
         simple.setProgress(76);
@@ -145,6 +147,7 @@ public class DeveloperActivity extends MyCompatActivity {
             super(path);
         }
 
+        @RequiresApi(Build.VERSION_CODES.Q)
         public MyObserver(File file) {
             super(file);
         }
@@ -156,7 +159,7 @@ public class DeveloperActivity extends MyCompatActivity {
     }
 
     public void testThread(View v) {
-        final SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.PROGRESS_STYLE);
+        final SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.STYLE_PROGRESS);
         dialog.setTitle("thread teste");
         dialog.setMax(100);
         dialog.show();
@@ -165,7 +168,7 @@ public class DeveloperActivity extends MyCompatActivity {
 
             @Override
             public void onException(Exception e) {
-                dialog.setStyle(SimpleDialog.ALERT_STYLE);
+                dialog.resetDialog();
                 dialog.setTitle("Execeção ocorrida!");
                 dialog.setMessage("Error caught! " + e.getMessage());
                 dialog.setPositiveButton("okay", null);
@@ -199,18 +202,18 @@ public class DeveloperActivity extends MyCompatActivity {
 
             @Override
             protected void onInterrupted() {
-                Toast.makeText(DeveloperActivity.this, "Interrupted!", 1).show();
+                Toast.makeText(DeveloperActivity.this, "Interrupted!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onBeingStarted() {
-                Toast.makeText(DeveloperActivity.this, "STARTED!\nx = " + x, 0).show();
+                Toast.makeText(DeveloperActivity.this, "STARTED!\nx = " + x, Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onFinished() {
                 dialog.setPositiveButton("close", null);
-                Toast.makeText(DeveloperActivity.this, "FINISHED!\nx = " + x, 0).show();
+                Toast.makeText(DeveloperActivity.this, "FINISHED!\nx = " + x, Toast.LENGTH_SHORT).show();
 
             }
         }.start();

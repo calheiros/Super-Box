@@ -1,126 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="?colorPrimary"
-    android:id="@+id/lock_layout"
+    android:layout_width="match_parent"
     android:layout_alignParentBottom="true"
+    android:layout_marginBottom="4dp"
+    android:layout_marginEnd="4dp"
+    android:layout_marginStart="4dp"
+    android:id="@+id/lock_layout"
     android:visibility="gone"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent">
+    android:layout_height="wrap_content">
+
+    <eightbitlab.com.blurview.BlurView
+        android:id="@+id/blurView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/dialog_background"
+        app:blurOverlayColor="?colorDialogBackground">
 
     <LinearLayout
-        android:background="?attr/selectableItemBackground"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/unlockView"
-        android:layout_width="0dp"
-        android:layout_weight="1.0"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="5dp">
+        android:background="@android:color/transparent">
 
-        <ImageView
-            android:layout_height="26dp"
-            android:layout_width="26dp"
-            android:src="@drawable/ic_export"
-            app:tint="@color/white" />
-
-        <TextView
-            android:layout_marginTop="1dp"
+        <LinearLayout
+            android:id="@+id/unlockView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Export"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:includeFontPadding="false"
-            android:textColor="@color/white"
-            android:textSize="12sp"/>
-    </LinearLayout>
+            android:layout_weight="1.0"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="5dp">
 
-    <LinearLayout
-        android:background="?attr/selectableItemBackground"
-        android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:layout_weight="1.0"
-        android:id="@+id/deleteView"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:padding="5dp">
-        
-        <ImageView
-            android:layout_height="26dp"
-            android:layout_width="26dp"
-            android:src="@drawable/ic_delete_outline"
-            app:tint="@color/white" />
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_export"
+                app:tint="@color/white" />
 
-        <TextView
-            android:layout_marginTop="1dp"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="Export"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/deleteView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Delete"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:includeFontPadding="false"
-            android:textColor="@color/white"
-            android:textSize="12sp"/>
-    </LinearLayout>
+            android:layout_weight="1.0"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="5dp">
 
-    <LinearLayout
-        android:background="?attr/selectableItemBackground"
-        android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:layout_weight="1.0"
-        android:orientation="vertical"
-        android:id="@+id/moveView"
-        android:gravity="center"
-        android:padding="5dp">
-        
-        <ImageView
-            android:layout_height="26dp"
-            android:layout_width="26dp"
-            android:src="@drawable/ic_folder_move_outline"
-            app:tint="@color/white" />
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_delete_outline"
+                app:tint="@color/white" />
 
-        <TextView
-            android:layout_marginTop="1dp"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="Delete"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/moveView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Move to"
-            android:maxLines="1"
-            android:includeFontPadding="false"
-            android:ellipsize="end"
-            android:textColor="@color/white"
-            android:textSize="12sp"/>
-    </LinearLayout>
+            android:layout_weight="1.0"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="5dp">
 
-    <LinearLayout
-        android:layout_height="wrap_content"
-        android:layout_width="0dp"
-        android:layout_weight="1.0"
-        android:background="?attr/selectableItemBackground"
-        android:orientation="vertical"
-        android:id="@+id/selectView"
-        android:gravity="center"
-        android:padding="5dp">
-        
-        <ImageView
-            android:layout_height="26dp"
-            android:layout_width="26dp"
-            android:id="@+id/selectImageView"
-            android:src="@drawable/ic_select_all"
-            app:tint="@color/white" />
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_folder_move_outline"
+                app:tint="@color/white" />
 
-        <TextView
-            android:layout_marginTop="1dp"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="Move to"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/selectView"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Select all"
-            android:id="@+id/options_album_selectTextView"
-            android:maxLines="1"
-            android:textColor="@color/white"
-            android:ellipsize="end"
-            android:includeFontPadding="false"
-            android:textSize="12sp"/>
-    </LinearLayout>
+            android:layout_weight="1.0"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="5dp">
 
-</LinearLayout>
+            <ImageView
+                android:id="@+id/selectImageView"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_select_all"
+                app:tint="@color/white" />
+
+            <TextView
+                android:id="@+id/options_album_selectTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="Select all"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+    </eightbitlab.com.blurview.BlurView>
+</FrameLayout>
