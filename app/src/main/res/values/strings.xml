@@ -187,5 +187,6 @@
     <string name="biometric_title">Biometric Auth</string>
     <string name="biometric_subtitle">Please anable to enter</string>
     <string name="biometric_desc">"biometric "</string>
+    <string name="descricao_botao_adicionar">Add items</string>
 
 </resources>

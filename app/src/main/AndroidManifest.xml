@@ -4,7 +4,7 @@
 
     <!-- alterar ou excluir conteúdo do armaz. compartilhado -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.INTERNET" />
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <!-- ler conteúdo do armaz. comp. -->
@@ -63,7 +63,8 @@
         android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"/>
 
     <!-- MANAGE_EXTERNAL_STORAGE -->
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
 
     <!-- conectar e desconectar do Wi-Fi -->
     <!--<uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>-->
