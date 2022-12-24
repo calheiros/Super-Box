@@ -191,5 +191,6 @@
     <string name="gif_image_view_description">gif view</string>
     <string name="export_gallery_button_description">export to gallery button</string>
     <string name="delete_image_button_description">delete image button</string>
+    <string name="contact_photo_description">contact photo</string>
 
 </resources>
