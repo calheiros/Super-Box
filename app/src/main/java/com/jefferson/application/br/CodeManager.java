@@ -128,7 +128,7 @@ public class CodeManager {
 	public static boolean deleteContact(Context ctx, String phone, String name) {
 		Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_FILTER_URI, Uri.encode(phone));
 		Cursor cur = ctx.getContentResolver().query(contactUri, null, null, null, null);
-		try {
+		/*try {
 			if (cur.moveToFirst()) {
 				do {
 					if (cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)).equalsIgnoreCase(name)) {
@@ -145,7 +145,7 @@ public class CodeManager {
 			System.out.println(e.getStackTrace());
 		} finally {
 			cur.close();
-		}
+		}*/
 		return false;
 	}
 

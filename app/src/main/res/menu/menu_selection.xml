@@ -1,6 +1,10 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_delete"
-      
-        android:showAsAction="ifRoom"
-        android:orderInCategory="10"/>
+<menu
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_delete"
+        app:showAsAction="ifRoom"
+        android:orderInCategory="10"
+        android:title="TODO" />
 </menu>

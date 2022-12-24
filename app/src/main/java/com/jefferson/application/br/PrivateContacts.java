@@ -1,4 +1,5 @@
 package com.jefferson.application.br;
+import android.annotation.SuppressLint;
 import android.content.*;
 import android.database.*;
 import android.net.*;
@@ -117,13 +118,14 @@ public class PrivateContacts extends AppCompatActivity {
         }
     }
     
+	@SuppressLint("Range")
 	public static boolean deleteContact(Context ctx, String phone, String name) {
 		Uri contactUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
 		Cursor cur = ctx.getContentResolver().query(contactUri, null, null, null, null);
 		try {
 			if (cur.moveToFirst()) {
 				do {
-					if (cur.getString(cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME)).equalsIgnoreCase(name)) {
+					if (name.equalsIgnoreCase(cur.getString(cur.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME)))) {
 						String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
 						Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
 						ctx.getContentResolver().delete(uri, null, null);

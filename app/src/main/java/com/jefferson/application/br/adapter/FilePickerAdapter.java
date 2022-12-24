@@ -28,7 +28,7 @@ public class FilePickerAdapter extends BaseAdapter {
         this.context = context;
         this.models = list;
         this.itemType = itemType;
-        this.mLayoutInflater = (LayoutInflater) context.getSystemService("layout_inflater");
+        this.mLayoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             
     }
 
@@ -64,7 +64,7 @@ public class FilePickerAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View view, ViewGroup viewGroup) {
         if (view == null) {
-            view = mLayoutInflater.inflate(R.layout.file_picker_item, (ViewGroup) null);
+            view = mLayoutInflater.inflate(R.layout.file_picker_item, viewGroup, false);
         }
         ImageView imageView = view.findViewById(R.id.tumbView);
         TextView textView = view.findViewById(R.id.item_name);

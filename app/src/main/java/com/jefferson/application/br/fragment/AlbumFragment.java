@@ -382,7 +382,7 @@ public class AlbumFragment extends Fragment {
         SimpleDialog simpleDialog = new SimpleDialog(requireActivity());
         simpleDialog.setIcon(R.drawable.ic_warning_twotone);
         simpleDialog.setTitle(getString(R.string.apagar));
-        simpleDialog.setMessage(String.format(getString(R.string.apagar_pasta_aviso), name));
+        simpleDialog.setMessage(getString(R.string.apagar_pasta_aviso, name));
         simpleDialog.setPositiveButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener() {
             @Override
             public boolean onClick(SimpleDialog dialog) {

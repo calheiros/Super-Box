@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
-    android:id="@+id/storage_permission_layout"
+	android:id="@+id/storage_permission_layout"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:gravity="center">
@@ -30,7 +30,7 @@
 			android:layout_marginBottom="10dp"/>
 
 		<ImageView
-            android:tint="?commonColorDark"
+            app:tint="?commonColorDark"
 			android:layout_width="120dp"
 			android:layout_height="120dp"/>
 

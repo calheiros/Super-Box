@@ -65,7 +65,7 @@
     <string name="galeria_vazia">Parece bem vazio...</string>
     <string name="pasta_ja_existe">Pasta já existe!</string>
     <string name="sem_nome">Sem nome</string>
-    <string name="apagar_pasta_aviso">Tem certeza que deseja apagar a pasta \"%s\" e todo o seu conteúdo permanentimente?</string>
+    <string name="apagar_pasta_aviso">Tem certeza que deseja apagar a pasta %1$s e todo o seu conteúdo permanentimente?</string>
     <string name="criar_pasta">Criar pasta</string>
     <string name="renomear_pasta">Renomear pasta</string>
     <string name="concluir">Concluir</string>

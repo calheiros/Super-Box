@@ -118,7 +118,8 @@ public class FolderPickerActivity extends MyCompatActivity implements OnItemClic
 
                 @Override
                 public void onClick(View v) {
-                    new MoveFilesTask(FolderPickerActivity.this, (filePickerAdapter.models.get(filePickerAdapter.getSelectedItem())).getPath()).start();
+                    new MoveFilesTask(FolderPickerActivity.this, (filePickerAdapter.models
+                            .get(filePickerAdapter.getSelectedItem())).getPath()).start();
                     fab.hide();
                 }
             }

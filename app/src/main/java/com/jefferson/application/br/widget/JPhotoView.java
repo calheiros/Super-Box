@@ -7,7 +7,7 @@ import android.view.*;
 import android.view.ScaleGestureDetector.*;
 import android.graphics.*;
 
-public class JPhotoView extends ImageView {
+public class JPhotoView extends androidx.appcompat.widget.AppCompatImageView {
     
 	private float mScaleFactor = 1.f;
 	private ScaleGestureDetector mScaleDetector;

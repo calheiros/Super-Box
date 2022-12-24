@@ -69,7 +69,7 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
             File file = new File(videoPath);
 
             if (!file.exists()) {
-                Toast.makeText(getContext(), "File does not exists " + videoPath, 1).show();
+                Toast.makeText(getContext(), "File does not exists " + videoPath, Toast.LENGTH_SHORT).show();
                 return parentView;
             }
             
@@ -98,7 +98,7 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
                 }
             );
         }
-        Glide.with(this).load("file://" + videoPath).into(mThumbView);
+        Glide.with(requireContext()).load("file://" + videoPath).into(mThumbView);
         return parentView;
     }
 

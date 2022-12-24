@@ -12,7 +12,7 @@ import android.widget.ImageButton;
  * An image button that uses a blue highlight (@link android.R.attr.selectableItemBackground} to
  * indicate pressed and focused states.
  */
-public class ImageTouch extends ImageButton {
+public class ImageTouch extends androidx.appcompat.widget.AppCompatImageButton {
    
     private Drawable mForegroundDrawable;
 

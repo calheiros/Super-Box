@@ -26,7 +26,7 @@
     <string name="galeria_vazia">それはかなり空っぽに見えます</string>
     <string name="pasta_ja_existe">フォルダはすでに存在します！</string>
     <string name="sem_nome">無名</string>
-    <string name="apagar_pasta_aviso">「%s」フォルダとそのすべての内容を完全に削除してもよろしいですか？</string>
+    <string name="apagar_pasta_aviso">%1$sフォルダとそのすべての内容を完全に削除してもよろしいですか？</string>
     <string name="criar_pasta">フォルダの作成</string>
     <string name="renomear_pasta">フォルダ名の変更</string>
     <string name="concluir">推す</string>

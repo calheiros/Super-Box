@@ -41,7 +41,7 @@ public class ReceiverMedia extends Activity {
             String path = Storage.getPath(uri);
 
             if (path == null) {
-                Toast.makeText(this, "Failed!", 1).show();
+                Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
             }
 
             File mFile = new File(path);
@@ -143,7 +143,7 @@ public class ReceiverMedia extends Activity {
         @Override
         public void onException(Exception e) {
             mProgressDialog.cancel();
-            Toast.makeText(ReceiverMedia.this, "Error", 1).show();
+            Toast.makeText(ReceiverMedia.this, "Error", Toast.LENGTH_SHORT).show();
         }
 
         @Override

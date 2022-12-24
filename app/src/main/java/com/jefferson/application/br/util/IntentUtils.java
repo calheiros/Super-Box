@@ -20,13 +20,5 @@ public class IntentUtils {
 		intent.putExtra(Intent.EXTRA_SUBJECT, "Super Box - bug report");
 		context.startActivity(Intent.createChooser(intent, "Relatar bug"));
 	}
-    
-    public static Intent getDocumentTreeIntent(Context cx) {
-        StorageManager sm = (StorageManager)
-        cx.getSystemService(Context.STORAGE_SERVICE); 
-        StorageVolume sv = sm.getPrimaryStorageVolume(); 
-        Intent intent = sv.createOpenDocumentTreeIntent(); 
-        intent.addFlags (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
-        return intent;
-    }
+
 }

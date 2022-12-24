@@ -6,7 +6,7 @@ import android.graphics.drawable.*;
 import android.util.*;
 import android.widget.*;
 
-public class ImageCircular extends ImageView {
+public class ImageCircular extends androidx.appcompat.widget.AppCompatImageView {
 
     public ImageCircular(Context context) {
         super(context);

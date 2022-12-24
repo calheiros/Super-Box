@@ -8,7 +8,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import com.jefferson.application.br.R;
 
-public class LockCheck extends CheckBox {
+public class LockCheck extends androidx.appcompat.widget.AppCompatCheckBox {
 
     public LockCheck(Context context, AttributeSet attrs) {
 		super(context, attrs);
