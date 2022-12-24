@@ -1,8 +1,10 @@
 package com.jefferson.application.br;
 
 import android.content.*;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.*;
-import androidx.appcompat.widget.*;
+
 import android.view.*;
 import android.view.View.*;
 import android.widget.*;
@@ -15,8 +17,8 @@ import java.util.*;
 
 public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHolder> {
 
-	ArrayList<String> mData;
-	Context mContext;
+	ArrayList<String> data;
+	Context context;
 	public static class ViewHolder extends RecyclerView.ViewHolder {
 		ImageView mImage;
 
@@ -28,60 +30,64 @@ public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHo
     
 	public IntruderAdapter(ArrayList<String> mData, Context mContext) {
 
-		this.mData = mData;
-		this.mContext = mContext;
+		this.data = mData;
+		this.context = mContext;
 	}
     
+	@NonNull
 	@Override
 	public IntruderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-        
 		View vi = LayoutInflater.from(parent.getContext())
 			.inflate(R.layout.intruder_item, parent, false);
 
-        ViewHolder vh = new ViewHolder(vi);
-
-		return vh;
+		return  new ViewHolder(vi);
 	}
 
 	@Override
-	public void onBindViewHolder(ViewHolder holder, final int position) {
+	public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
+		super.onBindViewHolder(holder, position, payloads);
 
-		File tnome = new File(mData.get(position));
+	}
+
+	@Override
+	public void onBindViewHolder(ViewHolder holder, int position) {
+
+		File tnome = new File(data.get(position));
 
 		//Picasso.with(mContext).load(tnome).centerCrop().fit().into(holder.mImage);
 		holder.mImage.setOnLongClickListener(new OnLongClickListener(){
 
 				@Override
 				public boolean onLongClick(View v) {
-                    final AlertDialog.Builder mbuild =new AlertDialog.Builder(mContext);
+					int position = holder.getAdapterPosition();
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-					mbuild.setTitle(R.string.excluir)
-
+					builder.setTitle(R.string.excluir)
                         .setMessage(R.string.excluir_face_intruder)
-						.setPositiveButton(R.string.sim, new DialogInterface.OnClickListener(){
+						.setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
 
 							@Override
 							public void onClick(DialogInterface p1, int p2) {
-								if (new File(mData.get(position)).delete()) {
+								if (new File(data.get(position)).delete()) {
 
-									Toast.makeText(mContext, "Apagado", Toast.LENGTH_LONG).show();
-                                    mData.remove(position);
+									Toast.makeText(context, "Apagado", Toast.LENGTH_LONG).show();
+                                    data.remove(position);
                                     notifyItemRemoved(position);
-                                    notifyItemRangeChanged(position, mData.size());
+                                    notifyItemRangeChanged(position, data.size());
 
 								} else {
-									Toast.makeText(mContext, "Erro desconhecido", Toast.LENGTH_LONG).show();
+									Toast.makeText(context, "Erro desconhecido", Toast.LENGTH_LONG).show();
 								}
 							}
                         });
-					mbuild.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener(){
+					builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener(){
 
 							@Override
 							public void onClick(DialogInterface p1, int p2) {
-								mbuild.create().dismiss();
+								builder.create().dismiss();
 							}
                         });
-                    mbuild.create().show();
+                    builder.create().show();
 					return true;
 				}
 
@@ -101,7 +107,7 @@ public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHo
 
 	@Override
 	public int getItemCount() {
-		return mData.size();
+		return data.size();
 	}
 
 }
