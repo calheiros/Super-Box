@@ -32,7 +32,8 @@
 		android:id="@+id/senha"
 		android:layout_gravity="center"
 		android:layout_marginTop="50dp"
-		android:singleLine="true"/>
+		android:singleLine="true"
+		android:autofillHints="password" />
 
 	<Button
 		style="?android:attr/buttonBarButtonStyle"
@@ -47,8 +48,7 @@
 		android:layout_width="wrap_content"
 		android:text="Esconder icone"
 		android:layout_gravity="center_horizontal"
-		android:layout_marginTop="100dp"
-		android:onClick="hiden"/>
+		android:layout_marginTop="100dp"/>
 
 </LinearLayout>
 
