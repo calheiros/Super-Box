@@ -3,7 +3,6 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
-    android:onClick="switchOptionsVisibility"
 	android:layout_height="fill_parent">
 
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
@@ -14,7 +13,8 @@
     <ImageView
         android:id="@+id/gif_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:contentDescription="@string/gif_image_view_description" />
 
     <LinearLayout
         android:background="@drawable/bg_gradient_bottom"
@@ -32,7 +32,7 @@
             android:layout_width="0dp"
             android:layout_height="55dp"
             app:tint="@android:color/white"
-            android:contentDescription="export" />
+            android:contentDescription="@string/export_gallery_button_description" />
 
         <ImageButton
             android:background="@android:color/transparent"
@@ -42,7 +42,7 @@
             android:layout_width="0dp"
             android:layout_height="55dp"
             app:tint="@android:color/white"
-            android:contentDescription="delete" />
+            android:contentDescription="@string/delete_image_button_description" />
 
     </LinearLayout>
 

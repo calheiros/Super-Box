@@ -60,7 +60,7 @@
     <string name="pasta_nome_muito_grande">Maximum number of characters exceeded!</string>
     <string name="pasta_nome_vazio">The folder name can\'t be empty!</string>
     <string name="nao_vejo_nada">I can\'t see a thing!</string>
-    <string name="poucas_fotos">It seems that you do not like to take many pictures...</string>
+    <string name="poucas_fotos">It seems that you do not like to take many pictures…</string>
     <string name="alguem_viu_uma_pasta">Has anyone seen a folder?</string>
     <string name="falha_video">Failed to play video!</string>
     <string name="pasta_mesmo_nome">The name cannot be the same ಠ_ಠ</string>
@@ -75,7 +75,7 @@
     <string name="criar_pasta">Create folder</string>
     <string name="renomear_pasta">Rename folder</string>
     <string name="concluir">Confirm</string>
-    <string name="galeria_vazia">It looks pretty empty...</string>
+    <string name="galeria_vazia">It looks pretty empty…</string>
     <string name="unicode_look_of_disapproval">ಠ_ಠ</string>
     <string name="unicode_dead_face">(×_×)</string>
     <string name="unicode_shrug">¯\\_(ツ)_/¯</string>
@@ -127,7 +127,7 @@
     <string name="galeria_privada">Private gallery</string>
     <string name="mudar_senha">Change password</string>
     <string name="escolha_idioma">Choose your language</string>
-    <string name="carregando">Loading...</string>
+    <string name="carregando">Loading…</string>
     <string name="invasor">Invaders</string>
     <string name="entre_em_contato">Contact us</string>
     <string name="compartilhar">Share</string>
@@ -148,7 +148,7 @@
     <string name="admin_receiver_status_disabled">disabled</string>
     <string name="admin_receiver_status_pw_changed">changed</string>
     <string name="entrar">Enter</string>
-    <string name="definir">Ok</string>
+    <string name="definir">OK</string>
     <string name="sim">Yes</string>
     <string name="uma_tentativa">1 attempt</string>
     <string name="duas_tentativas">2 attempts</string>
@@ -188,5 +188,8 @@
     <string name="biometric_subtitle">Please anable to enter</string>
     <string name="biometric_desc">"biometric "</string>
     <string name="descricao_botao_adicionar">Add items</string>
+    <string name="gif_image_view_description">gif view</string>
+    <string name="export_gallery_button_description">export to gallery button</string>
+    <string name="delete_image_button_description">delete image button</string>
 
 </resources>
