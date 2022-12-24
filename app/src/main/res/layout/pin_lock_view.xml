@@ -39,9 +39,5 @@
 
 	</FrameLayout>
 
-	<com.nightonke.blurlockview.BlurLockView
-		android:id="@+id/blurlockview"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
 </LinearLayout>
 
