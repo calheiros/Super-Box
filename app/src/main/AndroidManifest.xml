@@ -104,16 +104,6 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-3062666120925607~5789743722"/>
 
-        <activity android:name=".activity.SearchResultsActivity"
-            android:exported="true"
-            tools:node="merge">
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH"/>
-            </intent-filter>
-
-        </activity>
-        
         <activity
             android:name=".activity.ManageSpaceActivity"/>
         
