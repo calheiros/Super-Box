@@ -65,7 +65,7 @@
 			app:fab_addButtonColorPressed="#A0DA14"
 			app:fab_labelStyle="@style/menu_labels_style"
 			app:fab_labelsPosition="left">
-        
+
 			<com.getbase.floatingactionbutton.FloatingActionButton
 				app:fab_title="Criar"
 				app:fab_icon="@drawable/ic_folder_plus"

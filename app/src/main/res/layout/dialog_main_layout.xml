@@ -11,11 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
+        android:paddingTop="12dp"
         android:orientation="vertical"
-        android:paddingLeft="16dp"
-        android:paddingTop="13dp"
-        android:paddingRight="16dp"
-        android:paddingBottom="13dp">
+        android:paddingBottom="12dp">
 
         <ImageView
             android:id="@+id/dialog_icon"
@@ -26,16 +24,21 @@
 
         <TextView
             android:id="@+id/title_text_view"
+            android:paddingStart="13dp"
+            android:paddingEnd="13dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:visibility="gone"
             android:gravity="start"
             android:singleLine="true"
-            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textColor="?commonColor"
             android:textSize="21sp" />
 
         <com.jefferson.application.br.library.NumberProgressBar
+            android:paddingStart="13dp"
+            android:paddingEnd="13dp"
             android:id="@+id/number_progress_bar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -46,17 +49,19 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:paddingStart="13dp"
+            android:paddingEnd="13dp"
             android:layout_weight="1"
             android:gravity="start">
 
             <TextView
                 android:visibility="gone"
-                android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
+                android:layout_marginTop="5dp"
                 android:id="@+id/message_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                android:textColor="?commonColorLight"
                 android:textSize="16sp" />
 
         </ScrollView>
@@ -67,6 +72,7 @@
             android:layout_height="wrap_content"
             android:visibility="visible" />
 
-        <include layout="@layout/dialog_buttons" />
+        <include
+            layout="@layout/dialog_buttons" />
     </LinearLayout>
 </eightbitlab.com.blurview.BlurView>

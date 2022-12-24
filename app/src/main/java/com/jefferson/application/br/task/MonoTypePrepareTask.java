@@ -63,7 +63,7 @@ public class MonoTypePrepareTask extends JTask {
     @Override
     protected void onTaskCancelled() {
         super.onTaskCancelled();
-        Toast.makeText(context, "Cancelled", 0).show();
+        Toast.makeText(context, "Cancelled", Toast.LENGTH_SHORT).show();
     }
     
     @Override

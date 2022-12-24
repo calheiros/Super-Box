@@ -2,7 +2,10 @@ package com.jefferson.application.br.fragment;
 
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,13 +25,12 @@ import androidx.viewpager.widget.ViewPager.OnPageChangeListener;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.ImportGalleryActivity;
 import com.jefferson.application.br.activity.MainActivity;
+import com.jefferson.application.br.model.FolderModel;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class MainFragment extends Fragment implements OnPageChangeListener, OnClickListener, OnLongClickListener {
 
@@ -41,6 +43,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     private PagerAdapter pagerAdapter;
     private TabLayout tabLayout;
     private View fab;
+    private int paddingBottom;
 
     public MainFragment() {
     }
@@ -56,18 +59,21 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             viewPager = view.findViewById(R.id.mainViewPager);
             viewPager.setAdapter(pagerAdapter);
             viewPager.setOnPageChangeListener(this);
-            tabLayout = view.findViewById(R.id.tabLayoutPedido);
+            tabLayout = view.findViewById(R.id.tab_layout);
 
-            int selected = getResources().getColor(R.color.tab_selected);
-            int unselected = getResources().getColor(R.color.tab_unsected);
-            tabLayout.setTabTextColors(unselected, selected);
+            /*int selected = getResources().getColor(R.color.tab_selected);
+            int unselected = getResources().getColor(R.color.tab_unsected);*/
+            // tabLayout.setTabTextColors(unselected, selected);
             tabLayout.setupWithViewPager(viewPager);
+            tabLayout.getTabAt(0).setText(getString(R.string.imagens));
+            tabLayout.getTabAt(1).setText(getString(R.string.videos));
+            tabLayout.setInlineLabel(true);
 
             fab = view.findViewById(R.id.fab);
             fab.setOnClickListener(this);
             fab.setOnLongClickListener(this);
-
-            toogleTabIcon(0);
+            adjustViewsPadding();
+            // toogleTabIcon(0);
         }
 
         assert main != null;
@@ -93,6 +99,35 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
                 }
                 //createFolder(viewPager.getCurrentItem(), getContext(), (FilePicker) null);
                 break;
+        }
+    }
+
+    public void notifyBottomLayoutChanged(@NonNull View view) {
+        paddingBottom = view.getHeight();
+        adjustViewsPadding();
+    }
+
+    private void adjustViewsPadding() {
+        if (pagerAdapter != null) {
+            AlbumFragment[] fragments = pagerAdapter.fragments;
+            for (int i = 0; i < fragments.length; i++) {
+                AlbumFragment album = pagerAdapter.getItem(i);
+                album.setBottomPadding(paddingBottom);
+            }
+        }
+        //change params and add the fab button
+        if (fab != null) {
+            Resources r = getResources();
+            int px = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    16,
+                    r.getDisplayMetrics()
+            );
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
+            p.rightMargin = px;
+            p.bottomMargin = paddingBottom + px;
+            /* params.setMargins(0, 0, px, paddingBottom + px);*/
+            fab.setLayoutParams(p);
         }
     }
 
@@ -130,13 +165,13 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
         getActivity().startActivityForResult(intent, 23);
     }
 
-    private void toogleTabIcon(int position) {
+   /* private void toogleTabIcon(int position) {
         MainFragment mainFragment = this;
         int id = position == 0 ? R.drawable.ic_videos : R.drawable.ic_pictures;
         Objects.requireNonNull(mainFragment.tabLayout.getTabAt(position)).setIcon(
                 position == 0 ? R.drawable.ic_pictures_selected : R.drawable.ic_videos_selected);
         Objects.requireNonNull(tabLayout.getTabAt(position == 0 ? 1 : 0)).setIcon(id);
-    }
+    }*/
 
     public void updateFragment(int id) {
         if (pagerAdapter != null) {
@@ -164,7 +199,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 
     @Override
     public void onPageSelected(int i) {
-        toogleTabIcon(i);
+        //toogleTabIcon(i);
         ((MainActivity) requireActivity()).setupToolbar(this.toolbar, getToolbarName(i));
     }
 
@@ -191,6 +226,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     }
 
     private class PagerAdapter extends FragmentPagerAdapter {
+
         public static final int SIZE = 2;
         private final AlbumFragment[] fragments = new AlbumFragment[SIZE];
 

@@ -3,7 +3,9 @@ package com.jefferson.application.br.app;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +33,7 @@ import androidx.core.content.ContextCompat;
 
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.library.NumberProgressBar;
-import com.jefferson.application.br.util.BlurViewUtils;
+import com.jefferson.application.br.util.BlurUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,7 +48,7 @@ public class SimpleDialog {
     public static final int STYLE_INPUT = 444;
     public static final int STYLE_MENU = 4;
     private final String TAG = "SimpleDialog";
-
+    private View buttonsLayout;
     private final Activity activity;
     private ViewGroup parentView;
     private NumberProgressBar progressBar;
@@ -57,6 +60,7 @@ public class SimpleDialog {
             progressBar.setProgress(msg.what);
         }
     };
+
     private TextView contentText;
     private TextView contentTitle;
     private SimpleDialog progressBarDialog;
@@ -139,10 +143,10 @@ public class SimpleDialog {
         contentTitle = parentView.findViewById(R.id.title_text_view);
         contentText = parentView.findViewById(R.id.message_text_view);
         positiveButton = parentView.findViewById(R.id.dialogPositiveButton);
-        negativeButton = parentView.findViewById(R.id.dialogNegativebutton);
+        negativeButton = parentView.findViewById(R.id.dialogNegativeButton);
         editTextLayout = parentView.findViewById(R.id.dialog_edit_text_layout);
         iconView = parentView.findViewById(R.id.dialog_icon);
-
+        buttonsLayout = parentView.findViewById(R.id.dialog_buttons_layout);
         this.jdialog = new JDialog(activity, style == STYLE_INPUT);
         int color = ContextCompat.getColor(activity, R.color.colorAccent);
 
@@ -162,7 +166,7 @@ public class SimpleDialog {
         blurView.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
         blurView.setClipToOutline(true);
         blurView.setBlurAutoUpdate(true);
-        BlurAlgorithm render = BlurViewUtils.getRenderAlgorithm(activity);
+        BlurAlgorithm render = BlurUtils.getRenderAlgorithm(activity);
         blurView.setupWith(rootView, render) // or RenderEffectBlur
                 .setFrameClearDrawable(windowBackground) // Optional
                 .setBlurRadius(radius);
@@ -317,6 +321,10 @@ public class SimpleDialog {
     public SimpleDialog setPositiveButton(String buttonText, OnDialogClickListener listener) {
         if (positiveButton.getVisibility() != View.VISIBLE)
             positiveButton.setVisibility(View.VISIBLE);
+
+        if (buttonsLayout.getVisibility() != View.VISIBLE) {
+            buttonsLayout.setVisibility(View.VISIBLE);
+        }
         positiveButton.setText(buttonText);
         positiveButton.setOnClickListener(new OnClickListener(listener));
         return this;
@@ -325,6 +333,10 @@ public class SimpleDialog {
     public SimpleDialog setNegativeButton(String buttonText, OnDialogClickListener listener) {
         if (negativeButton.getVisibility() != View.VISIBLE)
             negativeButton.setVisibility(View.VISIBLE);
+
+        if (buttonsLayout.getVisibility() != View.VISIBLE) {
+            buttonsLayout.setVisibility(View.VISIBLE);
+        }
         negativeButton.setText(buttonText);
         negativeButton.setOnClickListener(new OnClickListener(listener));
         return this;
@@ -345,21 +357,36 @@ public class SimpleDialog {
 
     public static class MenuItem {
 
-        String name;
-        Integer icon;
+        public String name;
+        public Integer icon;
+        public boolean applyIconTint;
+
         public MenuItem(String name, int iconRes) {
             this.name = name;
             this.icon = iconRes;
+            this.applyIconTint = true;
+        }
+
+        public MenuItem(String name, int iconRes, boolean applyIconTint) {
+            this.name = name;
+            this.icon = iconRes;
+            this.applyIconTint = applyIconTint;
         }
     }
 
     public static class DialogMenuAdapter extends BaseAdapter {
         private final Context context;
         private final List<MenuItem> options;
+        private final int defaultTint;
 
         public DialogMenuAdapter(List<MenuItem> options, Context context) {
             this.options = options;
             this.context = context;
+
+            Resources.Theme theme = context.getTheme();
+            TypedValue value = new TypedValue();
+            theme.resolveAttribute(R.attr.commonColorLight, value, true);
+            defaultTint = value.data;
         }
 
         @Override
@@ -393,8 +420,13 @@ public class SimpleDialog {
                 holder = (DialogHolder) convertView.getTag();
             }
 
+            if (item.applyIconTint) {
+                holder.imageView.setColorFilter(defaultTint);
+            }
+
             holder.textView.setText(item.name);
             holder.imageView.setImageResource(item.icon);
+
             return convertView;
         }
 

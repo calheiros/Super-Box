@@ -62,7 +62,11 @@ public class DeveloperActivity extends MyCompatActivity {
             startActivityForResult(panelIntent, 1); 
         }
     }
-    
+
+    public void trowException(View v) throws Exception {
+        throw new Exception("Test exception");
+    }
+
     public void enableWifi(View v) {
         toogleWifi(true);
         Toast.makeText(this, "Wifi ON", Toast.LENGTH_LONG).show();

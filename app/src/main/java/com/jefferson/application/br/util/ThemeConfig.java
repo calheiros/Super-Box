@@ -2,9 +2,12 @@ package com.jefferson.application.br.util;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import com.jefferson.application.br.App;
+
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MainActivity;
+import com.jefferson.application.br.app.SimpleDialog;
+
+import java.util.ArrayList;
 
 public class ThemeConfig {
 
@@ -48,12 +51,35 @@ public class ThemeConfig {
        return MyPreferences.getSharedPreferencesEditor().putInt("app_theme", themePosition).commit();
     }
 
-    public static String[] getThemeList(Context context) {
+    public static String[] getThemesOptions(Context context) {
         return new String[] {
-            context.getString(R.string.automatico), 
-            context.getString(R.string.escuro),
-            context.getString(R.string.claro), 
-            context.getString(R.string.claro_verde)
+                context.getString(R.string.automatico),
+                context.getString(R.string.escuro),
+                context.getString(R.string.claro),
+                context.getString(R.string.claro_verde)
         };
+    }
+
+    public static ArrayList<SimpleDialog.MenuItem> getMenuList(Context context) {
+        String[] options = getThemesOptions(context);
+        ArrayList<SimpleDialog.MenuItem> menu = new ArrayList<>();
+
+        int[] icons = new int[] {
+                R.drawable.ic_auto_fix,
+                R.drawable.ic_circle_purple,
+                R.drawable.ic_circle_blue,
+                R.drawable.ic_circle_green
+        };
+
+        for (int i = 0; i < options.length; i++) {
+            menu.add(new SimpleDialog.MenuItem(options[i], icons[i], i == 0));
+        }
+
+        return menu;
+    }
+
+    public static String getCurrentThemeName(Context context) {
+        int i = getThemeIndex();
+        return getThemesOptions(context)[i];
     }
 }

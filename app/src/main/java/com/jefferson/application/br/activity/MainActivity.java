@@ -5,7 +5,6 @@ import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -19,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -41,18 +41,19 @@ import com.jefferson.application.br.fragment.MainFragment;
 import com.jefferson.application.br.fragment.SettingFragment;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.task.ImportTask;
-import com.jefferson.application.br.util.DialogUtils;
+import com.jefferson.application.br.util.BlurUtils;
 import com.jefferson.application.br.util.IntentUtils;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.ServiceUtils;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.ThemeConfig;
-import com.jefferson.application.br.widget.MyAlertDialog;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class MainActivity extends MyCompatActivity implements NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener, BottomNavigationView.OnNavigationItemSelectedListener {
+import eightbitlab.com.blurview.BlurView;
+
+public class MainActivity extends MyCompatActivity implements View.OnLayoutChangeListener, NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener, BottomNavigationView.OnNavigationItemSelectedListener {
 
     //public static final String admob_key="ca-app-pub-3062666120925607~5789743722";
     public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
@@ -76,6 +77,7 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
     private AdView adview;
     private boolean restarting;
     private AdView squareAdview;
+    int oldMargin;
 
     @SuppressLint("HandlerLeak")
     private final Handler getSdCardUriHandler = new Handler() {
@@ -170,10 +172,17 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             startActivity(new Intent(this, VerifyActivity.class).addFlags(
                     Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
         }
-        //createInterstitial();
+
         createFragments();
         createAdView();
         createReceiver();
+        configureBlur();
+    }
+
+    private void configureBlur() {
+        BlurView blurView = findViewById(R.id.blurView);
+        BlurUtils.setupWith(blurView, this);
+        blurView.addOnLayoutChangeListener(this);
     }
 
     public AdView getSquareAdView() {
@@ -213,18 +222,6 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
         adview.loadAd(new AdRequest.Builder().build());
     }
 
-/*	public void createInterstitial() {
-//        interstitial = new InterstitialAd(this);
-//		interstitial.setAdUnitId("ca-app-pub-3062666120925607/8580168530");
-//		interstitial.setAdListener(new AdListener() {
-//                @Override
-//                public void onAdClosed() {
-//                    prepareAd();
-//                }
-//            });
-//		prepareAd();
-}
-*/
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         //getMenuInflater().inflate(R.menu.main_menu, menu);
@@ -482,5 +479,22 @@ public class MainActivity extends MyCompatActivity implements NavigationView.OnN
             }
         }
         super.onDestroy();
+    }
+
+    @Override
+    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+
+        if (oldMargin != v.getHeight()) {
+            notifyBottomLayoutChanges(v);
+        }
+        oldMargin = v.getHeight();
+    }
+
+    private void notifyBottomLayoutChanges(View v) {
+        if (mainFragment != null)
+            mainFragment.notifyBottomLayoutChanged(v);
+
+        if (lockFragment != null)
+            lockFragment.notifyBottomLayoutChanged(v);
     }
 }

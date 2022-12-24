@@ -2,7 +2,10 @@
 <com.google.android.material.tabs.TabLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/tabLayoutPedido"
+    android:id="@+id/tab_layout"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
+	app:tabTextAppearance="@style/CustomTextAppearanceTab"
+	app:tabIndicatorColor="?colorAccent"
+	app:tabTextColor="@android:color/white"
 	android:background="?attr/colorPrimary"/>

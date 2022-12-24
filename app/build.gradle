@@ -8,7 +8,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 33
         versionCode 13
-        versionName "1.9.2 alpha"
+        versionName "1.10.0 alpha"
     }
     
     buildTypes {
@@ -32,6 +32,5 @@ dependencies {
 	implementation 'com.google.android.gms:play-services-ads:21.3.0'
     implementation 'org.jetbrains:annotations:15.0'
     implementation 'com.github.Dimezis:BlurView:version-2.0.3'
-    implementation 'com.github.mmin18:realtimeblurview:1.2.1'
 }
 

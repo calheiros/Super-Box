@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <attr name="colorTextMedium" format="reference|color"/>
+    <attr name="colorTextSmall" format="reference|color"/>
     <attr name="colorDialogBackground" format="reference|color"/>
     <attr name="colorBackgroundLight" format="reference|color"/>
     <attr name="textShadowColor" format="reference|color"/>

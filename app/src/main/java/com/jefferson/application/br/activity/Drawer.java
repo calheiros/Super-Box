@@ -47,7 +47,7 @@ public class Drawer extends MyCompatActivity {
 
         mTitle = mDrawerTitle = getTitle();
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-		tabLayout = (TabLayout) findViewById(R.id.tabLayoutPedido);
+		tabLayout = (TabLayout) findViewById(R.id.tab_layout);
 		mNavegation = (NavigationView)findViewById(R.id.my_navigation_view);
 
         setupToolbar();

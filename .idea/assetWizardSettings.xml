@@ -23,7 +23,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:$USER_HOME$/Android/Sdk/icons/material/materialiconsoutlined/bookmark_remove/outline_bookmark_remove_24.xml" />
+                                      <entry key="url" value="file:$USER_HOME$/Android/Sdk/icons/material/materialicons/upcoming/baseline_upcoming_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -33,8 +33,8 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ffffff" />
-                            <entry key="outputName" value="ic_bookmark_remove_outline" />
+                            <entry key="color" value="f0f0f0" />
+                            <entry key="outputName" value="ic_upcoming" />
                           </map>
                         </option>
                       </PersistentState>

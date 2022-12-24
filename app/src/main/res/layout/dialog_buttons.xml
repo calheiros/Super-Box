@@ -2,10 +2,14 @@
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="horizontal"
-    android:layout_marginTop="15dp"
+	android:id="@+id/dialog_buttons_layout"
+	android:layout_marginTop="16dp"
+	android:visibility="gone"
+	android:paddingEnd="13dp"
+	android:paddingStart="13dp"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
-	android:gravity="right|center_vertical">
+	android:gravity="end|center_vertical">
 
 	<Button
         android:background="@drawable/bg_dialog_negative"
@@ -19,23 +23,24 @@
         android:minWidth="65dp"
         android:includeFontPadding="false"
         android:gravity="center"
-        android:textColor="?colorAccent"
-		android:id="@+id/dialogNegativebutton"
-		android:layout_marginRight="8dp"/>
+        android:textColor="@color/white"
+		android:id="@+id/dialogNegativeButton"
+		android:layout_marginEnd="8dp"/>
 
 	<Button
+		android:textColor="@android:color/white"
         android:visibility="gone"
 		android:background="@drawable/bg_dialog_positive"
 		android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:minHeight="0dp"
         android:textSize="13sp"
-        android:textColor="?colorBackground"
         android:padding="12dp"
         android:minWidth="65dp"
         android:includeFontPadding="false"
         android:gravity="center"
-		android:id="@+id/dialogPositiveButton"/>
+		android:id="@+id/dialogPositiveButton"
+		style="?android:attr/buttonBarButtonStyle" />
 
 </LinearLayout>
 

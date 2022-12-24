@@ -1,58 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
     <LinearLayout
-        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
         android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:gravity="center_vertical"
+        tools:ignore="UselessParent">
 
         <ImageView
-            android:tint="?commonColor"
             android:id="@+id/ic_view"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="10dp"/>
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_margin="10dp"
+            app:tint="?colorPrimary" />
 
         <LinearLayout
-            android:orientation="vertical"
-            android:padding="6dp"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1.0">
+            android:layout_weight="1.0"
+            android:orientation="vertical"
+            android:padding="6dp">
 
             <TextView
-                android:textSize="16sp"
-                android:textColor="?commonColorLight"
                 android:id="@+id/title_view"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="?commonColorLight"
+                android:textSize="16sp" />
 
             <TextView
-                android:textSize="13.5sp"
-                android:textColor="?commonColorDark"
                 android:id="@+id/description_text_view"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:textColor="?commonColorDark"
+                android:textSize="13.5sp" />
 
         </LinearLayout>
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/my_switch"
-            android:focusable="false"
-            android:clickable="false"
             android:layout_width="wrap_content"
             android:layout_height="22dp"
-            android:track="@drawable/switch_track_selector"
+            android:layout_margin="7dp"
+            android:clickable="false"
+            android:focusable="false"
             android:thumb="@drawable/switch_thumb"
-            android:layout_margin="7dp"/>
+            app:track="@drawable/switch_track_selector" />
 
     </LinearLayout>
-    
 </LinearLayout>
-

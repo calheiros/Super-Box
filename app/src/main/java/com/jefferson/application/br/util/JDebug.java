@@ -8,15 +8,13 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Date;
-import java.io.IOException;
 
 public class JDebug {
 
     private static String PREFERENCE_NAME = "Debug";
 
     public static void writeLogFile(String fname, String error) {
-        String name = fname == null ? StringUtils.getFormatedDate() : fname;
+        String name = fname == null ? StringUtils.getFormattedDate() : fname;
         try {
             File logFile = new File(Storage.getInternalStorage() + "/.logs/" + name + ".txt");
             logFile.getParentFile().mkdirs();

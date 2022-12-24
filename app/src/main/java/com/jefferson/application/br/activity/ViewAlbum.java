@@ -38,7 +38,7 @@ import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.DeleteFilesTask;
 import com.jefferson.application.br.task.JTask;
-import com.jefferson.application.br.util.BlurViewUtils;
+import com.jefferson.application.br.util.BlurUtils;
 import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
@@ -156,7 +156,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         blurView.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
         blurView.setClipToOutline(true);
 
-        BlurAlgorithm render = BlurViewUtils.getRenderAlgorithm(this);
+        BlurAlgorithm render = BlurUtils.getRenderAlgorithm(this);
         blurView.setupWith(view, render) // or RenderEffectBlur
                 .setBlurRadius(radius);
 

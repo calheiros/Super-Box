@@ -4,6 +4,8 @@
 	android:orientation="vertical"
     android:gravity="center"
     android:id="@+id/dialog_edit_text_layout"
+	android:paddingStart="12dp"
+	android:paddingEnd="12dp"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content">
 
@@ -18,7 +20,6 @@
         android:hint="Maximun 50 digits"
         android:gravity="start"
 		android:textSize="18sp">
-
 		<requestFocus/>
 
 	</EditText>

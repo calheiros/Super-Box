@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <style name="CustomTextAppearanceTab" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 	<!-- Styles -->
 	<style name="menu_labels_style">
 		<item name="android:background">@drawable/fab_label_background</item>
@@ -14,7 +22,9 @@
     </style>
 
     <style name="LauncherTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+
+        <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimary</item>
@@ -62,12 +72,15 @@
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
         <item name="colorBackgroundDark">#FFE9E9EA</item>
-        <item name="colorDialogBackground">#B313AC9E</item>
+<!--        <item name="colorDialogBackground">#B313AC9E</item>-->
         <item name="commonColorDark">#FF9DA0A6</item>
         <item name="commonColor">#FF4D4D51</item>
         <item name="commonColorLight">#FF3D3D41</item>
         <!--<item name="android:windowBackground">#FFF0F0F0</item>-->
+        <item name="colorDialogBackground">#D9F0F0F0</item>
         <item name="colorControlHighlight">#1C00ABBB</item>
+        <item name="colorTextMedium">#000000</item>
+        <item name="colorTextSmall">#2C2C2D</item>
     </style>
 
     <style name="LightBlueTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -79,7 +92,11 @@
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
         <item name="colorBackgroundDark">#FFE9E9EA</item>
-        <item name="colorDialogBackground">#B3057BB1</item>
+        <item name="colorDialogBackground">#CCF0F0F0</item>
+        <item name="colorTextMedium">#F8090909</item>
+        <item name="colorTextSmall">#2C2C2D</item>
+<!--    <item name="colorDialogBackground">#B3057BB1</item>-->
+
         <!--BACKUP
         <item name="commonColorDark">#FFA6AAB1</item>
         <item name="commonColor">#FF38383A</item>
@@ -121,8 +138,7 @@
     </style>-->
 
     <style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:navigationBarColor">@color/colorPrimary</item>
-        
+      <!--  <item name="android:navigationBarColor">@color/colorPrimary</item>-->
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorBackgroundLight">#FF1B1D1D</item>
@@ -134,14 +150,19 @@
         <item name="commonColor">@color/colorCommon</item>
         <item name="commonColorLight">@color/colorCommonLight</item>
         <item name="android:windowBackground">@color/colorBackground</item>
-        <item name="colorControlHighlight">@color/highLightColor</item>
-        <item name="colorDialogBackground">#9A3A245E</item>
-        <!-- specify shared element transitions -->
+        <item name="colorControlHighlight">@color/highLightColor</item>]
+        <item name="colorDialogBackground">#CC141515</item>
+        <item name="colorTextMedium">#FFFFFF</item>
+        <item name="colorTextSmall">#7F7F80</item>
+
+        <!--<item name="colorDialogBackground">#9A3A245E</item>
+         specify shared element transitions -->
         <!--<item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
         <item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>
         <item name="colorControlHighlight">@color/green_semi_transparent</item>-->
+
     </style>
-    <style name="drawer_theme" parent="Theme.AppCompat.NoActionBar">
+    <style name="drawer_theme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorControlHighlight">@color/highLightColor</item> 
     </style>
 

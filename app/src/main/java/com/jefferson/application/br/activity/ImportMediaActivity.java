@@ -1,5 +1,6 @@
 package com.jefferson.application.br.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -25,6 +26,7 @@ import com.google.android.gms.ads.AdView;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.task.ImportTask;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.task.MonoTypePrepareTask;
@@ -62,8 +64,8 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.import_media_layout);
         getWindow().addFlags(flagKeepScreenOn);
-        
-        if (Build.VERSION.SDK_INT >= 21) { 
+
+        if (Build.VERSION.SDK_INT >= 21) {
             setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
             getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
@@ -92,7 +94,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             String parent = intent.getStringExtra(PARENT_KEY);
             String type = intent.getStringExtra(TYPE_KEY);
             prepareTask = new MonoTypePrepareTask(this, mediaList, type, parent);
-            
+
             if (type != null) {
                 typeQuantityRes = type.equals(FileModel.IMAGE_TYPE) ? R.plurals.quantidade_imagem_total : R.plurals.quantidade_video_total;
             }
@@ -156,9 +158,11 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         Resources res = getResources();
         boolean criticalError = importTask.error() != null;
         int failures = importTask.getFailuresCount();
-        int color = failures > 0  ? ContextCompat.getColor(this, R.color.red): getAttrColor(R.attr.commonColor) ;
-        String msg = criticalError ? getString(R.string.erro_critico) : failures > 0 ? res.getQuantityString(
-            R.plurals.falha_plural, failures, failures) : getString(R.string.transferencia_sucesso);
+        int color = failures > 0 || importTask.isInterrupted() ? ContextCompat.getColor(this, R.color.red): getAttrColor(R.attr.commonColor) ;
+        String msg = criticalError? getString(R.string.erro_critico) : failures > 0 ? res.getQuantityString(
+            R.plurals.falha_plural, failures, failures) :
+                importTask.isInterrupted() ? "Cancelled!" : getString(R.string.transferencia_sucesso);
+
 
         titleTextView.setText(getString(R.string.resultado));
         messageTextView.setTextColor(color);
@@ -197,7 +201,38 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                     progressView.setMax((double)max);
                 }
                 break;
+            case -2:
+                showNoSpaceAlert(importTask, values[1].toString());
+                break;
         }
+    }
+
+    private void showNoSpaceAlert(ImportTask task, String message) {
+            SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.STYLE_ALERT);
+            dialog.setTitle("Aviso");
+            dialog.setMessage(message);
+            dialog.setCancelable(false);
+            dialog.setPositiveButton("Continuar", new SimpleDialog.OnDialogClickListener() {
+
+                @Override
+                public boolean onClick(SimpleDialog dialog) {
+                    task.stopWaiting();
+                    return true;
+                }
+            });
+
+            dialog.setNegativeButton(getString(R.string.cancelar), null);
+            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    if (task.isWaiting()) {
+                        task.interrupt();
+                        task.stopWaiting();
+                    }
+                }
+            });
+            dialog.show();
+
     }
 
     @Override
@@ -215,6 +250,10 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if (importTask != null && importTask.isWaiting()) {
+            importTask.cancelTask();
+            Toast.makeText(this, "task canceled in hero mode", Toast.LENGTH_SHORT).show();
+        }
         //parent.removeView(adview);
         //adview.destroy();
     }
@@ -248,6 +287,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         if (importTask != null && importTask.status == JTask.Status.STARTED) {
             importTask.interrupt();
         }
+
         if (prepareTask != null && prepareTask.status == JTask.Status.STARTED) {
             prepareTask.cancelTask();
         }

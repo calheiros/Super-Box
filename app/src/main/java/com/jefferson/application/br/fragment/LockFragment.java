@@ -2,7 +2,6 @@ package com.jefferson.application.br.fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -31,7 +30,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -41,10 +39,10 @@ import com.jefferson.application.br.CodeManager;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MainActivity;
 import com.jefferson.application.br.adapter.AppLockAdapter;
+import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.model.AppModel;
 import com.jefferson.application.br.service.AppLockService;
 import com.jefferson.application.br.task.JTask;
-import com.jefferson.application.br.util.DialogUtils;
 import com.jefferson.application.br.widget.LockCheck;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,11 +62,12 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     private TextView mTextView;
     private ArrayList<AppModel> appModels;
     private AppLockAdapter appsAdapter;
-    private ListView mListView;
+    private ListView listView;
     private Intent intent;
     private View parentView;
     private LoadApplicationsTask mTask;
     private SwipeRefreshLayout mySwipeRefreshLayout;
+    int paddingBottom;
 
     public LockFragment() {
         startLoadPackagesTask();
@@ -82,9 +81,12 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             parentView = inflater.inflate(R.layout.list_view_app, container, false);
             mProgressBar = parentView.findViewById(R.id.progressApps);
             mTextView = parentView.findViewById(R.id.porcent);
-            mListView = parentView.findViewById(R.id.appList);
+            listView = parentView.findViewById(R.id.appList);
             mySwipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
-            mListView.setItemsCanFocus(true);
+            listView.setItemsCanFocus(true);
+            listView.setClipToPadding(false);
+            setListViewPaddingBottom();
+
             TypedValue typedValue = new TypedValue();
             Resources.Theme theme = requireActivity().getTheme();
             theme.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true);
@@ -92,7 +94,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 
             mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
             mySwipeRefreshLayout.setProgressBackgroundColorSchemeColor(color);// .setProgressBackgroundColor(color);
-            mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
                 @Override
                 public void onScrollStateChanged(AbsListView p1, int p2) {
@@ -118,7 +120,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             }
 
             intent = new Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS);
-            mListView.setOnItemClickListener(this);
+            listView.setOnItemClickListener(this);
             mySwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
                 @Override
@@ -148,7 +150,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     }
 
     private void applicationFound(int x) {
-        mListView.smoothScrollToPositionFromTop(x, (mListView.getHeight() / 2) - (appsAdapter.getItemHeight() / 2));
+        listView.smoothScrollToPositionFromTop(x, (listView.getHeight() / 2) - (appsAdapter.getItemHeight() / 2));
         //mListView.smoothScrollToPosition(scrollPosition);
         hideInputMethod(requireActivity().getWindow().getCurrentFocus());
 
@@ -234,21 +236,19 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                 animateCheckView(lastClickedParentView);
             }
         } else {
-            AlertDialog.Builder alert = new AlertDialog.Builder(requireContext(), DialogUtils.getTheme());
+            SimpleDialog alert = new SimpleDialog(requireActivity());
             alert.setMessage(getString(R.string.usage_data_permission_message));
-            alert.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+            alert.setPositiveButton(getString(android.R.string.ok), new SimpleDialog.OnDialogClickListener() {
 
                 @Override
-                public void onClick(DialogInterface p1, int p2) {
+                public boolean onClick(SimpleDialog dialog) {
                     startActivityForResult(intent, 0);
+                    return true;
                 }
             });
-
             alert.setNegativeButton(getString(android.R.string.cancel), null);
-            AlertDialog alertDialog = alert.create();
-            DialogUtils.configureDialog(alertDialog);
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.show();
+            alert.setCanceledOnTouchOutside(false);
+            alert.show();
         }
     }
 
@@ -285,7 +285,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 
         if (appsAdapter == null) {
             appsAdapter = new AppLockAdapter(getActivity(), appModels);
-            mListView.setAdapter(appsAdapter);
+            listView.setAdapter(appsAdapter);
         } else {
             appsAdapter.putDataSet(appModels);
         }
@@ -364,6 +364,21 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         return false;
+    }
+
+    public void notifyBottomLayoutChanged(@NonNull View v) {
+        paddingBottom = v.getHeight();
+        if (listView != null) {
+            setListViewPaddingBottom();
+        }
+    }
+
+    private void setListViewPaddingBottom() {
+        int left = listView.getPaddingLeft();
+        int right = listView.getPaddingRight();
+        int top = listView.getPaddingTop();
+
+        listView.setPadding(left, top, right, paddingBottom);
     }
 
     private class LoadApplicationsTask extends JTask {

@@ -1,22 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:gravity="center">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="Small Text"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="30dp">
 
-	<Button
-        android:backgroundTint="@color/red"
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
-		android:text="Clear"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="26dp"
+            android:text="Used space"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-</LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
 
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Data: "
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/app_cache_space_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" 134 mb"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="10dp"
+            android:paddingEnd="10dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cache: "
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/app_data_space_text_view"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" 134 mb"
+                android:textSize="18sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/darkOrange"
+                android:text="clear cache"
+                android:textColor="@android:color/white" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/red"
+                android:text="clear all"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+	<include
+        android:id="@+id/pattern_view"
+		layout="@layout/pattern"/>
+
+</FrameLayout>

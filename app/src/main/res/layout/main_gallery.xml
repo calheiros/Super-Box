@@ -1,73 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="match_parent"
-	android:layout_width="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:id="@+id/empty_linearLayout"
-        android:layout_height="match_parent"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.7"
+        android:gravity="center_horizontal"
         android:orientation="vertical"
-        android:visibility="gone"
-        android:gravity="center_horizontal">
+        android:visibility="gone">
 
-        <TextView
-            android:layout_marginTop="36dp"
-            android:text="(･◡･`)" 
-            android:gravity="center"
-            android:textSize="38dp"
-            android:textColor="?commonColorDark"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <TextView
+        <ImageView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textAllCaps="true"
-            android:gravity="center"
+            android:layout_marginTop="36dp"
+            android:src="@drawable/ic_upcoming"
+            app:tint="?commonColorDark" />
+
+        <TextView
+            android:id="@+id/emptyTextView"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
             android:text="@string/vazio"
             android:textColor="?commonColorDark"
-            android:id="@+id/emptyTextView"
-            android:layout_marginTop="14dp"/>
+            android:textSize="19sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="@string/toque_mais_adicionar"
+            android:textColor="?commonColorDark"
+            android:textSize="15sp" />
 
     </LinearLayout>
 
-	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/recyclerView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:clipToPadding="false"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-        android:padding="8dp"/>
+        android:padding="8dp" />
 
     <LinearLayout
-        android:gravity="center"
         android:id="@+id/main_galery_progressBar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
 
-        <LinearLayout
-            android:gravity="center"
-            android:layout_marginTop="-76dp"
-            android:orientation="vertical"
+        <ProgressBar
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-76dp"
+            android:indeterminate="true" />
 
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:indeterminate="true"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/carregando"
+            android:textSize="13sp" />
 
-            <TextView
-                android:textSize="13sp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/carregando"/>
-
-        </LinearLayout>
-
-	</LinearLayout>
+    </LinearLayout>
 
 </RelativeLayout>
 

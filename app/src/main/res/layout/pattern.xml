@@ -1,62 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:lockview="http://schemas.android.com/apk/res-auto"
-	android:layout_height="match_parent"
-	android:layout_width="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:lockview="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/patternRelativeLayout"
-    android:background="@color/colorPrimary"
-	android:orientation="vertical">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-	<RelativeLayout
+    <ImageView
+        android:background="@color/colorPrimary"
+        android:id="@+id/wallpaper_image_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        tools:ignore="ContentDescription" />
+
+    <RelativeLayout
+        android:background="@color/darkTransparent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:orientation="vertical">
+        android:orientation="vertical">
 
-		<com.jefferson.application.br.MaterialLockView
-			android:id="@+id/pattern"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_alignParentBottom="true"
-			android:layout_centerHorizontal="true"
-			android:layout_marginBottom="16dp"
-			android:layout_marginLeft="16dp"
-			android:layout_marginRight="16dp"
-			android:layout_gravity="center"
-			android:padding="25dp"
-			lockview:CORRECT_COLOR="#11DD61"
-			lockview:LOCK_COLOR="#fff"
-			lockview:WRONG_COLOR="#ff0000" />
+        <com.jefferson.application.br.MaterialLockView
+            android:id="@+id/pattern"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:padding="25dp"
+            lockview:CORRECT_COLOR="#11DD61"
+            lockview:LOCK_COLOR="#fff"
+            lockview:WRONG_COLOR="#ff0000" />
 
-		<FrameLayout
-			android:layout_height="match_parent"
-			android:layout_weight="1"
-			android:layout_width="match_parent"
-			android:layout_above="@id/pattern"
-			android:gravity="center">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/pattern"
+            android:layout_weight="1"
+            android:gravity="center">
 
-			<ImageView
-				android:layout_height="50dp"
-				android:layout_width="50dp"
-				android:id="@+id/icon_super_view"
-				android:src="@drawable/ic_super"
-				android:layout_gravity="center"
-				android:layout_margin="15dp"/>
+            <ImageView
+                android:id="@+id/icon_super_view"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="center"
+                android:layout_margin="15dp"
+                android:src="@drawable/ic_super" />
 
-			<ImageView
-				android:layout_height="40dp"
-				android:src="@drawable/ic_menu"
-				android:layout_gravity="top|right"
-				android:id="@+id/ic_menu_view"
-				android:layout_width="35dp"
-				android:layout_marginTop="20dp"
-				android:layout_marginEnd="10dp"
-				android:visibility="gone"/>
+            <ImageView
+                android:id="@+id/ic_menu_view"
+                android:layout_width="35dp"
+                android:layout_height="40dp"
+                android:layout_gravity="top|right"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_menu"
+                android:visibility="gone" />
 
-		</FrameLayout>
+        </FrameLayout>
 
-	</RelativeLayout>
+    </RelativeLayout>
 
 </RelativeLayout>
 

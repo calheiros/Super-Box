@@ -2,6 +2,7 @@ package com.jefferson.application.br.task;
 
 import android.app.Activity;
 import android.widget.Toast;
+
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
@@ -10,6 +11,7 @@ import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,31 +20,31 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class ImportTask extends JTask {
-    
-    private Exception error = null;
+
     public static final int PREPARATION_UPDATE = 1;
     public static final int PROGRESS_UPDATE = 2;
-    private ArrayList<String> importedFilesPath = new ArrayList<>();
-	private int maxProgress;
-    private ArrayList<FileModel> models;
-    private WatchTransference watchTransfer;
-	private StringBuilder errorMessage = new StringBuilder();
-	private int failuresCount = 0;
-	private FileTransfer mTransfer;
-	private boolean waiting = false;
-    private Listener listener;
-	private String no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n";
-    private Activity activity;
     private static final String TAG = "ImportTask";
+    private Exception error = null;
+    private final ArrayList<String> importedFilesPath = new ArrayList<>();
+    private final int maxProgress;
+    private final ArrayList<FileModel> models;
+    private WatchTransference watchTransfer;
+    private final StringBuilder errorMessage = new StringBuilder();
+    private int failuresCount = 0;
+    private final FileTransfer mTransfer;
+    private boolean waiting = false;
+    private final Listener listener;
+    private final String no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n";
+    private final Activity activity;
 
-	public ImportTask(Activity activity, ArrayList<FileModel> models, Listener listener) {
+    public ImportTask(Activity activity, ArrayList<FileModel> models, Listener listener) {
         this.activity = activity;
-		this.listener = listener;
-		this.maxProgress = models.size();
-		this.models = models;
-		this.mTransfer = new FileTransfer();
-	}
-    
+        this.listener = listener;
+        this.maxProgress = models.size();
+        this.models = models;
+        this.mTransfer = new FileTransfer();
+    }
+
     @Override
     public void onException(Exception e) {
         error = e;
@@ -50,7 +52,7 @@ public class ImportTask extends JTask {
         revokeFinish(false);
         errorMessage.append(e.getMessage());
     }
-    
+
     public int getFailuresCount() {
         return failuresCount;
     }
@@ -59,16 +61,17 @@ public class ImportTask extends JTask {
         return waiting;
     }
 
-	@Override
-	public void onBeingStarted() {
+    @Override
+    public void onBeingStarted() {
         if (listener != null) {
             listener.onBeingStarted();
         }
     }
-    
+
     public Exception error() {
         return error;
     }
+
     @Override
     protected void onTaskCancelled() {
         super.onTaskCancelled();
@@ -76,32 +79,32 @@ public class ImportTask extends JTask {
     }
 
     @Override
-	public void onFinished() {
+    public void onFinished() {
         synchronize();
-
         if (listener != null) {
             listener.onFinished();
         }
-	}
+    }
 
-	private void synchronize() {
-		Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]));
-	}
+    private void synchronize() {
+        Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]));
+    }
 
     @Override
     public void onInterrupted() {
         if (listener != null) {
             listener.onInterrupted();
         }
-		Toast.makeText(activity, activity.getString(R.string.canceledo_usuario), Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	public void onUpdated(Object[] values) {}
+        Toast.makeText(activity, activity.getString(R.string.canceledo_usuario), Toast.LENGTH_SHORT).show();
+    }
 
     @Override
-	public void workingThread() {
-		double max = 0;
+    public void onUpdated(Object[] values) {
+    }
+
+    @Override
+    public void workingThread() {
+        double max = 0;
         PathsDatabase database = PathsDatabase.getInstance(activity, Storage.getDefaultStoragePath());
         PathsDatabase.Folder folderDatabase = PathsDatabase.Folder.getInstance(activity);
 
@@ -155,7 +158,7 @@ public class ImportTask extends JTask {
                 String parentPath = model.getParentPath();
 
                 if (parentPath == null) {
-                    parentPath = Storage.getFolder(FileModel.IMAGE_TYPE.equals(model.getType()) ? Storage.IMAGE: Storage.VIDEO) + File.separator + randomString2;
+                    parentPath = Storage.getFolder(FileModel.IMAGE_TYPE.equals(model.getType()) ? Storage.IMAGE : Storage.VIDEO) + File.separator + randomString2;
                 }
 
                 File destFile = new File(parentPath, randomString);
@@ -164,7 +167,7 @@ public class ImportTask extends JTask {
                 if (file.renameTo(destFile)) {
                     database.insertData(randomString, model.getResource());
                     importedFilesPath.add(file.getAbsolutePath());
-                    mTransfer.increment((double)destFile.length() / 1024d);
+                    mTransfer.increment((double) destFile.length() / 1024d);
                     //Log.i(TAG, "Succesfully moved to: " + destFile);
                 } else {
                     InputStream inputStream = null;
@@ -201,60 +204,42 @@ public class ImportTask extends JTask {
         } finally {
             database.close();
         }
-	}
+    }
 
     public void waitForResponse() {
-		waiting = true;
-		while (waiting) {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
+        waiting = true;
+        while (waiting) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                waiting = false;
                 break;
             }
-		}
-	}
+        }
+    }
 
     public void continueWork() {
         waiting = false;
     }
 
-    private void warningAlert(String msg) {
-		SimpleDialog dialog = new SimpleDialog(activity, SimpleDialog.STYLE_ALERT);
-		dialog.setTitle("Aviso");
-		dialog.setMessage(msg);
-		dialog.setCancelable(false);
-		dialog.setPositiveButton("Continuar", new SimpleDialog.OnDialogClickListener() {
-
-				@Override
-				public boolean onClick(SimpleDialog dialog) {
-					waiting = false;
-					return true;
-				}
-			});
-
-		dialog.setNegativeButton(activity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
-
-				@Override
-				public boolean onClick(SimpleDialog dialog) {
-					interrupt();
-					waiting = false;
-					return true;
-				}
-			});
-		dialog.show();
-	}
+    public void stopWaiting() {
+        this.waiting = false;
+    }
 
     public interface Listener {
         void onBeingStarted();
+
         void onUserInteration();
+
         void onInterrupted();
+
         void onFinished();
     }
 
     private class WatchTransference extends Thread {
 
-        private JTask task;
-        private FileTransfer transfer;
+        private final JTask task;
+        private final FileTransfer transfer;
 
         public WatchTransference(JTask task, FileTransfer transfer) {
             this.task = task;

@@ -8,7 +8,7 @@
 	<LinearLayout
 		android:orientation="vertical"
 		android:layout_width="match_parent"
-		android:layout_height="match_parent"
+		android:layout_height="wrap_content"
 		android:gravity="center"
 		android:padding="10dp">
 
@@ -17,53 +17,61 @@
 			android:layout_height="wrap_content"
 			android:text="Debug"
 			android:layout_margin="10dp"
-			android:id="@+id/developerlayoutSwitch"/>
+			android:id="@+id/developerlayoutSwitch"
+			tools:ignore="UseSwitchCompatOrMaterialXml" />
 
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="Alert Dialog"
-			android:onClick="showAlertDialog"/>
+			android:onClick="showAlertDialog"
+			tools:ignore="UsingOnClickInXml" />
 
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="Progress Dialog"
-			android:onClick="showProgressDialog"/>
+			android:onClick="showProgressDialog"
+			tools:ignore="UsingOnClickInXml" />
 
 		<Button
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:text="camera"
-			android:onClick="camera"/>
+			android:onClick="camera"
+			tools:ignore="UsingOnClickInXml" />
 
 		<Button
 			android:layout_width="wrap_content"
 			style="?android:attr/buttonStyleSmall"
 			android:layout_height="wrap_content"
 			android:text="Contacts"
-			android:onClick="contacts"/>
+			android:onClick="contacts"
+			tools:ignore="UsingOnClickInXml" />
 
 		<Button
 			android:layout_width="wrap_content"
 			style="?android:attr/buttonStyleSmall"
 			android:layout_height="wrap_content"
 			android:text="Notification"
-			android:onClick="notification"/>
+			android:onClick="notification"
+			tools:ignore="UsingOnClickInXml" />
 
 		<Button
 			android:layout_width="wrap_content"
 			style="?android:attr/buttonStyleSmall"
 			android:layout_height="wrap_content"
 			android:text="Test Tread"
-			android:onClick="testThread"/>
+			android:onClick="testThread"
+			tools:ignore="UsingOnClickInXml" />
 
 		<Button
 			android:layout_width="wrap_content"
 			style="?android:attr/buttonStyleSmall"
 			android:layout_height="wrap_content"
 			android:onClick="trowException"
-			android:text="Thows Exception"/>
+			android:text="Thows Exception"
+			tools:ignore="UsingOnClickInXml" />
 
 		<Button
 			android:layout_width="wrap_content"

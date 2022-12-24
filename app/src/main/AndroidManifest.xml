@@ -86,7 +86,7 @@
     <application
         android:requestLegacyExternalStorage="true"
         android:name=".App"
-        android:manageSpaceActivity=".activity.VerifyActivity"
+        android:manageSpaceActivity=".activity.ManageSpaceActivity"
         android:fitsSystemWindows="true"
         android:resizeableActivity="false"
         android:allowBackup="true"
@@ -217,6 +217,7 @@
         <activity-alias
             android:exported="true"
             tools:node="merge"
+            android:fitsSystemWindows="true"
             android:name=".LuancherAlias"
             android:targetActivity=".activity.VerifyActivity">
 

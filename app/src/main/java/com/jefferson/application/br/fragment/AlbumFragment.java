@@ -65,6 +65,7 @@ public class AlbumFragment extends Fragment {
     private RecyclerView recyclerView;
     private View progressBar;
     private View emptyView;
+    private int paddingBottom;
 
     public AlbumFragment() {
 
@@ -210,8 +211,11 @@ public class AlbumFragment extends Fragment {
             recyclerView = view.findViewById(R.id.recyclerView);
             GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
             recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setClipToPadding(false);
+            recyclerView.setPadding(0,0,0, paddingBottom);
             populateRecyclerView();
         }
+
         return view;
     }
 
@@ -455,5 +459,12 @@ public class AlbumFragment extends Fragment {
             return;
         }
         f_model.setFavorite(false);
+    }
+
+    public void setBottomPadding(int paddingBottom) {
+        this.paddingBottom = paddingBottom;
+        if (recyclerView != null) {
+            recyclerView.setPadding(0,0,0, paddingBottom);
+        }
     }
 }

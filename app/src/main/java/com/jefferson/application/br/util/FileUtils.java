@@ -382,5 +382,4 @@ public class FileUtils {
         return "com.google.android.apps.docs.storage".equals(uri.getAuthority()) || "com.google.android.apps.docs.storage.legacy".equals(uri.getAuthority());
     }
 
-
 }

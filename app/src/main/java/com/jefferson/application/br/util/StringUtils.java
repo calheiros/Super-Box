@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
 public class StringUtils {
-	public static String Dictionary = "abcdefghijklmnopqrstuvwxyz01234567890123456789";
+    public static String Dictionary = "abcdefghijklmnopqrstuvwxyz01234567890123456789";
 
     private static String TAG = "StringUtils";
 
@@ -32,25 +32,26 @@ public class StringUtils {
         return builder.toString();
     }
 
-	public static String  getRandomString(int length) {
-		String generate = new String();
-		Random random = new Random();
+    public static String getRandomString(int length) {
+        String generate = new String();
+        Random random = new Random();
 
-		for (int i = 0; i < length; i++) {
-			int pos = random.nextInt(Dictionary.length());
-			generate += Dictionary.charAt(pos);
-		}
-		return generate;
-	}
+        for (int i = 0; i < length; i++) {
+            int pos = random.nextInt(Dictionary.length());
+            generate += Dictionary.charAt(pos);
+        }
+        return generate;
+    }
 
     public static String[] extractLinks(String text) {
-        List<String> links = new ArrayList<String>(); 
-        Matcher m = Patterns.WEB_URL.matcher(text); 
-        while (m.find()) { 
-            String url = m.group(); 
-            Log.d(TAG, "URL extracted: " + url); 
-            links.add(url); 
-        } return links.toArray(new String[links.size()]); 
+        List<String> links = new ArrayList<String>();
+        Matcher m = Patterns.WEB_URL.matcher(text);
+        while (m.find()) {
+            String url = m.group();
+            Log.d(TAG, "URL extracted: " + url);
+            links.add(url);
+        }
+        return links.toArray(new String[links.size()]);
     }
 
     public static String getFormattedVideoDuration(String millis) {
@@ -62,33 +63,44 @@ public class StringUtils {
         }
         long seconds = TimeUnit.MILLISECONDS.toSeconds(duration) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(duration));
         long minutes = TimeUnit.MILLISECONDS.toMinutes(duration);
-        long hours =  TimeUnit.MINUTES.toHours(minutes);
+        long hours = TimeUnit.MINUTES.toHours(minutes);
         minutes = minutes - (hours * 60);
         //long secunds = TimeUnit.MILLISECONDS.toSeconds(millis) - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(millis));
 
         return hours > 0 ? String.format("%d:%02d:%02d", hours, minutes, seconds) : String.format("%d:%02d", minutes, seconds);
     }
 
-    public static String getFormatedDate() {
+    public static String getFormattedDate() {
         return getFormattedDate("dd-MM-yyyy_HH-mm-ss");
     }
-    
+
     public static String getFormattedDate(String format) {
         Calendar calendar = Calendar.getInstance();
-        Date now = calendar.getTime(); 
+        Date now = calendar.getTime();
         SimpleDateFormat simpleDate = new SimpleDateFormat(format);
         return simpleDate.format(now);
     }
-    public static String getFormattedFileSize(long fileSize) {
-        DecimalFormat fmt = new DecimalFormat("0.00");
-        float kb = (float)fileSize / 1024;
 
-        if (kb < 1.0) {
-            return fmt.format(fileSize ) + " Bytes";
+    public static String getFormattedFileSize(long fileSize) {
+        // Use StringBuilder to build the string instead of multiple string concatenations
+        StringBuilder sb = new StringBuilder();
+        if (fileSize < 1024) {
+            // File size is in bytes
+            sb.append(fileSize).append(" Bytes");
+        } else if (fileSize < 1024 * 1024) {
+            // File size is in kilobytes
+            sb.append(fileSize / 1024).append(" Kilobytes");
+        } else if (fileSize < 1024 * 1024 * 1024) {
+            // File size is in megabytes
+            sb.append(fileSize / (1024 * 1024)).append(" Megabytes");
+        } else if (fileSize < 1024L * 1024 * 1024 * 1024) {
+            // File size is in gigabytes
+            sb.append(fileSize / (1024 * 1024 * 1024)).append(" Gigabytes");
+        } else {
+            // File size is in terabytes
+            sb.append(fileSize / (1024L * 1024 * 1024 * 1024)).append(" Terabytes");
         }
-        if (kb / 1024 < 1.0) {
-            return fmt.format(kb ) + " Kilobytes";
-        }
-        return fmt.format (kb / 1024) + " Megabytes";
+        return sb.toString();
     }
+
 }

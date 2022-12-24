@@ -4,14 +4,16 @@
     android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:gravity="center_vertical"
-    android:padding="8dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:paddingStart="13dp"
+    android:paddingEnd="13dp"
     android:layout_height="match_parent">
 
     <ImageView
-        app:tint="?commonColorLight"
         android:src="@drawable/ic_folder_download"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
+        android:layout_width="26dp"
+        android:layout_height="26dp"
         android:id="@+id/dialog_item_image_view"
         tools:ignore="ContentDescription" />
     
