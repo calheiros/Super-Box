@@ -1,10 +1,12 @@
 package com.jefferson.application.br.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -13,6 +15,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,6 +34,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.ImportGalleryActivity;
 import com.jefferson.application.br.activity.MainActivity;
+import com.jefferson.application.br.activity.SearchActivity;
 import com.jefferson.application.br.model.FolderModel;
 
 import java.util.ArrayList;
@@ -60,7 +67,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             viewPager.setAdapter(pagerAdapter);
             viewPager.setOnPageChangeListener(this);
             tabLayout = view.findViewById(R.id.tab_layout);
-
+            View searchView = view.findViewById(R.id.search_bar);
             /*int selected = getResources().getColor(R.color.tab_selected);
             int unselected = getResources().getColor(R.color.tab_unsected);*/
             // tabLayout.setTabTextColors(unselected, selected);
@@ -72,15 +79,19 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             fab = view.findViewById(R.id.fab);
             fab.setOnClickListener(this);
             fab.setOnLongClickListener(this);
+            searchView.setOnClickListener(this);
+
             adjustViewsPadding();
             // toogleTabIcon(0);
         }
 
         assert main != null;
         main.setupToolbar(toolbar, getToolbarName(viewPager.getCurrentItem()));
+
         return view;
     }
 
+    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View v) {
 
@@ -99,6 +110,9 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
                 }
                 //createFolder(viewPager.getCurrentItem(), getContext(), (FilePicker) null);
                 break;
+            case R.id.search_bar:
+                requireActivity().startActivity(new Intent(requireActivity(), SearchActivity.class));
+                break;
         }
     }
 
@@ -106,6 +120,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
         paddingBottom = view.getHeight();
         adjustViewsPadding();
     }
+
 
     private void adjustViewsPadding() {
         if (pagerAdapter != null) {

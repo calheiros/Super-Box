@@ -52,11 +52,13 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
     public void insertItem(FolderModel item) {
         models.add(item);
         FolderModel.sort(models);
-        notifyDataSetChanged();
 
         int position = models.indexOf(item);
         if (position != -1) {
+            notifyItemInserted(position);
             fragment.scrollTo(position);
+        } else {
+            notifyDataSetChanged();
         }
     }
 

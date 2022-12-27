@@ -1,7 +1,6 @@
 package com.jefferson.application.br.task;
 
 import android.app.Activity;
-import android.content.*;
 import android.widget.*;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.app.*;
@@ -45,8 +44,8 @@ public class DeleteFilesTask extends JTask {
                 if (file.delete()) {
                     progress++;
                     String name = null;
-                    if ((name = database.getPath(file.getName())) != null) {
-                        database.deleteData(file.getName());
+                    if ((name = database.getMediaPath(file.getName())) != null) {
+                        database.deleteMediaData(file.getName());
                     }
                     sendUpdate(path, name);
                 }
@@ -115,10 +114,10 @@ public class DeleteFilesTask extends JTask {
     }
 
 	private void deleteFolder(File file) {
-        PathsDatabase.Folder database = PathsDatabase.Folder.getInstance(activity);
+        PathsDatabase database = PathsDatabase.getInstance(activity);
         try {
             if (file.delete()) {
-                database.delete(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
+                database.deleteFolder(file.getName(), position == 0 ? FileModel.IMAGE_TYPE: FileModel.VIDEO_TYPE);
             }
         } finally {
             database.close();

@@ -6,7 +6,6 @@ import android.widget.Toast;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.Storage;
@@ -106,7 +105,7 @@ public class ImportTask extends JTask {
     public void workingThread() {
         double max = 0;
         PathsDatabase database = PathsDatabase.getInstance(activity, Storage.getDefaultStoragePath());
-        PathsDatabase.Folder folderDatabase = PathsDatabase.Folder.getInstance(activity);
+        PathsDatabase folderDatabase = PathsDatabase.getInstance(activity);
 
         try {
             for (FileModel resource : models) {
@@ -146,11 +145,11 @@ public class ImportTask extends JTask {
                 String folderName = file.getParentFile().getName();
                 String randomString = StringUtils.getRandomString(24);
                 String randomString2 = StringUtils.getRandomString(24);
-                String folderId = folderDatabase.getFolderId(folderName, model.getType());
+                String folderId = folderDatabase.getFolderIdFromName(folderName, model.getType());
                 String str = folderId;
 
                 if (folderId == null) {
-                    folderDatabase.addName(randomString2, folderName, model.getType());
+                    folderDatabase.addFolderName(randomString2, folderName, model.getType());
                 } else {
                     randomString2 = str;
                 }
@@ -165,7 +164,7 @@ public class ImportTask extends JTask {
                 destFile.getParentFile().mkdirs();
 
                 if (file.renameTo(destFile)) {
-                    database.insertData(randomString, model.getResource());
+                    database.insertMediaData(randomString, model.getResource());
                     importedFilesPath.add(file.getAbsolutePath());
                     mTransfer.increment((double) destFile.length() / 1024d);
                     //Log.i(TAG, "Succesfully moved to: " + destFile);
@@ -183,7 +182,7 @@ public class ImportTask extends JTask {
 
                     if (FileTransfer.OK.equals(response)) {
                         if (Storage.deleteFile(file)) {
-                            database.insertData(randomString, model.getResource());
+                            database.insertMediaData(randomString, model.getResource());
                             importedFilesPath.add(file.getAbsolutePath());
                         } else {
                             destFile.delete();

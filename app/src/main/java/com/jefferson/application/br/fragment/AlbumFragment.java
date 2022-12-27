@@ -38,6 +38,7 @@ import com.jefferson.application.br.util.StringUtils;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class AlbumFragment extends Fragment {
@@ -76,16 +77,16 @@ public class AlbumFragment extends Fragment {
     }
 
     public static boolean renameFolder(Context context, FolderModel model, String newName, int position) {
-        PathsDatabase.Folder folderDatabase = null;
+        PathsDatabase folderDatabase = null;
 
         try {
             String folderType = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
-            folderDatabase = PathsDatabase.Folder.getInstance(context);
+            folderDatabase = PathsDatabase.getInstance(context);
             File file = new File(model.getPath());
             String id = file.getName();
             String folderName = folderDatabase.getFolderName(id, folderType);
             //JDebug.toast("ID => " + folderName + "\n NAME => " + model.getName());
-            String newFolderId = folderDatabase.getFolderId(newName, folderType);
+            String newFolderId = folderDatabase.getFolderIdFromName(newName, folderType);
 
             if (folderName != null && folderName.equals(newName)) {
                 Toast.makeText(context, context.getString(R.string.pasta_mesmo_nome), Toast.LENGTH_LONG).show();
@@ -100,9 +101,9 @@ public class AlbumFragment extends Fragment {
             }
 
             if (folderName == null) {
-                folderDatabase.addName(id, newName, folderType);
+                folderDatabase.addFolderName(id, newName, folderType);
             } else {
-                folderDatabase.updateName(id, newName, folderType);
+                folderDatabase.updateFolderName(id, newName, folderType);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,13 +117,13 @@ public class AlbumFragment extends Fragment {
     }
 
     public static FolderModel createFolder(Context context, @NonNull String name, int position) {
-        PathsDatabase.Folder folderDatabase = null;
+        PathsDatabase folderDatabase = null;
         FolderModel folder = null;
 
         try {
             String type = position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE;
-            folderDatabase = PathsDatabase.Folder.getInstance(context);
-            String id = folderDatabase.getFolderId(name, type);
+            folderDatabase = PathsDatabase.getInstance(context);
+            String id = folderDatabase.getFolderIdFromName(name, type);
             String randomStr = StringUtils.getRandomString(24);
 
             if (id == null) {
@@ -132,7 +133,7 @@ public class AlbumFragment extends Fragment {
 
                 if (file.mkdirs()) {
                     folder = new FolderModel();
-                    folderDatabase.addName(id, name, type);
+                    folderDatabase.addFolderName(id, name, type);
                     folder.setName(name);
                     folder.setPath(file.getAbsolutePath());
                 }
@@ -220,18 +221,18 @@ public class AlbumFragment extends Fragment {
     }
 
     public ArrayList<FolderModel> getModels(int position) {
-        PathsDatabase.Folder sqldb = null;
+        PathsDatabase sqldb = null;
         ArrayList<FolderModel> models = new ArrayList<FolderModel>();
         File root = Storage.getFolder(position == 0 ? Storage.IMAGE : Storage.VIDEO);
         root.mkdirs();
 
         try {
-            sqldb = PathsDatabase.Folder.getInstance(getContext());
+            sqldb = PathsDatabase.getInstance(getContext());
         } catch (android.database.sqlite.SQLiteDatabaseCorruptException e) {
             //do something
+            return new ArrayList<>();
         }
-        SharedPreferences preferences = MyPreferences.getSharedPreferences();
-        Set<String> bookmark = preferences.getStringSet(MyPreferences.KEY_BOOKMARK, null);
+        Map<String, Boolean> bookmark = sqldb.getFavoritesFolder();
 
         if (root.exists()) {
             String[] files = root.list();
@@ -243,13 +244,10 @@ public class AlbumFragment extends Fragment {
                     File[] folder_list = file.listFiles();
                     String folder_name = null;
                     boolean favorite = false;
-
-                    if (sqldb != null) {
-                        folder_name = sqldb.getFolderName(s, position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
-                    }
+                    folder_name = sqldb.getFolderName(s, position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
 
                     if (bookmark != null) {
-                        favorite = bookmark.contains(file.getName());
+                        favorite = Boolean.TRUE.equals(bookmark.get(file.getName()));
                     }
 
                     FolderModel model = new FolderModel();
@@ -267,8 +265,7 @@ public class AlbumFragment extends Fragment {
             }
         }
         FolderModel.sort(models);
-        if (sqldb != null)
-            sqldb.close();
+        sqldb.close();
         return models;
     }
 
@@ -414,13 +411,12 @@ public class AlbumFragment extends Fragment {
     }
 
     public void addToFavorites(FolderModel f_model) {
-        SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences();
-        Set<String> bookmark = new HashSet<>(sharedPrefs.getStringSet(MyPreferences.KEY_BOOKMARK, new HashSet<String>()));
+        PathsDatabase database = PathsDatabase.getInstance(requireContext());
         File file = new File(f_model.getPath());
         String name = file.getName();
+        boolean success = database.setFavoriteFolder(name);
+        database.close();
 
-        boolean success = bookmark.add(name) && sharedPrefs.edit().
-                putStringSet(MyPreferences.KEY_BOOKMARK, bookmark).commit();
         if (!success) {
             Toast.makeText(requireContext(), "failed to ADD to bookmark", Toast.LENGTH_SHORT).show();
             return;
@@ -446,15 +442,11 @@ public class AlbumFragment extends Fragment {
     }
 
     public void removeFromFavorites(FolderModel f_model) {
-        SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences();
-        Set<String> bookmark = new HashSet<>(sharedPrefs.getStringSet(MyPreferences.KEY_BOOKMARK,
-                new HashSet<String>()));
+        PathsDatabase database = PathsDatabase.getInstance(requireContext());
         File file = new File(f_model.getPath());
         String name = file.getName();
 
-        if (bookmark.remove(name)) {
-            sharedPrefs.edit().putStringSet(MyPreferences.KEY_BOOKMARK, bookmark).apply();
-        } else {
+        if (!database.removeFavoriteFolder(name)) {
             Toast.makeText(requireContext(), "failed to remove from bookmark", Toast.LENGTH_SHORT).show();
             return;
         }

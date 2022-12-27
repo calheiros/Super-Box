@@ -52,6 +52,7 @@ import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.ThemeConfig;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SettingFragment extends Fragment implements OnItemClickListener, OnClickListener, OnItemLongClickListener {
 
@@ -180,8 +181,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.title = getString(R.string.app_name);
                     item.type = PreferenceItem.ITEM_TYPE;
                     try {
-                        item.description = requireContext().getPackageManager().getPackageInfo(
-                                requireContext().getPackageName(), 0).versionName;
+                        item.description = requireContext().getPackageManager().getPackageInfo(requireContext().getPackageName(), 0).versionName;
                     } catch (PackageManager.NameNotFoundException ignored) {
                     }
                     break;
@@ -270,6 +270,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                dialog.cancel();
                 int themeIndex = ThemeConfig.getThemeIndex();
                 int currentTheme = MainActivity.CURRENT_THEME;
                 int newTheme = ThemeConfig.resolveTheme(getContext(), position);
@@ -284,7 +285,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 }
                 //"must update description"
                 updateItemDescription(PreferenceItem.ID.APP_THEME, items.get(position).name);
-                dialog.dismiss();;
             }
         });
         dialog.show();
@@ -336,7 +336,6 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 ((MainActivity) requireActivity()).mainFragment.reloadFragments();
                 SimpleDialog.MenuItem item = options.get(position);
                 updateItem(PreferenceItem.ID.STORAGE, item.name, item.icon);
-
             }
         });
         dialog.show();
@@ -375,8 +374,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 Intent enrollIntent = null;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
                     enrollIntent = new Intent(Settings.ACTION_BIOMETRIC_ENROLL);
-                    enrollIntent.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED,
-                            BIOMETRIC_STRONG | DEVICE_CREDENTIAL);
+                    enrollIntent.putExtra(Settings.EXTRA_BIOMETRIC_AUTHENTICATORS_ALLOWED, BIOMETRIC_STRONG | DEVICE_CREDENTIAL);
                 }
                 requireActivity().startActivityForResult(enrollIntent, REQUEST_CODE);
                 break;
@@ -425,17 +423,15 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     public int getComponentEnabledState(String componentName) {
-        return requireActivity().getPackageManager().getComponentEnabledSetting(
-                new ComponentName(getContext(), componentName));
+        return requireActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(getContext(), componentName));
     }
 
     private String getStorageName() {
-        return Storage.getStorageLocation().equals(Storage.INTERNAL) ?
-                getString(R.string.armaz_interno) : getString(R.string.armaz_externo);
+        return Storage.getStorageLocation().equals(Storage.INTERNAL) ? getString(R.string.armaz_interno) : getString(R.string.armaz_externo);
     }
+
     private int getStorageIcon() {
-        return Storage.getStorageLocation().equals(Storage.INTERNAL) ?
-                R.drawable.ic_twotone_smartphone : R.drawable.ic_micro_sd;
+        return Storage.getStorageLocation().equals(Storage.INTERNAL) ? R.drawable.ic_twotone_smartphone : R.drawable.ic_micro_sd;
     }
 
     public void updateItem(PreferenceItem.ID id, String description, int icon) {
@@ -443,8 +439,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             PreferenceItem item = adapter.getItem(i);
             if (item.id == id) {
                 item.description = description;
-                if (icon != -1)
-                    item.icon_res_id = icon;
+                if (icon != -1) item.icon_res_id = icon;
                 adapter.notifyDataSetChanged();
                 //Toast.makeText(getContext(), "fount item to update! " + description, 1).show();
                 break;
@@ -533,11 +528,14 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     private void showLanguageDialog() {
-        final CharSequence[] items = {getString(R.string.padrao_do_sistema), "English", "Español", "Deutsch", "Português (Brasil)", "日本語"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireActivity(), DialogUtils.getTheme()).setTitle(R.string.escolha_idioma).setItems(items, new DialogInterface.OnClickListener() {
+        List<SimpleDialog.MenuItem> items = getLanguageMenuItems();
+        SimpleDialog dialog = new SimpleDialog(requireActivity(), SimpleDialog.STYLE_MENU);
+        dialog.setTitle(R.string.escolha_idioma);
+        dialog.setMenuItems(items, new AdapterView.OnItemClickListener() {
 
             @Override
-            public void onClick(DialogInterface p1, int position) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                dialog.cancel();
                 String locale;
                 switch (position) {
                     case 1:
@@ -566,9 +564,17 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                 }
             }
         });
-
-        AlertDialog dialog = builder.create();
-        configureDialog(dialog);
         dialog.show();
+    }
+
+    private List<SimpleDialog.MenuItem> getLanguageMenuItems() {
+        final String[] languages = {getString(R.string.padrao_do_sistema), "English", "Español", "Deutsch", "Português (Brasil)", "日本語"};
+        int[] flags = new int[]{R.drawable.ic_auto_fix, R.drawable.flag_us, R.drawable.flag_es, R.drawable.flag_de, R.drawable.flag_br, R.drawable.flag_jp};
+        List<SimpleDialog.MenuItem> items = new ArrayList<>();
+
+        for (int i = 0; i < languages.length; i++) {
+            items.add(new SimpleDialog.MenuItem(languages[i], flags[i], i == 0));
+        }
+        return  items;
     }
 }

@@ -42,7 +42,7 @@ public class ImagePreviewFragment extends Fragment implements View.OnClickListen
             ImageView gifView = parentView.findViewById(R.id.gif_view);
             optionLayout = parentView.findViewById(R.id.image_preview_options_layout);
             PathsDatabase database = PathsDatabase.getInstance(getContext(), Storage.getDefaultStoragePath());
-            String originPath = originPath = database.getPath(new File(path).getName());
+            String originPath = originPath = database.getMediaPath(new File(path).getName());
             database.close();
 
             if (originPath != null) {

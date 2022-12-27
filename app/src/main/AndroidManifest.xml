@@ -399,6 +399,9 @@
             android:theme="@style/MainTheme"/>
 
         <activity
+            android:name=".activity.SearchActivity"/>
+
+        <activity
             android:name=".activity.VideoPlayerActivity"
             android:excludeFromRecents="true"
             android:theme="@style/VideoPlayerTheme"

@@ -297,7 +297,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             TextView nameText = view.findViewById(R.id.file_name_info);
             TextView sizeText = view.findViewById(R.id.file_size_info);
             TextView originText = view.findViewById(R.id.file_origin_text_view);
-            String filePath = database.getPath(file.getName());
+            String filePath = database.getMediaPath(file.getName());
             String name = new File(filePath).getName();
 
             nameText.setText(name);
@@ -631,7 +631,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                             } catch (RuntimeException e) {
                                 duration = -2;
                             }
-                            database.updateFileDuration(file.getName(), duration);
+                            database.updateMediaDuration(file.getName(), duration);
                         }
                         final String time = StringUtils.getFormattedVideoDuration(String.valueOf(duration));
                         runOnUiThread(new Runnable() {
@@ -707,7 +707,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                         }
 
                         File file = new File(item);
-                        String path = database.getPath(file.getName());
+                        String path = database.getMediaPath(file.getName());
 
                         if (path == null) {
                             //need something 0.o
@@ -723,7 +723,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
                         if (file.renameTo(fileOut)) {
                             mArrayPath.add(fileOut.getAbsolutePath());
-                            database.deleteData(file.getName());
+                            database.deleteMediaData(file.getName());
                             addJunkItem(item, Thread.currentThread());
                             //sendUpdate(ACTION_ADD_JUNK, item);
                             mTransfer.increment(fileOut.length() / 1024);
@@ -736,7 +736,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                             if (FileTransfer.OK.equals(response)) {
                                 if (file.delete()) {
                                     mArrayPath.add(fileOut.getAbsolutePath());
-                                    database.deleteData(file.getName());
+                                    database.deleteMediaData(file.getName());
                                     addJunkItem(item, Thread.currentThread());
                                     //sendUpdate(ACTION_ADD_JUNK, item);
                                 }
@@ -842,10 +842,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         public void deleteFolder() {
-            PathsDatabase.Folder database = PathsDatabase.Folder.getInstance(App.getInstance());
+            PathsDatabase database = PathsDatabase.getInstance(App.getInstance());
 
             if (folder.delete()) {
-                database.delete(folder.getName(), position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
+                database.deleteFolder(folder.getName(), position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
             }
             database.close();
         }

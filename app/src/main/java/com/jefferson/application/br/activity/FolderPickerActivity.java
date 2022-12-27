@@ -95,7 +95,7 @@ public class FolderPickerActivity extends MyCompatActivity implements OnItemClic
     @Override
     protected void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setContentView(R.layout.list_view_layout);
+        setContentView(R.layout.file_picker_layout);
         ListView mListView = findViewById(R.id.androidList);
         Toolbar mToolbar = findViewById(R.id.toolbar);
         this.myOverlay = findViewById(R.id.myOverlayLayout);
@@ -205,7 +205,7 @@ public class FolderPickerActivity extends MyCompatActivity implements OnItemClic
     public List<PickerModel> getModels(int i) {
         ArrayList<PickerModel> arrayList = new ArrayList<>();
         File storageAndFolder = Storage.getFolder(i == 0 ? Storage.IMAGE : Storage.VIDEO);
-        PathsDatabase.Folder instance = PathsDatabase.Folder.getInstance(this);
+        PathsDatabase instance = PathsDatabase.getInstance(this);
 
         assert storageAndFolder != null;
         File[] listFiles = storageAndFolder.listFiles();

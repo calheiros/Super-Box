@@ -119,7 +119,7 @@
     <string name="caixa_principal">Main box</string>
     <string name="nenhum_video">No video</string>
     <string name="nenhuma_imagem">No image</string>
-    <string name="toque_mais_adicionar">Tap + to add.</string>
+    <string name="toque_mais_adicionar">To add items, press the floating plus button</string>
     <string name="local_armazenamento">Storage location</string>
     <string name="importar_galeria">import from galery</string>
     <string name="mudar_senha_descricao">Set your language </string>

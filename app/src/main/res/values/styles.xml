@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <style name="RoundSquareShapeAppearance">
+        <item name="cornerSize">25%</item>
+    </style>
+
     <style name="CustomTextAppearanceTab" parent="TextAppearance.Design.Tab">
         <item name="textAllCaps">false</item>
         <item name="android:textStyle">bold</item>
