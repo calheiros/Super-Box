@@ -73,11 +73,8 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
                 return parentView;
             }
             
-            jController = new JVideoController(mVideoView);
-            jController.setAnchor((ViewGroup)parentView);
+            jController = new JVideoController(mVideoView, (ViewGroup)parentView);
             jController.setOnButtonPressedListener(this);
-
-            jController.prepare();
             mVideoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener(){
 
                     @Override
@@ -108,7 +105,7 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
 
         try {
             stop();
-            if (jController != null && jController.alive()) {
+            if (jController != null && jController.isControllerActive()) {
                 jController.pause();
             }
         } finally {
@@ -172,7 +169,7 @@ public class VideoPlayerFragment extends Fragment implements OnClickListener, JV
             videoNotPrepared = true;
         } 
 
-        if (jController != null && jController.alive()) {
+        if (jController != null && jController.isControllerActive()) {
             jController.pause();
         }
     }

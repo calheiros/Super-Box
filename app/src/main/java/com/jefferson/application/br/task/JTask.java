@@ -16,15 +16,15 @@ abstract public class JTask implements JTaskListener {
     private static final int STATE_TASK_CANCELLED = 444;
 
     private boolean interrupted = false;
-    private static Exception exception = null;
+    private Exception exception = null;
     private boolean revokeFinish = false;
-    private  Handler mainHandler;
-    private Thread workThread;
+    private final Handler mainHandler;
+    private final Thread workThread;
     private boolean cancelled = false;
     private OnUpdatedListener onUpdatedListener;
     private OnBeingStartedListener onBeingStartedListener;
 
-    public static enum Status {
+    public enum Status {
         FINISHED,
         STARTED,
         INTERRUPTED,
@@ -189,15 +189,15 @@ abstract public class JTask implements JTaskListener {
 
     }
 
-    public static interface OnFinishedListener {
+    public interface OnFinishedListener {
         void onFinished();
     }
 
-    public static interface OnBeingStartedListener {
+    public interface OnBeingStartedListener {
         void onBeingStarted();
     }
 
-    public static interface OnUpdatedListener {
+    public interface OnUpdatedListener {
         void onUpdated(Object[] values);
     }
 }

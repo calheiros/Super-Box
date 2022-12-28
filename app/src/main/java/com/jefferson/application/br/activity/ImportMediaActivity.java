@@ -8,8 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.ContextCompat;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -22,16 +20,20 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.google.android.gms.ads.AdView;
+import com.google.android.material.snackbar.Snackbar;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.task.ImportTask;
 import com.jefferson.application.br.task.JTask;
-import com.jefferson.application.br.task.MonoTypePrepareTask;
+import com.jefferson.application.br.task.FileModelBuilderTask;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.view.CircleProgressView;
+
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -41,23 +43,29 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     public static final String MEDIA_LIST_KEY = "media_list_key";
     public static final String POSITION_KEY = "position_key";
     public static final String PARENT_KEY = "parent_key";
-
+    public static final String MODELS_KEY = "models_key";
+    private final int flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
+    private FrameLayout parent;
     private TextView prepareTextView;
     private CircleProgressView progressView;
     private TextView messageTextView;
     private ImportTask importTask;
-    private MonoTypePrepareTask prepareTask;
+    private FileModelBuilderTask builderTask;
     private TextView titleTextView;
     private ImportMediaActivity.AnimateProgressText animateText;
     private boolean allowCancel;
     private TextView prepareTitleView;
     private Button button;
     private int typeQuantityRes;
-    private final int flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
     private AdView adview;
-    FrameLayout parent;
 
-    public static final String MODELS_KEY = "models_key";
+    public static void removeParent(View v) {
+        ViewParent parent = v.getParent();
+        if (parent instanceof ViewGroup) {
+            ViewGroup group = (ViewGroup) parent;
+            group.removeView(v);// w  w w .j  a  va  2  s.co m
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,54 +85,48 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         button = (Button) findViewById(R.id.import_media_button);
 
         MainActivity mainActivity = MainActivity.getInstance();
-        adview = Objects.requireNonNull(mainActivity == null?
+        adview = Objects.requireNonNull(mainActivity == null ?
                 MainActivity.createSquareAdview(this) : mainActivity.getSquareAdView());
         removeParent(adview);
         parent = findViewById(R.id.ad_view_layout);
         parent.addView(adview);
+        startImportTask();
+    }
 
+    private void startImportTask() {
         Intent intent = getIntent();
-        ArrayList <FileModel> data = null;
+        ArrayList<FileModel> files = intent.getParcelableArrayListExtra(MODELS_KEY);
 
-        if ((data = intent.getParcelableArrayListExtra(MODELS_KEY)) != null) {
+        if (files != null) {
             typeQuantityRes = R.plurals.quantidade_arquivo_total;
-            startImportTask(data);
+            startImportTask(files);
         } else {
-            ArrayList<String> mediaList = (ArrayList<String>) getIntent().getStringArrayListExtra(MEDIA_LIST_KEY);
+            ArrayList<String> filesPath = (ArrayList<String>) getIntent().getStringArrayListExtra(MEDIA_LIST_KEY);
             String parent = intent.getStringExtra(PARENT_KEY);
             String type = intent.getStringExtra(TYPE_KEY);
-            prepareTask = new MonoTypePrepareTask(this, mediaList, type, parent);
-
+            builderTask = new FileModelBuilderTask(this, filesPath, type, parent);
             if (type != null) {
                 typeQuantityRes = type.equals(FileModel.IMAGE_TYPE) ? R.plurals.quantidade_imagem_total : R.plurals.quantidade_video_total;
             }
             if (parent == null) {
-                prepareTask.setDestination(Storage.getFolder(type == FileModel.IMAGE_TYPE ? Storage.IMAGE: Storage.VIDEO).getAbsolutePath());
+                builderTask.setDestination(Storage.getFolder(FileModel.IMAGE_TYPE.equals(type) ? Storage.IMAGE : Storage.VIDEO).getAbsolutePath());
             }
-            prepareTask.setOnUpdatedListener(this);
-            prepareTask.setOnFinishedListener(new JTask.OnFinishedListener() {
+            builderTask.setOnUpdatedListener(this);
+            builderTask.setOnFinishedListener(new JTask.OnFinishedListener() {
 
-                    private ImportMediaActivity.AnimateProgressText animateText;
-
-                    @Override
-                    public void onFinished() {
-                        startImportTask(prepareTask.getData());
-                    }
-                }
+                                                  @Override
+                                                  public void onFinished() {
+                                                      startImportTask(builderTask.getData());
+                                                  }
+                                              }
             );
-            prepareTask.start();
+            builderTask.start();
             prepareTitleView.setText("Checking");
         }
     }
-    public static void removeParent(View v) {
-        ViewParent parent = v.getParent();
-        if (parent instanceof ViewGroup) {
-            ViewGroup group = (ViewGroup) parent;
-            group.removeView(v);// w  w w .j  a  va  2  s.co m
-        }
-    }
+
     private void startImportTask(ArrayList<FileModel> data) {
-        importTask = new ImportTask(this, data , null);
+        importTask = new ImportTask(this, data, null);
         importTask.setOnUpdatedListener(this);
         importTask.setOnbeingStartedListener(this);
         importTask.setOnFinishedListener(this);
@@ -140,7 +142,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     }
 
     private boolean isTaskNotRunning() {
-        return (prepareTask != null && importTask != null) && prepareTask.status != JTask.Status.STARTED && importTask.status != JTask.Status.STARTED;
+        return (builderTask != null && importTask != null) && builderTask.status != JTask.Status.STARTED && importTask.status != JTask.Status.STARTED;
     }
 
     @Override
@@ -158,9 +160,9 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
         Resources res = getResources();
         boolean criticalError = importTask.error() != null;
         int failures = importTask.getFailuresCount();
-        int color = failures > 0 || importTask.isInterrupted() ? ContextCompat.getColor(this, R.color.red): getAttrColor(R.attr.commonColor) ;
-        String msg = criticalError? getString(R.string.erro_critico) : failures > 0 ? res.getQuantityString(
-            R.plurals.falha_plural, failures, failures) :
+        int color = failures > 0 || importTask.isInterrupted() ? ContextCompat.getColor(this, R.color.red) : getAttrColor(R.attr.commonColor);
+        String msg = criticalError ? getString(R.string.erro_critico) : failures > 0 ? res.getQuantityString(
+                R.plurals.falha_plural, failures, failures) :
                 importTask.isInterrupted() ? "Cancelled!" : getString(R.string.transferencia_sucesso);
 
 
@@ -190,15 +192,15 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                 }
                 Object message = values[1];
                 if (message != null) {
-                    messageTextView.setText((String)values[1]);
+                    messageTextView.setText((String) values[1]);
                 }
                 Object progress = values[2];
                 if (progress != null) {
-                    progressView.setProgress((double)progress);
+                    progressView.setProgress((double) progress);
                 }
                 Object max = values[3];
                 if (max != null) {
-                    progressView.setMax((double)max);
+                    progressView.setMax((double) max);
                 }
                 break;
             case -2:
@@ -208,30 +210,30 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
     }
 
     private void showNoSpaceAlert(ImportTask task, String message) {
-            SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.STYLE_ALERT);
-            dialog.setTitle("Aviso");
-            dialog.setMessage(message);
-            dialog.setCancelable(false);
-            dialog.setPositiveButton("Continuar", new SimpleDialog.OnDialogClickListener() {
+        SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.STYLE_ALERT);
+        dialog.setTitle("Aviso");
+        dialog.setMessage(message);
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("Continuar", new SimpleDialog.OnDialogClickListener() {
 
-                @Override
-                public boolean onClick(SimpleDialog dialog) {
+            @Override
+            public boolean onClick(SimpleDialog dialog) {
+                task.stopWaiting();
+                return true;
+            }
+        });
+
+        dialog.setNegativeButton(getString(R.string.cancelar), null);
+        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                if (task.isWaiting()) {
+                    task.interrupt();
                     task.stopWaiting();
-                    return true;
                 }
-            });
-
-            dialog.setNegativeButton(getString(R.string.cancelar), null);
-            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    if (task.isWaiting()) {
-                        task.interrupt();
-                        task.stopWaiting();
-                    }
-                }
-            });
-            dialog.show();
+            }
+        });
+        dialog.show();
 
     }
 
@@ -274,11 +276,11 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                 Snackbar.make(messageTextView, "Press back button again to cancel!", Snackbar.LENGTH_SHORT).show();
                 new Handler().postDelayed(new Runnable() {
 
-                        @Override
-                        public void run() {
-                            allowCancel = false;
-                        }
-                    }, 2000);
+                    @Override
+                    public void run() {
+                        allowCancel = false;
+                    }
+                }, 2000);
             }
         }
     }
@@ -288,18 +290,16 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
             importTask.interrupt();
         }
 
-        if (prepareTask != null && prepareTask.status == JTask.Status.STARTED) {
-            prepareTask.cancelTask();
+        if (builderTask != null && builderTask.status == JTask.Status.STARTED) {
+            builderTask.cancelTask();
         }
     }
 
     private static class AnimateProgressText extends Thread {
 
         private TextView textView;
-        private String text;
+        private final String text;
         private String suffix = "";
-        private JTask task;
-
         private final Handler updateHandler = new Handler() {
 
             @Override
@@ -310,6 +310,7 @@ public class ImportMediaActivity extends MyCompatActivity implements JTask.OnUpd
                 }
             }
         };
+        private final JTask task;
 
         public AnimateProgressText(TextView textView, JTask task) {
             this.textView = textView;

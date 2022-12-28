@@ -29,7 +29,6 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     private Animation animFadeIn;
     private Animation animFadeOut;
     private TextView endTextView;
-
     private Handler handler;
     private Handler controllerHandler;
     private Runnable controllerRunnable;
@@ -48,7 +47,6 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
 
     @Override
     public boolean onTouch(View view, MotionEvent event) {
-
         boolean invisible = (controllerView.getVisibility() != View.VISIBLE);
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -67,17 +65,19 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     public JVideoController(VideoView video, ViewGroup parentView) {
         this.mVideoView = video;
         this.anchorView = parentView;
+        init_();
     }
 
     public JVideoController(VideoView video) {
         this.mVideoView = video;
+        init_();
     }
 
     public void setAnchor(ViewGroup view) {
         this.anchorView = view;
     }
 
-    public boolean alive() {
+    public boolean isControllerActive() {
         return timer != null && timerTask != null;
     }
 
@@ -141,7 +141,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         timer.scheduleAtFixedRate(timerTask, 0, 100);
     }
 
-    public void prepare() {
+    public void init_() {
         animFadeIn = AnimationUtils.loadAnimation(anchorView.getContext(), R.anim.jcontroller_fade_in);
         animFadeOut = AnimationUtils.loadAnimation(anchorView.getContext(), R.anim.jcontroller_fade_out);
         controllerRunnable = new Runnable() {
@@ -158,6 +158,9 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     }
 
     public void hideDelayed(int millis) {
+        if (controllerHandler == null) {
+            return;
+        }
         controllerHandler.postDelayed(controllerRunnable, millis);
     }
 

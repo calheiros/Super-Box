@@ -88,8 +88,8 @@ public class CircleProgressView extends View {
         progressWidth = padding * 1.5f;
         backgroundPaint.setStrokeWidth(progressWidth);
         progressPaint.setStrokeWidth(progressWidth);
-        textPaint.setTextSize(w / 4);
-        percentPaint.setTextSize(w / 8);
+        textPaint.setTextSize(w / 4f);
+        percentPaint.setTextSize(w / 8f);
         rect.set(padding, padding, w - padding, h - padding);
     }
 

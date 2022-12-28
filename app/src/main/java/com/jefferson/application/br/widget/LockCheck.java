@@ -2,10 +2,9 @@ package com.jefferson.application.br.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.CheckBox;
+
 import com.jefferson.application.br.R;
 
 public class LockCheck extends androidx.appcompat.widget.AppCompatCheckBox {
@@ -14,9 +13,6 @@ public class LockCheck extends androidx.appcompat.widget.AppCompatCheckBox {
 		super(context, attrs);
 	}
 
-    public void setCheckedNoAnimation(boolean p0) {
-    }
-    
 	@Override
 	public void setChecked(boolean checked) {
 		
@@ -36,6 +32,5 @@ public class LockCheck extends androidx.appcompat.widget.AppCompatCheckBox {
     
     public void setCheckedNoAnim(boolean checked) {
         setChecked(checked);
-        //animateCheckView(this);
     }
 }

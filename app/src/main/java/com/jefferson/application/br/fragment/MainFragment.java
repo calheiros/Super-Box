@@ -1,12 +1,11 @@
 package com.jefferson.application.br.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -15,12 +14,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -36,6 +33,7 @@ import com.jefferson.application.br.activity.ImportGalleryActivity;
 import com.jefferson.application.br.activity.MainActivity;
 import com.jefferson.application.br.activity.SearchActivity;
 import com.jefferson.application.br.model.FolderModel;
+import com.jefferson.application.br.model.SimplifiedAlbum;
 
 import java.util.ArrayList;
 
@@ -51,6 +49,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     private TabLayout tabLayout;
     private View fab;
     private int paddingBottom;
+    private ActivityResultLauncher<Intent> activityResultLauncher;
 
     public MainFragment() {
     }
@@ -58,7 +57,6 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         MainActivity main = (MainActivity) getActivity();
-
         if (view == null) {
             view = inflater.inflate(R.layout.main_fragment, null);
             pagerAdapter = new PagerAdapter(requireActivity().getSupportFragmentManager());
@@ -68,9 +66,9 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             viewPager.setOnPageChangeListener(this);
             tabLayout = view.findViewById(R.id.tab_layout);
             View searchView = view.findViewById(R.id.search_bar);
-            /*int selected = getResources().getColor(R.color.tab_selected);
-            int unselected = getResources().getColor(R.color.tab_unsected);*/
-            // tabLayout.setTabTextColors(unselected, selected);
+            int selected = getResources().getColor(R.color.tab_selected);
+            int unselected = getResources().getColor(R.color.tab_unsected);
+            tabLayout.setTabTextColors(unselected, selected);
             tabLayout.setupWithViewPager(viewPager);
             tabLayout.getTabAt(0).setText(getString(R.string.imagens));
             tabLayout.getTabAt(1).setText(getString(R.string.videos));
@@ -82,7 +80,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             searchView.setOnClickListener(this);
 
             adjustViewsPadding();
-            // toogleTabIcon(0);
+            createActivityResultLauncher();
         }
 
         assert main != null;
@@ -111,8 +109,40 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
                 //createFolder(viewPager.getCurrentItem(), getContext(), (FilePicker) null);
                 break;
             case R.id.search_bar:
-                requireActivity().startActivity(new Intent(requireActivity(), SearchActivity.class));
+                openSearchView();
                 break;
+        }
+    }
+    private void createActivityResultLauncher() {
+       activityResultLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == Activity.RESULT_OK) {
+                        // There are no request codes
+                        Intent data = result.getData();
+                        if (data != null) {
+                            String albumName = data.getStringExtra("result");
+                            scrollToAlbum(albumName);
+                          //Toast.makeText(App.getAppContext(),"name: " + name, Toast.LENGTH_SHORT ).show();
+
+                        }
+                    }
+                });
+    }
+
+    private void scrollToAlbum(String albumName) {
+        int pos = viewPager.getCurrentItem();
+        AlbumFragment fragment = pagerAdapter.getItem(pos);
+        fragment.scrollToAlbum(albumName);
+    }
+
+    private void openSearchView() {
+        int pos = viewPager.getCurrentItem();
+        AlbumFragment fragment = pagerAdapter.getItem(pos);
+        if (!fragment.isLoading()) {
+            Intent intent = new Intent(requireActivity(), SearchActivity.class);
+            intent.putParcelableArrayListExtra(SearchActivity.EXTRA_SIMPLE_MODELS, fragment.getSimplifiedModels());
+            activityResultLauncher.launch(intent);
         }
     }
 
@@ -120,7 +150,6 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
         paddingBottom = view.getHeight();
         adjustViewsPadding();
     }
-
 
     private void adjustViewsPadding() {
         if (pagerAdapter != null) {
@@ -141,14 +170,12 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) fab.getLayoutParams();
             p.rightMargin = px;
             p.bottomMargin = paddingBottom + px;
-            /* params.setMargins(0, 0, px, paddingBottom + px);*/
             fab.setLayoutParams(p);
         }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        //inflater.inflate(R.menu.menu_main_album, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -214,8 +241,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
 
     @Override
     public void onPageSelected(int i) {
-        //toogleTabIcon(i);
-        ((MainActivity) requireActivity()).setupToolbar(this.toolbar, getToolbarName(i));
+
     }
 
     private CharSequence getToolbarName(int i) {
@@ -250,8 +276,8 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             super(fm);
         }
 
-        public void update(int position, ArrayList<FolderModel> models) {
-            getItem(position).putModels(models);
+        public void update(int position, ArrayList<FolderModel> models, ArrayList<SimplifiedAlbum> simplifiedModels) {
+            getItem(position).putModels(models, simplifiedModels);
         }
 
         @NonNull

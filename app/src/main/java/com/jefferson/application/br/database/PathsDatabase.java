@@ -3,6 +3,7 @@ package com.jefferson.application.br.database;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
@@ -28,21 +29,8 @@ public class PathsDatabase extends SQLiteOpenHelper {
     public final static String FOLDER_TABLE_NAME = "FOLDER_";
 
     private PathsDatabase(Context context, String path) {
-
         super(context, path, null, DATABASE_VERSION);
         //SQLiteDatabase.openOrCreateDatabase(path, null);
-    }
-
-    public void onUpgradeDatabase(SQLiteDatabase sQLiteDatabase, int oldVersion, int newVersion) {
-        Log.e("DATABASE", " UPGRADE: oldVersion => " + oldVersion);
-        if (oldVersion <= 9) {
-            sQLiteDatabase.execSQL("ALTER TABLE " + MEDIA_TABLE_NAME + " ADD COLUMN " + MEDIA_DURATION_COL +
-                    " INTEGER DEFAULT -1");
-        }
-        if (oldVersion <= 10) {
-            sQLiteDatabase.execSQL("ALTER TABLE " + FOLDER_TABLE_NAME  + " ADD COLUMN favorite" +
-                    " INTEGER DEFAULT 0");
-        }
     }
 
     public static String getCreateMediaTableSql() {
@@ -60,24 +48,44 @@ public class PathsDatabase extends SQLiteOpenHelper {
         return new PathsDatabase(context, file.getAbsolutePath());
     }
 
+    public void onUpgradeDatabase(SQLiteDatabase sQLiteDatabase, int oldVersion, int newVersion) {
+        Log.e("DATABASE", " UPGRADE: oldVersion => " + oldVersion);
+        if (oldVersion <= 9) {
+            try {
+                sQLiteDatabase.execSQL("ALTER TABLE " + MEDIA_TABLE_NAME + " ADD COLUMN " + MEDIA_DURATION_COL +
+                        " INTEGER DEFAULT -1");
+            } catch (SQLException err) {
+                //do nothing
+            }
+        }
+        if (oldVersion <= 10) {
+            try {
+                sQLiteDatabase.execSQL("ALTER TABLE " + FOLDER_TABLE_NAME + " ADD COLUMN favorite" +
+                        " INTEGER DEFAULT 0");
+            } catch (SQLException e) {
+                //do nothing
+            }
+        }
+    }
+
     @Override
     public void onCreate(SQLiteDatabase db) {
-       String CREATE_FOLDER_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + FOLDER_TABLE_NAME +
-               "(id TEXT NOT NULL, " +
-               "name TEXT,"+
-               " type VARCHAR(6) NOT NULL," +
-               "favorite INTEGER DEFAULT 0);";
-       db.execSQL(getCreateMediaTableSql());
-       db.execSQL(CREATE_FOLDER_TABLE_SQL);
+        String CREATE_FOLDER_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + FOLDER_TABLE_NAME +
+                "(id TEXT NOT NULL, " +
+                "name TEXT," +
+                " type VARCHAR(6) NOT NULL," +
+                "favorite INTEGER DEFAULT 0);";
+        db.execSQL(getCreateMediaTableSql());
+        db.execSQL(CREATE_FOLDER_TABLE_SQL);
     }
 
     public boolean setFavoriteFolder(String folder) {
         return updateFavoriteFolder(folder, 1);
     }
 
-   public boolean removeFavoriteFolder(String folder) {
+    public boolean removeFavoriteFolder(String folder) {
         return updateFavoriteFolder(folder, 0);
-   }
+    }
 
     public boolean updateFavoriteFolder(String folderName, int value) {
         boolean result = false;
@@ -85,7 +93,7 @@ public class PathsDatabase extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         values.put("favorite", value);
 
-        int rowsUpdated = db.update(FOLDER_TABLE_NAME, values, "id = ?", new String[] { folderName });
+        int rowsUpdated = db.update(FOLDER_TABLE_NAME, values, "id = ?", new String[]{folderName});
         if (rowsUpdated > 0) {
             result = true;
         }
@@ -95,7 +103,6 @@ public class PathsDatabase extends SQLiteOpenHelper {
 
     public boolean isFavoriteFolder(String folderName) {
         boolean result = false;
-
         SQLiteDatabase db = getReadableDatabase();
         String query = "SELECT * FROM " + FOLDER_TABLE_NAME + " WHERE favorite = 1 AND id = ?";
         Cursor cursor = db.rawQuery(query, new String[]{folderName});
@@ -106,7 +113,7 @@ public class PathsDatabase extends SQLiteOpenHelper {
 
         cursor.close();
         return result;
-}
+    }
 
     @Override
     public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
@@ -267,7 +274,7 @@ public class PathsDatabase extends SQLiteOpenHelper {
         while (cursor.moveToNext()) {
             String id = cursor.getString(0);
             boolean favorite = cursor.getInt(1) == 1;
-            favorites.put(id ,favorite);
+            favorites.put(id, favorite);
         }
         cursor.close();
         return favorites;
