@@ -38,6 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:gravity="center"
+            android:textStyle="italic"
             android:text="@string/toque_mais_adicionar"
             android:textColor="?commonColorDark"
             android:textSize="15sp" />

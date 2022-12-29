@@ -60,7 +60,6 @@ public class CreatePattern extends MyCompatActivity {
 
         materialLockView = (MaterialLockView) findViewById(R.id.pattern);
         materialLockView.setTactileFeedbackEnabled(false);
-
         materialLockView.setOnPatternListener(new MaterialLockView.OnPatternListener() {
                                                   public void onPatternStart() {
                                                       if (clearRunnable != null && clearHandler != null) {

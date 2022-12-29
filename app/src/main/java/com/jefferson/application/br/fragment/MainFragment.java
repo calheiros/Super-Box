@@ -67,7 +67,7 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
             tabLayout = view.findViewById(R.id.tab_layout);
             View searchView = view.findViewById(R.id.search_bar);
             int selected = getResources().getColor(R.color.tab_selected);
-            int unselected = getResources().getColor(R.color.tab_unsected);
+            int unselected = getResources().getColor(R.color.tab_unselected);
             tabLayout.setTabTextColors(unselected, selected);
             tabLayout.setupWithViewPager(viewPager);
             tabLayout.getTabAt(0).setText(getString(R.string.imagens));

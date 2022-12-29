@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:lockview="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/create_pattern_parent_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/text_view_layout"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/pattern_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:gravity="center"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pattern_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignEnd="@id/text_view_layout"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.jefferson.application.br.MaterialLockView
+            android:id="@+id/pattern"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_weight="1"
+            android:padding="25dp"
+            lockview:CORRECT_COLOR="#11DD61"
+            lockview:LOCK_COLOR="#fff"
+            lockview:WRONG_COLOR="#ff0000" />
+
+        <Button
+            android:id="@+id/bt_pattern"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_margin="10dp"
+            android:text="@string/concluir"
+            android:textColor="@color/auto_text_color" />
+    </LinearLayout>
+</LinearLayout>
+

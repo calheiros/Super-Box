@@ -25,9 +25,8 @@
     <color name="darkGreen">#68a500</color>
     <color name="darkOrange">#ffff8800</color>
     <color name="tab_selected">#ffffff</color>
-    <color name="tab_unsected">#dee6ea</color>
+    <color name="tab_unselected">#dee6ea</color>
     <color name="black">#ff000000</color>
-    <color name="cinza">#c7dbfc</color>
     <color name="dark_grey">#424242</color>
     <color name="medium_grey">#9e9e9e</color>
     <color name="button_grey">#757575</color>
@@ -44,7 +43,7 @@
     <color name="colorAccent">@color/pureGreen</color>
     <color name="colorPrimaryDark">#640BCB</color>
     <color name="fab_pressed">#00b899</color>
-    <color name="highLightColor">#11FFFFFF</color>
+    <color name="highLightColor">#1A000000</color>
     <color name="colorCommonDark">#FF757B85</color>
     <color name="colorCommon">#FFA0A8B5</color>
     <color name="colorCommonLight">#FFC6D0DB</color>

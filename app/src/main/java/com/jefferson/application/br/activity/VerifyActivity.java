@@ -79,8 +79,10 @@ public class VerifyActivity extends MyCompatActivity {
     }
 
     private void setWallpaper() {
+
         try {
             ImageView imageView = findViewById(R.id.wallpaper_image_view);
+            if (imageView == null) return;
             AssetManager asset = getAssets();
 
             InputStream rawImage = asset.open("wallpapers/pexels-bruno-thethe.jpg");

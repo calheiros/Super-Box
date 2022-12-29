@@ -123,6 +123,7 @@ public class MyCompatActivity extends androidx.appcompat.app.AppCompatActivity {
     }
 
     public boolean haveWriteReadPermission() {
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             return Environment.isExternalStorageManager();
 
