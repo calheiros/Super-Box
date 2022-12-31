@@ -192,5 +192,6 @@
     <string name="export_gallery_button_description">export to gallery button</string>
     <string name="delete_image_button_description">delete image button</string>
     <string name="contact_photo_description">contact photo</string>
+    <string name="search_albums">Search albums</string>
 
 </resources>

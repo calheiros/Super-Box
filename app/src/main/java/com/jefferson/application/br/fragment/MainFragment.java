@@ -122,7 +122,15 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
                         Intent data = result.getData();
                         if (data != null) {
                             String albumName = data.getStringExtra("result");
-                            scrollToAlbum(albumName);
+                            String action = data.getAction();
+
+                            if (action.equals(SearchActivity.ACTION_GO_TO_ALBUM)) {
+                                scrollToAlbum(albumName);
+                                return;
+                            }
+                            if (action.equals(SearchActivity.ACTION_OPEN_ALBUM)) {
+                                openAlbum(albumName);
+                            }
                           //Toast.makeText(App.getAppContext(),"name: " + name, Toast.LENGTH_SHORT ).show();
 
                         }
@@ -130,10 +138,17 @@ public class MainFragment extends Fragment implements OnPageChangeListener, OnCl
                 });
     }
 
+    private void openAlbum(String albumName) {
+        getCurrentFragment().openAlbum(albumName);
+    }
+
     private void scrollToAlbum(String albumName) {
+        getCurrentFragment().scrollToAlbum(albumName);
+    }
+
+    private AlbumFragment getCurrentFragment() {
         int pos = viewPager.getCurrentItem();
-        AlbumFragment fragment = pagerAdapter.getItem(pos);
-        fragment.scrollToAlbum(albumName);
+        return pagerAdapter.getItem(pos);
     }
 
     private void openSearchView() {

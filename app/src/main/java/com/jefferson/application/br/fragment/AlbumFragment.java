@@ -2,6 +2,7 @@ package com.jefferson.application.br.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Environment;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MainActivity;
+import com.jefferson.application.br.activity.ViewAlbum;
 import com.jefferson.application.br.adapter.AlbumAdapter;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.database.PathsDatabase;
@@ -78,6 +80,143 @@ public class AlbumFragment extends Fragment {
         this.position = position;
     }
 
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        if (view == null) {
+            view = inflater.inflate(R.layout.main_gallery, container, false);
+            progressBar = view.findViewById(R.id.main_galery_progressBar);
+            emptyView = view.findViewById(R.id.empty_linearLayout);
+            View storagePermissionView = view.findViewById(R.id.storage_permission_layout);
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String root = Environment.getExternalStorageDirectory().getAbsolutePath();
+            recyclerView = view.findViewById(R.id.recyclerView);
+            GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+            recyclerView.setLayoutManager(layoutManager);
+            recyclerView.setClipToPadding(false);
+            recyclerView.setPadding(0, 0, 0, paddingBottom);
+            populateRecyclerView();
+        }
+
+        return view;
+    }
+
+    public void openAlbum(FolderModel f_model) {
+        Intent intent = new Intent(getContext(), ViewAlbum.class);
+        intent.putExtra("position", getPagerPosition());
+        intent.putExtra("name", f_model.getName());
+        intent.putExtra("data", f_model.getItems());
+        intent.putExtra("folder", f_model.getPath());
+        requireActivity().startActivity(intent);
+    }
+
+    public void openAlbum(String albumName) {
+        int pos = albumAdapter.getItemPositionByName(albumName);
+        if (pos != -1) {
+            openAlbum(albumAdapter.getItem(pos));
+        }
+    }
+
+    private static class BuildResult {
+       ArrayList<SimplifiedAlbum> simplifiedAlbums;
+       ArrayList<FolderModel> folderModels;
+
+       public BuildResult() {
+           simplifiedAlbums = new ArrayList<>();
+           folderModels = new ArrayList<>();
+       }
+    }
+
+    public BuildResult buildModels(int position) {
+        BuildResult result = new BuildResult();
+        PathsDatabase database = null;
+        ArrayList<SimplifiedAlbum> simplifiedModels = new ArrayList<>();
+        ArrayList<FolderModel> models = new ArrayList<FolderModel>();
+        File root = Storage.getFolder(position == 0 ? Storage.IMAGE : Storage.VIDEO);
+        root.mkdirs();
+
+        try {
+            database = PathsDatabase.getInstance(getContext());
+        } catch (android.database.sqlite.SQLiteDatabaseCorruptException e) {
+            //do something
+            return result;
+        }
+        Map<String, Boolean> bookmark = database.getFavoritesFolder();
+
+        if (root.exists()) {
+            String[] files = root.list();
+            if (files != null)
+                for (String s : files) {
+                    File file = new File(root, s);
+
+                    if (file.isDirectory()) {
+                        File[] folder_list = file.listFiles();
+                        String folderName = null;
+                        boolean favorite = false;
+                        folderName = database.getFolderName(s, position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
+
+                        if (bookmark != null) {
+                            favorite = Boolean.TRUE.equals(bookmark.get(file.getName()));
+                        }
+                        folderName = folderName == null ? s : folderName;
+                        FolderModel model = new FolderModel();
+                        model.setName(folderName);
+                        model.setPath(file.getAbsolutePath());
+                        model.setFavorite(favorite);
+
+                        if (folder_list != null) for (File value : folder_list) {
+                            MediaModel mm = new MediaModel(value.getAbsolutePath());
+                            model.addItem(mm);
+                        }
+
+                        ArrayList<MediaModel> items = model.getItems();
+                        String thumb = items.size() > 0 ? items.get(0).getPath() : null;
+                        simplifiedModels.add(new SimplifiedAlbum(folderName, thumb));
+                        models.add(model);
+                    }
+                }
+        }
+        FolderModel.sort(models);
+        result.folderModels = models;
+        result.simplifiedAlbums = simplifiedModels;
+        database.close();
+        return result;
+    }
+
+    private void populateRecyclerView() {
+        retrieveMedia = new JTask() {
+            private ArrayList<SimplifiedAlbum> simplifiedModels;
+            private ArrayList<FolderModel> albumsModel;
+
+            @Override
+            public void workingThread() {
+                BuildResult result = buildModels(position);
+                this.albumsModel = result.folderModels;
+                this.simplifiedModels = result.simplifiedAlbums;
+            }
+
+            @Override
+            public void onBeingStarted() {
+            }
+
+            @Override
+            public void onFinished() {
+                putModels(albumsModel, simplifiedModels);
+                notifyDataUpdated();
+            }
+
+            @Override
+            public void onException(Exception e) {
+                revokeFinish(true);
+                Toast.makeText(getContext(), "Unknown error occurred! " + e.getMessage(), Toast.LENGTH_LONG).show();
+                JDebug.writeLog(e.getCause());
+            }
+
+        };
+        retrieveMedia.setThreadPriority(Thread.MAX_PRIORITY);
+        retrieveMedia.start();
+    }
     public static boolean renameFolder(Context context, FolderModel model, String newName, int position) {
         PathsDatabase folderDatabase = null;
 
@@ -199,127 +338,6 @@ public class AlbumFragment extends Fragment {
 
     public int getPagerPosition() {
         return position;
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        if (view == null) {
-            view = inflater.inflate(R.layout.main_gallery, container, false);
-            progressBar = view.findViewById(R.id.main_galery_progressBar);
-            emptyView = view.findViewById(R.id.empty_linearLayout);
-            View storagePermissionView = view.findViewById(R.id.storage_permission_layout);
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String root = Environment.getExternalStorageDirectory().getAbsolutePath();
-            recyclerView = view.findViewById(R.id.recyclerView);
-            GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
-            recyclerView.setLayoutManager(layoutManager);
-            recyclerView.setClipToPadding(false);
-            recyclerView.setPadding(0, 0, 0, paddingBottom);
-            populateRecyclerView();
-        }
-
-        return view;
-    }
-
-    private static class BuildResult {
-       ArrayList<SimplifiedAlbum> simplifiedAlbums;
-       ArrayList<FolderModel> folderModels;
-
-       public BuildResult() {
-           simplifiedAlbums = new ArrayList<>();
-           folderModels = new ArrayList<>();
-       }
-    }
-
-    public BuildResult buildModels(int position) {
-        BuildResult result = new BuildResult();
-        PathsDatabase database = null;
-        ArrayList<SimplifiedAlbum> simplifiedModels = new ArrayList<>();
-        ArrayList<FolderModel> models = new ArrayList<FolderModel>();
-        File root = Storage.getFolder(position == 0 ? Storage.IMAGE : Storage.VIDEO);
-        root.mkdirs();
-
-        try {
-            database = PathsDatabase.getInstance(getContext());
-        } catch (android.database.sqlite.SQLiteDatabaseCorruptException e) {
-            //do something
-            return result;
-        }
-        Map<String, Boolean> bookmark = database.getFavoritesFolder();
-
-        if (root.exists()) {
-            String[] files = root.list();
-            if (files != null)
-                for (String s : files) {
-                    File file = new File(root, s);
-
-                    if (file.isDirectory()) {
-                        File[] folder_list = file.listFiles();
-                        String folderName = null;
-                        boolean favorite = false;
-                        folderName = database.getFolderName(s, position == 0 ? FileModel.IMAGE_TYPE : FileModel.VIDEO_TYPE);
-
-                        if (bookmark != null) {
-                            favorite = Boolean.TRUE.equals(bookmark.get(file.getName()));
-                        }
-                        folderName = folderName == null ? s : folderName;
-                        FolderModel model = new FolderModel();
-                        model.setName(folderName);
-                        model.setPath(file.getAbsolutePath());
-                        model.setFavorite(favorite);
-
-                        if (folder_list != null) for (File value : folder_list) {
-                            MediaModel mm = new MediaModel(value.getAbsolutePath());
-                            model.addItem(mm);
-                        }
-
-                        ArrayList<MediaModel> items = model.getItems();
-                        String thumb = items.size() > 0 ? items.get(0).getPath() : null;
-                        simplifiedModels.add(new SimplifiedAlbum(folderName, thumb));
-                        models.add(model);
-                    }
-                }
-        }
-        FolderModel.sort(models);
-        result.folderModels = models;
-        result.simplifiedAlbums = simplifiedModels;
-        database.close();
-        return result;
-    }
-
-    private void populateRecyclerView() {
-        retrieveMedia = new JTask() {
-            private ArrayList<SimplifiedAlbum> simplifiedModels;
-            private ArrayList<FolderModel> albumsModel;
-
-            @Override
-            public void workingThread() {
-                BuildResult result = buildModels(position);
-                this.albumsModel = result.folderModels;
-                this.simplifiedModels = result.simplifiedAlbums;
-            }
-
-            @Override
-            public void onBeingStarted() {
-            }
-
-            @Override
-            public void onFinished() {
-                putModels(albumsModel, simplifiedModels);
-                notifyDataUpdated();
-            }
-
-            @Override
-            public void onException(Exception e) {
-                revokeFinish(true);
-                Toast.makeText(getContext(), "Unknown error occurred! " + e.getMessage(), Toast.LENGTH_LONG).show();
-                JDebug.writeLog(e.getCause());
-            }
-
-        };
-        retrieveMedia.setThreadPriority(Thread.MAX_PRIORITY);
-        retrieveMedia.start();
     }
 
     private void warnDatabaseCorrupted() {

@@ -15,7 +15,7 @@
         android:elegantTextHeight="false"
         android:fontFamily="sans-serif"
         android:gravity="start|center_vertical"
-        android:hint="Insira o seu texto aqui"
+        android:hint="@string/search_albums"
         android:hyphenationFrequency="normal"
         android:imeOptions="actionDone"
         android:includeFontPadding="true"

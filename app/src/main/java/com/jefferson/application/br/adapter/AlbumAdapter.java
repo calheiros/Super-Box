@@ -154,12 +154,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
 
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(fragment.getContext(), ViewAlbum.class);
-                intent.putExtra("position", fragment.getPagerPosition());
-                intent.putExtra("name", f_model.getName());
-                intent.putExtra("data", f_model.getItems());
-                intent.putExtra("folder", f_model.getPath());
-                fragment.requireActivity().startActivity(intent);
+                fragment.openAlbum(f_model);
             }
         });
 
