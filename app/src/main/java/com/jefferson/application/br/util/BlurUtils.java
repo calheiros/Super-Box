@@ -37,8 +37,8 @@ public class BlurUtils {
         output.copyTo(bitmap);
     }
 
-    public static void setupWith(BlurView blurView, Activity activity) {
-        float radius = 20f;
+    public static void setupWith(BlurView blurView, Activity activity, float radius) {
+
         View decorView = activity.getWindow().getDecorView();
         // ViewGroup you want to start blur from. Choose root as close to BlurView in hierarchy as possible.
         ViewGroup rootView = decorView.findViewById(android.R.id.content);

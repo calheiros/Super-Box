@@ -151,7 +151,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
     private void configureBlurView(ViewGroup view) {
         BlurView blurView = findViewById(R.id.blurView);
-        float radius = 20f;
+        float radius = 13f;
         View decorView = getWindow().getDecorView();
         blurView.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
         blurView.setClipToOutline(true);

@@ -16,9 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.jefferson.application.br.MultiSelectRecyclerViewAdapter;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.model.MediaModel;
+import com.jefferson.application.br.util.BlurUtils;
 
 import java.util.ArrayList;
 import java.util.Objects;
+
+import eightbitlab.com.blurview.BlurView;
 
 public class SelectionActivity extends MyCompatActivity implements MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener {
 
@@ -36,6 +39,8 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
         View importLayout = findViewById(R.id.importView);
         RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
         selectAllTextView = (TextView) findViewById(R.id.options_selectTextView);
+        BlurView blurView = findViewById(R.id.blurView);
+        BlurUtils.setupWith(blurView, this, 13f);
 
         Intent intent = getIntent();
         name = intent.getStringExtra("name");
@@ -55,6 +60,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
 
         setupToolbar();
         updateActionBarTitle();
+
     }
 
     @Override

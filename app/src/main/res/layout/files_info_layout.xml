@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="start"
+    android:paddingStart="13dp"
+    android:paddingEnd="13dp"
     android:layout_marginTop="10dp"
     android:baselineAligned="false">
 

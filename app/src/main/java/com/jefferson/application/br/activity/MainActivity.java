@@ -181,7 +181,7 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
 
     private void configureBlur() {
         BlurView blurView = findViewById(R.id.blurView);
-        BlurUtils.setupWith(blurView, this);
+        BlurUtils.setupWith(blurView, this, 13f);
         blurView.addOnLayoutChangeListener(this);
     }
 

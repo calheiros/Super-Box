@@ -1,98 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/gallery_selection_parentLayout"
-	android:orientation="vertical">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
 
-	<com.google.android.material.appbar.AppBarLayout
-		android:id="@+id/tab_appbar"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/tab_appbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-		<include
-			layout="@layout/toolbar"/>
+        <include layout="@layout/toolbar" />
 
-	</com.google.android.material.appbar.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-	<androidx.recyclerview.widget.RecyclerView
-		android:id="@+id/my_recycler_view"
-		android:layout_width="match_parent"
-		android:layout_height="0dp"
-		android:layout_weight="1"
-		android:clipToPadding="false"
+    <androidx.recyclerview.widget.RecyclerView
 		android:padding="1dp"
-		android:scrollbars="vertical" />
+		android:paddingBottom="55dp"
+		android:layout_below="@+id/tab_appbar"
+        android:id="@+id/my_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:scrollbars="vertical" />
 
-	<LinearLayout
-		android:layout_height="wrap_content"
-		android:layout_width="match_parent"
-		android:background="?colorPrimary"
-		android:gravity="center_vertical"
-		android:baselineAligned="false">
+    <eightbitlab.com.blurview.BlurView
+		android:layout_alignParentBottom="true"
+        android:id="@+id/blurView"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:background="@android:color/transparent"
+        app:blurOverlayColor="?colorDialogBackground">
 
-        <LinearLayout
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="1.0"
-            android:background="?attr/selectableItemBackground"
-            android:orientation="vertical"
-            android:id="@+id/importView"
-            android:gravity="center"
-            android:padding="5dp">
-
-            <ImageView
-				android:layout_height="28dp"
-                android:layout_width="28dp"
-                android:id="@+id/importImageView"
-                android:src="@drawable/ic_import"
-				app:tint="@color/white" />
-            
-            <TextView
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="Import"
-                android:id="@+id/options_album_selectTextView"
-                android:maxLines="1"
-                android:textColor="@color/white"
-                android:ellipsize="end"
-                android:includeFontPadding="false"
-                android:textSize="12sp"/>
-        </LinearLayout>
+        <View
+			android:alpha="0.5"
+			android:background="?commonColorDark"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp" />
 
         <LinearLayout
+			android:layout_gravity="center"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="1.0"
-            android:background="?attr/selectableItemBackground"
-            android:orientation="vertical"
-            android:id="@+id/selectView"
-            android:gravity="center"
-            android:padding="5dp">
+            android:baselineAligned="false"
+            android:gravity="center_vertical">
 
-            <ImageView
-				android:layout_height="28dp"
-                android:layout_width="28dp"
-                android:id="@+id/selectImageView"
-                android:src="@drawable/ic_select_all"
-				app:tint="@color/white" />
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/importView"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:text="@string/select_all"
-                android:id="@+id/options_selectTextView"
-                android:maxLines="1"
-                android:textColor="@color/white"
-                android:ellipsize="end"
-                android:includeFontPadding="false"
-                android:textSize="12sp"/>
-        </LinearLayout>
-        
-    </LinearLayout>
+                android:layout_weight="1.0"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="5dp">
 
-</LinearLayout>
+                <ImageView
+                    android:id="@+id/importImageView"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_import"
+                    app:tint="?commonColorLight" />
+
+                <TextView
+                    android:id="@+id/options_album_selectTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:text="Import"
+                    android:textColor="?commonColorLight"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/selectView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1.0"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="5dp">
+
+                <ImageView
+                    android:id="@+id/selectImageView"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_select_all"
+                    app:tint="?commonColorLight" />
+
+                <TextView
+                    android:id="@+id/options_selectTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    android:text="@string/select_all"
+                    android:textColor="?commonColorLight"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+        </LinearLayout>
+    </eightbitlab.com.blurview.BlurView>
+</RelativeLayout>
 

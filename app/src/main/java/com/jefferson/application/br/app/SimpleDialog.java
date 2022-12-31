@@ -158,7 +158,7 @@ public class SimpleDialog {
     }
 
     private void configureBlur(Activity activity, BlurView blurView) {
-        float radius = 20f;
+        float radius = 13f;
         View decorView = activity.getWindow().getDecorView();
         // ViewGroup you want to start blur from. Choose root as close to BlurView in hierarchy as possible.
         ViewGroup rootView = decorView.findViewById(android.R.id.content);

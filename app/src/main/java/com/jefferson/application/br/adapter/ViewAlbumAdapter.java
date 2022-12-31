@@ -1,21 +1,25 @@
 package com.jefferson.application.br.adapter;
 
-import androidx.appcompat.widget.*;
-import android.util.*;
-import android.view.*;
-import android.widget.*;
+import android.util.SparseBooleanArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jefferson.application.br.*;
-import java.util.*;
+import com.jefferson.application.br.R;
 
-public class ViewAlbumAdapter extends  RecyclerView.Adapter<ViewAlbumAdapter.ListItemViewHolder> {
+import java.util.ArrayList;
+import java.util.List;
 
-    private List<String> items;
-    private SparseBooleanArray selectedItems;
+public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.ListItemViewHolder> {
 
-	public ViewAlbumAdapter(List<String> modelData) {
+    private final List<String> items;
+    private final SparseBooleanArray selectedItems;
+
+    public ViewAlbumAdapter(List<String> modelData) {
         if (modelData == null) {
             throw new IllegalArgumentException("modelData must not be null");
         }
@@ -23,16 +27,16 @@ public class ViewAlbumAdapter extends  RecyclerView.Adapter<ViewAlbumAdapter.Lis
         selectedItems = new SparseBooleanArray();
     }
 
-	public void removeItem(int position) {
-		items.remove(position);
-		notifyItemRemoved(position);
-	}
+    public void removeItem(int position) {
+        items.remove(position);
+        notifyItemRemoved(position);
+    }
 
     @Override
     public ListItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View itemView = LayoutInflater.
-					from(viewGroup.getContext()).
-							inflate(R.layout.generic_gridview_item, viewGroup, false);
+                from(viewGroup.getContext()).
+                inflate(R.layout.generic_gridview_item, viewGroup, false);
         return new ListItemViewHolder(itemView);
     }
 
@@ -75,15 +79,15 @@ public class ViewAlbumAdapter extends  RecyclerView.Adapter<ViewAlbumAdapter.Lis
 
     public final static class ListItemViewHolder extends RecyclerView.ViewHolder {
 
-		public ImageView image;
-		public TextView fname;
-		public TextView fsize;
+        public ImageView image;
+        public TextView fname;
+        public TextView fsize;
 
         public ListItemViewHolder(View view) {
             super(view);
             image = (ImageView) view.findViewById(R.id.image);
-			fname = (TextView) view.findViewById(R.id.tv_folder);
-			fsize = (TextView) view.findViewById(R.id.tv_folder2);
+            fname = (TextView) view.findViewById(R.id.tv_folder);
+            fsize = (TextView) view.findViewById(R.id.tv_folder2);
         }
     }
 }
