@@ -68,7 +68,6 @@ public class VerifyActivity extends MyCompatActivity {
         materialLockView.setTactileFeedbackEnabled(false);
         handler = new Handler();
         Runnable = () -> materialLockView.clearPattern();
-
         materialLockView.setOnPatternListener(new MyPatternListener());
     }
     private void setNavigationAndStatusBarTransparent() {

@@ -193,5 +193,6 @@
     <string name="delete_image_button_description">delete image button</string>
     <string name="contact_photo_description">contact photo</string>
     <string name="search_albums">Search albums</string>
+    <string name="album_thumbnail">album thumbnail</string>
 
 </resources>

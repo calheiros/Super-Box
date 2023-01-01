@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,15 +20,18 @@ import android.view.ViewOutlineProvider;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.FileModel;
@@ -43,6 +48,9 @@ import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
+import com.jefferson.application.br.view.RoundedImageView;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -64,7 +72,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private static final int CHANGE_DIRECTORY_CODE = 3;
     private static final int IMPORT_FROM_GALLERY_CODE = 6;
     private boolean selectionMode;
-    private Toolbar mToolbar;
+    private Toolbar toolbar;
     private MultiSelectRecyclerViewAdapter mAdapter;
     private int position;
     private View menuLayout;
@@ -77,22 +85,22 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private String baseNameDirectory = null;
     private TextView selectAllTextView;
     private ImageView selectImageView;
+    private ArrayList<MediaModel> filePaths;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.view_album_layout);
-        RelativeLayout mainLayout = findViewById(R.id.main_linear_layout);
         Intent intent = getIntent();
         position = intent.getIntExtra("position", -1);
         title = intent.getStringExtra("name");
         folder = new File(intent.getStringExtra("folder"));
-        ArrayList<MediaModel> mListItemsPath = intent.getParcelableArrayListExtra("data");
+        filePaths = intent.getParcelableArrayListExtra("data");
         mRecyclerView = findViewById(R.id.my_recycler_view);
         mRecyclerView.setHasFixedSize(true);
         GridLayoutManager mLayoutManager = new GridLayoutManager(this, 3);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, mListItemsPath, this, position);
+        mAdapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, filePaths, this, position);
         mRecyclerView.setAdapter(mAdapter);
 
         fab = findViewById(R.id.view_album_fab_button);
@@ -115,12 +123,12 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         initToolbar();
         configureBlurView(mRecyclerView);
 
-        if (mListItemsPath.isEmpty()) {
+        if (filePaths.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);
         }
 
         if (position == 1) {
-            updateDatabase(mListItemsPath, mAdapter);
+            updateDatabase(filePaths, mAdapter);
         }
 
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -149,10 +157,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             }
         });
     }
+
     private void configureBlurView(ViewGroup view) {
         BlurView blurView = findViewById(R.id.blurView);
         float radius = 13f;
-        View decorView = getWindow().getDecorView();
         blurView.setOutlineProvider(ViewOutlineProvider.BACKGROUND);
         blurView.setClipToOutline(true);
 
@@ -161,6 +169,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                 .setBlurRadius(radius);
 
     }
+
     @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View view) {
@@ -285,8 +294,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private void showFilesInfo() {
         ArrayList<String> files = mAdapter.getSelectedItemsPath();
         int size = files.size();
-        int resId = 0;
-        View view = null;
+        int resId;
+        View view;
         PathsDatabase database = PathsDatabase.getInstance(this, Storage.getDefaultStoragePath());
 
         if (size == 1) {
@@ -345,13 +354,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     break;
                 case VIDEO_PLAY_CODE:
                     final int index = data.getIntExtra("index", 0);
-                    mRecyclerView.post(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            mRecyclerView.smoothScrollToPosition(index);
-                        }
-                    });
+                    mRecyclerView.post(() -> mRecyclerView.smoothScrollToPosition(index));
                     break;
                 case IMPORT_FROM_GALLERY_CODE:
                     ArrayList<String> paths = data.getStringArrayListExtra("selection");
@@ -374,7 +377,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     public void updateRecyclerView() {
-        ArrayList<MediaModel> mListItemsPath = new ArrayList<MediaModel>();
+        ArrayList<MediaModel> mListItemsPath = new ArrayList<>();
 
         for (File file : Objects.requireNonNull(folder.listFiles())) {
             mListItemsPath.add(new MediaModel(file.getAbsolutePath()));
@@ -398,14 +401,14 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         if (selectionMode) {
             getMenuInflater().inflate(R.menu.view_album_menu, menu);
             if (baseNameDirectory == null) {
                 baseNameDirectory = (title.length() <= 20) ? title + " ( %s )" : title.substring(0, 20) + "... ( %s )";
             }
             String count = String.valueOf(mAdapter.getSelectedItemCount());
-            mToolbar.setTitle(String.format(baseNameDirectory, count));
+            toolbar.setTitle(String.format(baseNameDirectory, count));
         }
         return super.onCreateOptionsMenu(menu);
     }
@@ -427,13 +430,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     @Override
     public void onItemClicked(int item_position, View v) {
         if (!selectionMode) {
-            Class<?> mClass = null;
+            Class<?> mClass;
             switch (position) {
                 case 0:
-                    ArrayList<String> path = new ArrayList<>();
-                    for (MediaModel model : mAdapter.mListItemsModels) {
-                        path.add(model.getPath());
-                    }
                     startPreviewActivity(ImagePreviewActivity.class, item_position, v);
                     break;
                 case 1:
@@ -469,7 +468,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private ArrayList<String> getSelectedItemsPath() {
-        ArrayList<String> selectedItems = new ArrayList<String>();
+        ArrayList<String> selectedItems = new ArrayList<>();
 
         for (int i : mAdapter.getSelectedItems()) {
             selectedItems.add(mAdapter.mListItemsModels.get(i).getPath());
@@ -529,7 +528,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         menuLayout.setVisibility(View.GONE);
         int dimen = (int) getResources().getDimension(R.dimen.recycler_view_padding);
         mRecyclerView.setPadding(dimen, dimen, dimen, dimen);
-        mToolbar.setTitle(title);
+        toolbar.setTitle(title);
         fab.show();
     }
 
@@ -543,11 +542,37 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private void initToolbar() {
-        mToolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(mToolbar);
-        mToolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
-        getSupportActionBar().setTitle(title);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        toolbar.setTitleTextColor(getResources().getColor(android.R.color.white));
+        Objects.requireNonNull(getSupportActionBar()).setTitle(title);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.collapsing_toolbar);
+        collapsingToolbar.setTitle(title);  // sets the title of the toolbar
+        collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE);  // sets the text color of the collapsed title
+        collapsingToolbar.setExpandedTitleColor(Color.TRANSPARENT);  // sets the text color of the expanded title
+        collapsingToolbar.setScrimAnimationDuration(150);
+        setAlbumDetails();
+    }
+
+    private void setAlbumDetails() {
+        RoundedImageView roundedImageView = findViewById(R.id.thumbnail_image_view);
+        TextView itemCountLabel = findViewById(R.id.text_view_item_count);
+        TextView albumNameLabel = findViewById(R.id.album_name_label);
+
+        int resId = position == 0? R.plurals.imagem_total_plural : R.plurals.video_total_plural;
+        String itemCount = getResources().getQuantityString(resId, filePaths.size());
+        itemCount = String.format(itemCount, filePaths.size());
+
+        itemCountLabel.setText(itemCount);
+        albumNameLabel.setText(title);
+        roundedImageView.setRadius(15f);
+
+        if (!filePaths.isEmpty()) {
+            String path = filePaths.get(0).getPath();
+            Glide.with(this).load(path).into(roundedImageView);
+        }
     }
 
     public class DeleteFiles extends DeleteFilesTask {
@@ -599,10 +624,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
     public class RetrieverDataTask extends Thread {
 
-        private boolean running;
-        private boolean cancelled;
         private final ArrayList<MediaModel> list;
         private final MultiSelectRecyclerViewAdapter adapter;
+        private boolean running;
+        private boolean cancelled;
 
         public RetrieverDataTask(ArrayList<MediaModel> list, MultiSelectRecyclerViewAdapter adapter) {
             this.list = list;
@@ -634,13 +659,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                             database.updateMediaDuration(file.getName(), duration);
                         }
                         final String time = StringUtils.getFormattedVideoDuration(String.valueOf(duration));
-                        runOnUiThread(new Runnable() {
-
-                            @Override
-                            public void run() {
-                                adapter.updateItemDuration(model.getPath(), time);
-                            }
-                        });
+                        runOnUiThread(() -> adapter.updateItemDuration(model.getPath(), time));
                     } catch (Exception e) {
                         e.printStackTrace();
                         JDebug.writeLog(e.getCause());
@@ -668,7 +687,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     public class ExportTask extends JTask {
 
         private static final String ACTION_UPDATE_ADAPTER = "action_update";
-        private boolean allowListModification = true;
         private final SimpleDialog mySimpleDialog;
         private final List<String> selectedItems;
         private final ArrayList<String> mArrayPath = new ArrayList<>();
@@ -677,6 +695,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         private final ArrayList<String> junkList = new ArrayList<>();
         private final PathsDatabase database;
         private final String TAG = "ExportTask";
+        private boolean allowListModification = true;
 
         public ExportTask(List<String> items, SimpleDialog progress) {
             this.mySimpleDialog = progress;
@@ -718,7 +737,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
                         if (fileOut.exists()) fileOut = new File(getNewFileName(fileOut));
 
-                        fileOut.getParentFile().mkdirs();
+                        Objects.requireNonNull(fileOut.getParentFile()).mkdirs();
                         sendUpdate(null, fileOut.getName());
 
                         if (file.renameTo(fileOut)) {
@@ -726,7 +745,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                             database.deleteMediaData(file.getName());
                             addJunkItem(item, Thread.currentThread());
                             //sendUpdate(ACTION_ADD_JUNK, item);
-                            mTransfer.increment(fileOut.length() / 1024);
+                            mTransfer.increment(fileOut.length() / 1024f);
 
                         } else {
                             OutputStream output = getOutputStream(fileOut);
@@ -749,8 +768,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                             sendUpdate(ACTION_UPDATE_ADAPTER);
                             start = System.currentTimeMillis();
                         }
-                    } catch (Exception e) {
-
+                    } catch (Exception ignored) {
                     }
                 }
                 if (!junkList.isEmpty()) {
@@ -806,7 +824,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         private String getAlternativePath(int type) {
-            File file = new File(Environment.getExternalStoragePublicDirectory(type == 0 ? Environment.DIRECTORY_PICTURES : Environment.DIRECTORY_MOVIES), StringUtils.getFormattedDate("yyyy.MM.dd 'at' HH:mm:ss z") + (type == 0 ? ".jpeg" : ".mp4"));
+            File file = new File(Environment.getExternalStoragePublicDirectory(type == 0 ?
+                    Environment.DIRECTORY_PICTURES : Environment.DIRECTORY_MOVIES),
+                    StringUtils.getFormattedDate("yyyy.MM.dd 'at' HH:mm:ss z") + (type == 0 ? ".jpeg" : ".mp4"));
             if (file.exists()) {
                 file = new File(getNewFileName(file));
             }
@@ -819,7 +839,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         private void kill() {
-            Storage.scanMediaFiles(mArrayPath.toArray(new String[mArrayPath.size()]));
+            Storage.scanMediaFiles((String[]) mArrayPath.toArray());
             mySimpleDialog.dismiss();
 
             if (mAdapter.mListItemsModels.isEmpty()) {
@@ -871,14 +891,20 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             return file.exists() ? concatenateParts(part1, part2, time + 1) : file.getAbsolutePath();
         }
 
-        public OutputStream getOutputStream(File file) throws FileNotFoundException {
+        public OutputStream getOutputStream(@NonNull File file) throws FileNotFoundException {
+            OutputStream result = null;
 
             if (Build.VERSION.SDK_INT >= 21) if (Environment.isExternalStorageRemovable(file)) {
-                return App.getAppContext().getContentResolver().openOutputStream(Storage.getDocumentFile(file, true).getUri());
+                DocumentFile document = Storage.getDocumentFile(file, true);
+                if (document != null)
+                    result = App.getAppContext().getContentResolver().openOutputStream(document.getUri());
+            } else {
+                File parentFile = file.getParentFile();
+                if (parentFile != null && !parentFile.exists()) {
+                    parentFile.mkdirs();
+                }
             }
-
-            file.getParentFile().mkdirs();
-            return new FileOutputStream(file);
+            return result == null ? new FileOutputStream(file) : result;
         }
     }
 }

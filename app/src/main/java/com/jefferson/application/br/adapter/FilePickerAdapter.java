@@ -18,11 +18,11 @@ import java.util.List;
 
 public class FilePickerAdapter extends BaseAdapter {
 
-    private Context context;
-    private LayoutInflater mLayoutInflater;
+    private final Context context;
+    private final LayoutInflater mLayoutInflater;
     public List<PickerModel> models;
     private int selectedItem = -1;
-    private int itemType;
+    private final int itemType;
     
     public FilePickerAdapter(List<PickerModel> list, Context context, int itemType) {
         this.context = context;
