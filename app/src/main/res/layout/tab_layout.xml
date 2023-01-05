@@ -7,5 +7,4 @@
 	android:layout_height="wrap_content"
 	app:tabTextAppearance="@style/CustomTextAppearanceTab"
 	app:tabIndicatorColor="?colorAccent"
-	app:tabTextColor="@android:color/white"
-	android:background="?attr/colorPrimary"/>
+	app:tabTextColor="@android:color/white"/>

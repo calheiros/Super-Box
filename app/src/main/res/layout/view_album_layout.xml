@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:fitsSystemWindows="true"
@@ -94,8 +95,9 @@
         app:layout_anchorGravity="end|bottom|end"
         app:shapeAppearanceOverlay="@style/RoundSquareShapeAppearance"
         app:tint="@color/white" />
-
+<!--EMPTY LAYOUT-->
     <RelativeLayout
+        app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/tab_appbar">
