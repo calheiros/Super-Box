@@ -43,6 +43,7 @@
                     android:id="@+id/thumbnail_image_view"
                     android:layout_height="80dp"
                     android:contentDescription="@string/album_thumbnail" />
+
                 <TextView
                     android:textColor="@color/white"
                     android:layout_marginTop="10dp"
@@ -97,7 +98,6 @@
         app:tint="@color/white" />
 <!--EMPTY LAYOUT-->
     <RelativeLayout
-        app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/tab_appbar">
@@ -106,30 +106,29 @@
             android:id="@+id/view_album_empty_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal"
+            android:gravity="center"
+            android:alpha="0.7"
             android:orientation="vertical"
             android:visibility="gone">
 
-            <TextView
+            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="40dp"
+                android:src="@drawable/ic_folder"
                 android:gravity="center"
-                android:text="(•_•ヾ"
-                android:textColor="?commonColorDark"
-                android:textSize="40sp"
+                app:tint="?commonColorDark"
                 tools:ignore="HardcodedText" />
 
             <TextView
                 android:id="@+id/emptyTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
+                android:layout_marginTop="12dp"
                 android:gravity="center"
-                android:text="@string/nao_vejo_nada"
-                android:textAllCaps="true"
+                android:text="@string/album_vazio_titulo"
                 android:textColor="?commonColorDark"
-                android:textSize="14sp" />
+                android:textStyle="bold"
+                android:textSize="18sp" />
         </LinearLayout>
 
         <include layout="@layout/options_album_layout" />

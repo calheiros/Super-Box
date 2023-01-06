@@ -14,7 +14,7 @@
         android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:background="@drawable/gradient_purple_green_bg"
+            android:background="?colorPrimary"
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -57,35 +57,8 @@
                 android:src="@drawable/ic_plus"
                 app:backgroundTint="?colorAccent"
                 app:shapeAppearanceOverlay="@style/RoundSquareShapeAppearance"
-                app:tint="@color/white" />
-            <!--
-        <com.getbase.floatingactionbutton.FloatingActionsMenu
-            android:layout_marginRight="5dp"
-            android:layout_marginBottom="5dp"
-            android:id="@+id/mFloatingActionsMenu"
-            android:layout_gravity="right"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:fab_addButtonColorNormal="@color/green"
-            app:fab_addButtonColorPressed="#A0DA14"
-            app:fab_labelStyle="@style/menu_labels_style"
-            app:fab_labelsPosition="left">
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                app:fab_title="Criar"
-                app:fab_icon="@drawable/ic_folder_plus"
-                android:id="@+id/fab_create"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <com.getbase.floatingactionbutton.FloatingActionButton
-                app:fab_title="Adicionar"
-                android:id="@+id/fab_add"
-                app:fab_icon="@drawable/ic_image_collection"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-        </com.getbase.floatingactionbutton.FloatingActionsMenu>-->
+                app:tint="@color/white"
+                android:contentDescription="@string/add_items_button" />
         </LinearLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -21,8 +21,7 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
 
     private final ImportGalleryActivity mGalleryAlbum;
     private final int option;
-    private ViewHolder mViewHolder;
-    private ArrayList<FolderModel> al_menu = new ArrayList<>();
+    private ArrayList<FolderModel> al_menu;
 
     public PhotosFolderAdapter(ImportGalleryActivity galleryAlbum, ArrayList<FolderModel> al_menu, int option) {
         super(galleryAlbum, R.layout.adapter_photosfolder, al_menu);
@@ -65,6 +64,7 @@ public class PhotosFolderAdapter extends ArrayAdapter<FolderModel> {
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
+        ViewHolder mViewHolder;
         if (convertView == null) {
             mViewHolder = new ViewHolder();
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.adapter_photosfolder, parent, false);
