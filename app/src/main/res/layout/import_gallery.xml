@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
-	android:layout_height="match_parent">
+	android:layout_height="match_parent"
+	xmlns:app="http://schemas.android.com/apk/res-auto">
 
 	<com.google.android.material.appbar.AppBarLayout
 		android:id="@+id/tab_appbar"
@@ -24,22 +24,22 @@
 		android:visibility="gone"/>
 
     <LinearLayout
-        android:layout_marginTop="36dp"
         android:layout_width="match_parent"
         android:gravity="center"
+		android:alpha="0.7"
         android:visibility="gone"
-        android:layout_below="@+id/tab_appbar"
         android:orientation="vertical"
         android:id="@+id/gallery_album_empty_layout"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true">
+        android:layout_height="match_parent"
+		android:layout_centerInParent="true"
+		tools:ignore="UseCompoundDrawables">
 
-        <TextView
-            android:text="@string/unicode_look_of_disapproval"
-            android:textSize="40dp"
-            android:textColor="?commonColorDark"
+        <ImageView
+			android:src="@drawable/ic_filter_vintage"
+            app:tint="?commonColorDark"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+			tools:ignore="ContentDescription" />
 
         <TextView
             android:layout_height="wrap_content"
@@ -59,14 +59,14 @@
 		android:text="@string/vazio"
 		android:gravity="center"
 		android:visibility="gone"
-		android:id="@+id/vazio"
+		android:id="@+id/empty_text_view"
         android:textColor="?commonColor"
 		android:layout_centerInParent="true"
 		android:padding="10dp"
 		android:textAppearance="?android:attr/textAppearanceMedium"/>
     
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swiperefresh"
+        android:id="@+id/swipe_refresh"
         android:layout_below="@+id/tab_appbar"
         android:layout_width="match_parent"
         android:layout_height="match_parent">

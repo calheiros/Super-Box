@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -45,8 +44,11 @@ public class SimpleDialog {
 
     public static final int STYLE_PROGRESS = 123;
     public static final int STYLE_ALERT = 321;
+    public static final int STYLE_ALERT_HIGH = 999;
     public static final int STYLE_INPUT = 444;
     public static final int STYLE_MENU = 4;
+    private static final int STYLE_ALERT_MEDIUM = 555;
+
     private final String TAG = "SimpleDialog";
     private View buttonsLayout;
     private final Activity activity;
@@ -70,7 +72,7 @@ public class SimpleDialog {
     private boolean dismissed = false;
     private Button positiveButton;
     private Button negativeButton;
-    private JDialog jdialog;
+    private JDialog dialog;
     private View editTextLayout;
     private ImageView iconView;
     private ListView menuListView;
@@ -94,11 +96,11 @@ public class SimpleDialog {
     }
 
     public void cancel() {
-        jdialog.cancel();
+        dialog.cancel();
     }
 
     public void setCanceledOnTouchOutside(boolean cancelable) {
-        jdialog.setCanceledOnTouchOutside(cancelable);
+        dialog.setCanceledOnTouchOutside(cancelable);
     }
 
     public long getCurrentBytes() {
@@ -147,7 +149,7 @@ public class SimpleDialog {
         editTextLayout = parentView.findViewById(R.id.dialog_edit_text_layout);
         iconView = parentView.findViewById(R.id.dialog_icon);
         buttonsLayout = parentView.findViewById(R.id.dialog_buttons_layout);
-        this.jdialog = new JDialog(activity, style == STYLE_INPUT);
+        this.dialog = new JDialog(activity, style == STYLE_INPUT);
         int color = ContextCompat.getColor(activity, R.color.colorAccent);
 
         progressBar.setMax(100);
@@ -194,6 +196,10 @@ public class SimpleDialog {
     private void configureStyle(int style) {
 
         switch (style) {
+            case STYLE_ALERT_HIGH:
+                setIcon(R.drawable.ic_alert_rounded_auth);
+                break;
+            case STYLE_ALERT_MEDIUM:
             case STYLE_MENU:
                 createMenu();
                 break;
@@ -239,7 +245,7 @@ public class SimpleDialog {
     }
 
     public SimpleDialog setCancelable(boolean cancelable) {
-        this.jdialog.setCancelable(false);
+        this.dialog.setCancelable(false);
         return this;
     }
 
@@ -253,13 +259,14 @@ public class SimpleDialog {
         return this;
     }
 
-    public void setOnDismissListener(DialogInterface.OnDismissListener listener) {
-        this.jdialog.setOnDismissListener(listener);
+    public SimpleDialog setOnDismissListener(DialogInterface.OnDismissListener listener) {
+        this.dialog.setOnDismissListener(listener);
+        return this;
     }
 
     public void dismiss() {
-        if (jdialog != null) {
-            this.jdialog.dismiss();
+        if (dialog != null) {
+            this.dialog.dismiss();
         }
     }
 
@@ -306,7 +313,7 @@ public class SimpleDialog {
     }
 
     public SimpleDialog show() {
-        this.jdialog.show();
+        this.dialog.show();
         return this;
     }
 
@@ -449,7 +456,7 @@ public class SimpleDialog {
             if (listener != null) {
                 if (!listener.onClick(progressBarDialog)) return;
             }
-            jdialog.dismiss();
+            dialog.dismiss();
         }
     }
 

@@ -254,8 +254,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         String item = count + " " + getItemName(count);
         String message = String.format(getString(R.string.apagar_mensagem), item);
 
-        SimpleDialog dialog = new SimpleDialog(ViewAlbum.this);
-        dialog.setIcon(R.drawable.ic_warning_twotone);
+        SimpleDialog dialog = new SimpleDialog(ViewAlbum.this, SimpleDialog.STYLE_ALERT_HIGH);
         dialog.showProgressBar(false);
         dialog.setTitle(getString(R.string.excluir));
         dialog.setMessage(message);
@@ -331,11 +330,11 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
     private void synchronizeMainActivity() {
         int visibility = (mAdapter.getItemCount() == 0) ? View.VISIBLE : View.GONE;
-        MainActivity mActivity = MainActivity.getInstance();
+        MainActivity mainActivity = MainActivity.getInstance();
         emptyView.setVisibility(visibility);
 
-        if (mActivity != null) {
-            mActivity.updateFragment(position);
+        if (mainActivity != null) {
+            mainActivity.updateFragment(position);
         } else {
             Toast.makeText(this, "Can't synchronize MainActivity!", Toast.LENGTH_SHORT).show();
         }

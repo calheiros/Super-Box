@@ -82,7 +82,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             mProgressBar = parentView.findViewById(R.id.progressApps);
             mTextView = parentView.findViewById(R.id.porcent);
             listView = parentView.findViewById(R.id.appList);
-            mySwipeRefreshLayout = parentView.findViewById(R.id.swiperefresh);
+            mySwipeRefreshLayout = parentView.findViewById(R.id.swipe_refresh);
             listView.setItemsCanFocus(true);
             listView.setClipToPadding(false);
             setListViewPaddingBottom();

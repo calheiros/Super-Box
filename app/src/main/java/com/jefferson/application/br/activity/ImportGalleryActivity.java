@@ -55,7 +55,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         myGridView = (GridView) findViewById(R.id.gv_folder);
         sharedPrefrs = MyPreferences.getSharedPreferences(this);
         position = getIntent().getExtras().getInt("position");
-        mySwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        mySwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         mySwipeRefreshLayout.setOnRefreshListener(this);
         mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 

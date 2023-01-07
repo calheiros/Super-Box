@@ -417,8 +417,7 @@ public class AlbumFragment extends Fragment {
             return;
         }
         String name = model.getName();
-        SimpleDialog simpleDialog = new SimpleDialog(requireActivity());
-        simpleDialog.setIcon(R.drawable.ic_warning_twotone);
+        SimpleDialog simpleDialog = new SimpleDialog(requireActivity(), SimpleDialog.STYLE_ALERT_HIGH);
         simpleDialog.setTitle(getString(R.string.apagar));
         simpleDialog.setMessage(getString(R.string.apagar_pasta_aviso, name));
         simpleDialog.setPositiveButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener() {

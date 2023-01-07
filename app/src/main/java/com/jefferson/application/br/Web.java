@@ -5,7 +5,6 @@ import android.content.*;
 import android.graphics.*;
 import android.net.*;
 import android.os.*;
-import androidx.core.widget.*;
 import android.util.*;
 import android.view.*;
 import android.webkit.*;
@@ -37,7 +36,7 @@ public class Web extends Activity {
 		webView.loadUrl("http://www.google.com/");
 		webView.getSettings().setDomStorageEnabled(true);
         webView.getSettings().setJavaScriptEnabled(true);     
-		mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swiperefresh);
+		mySwipeRefreshLayout = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
 
 
 		mySwipeRefreshLayout.setOnRefreshListener(
