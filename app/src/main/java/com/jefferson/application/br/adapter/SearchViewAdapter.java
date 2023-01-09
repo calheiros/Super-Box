@@ -10,9 +10,13 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.model.SimplifiedAlbum;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Locale;
 
 public class SearchViewAdapter extends BaseAdapter {
 
@@ -26,8 +30,20 @@ public class SearchViewAdapter extends BaseAdapter {
         this.context = context;
         this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         this.filteredItems = new ArrayList<>();
+        //when unfiltered, shows all items in alphabetical order.
+        sort(items);
+        filteredItems.addAll(items);
     }
 
+    public void sort(ArrayList<SimplifiedAlbum> albums) {
+        Collections.sort(albums, new Comparator<SimplifiedAlbum>() {
+
+            @Override
+            public int compare(SimplifiedAlbum o1, SimplifiedAlbum o2) {
+                return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
+            }
+        });
+    }
     @Override
     public int getCount() {
         return filteredItems.size();
@@ -63,12 +79,15 @@ public class SearchViewAdapter extends BaseAdapter {
 
     public void filter(String keyword) {
         filteredItems.clear();
-        if (!keyword.isEmpty())
+        if (keyword.isEmpty()) {
+            filteredItems.addAll(items);
+        } else {
             for (SimplifiedAlbum item : items) {
                 if (item.getName().toLowerCase().startsWith(keyword.toLowerCase())) {
                     filteredItems.add(item);
                 }
             }
+        }
         notifyDataSetChanged();
     }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingStart="16dp"
     android:paddingEnd="16dp"
     android:paddingTop="5dp"
@@ -9,6 +10,7 @@
 
     <TextView
         android:id="@+id/search_item_text_view"
+        android:textColor="?commonColorLight"
         android:textSize="16sp"
         android:layout_weight="1"
         android:layout_width="0dp"
@@ -18,5 +20,6 @@
         android:scaleType="centerCrop"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:id="@+id/thumb_view"/>
+        android:id="@+id/thumb_view"
+        tools:ignore="ContentDescription" />
 </LinearLayout>

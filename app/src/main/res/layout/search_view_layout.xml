@@ -32,6 +32,7 @@
         android:textAlignment="viewStart"
         android:textAllCaps="false"
         android:textColor="?commonColorLight"
+    android:textColorHint="?commonColorDark"
         android:textDirection="inherit"
         android:textSize="18sp"
         android:textStyle="normal"
