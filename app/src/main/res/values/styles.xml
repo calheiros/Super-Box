@@ -1,5 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.Base.Dark" parent="Theme.AppCompat.NoActionBar">
+        <item name="textShadowColor">#00FFFFFF</item>
+        <item name="colorBackgroundDark">@color/colorBackgroundDark</item>
+        <item name="colorBackground">@color/colorBackground</item>
+        <item name="commonColorDark">@color/colorCommonDark</item>
+        <item name="commonColor">@color/colorCommon</item>
+        <item name="commonColorLight">@color/colorCommonLight</item>
+        <item name="android:windowBackground">@color/colorBackground</item>
+        <item name="colorControlHighlight">@color/highLightColor</item>]
+        <item name="colorDialogBackground">#CC141515</item>
+        <item name="colorTextMedium">#FFFFFF</item>
+        <item name="colorTextSmall">#7F7F80</item>
+    </style>
+
+    <style name="Theme.Base.Light" parent="Theme.AppCompat.Light.NoActionBar">
+    <!--        <item name="android:navigationBarColor">@color/bondiBlue</item>-->
+        <item name="textShadowColor">#00FFFFFF</item>
+        <item name="colorPrimary">@color/bondiBlue</item>
+        <item name="colorPrimaryDark">@color/bondiBlue</item>
+        <item name="colorAccent">@color/colorAccentLight</item>
+        <item name="colorBackgroundLight">#f0f0f0</item>item>
+        <item name="colorBackground">#FAFAFA</item>
+        <item name="colorBackgroundDark">#FFE9E9EA</item>
+        <item name="colorDialogBackground">#CCF0F0F0</item>
+
+        <item name="colorTextMedium">#F8090909</item>
+        <item name="colorTextSmall">#2C2C2D</item>
+        <item name="commonColorDark">#FF9DA0A6</item>
+        <item name="commonColor">#FF4D4D51</item>
+        <item name="commonColorLight">#FF3D3D41</item>
+        <item name="colorControlHighlight">#1C00ABBB</item>
+    </style>
 
     <style name="RoundSquareShapeAppearance">
         <item name="cornerSize">25%</item>
@@ -66,9 +98,7 @@
 		<item name="colorAccent">#10D863</item>
 	</style>
 
-    <style name="LightGreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- <item name="android:windowTranslucentNavigation">true</item>-->
-<!--        <item name="android:navigationBarColor">@color/turquoiseDark</item>-->
+    <style name="ThemeGreenLight" parent="Theme.Base.Light">
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/turquoiseDark</item>
         <item name="colorPrimaryDark">@color/turquoiseDark</item>
@@ -76,18 +106,11 @@
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
         <item name="colorBackgroundDark">#FFE9E9EA</item>
-<!--        <item name="colorDialogBackground">#B313AC9E</item>-->
-        <item name="commonColorDark">#FF9DA0A6</item>
-        <item name="commonColor">#FF4D4D51</item>
-        <item name="commonColorLight">#FF3D3D41</item>
-        <!--<item name="android:windowBackground">#FFF0F0F0</item>-->
         <item name="colorDialogBackground">#D9F0F0F0</item>
         <item name="colorControlHighlight">#1C00ABBB</item>
-        <item name="colorTextMedium">#000000</item>
-        <item name="colorTextSmall">#2C2C2D</item>
     </style>
 
-    <style name="LightBlueTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="ThemeBlueLight" parent="Theme.Base.Light">
 <!--        <item name="android:navigationBarColor">@color/bondiBlue</item>-->
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/bondiBlue</item>
@@ -99,17 +122,6 @@
         <item name="colorDialogBackground">#CCF0F0F0</item>
         <item name="colorTextMedium">#F8090909</item>
         <item name="colorTextSmall">#2C2C2D</item>
-<!--    <item name="colorDialogBackground">#B3057BB1</item>-->
-
-        <!--BACKUP
-        <item name="commonColorDark">#FFA6AAB1</item>
-        <item name="commonColor">#FF38383A</item>
-        <item name="commonColorLight">#FF2B2C2D</item>
-        -->
-        <item name="commonColorDark">#FF9DA0A6</item>
-        <item name="commonColor">#FF4D4D51</item>
-        <item name="commonColorLight">#FF3D3D41</item>
-        <!--<item name="android:windowBackground">#FFF0F0F0</item>-->
         <item name="colorControlHighlight">#1C00ABBB</item>
     </style>
 
@@ -141,7 +153,7 @@
     <item name="colorControlHighlight">@color/highLightColor</item>
     </style>-->
 
-    <style name="MainTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="MainTheme" parent="Theme.Base.Dark">
 <!--        <item name="android:navigationBarColor">@color/colorPrimary</item>-->
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/colorPrimary</item>

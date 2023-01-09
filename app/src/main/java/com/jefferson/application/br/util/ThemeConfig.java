@@ -33,11 +33,11 @@ public class ThemeConfig {
     public static int resolveTheme(Context context, int index) {
         switch (index) {
             case 0:
-                return (isDarkThemeOn(context) ? R.style.MainTheme: R.style.LightBlueTheme);
+                return (isDarkThemeOn(context) ? R.style.MainTheme: R.style.ThemeBlueLight);
             case 2:
-                return R.style.LightBlueTheme;
+                return R.style.ThemeBlueLight;
             case 3:
-                return R.style.LightGreenTheme;
+                return R.style.ThemeGreenLight;
             default:
                 return R.style.MainTheme;
         }
