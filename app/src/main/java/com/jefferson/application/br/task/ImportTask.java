@@ -245,7 +245,7 @@ public class ImportTask extends JTask {
     public interface Listener {
         void onBeingStarted();
 
-        void onUserInteration();
+        void onUserInteraction();
 
         void onInterrupted();
 

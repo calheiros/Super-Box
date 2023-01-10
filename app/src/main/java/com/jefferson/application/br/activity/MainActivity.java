@@ -89,7 +89,6 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
     private LockFragment lockFragment;
     private SettingFragment settingFragment;
     private Fragment oldFrag;
-    private SharedPreferences sharedPreferences;
     private int position;
     private AdView adview;
     private boolean restarting;
@@ -146,7 +145,7 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
     }
 
     @Override
-    public void onUserInteration() {
+    public void onUserInteraction() {
     }
 
     @Override
@@ -171,19 +170,10 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
         });
         setContentView(R.layout.main_activity);
         CURRENT_THEME = ThemeConfig.getTheme(this);
-/*
-        if (Build.VERSION.SDK_INT >= 21) {
-            setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false);
-            getWindow().setStatusBarColor(Color.TRANSPARENT);
-        }
-		drawerLayout = (DrawerLayout) findViewById(R.id.mainDrawerLayout);
-		navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-*/
         buttonNavigationView = findViewById(R.id.navigationView);
         buttonNavigationView.setOnNavigationItemSelectedListener(this);
 
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         calculatorStateEnabled = isCalculatorComponentEnabled();
         if (savedInstanceState != null) {
             startActivity(new Intent(this, VerifyActivity.class).addFlags(

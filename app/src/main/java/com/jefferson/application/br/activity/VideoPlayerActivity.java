@@ -20,6 +20,8 @@ package com.jefferson.application.br.activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
@@ -33,29 +35,25 @@ import java.util.ArrayList;
 
 public class VideoPlayerActivity extends MyCompatActivity {
 
-    public class MyPageListerner implements ViewPager.OnPageChangeListener {
+    private VideoPlayerActivity.VideoPagerAdapter pagerAdapter;
+    private ViewPager viewPager;
 
-        private VideoPagerAdapter adpter;
+    public class MyPageListener implements ViewPager.OnPageChangeListener {
+
         private int lastFragmentPosition;
 
-        public MyPageListerner(VideoPagerAdapter adapter, int position) {
-            this.adpter = adapter;
+        public MyPageListener(int position) {
             lastFragmentPosition = position;
         }
 
         @Override
         public void onPageScrolled(int p1, float p2, int p3) {
-            //Debug.toast("p2 = " + p1 + ", p3 = " + p3);
         }
 
         @Override
         public void onPageSelected(int position) {
             VideoPlayerFragment lastFragment = pagerAdapter.getItem(lastFragmentPosition);
-
-            if (lastFragment != null) {
-                lastFragment.stop();
-            }
-
+            lastFragment.stop();
             lastFragmentPosition = position;
 
         }
@@ -66,29 +64,24 @@ public class VideoPlayerActivity extends MyCompatActivity {
         }
     }
 
-    private VideoPlayerActivity.VideoPagerAdapter pagerAdapter;
-    private ViewPager viewPager;
-    private int choice;
-
-	@Override
+    @Override
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.view_pager_layout);
+        setContentView(R.layout.video_player_layout);
         Intent intent = getIntent();
-        choice = intent.getExtras().getInt("position");
+        int choice = intent.getExtras().getInt("position");
         ArrayList<String> filesPath = intent.getStringArrayListExtra("filepath");
         fullscreen();
         pagerAdapter = new VideoPagerAdapter(getSupportFragmentManager(), filesPath);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         viewPager.setAdapter(pagerAdapter);
-        viewPager.setOnPageChangeListener(new MyPageListerner(pagerAdapter, choice));
+        viewPager.setOnPageChangeListener(new MyPageListener(choice));
         viewPager.setCurrentItem(choice);
         viewPager.setOffscreenPageLimit(3);
         viewPager.setPageMargin(dpToPx(5));
         pagerAdapter.getItem(choice).setPlayOnCreate(true);
-        //hideNavigationBar();
+
         viewPager.requestFocus();
-        // applyParentViewPadding(viewPager);
     }
 
     @Override
@@ -108,10 +101,6 @@ public class VideoPlayerActivity extends MyCompatActivity {
     
     void hideNavigationBar(){
         View decorView = getWindow().getDecorView();
-        // Hide both the navigation bar and the status bar.
-         // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher, but as
-        // a general rule, you should design your app to hide the status bar whenever you
-        // hide the navigation bar.
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
              | View.SYSTEM_UI_FLAG_FULLSCREEN;
          decorView.setSystemUiVisibility(uiOptions);
@@ -130,10 +119,10 @@ public class VideoPlayerActivity extends MyCompatActivity {
         super.onDestroy();
     }
 
-    private class VideoPagerAdapter extends FragmentStatePagerAdapter {
+    private static class VideoPagerAdapter extends FragmentStatePagerAdapter {
 
-        private ArrayList<String> filesPath;
-        private VideoPlayerFragment[] fragments;
+        private final ArrayList<String> filesPath;
+        private final VideoPlayerFragment[] fragments;
         
         public VideoPagerAdapter(FragmentManager fm, ArrayList<String> paths) {
             super(fm);
@@ -141,6 +130,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
             this.fragments = new VideoPlayerFragment[paths.size()];
         }
 
+        @NonNull
         @Override
         public VideoPlayerFragment getItem(int position) {
             VideoPlayerFragment fragment = fragments[position];
@@ -150,10 +140,6 @@ public class VideoPlayerActivity extends MyCompatActivity {
             }
             return fragment;
         }
-
-//        public VideoPlayFragment getCachedFragment() {
-//            return cachedFragment;
-//       }
 
         @Override
         public int getCount() {

@@ -37,7 +37,7 @@ public class ImagePreviewActivity extends MyCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.view_pager_layout);
+        setContentView(R.layout.video_player_layout);
         viewPager = (ViewPager) findViewById(R.id.view_pager);
         Intent intent = getIntent();
         int position = intent.getExtras().getInt("position");

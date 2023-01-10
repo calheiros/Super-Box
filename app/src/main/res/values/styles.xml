@@ -26,8 +26,8 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="android:windowBackground">@color/colorBackground</item>
         <item name="colorControlHighlight">@color/highLightColor</item>]
         <item name="colorDialogBackground">#CC141515</item>
-        <item name="colorTextMedium">#FFFFFF</item>
-        <item name="colorTextSmall">#7F7F80</item>
+        <item name="colorTextMedium">#F0F0F0</item>
+        <item name="colorTextSmall">#848692</item>
     </style>
 
     <style name="Theme.Base.Light" parent="Theme.AppCompat.Light.NoActionBar">
@@ -40,9 +40,10 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="colorBackground">#FAFAFA</item>
         <item name="colorBackgroundDark">#FFE9E9EA</item>
         <item name="colorDialogBackground">#CCF0F0F0</item>
-
+        <!-- colors for text -->
         <item name="colorTextMedium">#F8090909</item>
         <item name="colorTextSmall">#2C2C2D</item>
+        <!-- general item colors -->
         <item name="commonColorDark">#FF9DA0A6</item>
         <item name="commonColor">#FF4D4D51</item>
         <item name="commonColorLight">#FF3D3D41</item>

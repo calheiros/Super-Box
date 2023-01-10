@@ -28,6 +28,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 
+import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -42,7 +43,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -66,8 +66,6 @@ import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
 import com.jefferson.application.br.view.RoundedImageView;
-
-import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -148,6 +146,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             updateDatabase(filePaths, mAdapter);
         }
 
+        float threshold = getHeightPixels() / 100; //1%
+
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
@@ -158,23 +158,27 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     return;
                 }
 
-                if (dy > 0) {
-                    // Scroll Down
-                    if (fab.isShown()) {
-
-                        fab.hide();
-                    }
-                } else if (dy < 0) { // Scroll Up
-
-                    if (!fab.isShown()) {
-
-                        fab.show();
+                if (Math.abs(dy) > threshold) {
+                    if (dy > 0) {
+                        // Scroll Down
+                        if (fab.isShown()) {
+                            fab.hide();
+                        }
+                    } else {
+                        // Scroll Up
+                        if (!fab.isShown()) {
+                            fab.show();
+                        }
                     }
                 }
             }
         });
     }
-
+    private float getHeightPixels() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return displayMetrics.heightPixels;
+    }
     private void configureBlurView(ViewGroup view) {
         BlurView blurView = findViewById(R.id.blurView);
         float radius = 13f;

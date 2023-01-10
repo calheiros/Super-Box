@@ -15,7 +15,7 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<LinearLayout
+<RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
 	android:orientation="vertical"
@@ -29,5 +29,30 @@ Copyright (C) 2023 Jefferson Calheiros
         android:layout_height="match_parent"
         android:layout_width="match_parent"
         android:id="@+id/view_pager"/>
-    
-</LinearLayout>
+
+    <LinearLayout
+		android:layout_alignParentBottom="true"
+		android:gravity="center_vertical"
+		android:layout_width="match_parent"
+		android:layout_height="50dp">
+
+		<ImageView
+			app:tint="@color/white"
+			android:background="?selectableItemBackground"
+			android:src="@drawable/ic_export"
+			android:scaleType="center"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="40dp"/>
+
+		<ImageView
+			android:background="?selectableItemBackground"
+			app:tint="@color/white"
+			android:src="@drawable/ic_delete_outline"
+			android:scaleType="center"
+			android:layout_weight="1"
+			android:layout_width="0dp"
+			android:layout_height="40dp"/>
+
+	</LinearLayout>
+</RelativeLayout>
