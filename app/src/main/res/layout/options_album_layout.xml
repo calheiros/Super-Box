@@ -65,7 +65,7 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:text="Export"
-                    android:textColor="?colorTextMedium"
+                    android:textColor="?commonColorLight"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -93,7 +93,7 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:text="Delete"
-                    android:textColor="?colorTextMedium"
+                    android:textColor="?commonColorLight"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -121,7 +121,7 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:text="Move to"
-                    android:textColor="?colorTextMedium"
+                    android:textColor="?commonColorLight"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -151,7 +151,7 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:includeFontPadding="false"
                     android:maxLines="1"
                     android:text="Select all"
-                    android:textColor="?colorTextMedium"
+                    android:textColor="?commonColorLight"
                     android:textSize="12sp" />
             </LinearLayout>
         </LinearLayout>

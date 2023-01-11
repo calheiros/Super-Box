@@ -29,11 +29,14 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.fragment.VideoPlayerFragment;
 import java.util.ArrayList;
 
-public class VideoPlayerActivity extends MyCompatActivity {
+public class VideoPlayerActivity extends MyCompatActivity implements View.OnClickListener {
 
     private VideoPlayerActivity.VideoPagerAdapter pagerAdapter;
     private ViewPager viewPager;
@@ -55,12 +58,10 @@ public class VideoPlayerActivity extends MyCompatActivity {
             VideoPlayerFragment lastFragment = pagerAdapter.getItem(lastFragmentPosition);
             lastFragment.stop();
             lastFragmentPosition = position;
-
         }
 
         @Override
         public void onPageScrollStateChanged(int state) {
-
         }
     }
 
@@ -68,6 +69,14 @@ public class VideoPlayerActivity extends MyCompatActivity {
 	protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.video_player_layout);
+        ImageView exportImageView = findViewById(R.id.export_imageview);
+        ImageView deleteImageView = findViewById(R.id.delete_imageview);
+        View optionsLayout = findViewById(R.id.options_layout);
+
+        optionsLayout.setOnClickListener(this);
+        exportImageView.setOnClickListener(this);
+        deleteImageView.setOnClickListener(this);
+
         Intent intent = getIntent();
         int choice = intent.getExtras().getInt("position");
         ArrayList<String> filesPath = intent.getStringArrayListExtra("filepath");
@@ -80,8 +89,23 @@ public class VideoPlayerActivity extends MyCompatActivity {
         viewPager.setOffscreenPageLimit(3);
         viewPager.setPageMargin(dpToPx(5));
         pagerAdapter.getItem(choice).setPlayOnCreate(true);
-
         viewPager.requestFocus();
+        viewPager.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        String name = "unknown";
+        int id  = v.getId();
+
+        if (id == R.id.export_imageview) {
+            name = "export";
+        } else if (id == R.id.delete_imageview) {
+            name = "delete";
+        } else if (id == R.id.options_layout) {
+            name = "options";
+        }
+        Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -99,7 +123,7 @@ public class VideoPlayerActivity extends MyCompatActivity {
         setRequestedOrientation(orientation);
     }
     
-    void hideNavigationBar(){
+    void hideNavigationBar() {
         View decorView = getWindow().getDecorView();
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
              | View.SYSTEM_UI_FLAG_FULLSCREEN;

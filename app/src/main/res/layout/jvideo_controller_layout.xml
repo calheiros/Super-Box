@@ -15,14 +15,14 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/jcontroller_view_button"
+        android:id="@+id/controller_play_button"
         android:layout_gravity="center"
         android:layout_centerInParent="true"
         android:layout_width="65dp"
@@ -30,13 +30,15 @@ Copyright (C) 2023 Jefferson Calheiros
         android:src="@drawable/ic_video_play"/>
 
     <LinearLayout
+        android:paddingBottom="50dp"
         android:layout_alignParentBottom="true"
+        android:id="@+id/controller_seekbar_layout"
         android:orientation="horizontal"
         android:paddingRight="16dp"
         android:paddingLeft="16dp"
         android:gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="50dp">
+        android:layout_height="100dp">
         
         <TextView
             android:layout_width="wrap_content"
@@ -45,16 +47,16 @@ Copyright (C) 2023 Jefferson Calheiros
             android:textColor="#f0f0f0"
             android:shadowColor="#CB000000"
             android:shadowRadius="3"
-            android:id="@+id/jcontroller_start_TextView"/>
+            android:id="@+id/controller_timer_label"/>
         
         <SeekBar
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_weight="1.0"
             android:paddingLeft="12dp"
             android:paddingRight="12dp"
             android:layout_height="36dp"
             android:visibility="invisible"
-            android:id="@+id/jvideo_controller_seekbar"/>
+            android:id="@+id/controller_seekbar"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -63,9 +65,9 @@ Copyright (C) 2023 Jefferson Calheiros
             android:textColor="#f0f0f0"
             android:shadowColor="#CB000000"
             android:shadowRadius="3"
-            android:id="@+id/jcontroller_end_TextView"/>
+            android:id="@+id/video_length_label"/>
         
     </LinearLayout>
-    
+
 </RelativeLayout>
 

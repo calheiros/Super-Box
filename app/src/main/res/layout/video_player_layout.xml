@@ -30,7 +30,8 @@ Copyright (C) 2023 Jefferson Calheiros
         android:layout_width="match_parent"
         android:id="@+id/view_pager"/>
 
-    <LinearLayout
+	<LinearLayout
+		android:id="@+id/options_layout"
 		android:layout_alignParentBottom="true"
 		android:gravity="center_vertical"
 		android:layout_width="match_parent"
@@ -40,6 +41,7 @@ Copyright (C) 2023 Jefferson Calheiros
 			app:tint="@color/white"
 			android:background="?selectableItemBackground"
 			android:src="@drawable/ic_export"
+			android:id="@+id/export_imageview"
 			android:scaleType="center"
 			android:layout_weight="1"
 			android:layout_width="0dp"
@@ -48,6 +50,7 @@ Copyright (C) 2023 Jefferson Calheiros
 		<ImageView
 			android:background="?selectableItemBackground"
 			app:tint="@color/white"
+			android:id="@+id/delete_imageview"
 			android:src="@drawable/ic_delete_outline"
 			android:scaleType="center"
 			android:layout_weight="1"

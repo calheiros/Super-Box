@@ -17,6 +17,7 @@
 
 package com.jefferson.application.br.ui;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.os.Handler;
@@ -51,7 +52,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     private Runnable controllerRunnable;
     private boolean tracking;
     public static final String TAG = "JVideoController";
-    private VideoView mVideoView;
+    private final VideoView mVideoView;
     private MyTask timerTask;
     private SeekBar mSeekBar;
     private ViewGroup anchorView = null;
@@ -67,14 +68,12 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         boolean invisible = (controllerView.getVisibility() != View.VISIBLE);
 
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            controllerHandler.removeCallbacks(controllerRunnable);
             showController(invisible);
             return true;
-        } else if (event.getAction() == event.ACTION_UP) {
+        } else if (event.getAction() == MotionEvent.ACTION_UP) {
             if (!invisible) {
                 hideDelayed(2000);
             }
-            //JDebug.toast("ACTION_UP");
         }
         return false;
     }
@@ -122,7 +121,6 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     }
 
     public void pause() {
-        //JDebug.toast("Controller paused");
 
         if (timer != null) {
             timer.cancel();
@@ -138,7 +136,6 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     }
 
     private void resume() {
-        //JDebug.toast("Controller resumed!");
 
         if (handler == null) {
             handler = new MyHandler();
@@ -203,15 +200,16 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         this.onPlayButtonPressedListener = listener;
     }
 
+    @SuppressLint("InflateParams")
     private void createControllerView() {
         Context context = mVideoView.getContext();
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         controllerView = inflater.inflate(R.layout.jvideo_controller_layout, null);
         anchorView.addView(controllerView);
-        mSeekBar = controllerView.findViewById(R.id.jvideo_controller_seekbar);
-        startTextView = controllerView.findViewById(R.id.jcontroller_start_TextView);
-        endTextView = controllerView.findViewById(R.id.jcontroller_end_TextView);
-        controllerButton = controllerView.findViewById(R.id.jcontroller_view_button);
+        mSeekBar = controllerView.findViewById(R.id.controller_seekbar);
+        startTextView = controllerView.findViewById(R.id.controller_timer_label);
+        endTextView = controllerView.findViewById(R.id.video_length_label);
+        controllerButton = controllerView.findViewById(R.id.controller_play_button);
         mSeekBar.setOnSeekBarChangeListener(this);
         anchorView.setOnTouchListener(this);
         controllerButton.setOnClickListener(this);
@@ -222,12 +220,12 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     }
 
     private void showController(boolean show) {
+        controllerHandler.removeCallbacks(controllerRunnable);
         controllerView.setVisibility(show ? View.VISIBLE: View.INVISIBLE);
         controllerView.startAnimation(show ? animFadeIn : animFadeOut);
     }
 
     private void setPlaying(boolean playing) {
-        // setButtonStatePlaying(playing);
 
         if (playing) {
             resume();
@@ -270,13 +268,11 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     
     public class MyHandler extends Handler {
 
-        private boolean playing;
-
-        @Override 
+        @Override
         public void dispatchMessage(Message message) {
+            boolean playing = mVideoView.isPlaying();
 
-            if (playing = mVideoView.isPlaying()) {
-
+            if (playing) {
                 if (duration == -1) {
                     duration = mVideoView.getDuration();
                     mSeekBar.setVisibility(View.VISIBLE);
