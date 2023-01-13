@@ -39,7 +39,8 @@ Copyright (C) 2023 Jefferson Calheiros
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:baselineAligned="false">
 
             <LinearLayout
                 android:id="@+id/unlockView"

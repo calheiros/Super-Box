@@ -58,9 +58,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     private static final int PICK_CONTENT_FROM_EXTERNAL_APP = 1;
     private PhotosFolderAdapter obj_adapter;
     private int position;
-    private Toolbar toolbar;
     private GridView myGridView;
-    private SharedPreferences sharedPrefrs;
     private String title;
     private SwipeRefreshLayout mySwipeRefreshLayout;
     private ImportGalleryActivity.RetrieveMediaTask retrieveMediaTask;
@@ -70,7 +68,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.import_gallery);
         myGridView = (GridView) findViewById(R.id.gv_folder);
-        sharedPrefrs = MyPreferences.getSharedPreferences(this);
+        SharedPreferences sharedPref = MyPreferences.getSharedPreferences(this);
         position = getIntent().getExtras().getInt("position");
         mySwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
         mySwipeRefreshLayout.setOnRefreshListener(this);
@@ -82,7 +80,6 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         int color = typedValue.data;
 
         mySwipeRefreshLayout.setProgressBackgroundColorSchemeColor(color);// .setProgressBackgroundColor(color);
-
         title = (position == 0 ? getString(R.string.importar_imagem) : getString(R.string.importar_video));
         retrieveMediaTask = new RetrieveMediaTask();
         retrieveMediaTask.start();
@@ -112,7 +109,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     }
 
     private void setupToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

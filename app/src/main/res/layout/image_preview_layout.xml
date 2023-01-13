@@ -32,35 +32,5 @@ Copyright (C) 2023 Jefferson Calheiros
         android:layout_height="match_parent"
         android:contentDescription="@string/gif_image_view_description" />
 
-    <LinearLayout
-        android:background="@drawable/bg_gradient_bottom"
-        android:padding="4dp"
-        android:id="@+id/image_preview_options_layout"
-        android:layout_gravity="bottom"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageButton
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_export"
-            android:id="@+id/image_preview_move_gallery_button"
-            android:layout_weight="1.0"
-            android:layout_width="0dp"
-            android:layout_height="55dp"
-            app:tint="@android:color/white"
-            android:contentDescription="@string/export_gallery_button_description" />
-
-        <ImageButton
-            android:background="@android:color/transparent"
-            android:src="@drawable/ic_delete_outline"
-            android:id="@+id/image_preview_delete_button"
-            android:layout_weight="1.0"
-            android:layout_width="0dp"
-            android:layout_height="55dp"
-            app:tint="@android:color/white"
-            android:contentDescription="@string/delete_image_button_description" />
-
-    </LinearLayout>
-
 </FrameLayout>
 
