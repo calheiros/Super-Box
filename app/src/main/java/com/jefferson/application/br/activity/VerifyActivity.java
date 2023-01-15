@@ -35,19 +35,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
-
 import com.jefferson.application.br.MaterialLockView;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.BlurUtils;
-import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.PasswordManager;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -63,13 +59,11 @@ public class VerifyActivity extends MyCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        password = new PasswordManager().getInternalPassword();
         super.onCreate(savedInstanceState);
-        if (JDebug.isDebugOn())
-            Toast.makeText(this, getIntent().getAction(), Toast.LENGTH_SHORT).show();
-
+        password = new PasswordManager().getInternalPassword();
         if (password.isEmpty()) {
-            startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE).addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
+            startActivity(new Intent(getApplicationContext(), CreatePattern.class).setAction(CreatePattern.ENTER_FIST_CREATE)
+                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
             overridePendingTransition(0, 0);
             return;
         }
@@ -95,7 +89,6 @@ public class VerifyActivity extends MyCompatActivity {
     }
 
     private void setWallpaper() {
-
         try {
             ImageView imageView = findViewById(R.id.wallpaper_image_view);
             if (imageView == null) return;
@@ -150,13 +143,7 @@ public class VerifyActivity extends MyCompatActivity {
     private void startPopupMenu(View view) {
         PopupMenu popMenu = new PopupMenu(this, view);
         popMenu.getMenuInflater().inflate(R.menu.menu_recovery_pass, popMenu.getMenu());
-        popMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-            @Override
-            public boolean onMenuItemClick(MenuItem p1) {
-                return false;
-            }
-        });
+        popMenu.setOnMenuItemClickListener(p1 -> false);
         popMenu.show();
     }
 

@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br.activity;
 
@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -36,9 +37,9 @@ import android.provider.Settings;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -47,8 +48,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.jefferson.application.br.R;
@@ -65,36 +64,27 @@ import com.jefferson.application.br.util.ServiceUtils;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.ThemeConfig;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Objects;
 
 import eightbitlab.com.blurview.BlurView;
 
-public class MainActivity extends MyCompatActivity implements View.OnLayoutChangeListener, NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener, BottomNavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends MyCompatActivity implements View.OnLayoutChangeListener, NavigationView.OnNavigationItemSelectedListener,
+        ImportTask.Listener, BottomNavigationView.OnNavigationItemSelectedListener {
 
-    //public static final String admob_key="ca-app-pub-3062666120925607~5789743722";
     public static final String ACTION_START_IN_PREFERENCES = "com.jefferson.application.action.START_IN_PREFERENCES";
     public static final int IMPORT_FROM_GALLERY_CODE = 43;
     public static final String ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS";
     private static final int ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12;
-    //private static final int GET_URI_CODE_TASK = 54;
+
     private static final int GET_SDCARD_URI_CODE = 98;
     private static final String ADS_ID = "ca-app-pub-3062666120925607/2904985113";
     public static int CURRENT_THEME;
     private static MainActivity instance;
-    public MainFragment mainFragment;
-    public boolean calculatorStateEnabled;
-    private BottomNavigationView buttonNavigationView;
-    private BroadcastReceiver receiver;
-    private LockFragment lockFragment;
-    private SettingFragment settingFragment;
-    private Fragment oldFrag;
-    private int position;
-    private AdView adview;
-    private boolean restarting;
-    private AdView squareAdview;
-    int oldMargin;
-
     @SuppressLint("HandlerLeak")
     private final Handler getSdCardUriHandler = new Handler() {
 
@@ -106,6 +96,18 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
             startActivityForResult(intent, msg.what);
         }
     };
+    public MainFragment mainFragment;
+    public boolean calculatorStateEnabled;
+    int oldMargin;
+    private BottomNavigationView buttonNavigationView;
+    private BroadcastReceiver receiver;
+    private LockFragment lockFragment;
+    private SettingFragment settingFragment;
+    private Fragment oldFrag;
+    private int position;
+    private AdView adview;
+    private boolean restarting;
+    private AdView squareAdview;
 
     public static MainActivity getInstance() {
         return instance;
@@ -136,10 +138,6 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
         this.restarting = restarting;
     }
 
-    public void setupToolbar(Toolbar toolbar, String string, int menuId) {
-
-    }
-
     @Override
     public void onBeingStarted() {
     }
@@ -162,12 +160,7 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instance = this;
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(@NonNull InitializationStatus initializationStatus) {
-                squareAdview = createSquareAdview(MainActivity.this);
-            }
-        });
+        MobileAds.initialize(this, initializationStatus -> squareAdview = createSquareAdview(MainActivity.this));
         setContentView(R.layout.main_activity);
         CURRENT_THEME = ThemeConfig.getTheme(this);
         buttonNavigationView = findViewById(R.id.navigationView);
@@ -179,11 +172,43 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
             startActivity(new Intent(this, VerifyActivity.class).addFlags(
                     Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK));
         }
-
+        if (!MyPreferences.userAcceptedAgreement()) {
+            showUserAgreement();
+        }
         createFragments();
         createAdView();
         createReceiver();
         configureBlur();
+    }
+
+    private void showUserAgreement() {
+        View view = getLayoutInflater().inflate(R.layout.user_agreement_layout, null);
+        TextView textView = view.findViewById(R.id.user_agreement_text);
+        SimpleDialog dialog = new SimpleDialog(this, SimpleDialog.STYLE_ALERT);
+        dialog.setContentView(view);
+
+        try {
+            String termOfService = getTextFromRaw(R.raw.terms_of_service);
+            textView.setText(termOfService);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        dialog.show();
+    }
+
+    private String getTextFromRaw(int raw_id) throws IOException {
+        Resources resources = getResources();
+        InputStream inputStream = resources.openRawResource(raw_id);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            stringBuilder.append(line);
+            stringBuilder.append("\n");
+        }
+        reader.close();
+        inputStream.close();
+        return stringBuilder.toString();
     }
 
     private void configureBlur() {
@@ -197,12 +222,6 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
             createSquareAdview(this);
         }
         return squareAdview;
-    }
-
-    public void showSnackBar(String message, int length) {
-        if (mainFragment != null) {
-            mainFragment.showSnackBar(message, length);
-        }
     }
 
     public void removeFolder(int folderPosition, int pagerPosition) {
@@ -297,32 +316,35 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
     public boolean onNavigationItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        switch (id) {
-            case R.id.main_item1:
-                changeFragment(mainFragment);
-                break;
-            case R.id.main_item2:
-                changeFragment(lockFragment);
-                break;
-            case R.id.item3:
-                changeFragment(settingFragment);
-                break;
-            case R.id.item_4:
-                try {
-                    IntentUtils.shareApp(this);
-                } catch (ActivityNotFoundException e) {
-                    activityNotFound();
-                }
-                break;
-            case R.id.item_5:
-                try {
-                    IntentUtils.reportBug(this);
-                } catch (ActivityNotFoundException e) {
-                    activityNotFound();
-                }
+        if (id == R.id.main_item1) {
+            changeFragment(mainFragment);
+            return true;
         }
-        //drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
+        if (id == R.id.main_item2) {
+            changeFragment(lockFragment);
+            return true;
+        }
+        if (id == R.id.item3) {
+            changeFragment(settingFragment);
+            return true;
+        }
+        if (id == R.id.item_4) {
+            try {
+                IntentUtils.shareApp(this);
+            } catch (ActivityNotFoundException e) {
+                activityNotFound();
+            }
+            return true;
+        }
+        if (id == R.id.item_5) {
+            try {
+                IntentUtils.reportBug(this);
+            } catch (ActivityNotFoundException e) {
+                activityNotFound();
+            }
+            return true;
+        }
+        return false;
     }
 
     public void activityNotFound() {
@@ -362,7 +384,6 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
             }
 
             if (requestCode == MainFragment.GET_FILE) {
-
                 Uri uri = null;
 
                 if (data != null) {
@@ -391,28 +412,8 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
                 intent.putExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths);
                 intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
                 this.startActivityForResult(intent, 69);
-
-//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && (Storage.getExternalUri(this) == null || getContentResolver().getPersistedUriPermissions().isEmpty()))
-//                    preparationTask.setOnLoopListener(new MonoTypePrepareTask.onLoopListener() {
-//
-//                            @Override
-//                            public void onLoop(String path) {
-//
-//                                if (Environment.isExternalStorageRemovable(new File(path))) {
-//                                    preparationTask.setOnLoopListener(null);
-//                                    preparationTask.revokeFinish(true);
-//                                    getSdCardUri(GET_URI_CODE_TASK);
-//                                }
-//                            }
-//                        }
-//                    );
-//                preparationTask.start();
-//			}
-//            if (requestCode == GET_URI_CODE_TASK) {
-//                preparationTask.proceed();
-//            }
             }
-        }  //Toast.makeText(this, "RESUKT_CANCELLED " + requestCode, 1).show();
+        }
 
         super.onActivityResult(requestCode, resultCode, data);
     }

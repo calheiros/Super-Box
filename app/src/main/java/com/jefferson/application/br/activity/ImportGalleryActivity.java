@@ -13,12 +13,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
@@ -33,6 +32,8 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.Toolbar;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -43,12 +44,8 @@ import com.jefferson.application.br.model.FolderModel;
 import com.jefferson.application.br.model.MediaModel;
 import com.jefferson.application.br.task.JTask;
 import com.jefferson.application.br.util.FileUtils;
-import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.StringUtils;
-
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 
 public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
@@ -67,10 +64,9 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.import_gallery);
-        myGridView = (GridView) findViewById(R.id.gv_folder);
-        SharedPreferences sharedPref = MyPreferences.getSharedPreferences(this);
+        myGridView = findViewById(R.id.gv_folder);
         position = getIntent().getExtras().getInt("position");
-        mySwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_refresh);
+        mySwipeRefreshLayout = findViewById(R.id.swipe_refresh);
         mySwipeRefreshLayout.setOnRefreshListener(this);
         mySwipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
 
@@ -109,31 +105,31 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     }
 
     private void setupToolbar() {
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(title);
+        ActionBar actionBar = getSupportActionBar();
+
+        if (actionBar != null) {
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(title);
+        }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(@NonNull Menu menu) {
         getMenuInflater().inflate(R.menu.menu_import, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item_from_gallery:
-                getContentFromExternalApp();
-                break;
-                /*case R.id.item_from_camera:
-                 notImplemented();
-                 break;*/
-            case android.R.id.home:
-                finish();
-                break;
+        int id = item.getItemId();
+
+        if (id == R.id.item_from_gallery) {
+            getContentFromExternalApp();
+        } else if (id == android.R.id.home) {
+            finish();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -161,41 +157,36 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
         Toast.makeText(this, "Not implemented!", Toast.LENGTH_SHORT).show();
     }
 
-    public ArrayList<FolderModel> fn_imagespath() {
-        ArrayList<FolderModel> al_images = new ArrayList<FolderModel>();
-
-        Uri uri = null;
+    public ArrayList<FolderModel> getGalleryItems() {
+        ArrayList<FolderModel> galleryItems = new ArrayList<>();
+        Uri uri;
         Cursor cursor;
-        String orderBy = null;
-        String index_fname = null;
-        String Bucket = null;
-
+        String orderBy;
+        String bucketName;
         int column_index_data, column_index_folder_name;
 
         if (position == 0) {
-            Bucket = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
+            bucketName = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
             uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-            index_fname = MediaStore.Images.Media.BUCKET_DISPLAY_NAME;
             orderBy = MediaStore.Images.Media.DATE_TAKEN;
         } else if (position == 1) {
-            Bucket = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
+            bucketName = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
             uri = MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
-            index_fname = MediaStore.Video.Media.BUCKET_DISPLAY_NAME;
             orderBy = MediaStore.Video.Media.DATE_TAKEN;
         } else {
             return null;
         }
 
-        String absolutePathOfImage = "";
-        String[] projection = {MediaStore.MediaColumns.DATA, Bucket};
+        String absolutePathOfImage;
+        String[] projection = {MediaStore.MediaColumns.DATA, bucketName};
 
         if (position == 1) {
-            projection = new String[]{MediaStore.Video.VideoColumns.DURATION, MediaStore.MediaColumns.DATA, Bucket};
+            projection = new String[]{MediaStore.Video.VideoColumns.DURATION, MediaStore.MediaColumns.DATA, bucketName};
         }
 
         cursor = getApplicationContext().getContentResolver().query(uri, projection, null, null, orderBy + " DESC");
         column_index_data = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA);
-        column_index_folder_name = cursor.getColumnIndexOrThrow(index_fname);
+        column_index_folder_name = cursor.getColumnIndexOrThrow(bucketName);
         int column_index_duration = cursor.getColumnIndex(MediaStore.Video.Media.DURATION);
 
         while (cursor.moveToNext()) {
@@ -207,7 +198,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 
             absolutePathOfImage = cursor.getString(column_index_data);
             String folderName = cursor.getString(column_index_folder_name);
-            int folderPosition = getFolderIndex(al_images, folderName);
+            int folderPosition = getFolderIndex(galleryItems, folderName);
 
             if (folderPosition == -1) {
                 FolderModel model = new FolderModel();
@@ -218,28 +209,21 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 
                 model.setName(cursor.getString(column_index_folder_name));
                 model.addItem(mm);
-                al_images.add(model);
+                galleryItems.add(model);
             } else {
                 MediaModel mm = new MediaModel(absolutePathOfImage);
 
                 if (position == 1) {
-                    String formatedTime = StringUtils.getFormattedVideoDuration(duration);
-                    mm.setDuration(formatedTime);
+                    String formattedTime = StringUtils.getFormattedVideoDuration(duration);
+                    mm.setDuration(formattedTime);
                 }
 
-                al_images.get(folderPosition).addItem(mm);
+                galleryItems.get(folderPosition).addItem(mm);
             }
         }
         cursor.close();
-
-        Collections.sort(al_images, new Comparator<FolderModel>() {
-                    @Override
-                    public int compare(FolderModel o1, FolderModel o2) {
-                        return o1.getName().toLowerCase().compareTo(o2.getName().toLowerCase());
-                    }
-                }
-        );
-        return al_images;
+        FolderModel.sort(galleryItems);
+        return galleryItems;
     }
 
     private int getFolderIndex(ArrayList<FolderModel> list, String name) {
@@ -266,7 +250,7 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (resultCode == RESULT_OK) {
-            ArrayList<String> mediaList = new ArrayList<String>();
+            ArrayList<String> mediaList = new ArrayList<>();
 
             if (requestCode == PICK_CONTENT_FROM_EXTERNAL_APP) {
                 FileUtils fileUtils = new FileUtils(this);
@@ -302,17 +286,15 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case REQUEST_PERMISSIONS: {
-                for (int i = 0; i < grantResults.length; i++) {
-                    if (grantResults.length > 0 && grantResults[i] == PackageManager.PERMISSION_GRANTED) {
-                        fn_imagespath();
-                    } else {
-                        Toast.makeText(ImportGalleryActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
-                    }
+        if (requestCode == REQUEST_PERMISSIONS) {
+            for (int grantResult : grantResults) {
+                if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                    getGalleryItems();
+                } else {
+                    Toast.makeText(ImportGalleryActivity.this, "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission", Toast.LENGTH_LONG).show();
                 }
             }
         }
@@ -325,12 +307,12 @@ public class ImportGalleryActivity extends MyCompatActivity implements SwipeRefr
 
         @Override
         public void workingThread() {
-            result = fn_imagespath();
+            result = getGalleryItems();
         }
 
         @Override
         public void onBeingStarted() {
-            this.myProgress = (ProgressBar) findViewById(R.id.galleryalbumProgressBar);
+            this.myProgress = findViewById(R.id.galleryalbumProgressBar);
             myProgress.setVisibility(View.VISIBLE);
         }
 

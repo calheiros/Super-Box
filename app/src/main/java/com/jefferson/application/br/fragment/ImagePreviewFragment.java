@@ -29,20 +29,20 @@ import com.bumptech.glide.Glide;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.activity.triggers.SwitchVisibilityTrigger;
 import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.util.Storage;
-
 import java.io.File;
 
 public class ImagePreviewFragment extends Fragment implements View.OnClickListener {
 
     private final String path;
-    private final View optionsLayout;
+    private final SwitchVisibilityTrigger optionsTrigger;
     private View parentView;
 
-    public ImagePreviewFragment(String path, View optionsLayout) {
+    public ImagePreviewFragment(String path, SwitchVisibilityTrigger optionsLayout) {
         this.path = path;
-        this.optionsLayout = optionsLayout;
+        this.optionsTrigger = optionsLayout;
     }
 
     public static String getMimeType(String url) {
@@ -78,13 +78,8 @@ public class ImagePreviewFragment extends Fragment implements View.OnClickListen
         return parentView;
     }
 
-    public void switchOptionsVisibility() {
-        int visibility = optionsLayout.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE;
-        optionsLayout.setVisibility(visibility);
-    }
-
     @Override
     public void onClick(View v) {
-        switchOptionsVisibility();
+        optionsTrigger.switchVisibility();
     }
 }

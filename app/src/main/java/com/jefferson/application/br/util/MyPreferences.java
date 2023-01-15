@@ -25,6 +25,7 @@ public class MyPreferences {
     public static final String KEY_FINGERPRINT = "fingerprint";
     private final static String KEY_ALLOW_SCREENSHOT = "allow_screenshot";
     private final static String KEY_CALCULATOR_CODE = "calculator_code";
+    private static final String KEY_USER_AGREEMENT = "user_agreement";
 
     public static boolean getAllowScreenshot() {
         return getSharedPreferences().getBoolean(KEY_ALLOW_SCREENSHOT, false);
@@ -53,5 +54,9 @@ public class MyPreferences {
 
     public static SharedPreferences.Editor getSharedPreferencesEditor() {
         return getSharedPreferences().edit();
+    }
+
+    public static boolean userAcceptedAgreement() {
+       return getSharedPreferences().getBoolean(KEY_USER_AGREEMENT, false);
     }
 }

@@ -212,5 +212,6 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="album_thumbnail">album thumbnail</string>
     <string name="add_items_button">add items button</string>
     <string name="album_vazio_titulo">The album is empty.</string>
+    <string name="accept">accept</string>
 
 </resources>

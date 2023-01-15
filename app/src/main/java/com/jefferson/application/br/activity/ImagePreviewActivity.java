@@ -21,14 +21,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
-
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.activity.triggers.SwitchVisibilityTrigger;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.fragment.ImagePreviewFragment;
 
@@ -105,10 +104,12 @@ public class ImagePreviewActivity extends MyCompatActivity implements View.OnCli
     }
 
     private class ImagePagerAdapter extends FragmentStatePagerAdapter {
-        private final View optionsLayout;
+
+        private final SwitchVisibilityTrigger optionsTrigger;
+
         public ImagePagerAdapter(FragmentManager fm, View optionsLayout) {
             super(fm);
-            this.optionsLayout = optionsLayout;
+            this.optionsTrigger = new SwitchVisibilityTrigger((optionsLayout));
         }
 
         @Override
@@ -119,7 +120,7 @@ public class ImagePreviewActivity extends MyCompatActivity implements View.OnCli
         @NonNull
         @Override
         public Fragment getItem(int position) {
-            return new ImagePreviewFragment(filepath.get(position) , optionsLayout);
+            return new ImagePreviewFragment(filepath.get(position) , optionsTrigger);
         }
     }
 }
