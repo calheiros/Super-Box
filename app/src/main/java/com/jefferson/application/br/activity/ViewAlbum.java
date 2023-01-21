@@ -86,12 +86,13 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private static final int VIDEO_PLAY_CODE = 7;
     private static final int CHANGE_DIRECTORY_CODE = 3;
     private static final int IMPORT_FROM_GALLERY_CODE = 6;
+    final int minItemWidth = 110;
     private boolean selectionMode;
     private Toolbar toolbar;
     private MultiSelectRecyclerViewAdapter mAdapter;
     private int position;
     private View menuLayout;
-    private RecyclerView mRecyclerView;
+    private RecyclerView recyclerView;
     private String title;
     private File folder;
     private View emptyView;
@@ -111,12 +112,13 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         title = intent.getStringExtra("name");
         folder = new File(intent.getStringExtra("folder"));
         filePaths = intent.getParcelableArrayListExtra("data");
-        mRecyclerView = findViewById(R.id.my_recycler_view);
-        mRecyclerView.setHasFixedSize(true);
-        GridLayoutManager mLayoutManager = new GridLayoutManager(this, 3);
-        mRecyclerView.setLayoutManager(mLayoutManager);
+        recyclerView = findViewById(R.id.my_recycler_view);
+        recyclerView.setHasFixedSize(true);
+        GridLayoutManager layoutManager = new GridLayoutManager(this, getAutoSpan());
+        layoutManager.setAutoMeasureEnabled(true);
+        recyclerView.setLayoutManager(layoutManager);
         mAdapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, filePaths, this, position);
-        mRecyclerView.setAdapter(mAdapter);
+        recyclerView.setAdapter(mAdapter);
 
         fab = findViewById(R.id.view_album_fab_button);
         menuLayout = findViewById(R.id.lock_layout);
@@ -136,7 +138,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         fab.setOnClickListener(this);
 
         initToolbar();
-        configureBlurView(mRecyclerView);
+        configureBlurView(recyclerView);
 
         if (filePaths.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);
@@ -148,7 +150,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
         float threshold = getHeightPixels() / 100; //1%
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -174,6 +176,16 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             }
         });
     }
+
+    private int getAutoSpan() {
+        // Convert the minimum width to pixels
+        final float scale = getResources().getDisplayMetrics().density;
+        final int minItemWidthPx = (int) (minItemWidth * scale + 0.5f);
+        int screenWidthPx = getResources().getDisplayMetrics().widthPixels;
+
+        return screenWidthPx / minItemWidthPx;
+    }
+
     private float getHeightPixels() {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -374,7 +386,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     break;
                 case VIDEO_PLAY_CODE:
                     final int index = data.getIntExtra("index", 0);
-                    mRecyclerView.post(() -> mRecyclerView.smoothScrollToPosition(index));
+                    recyclerView.post(() -> recyclerView.smoothScrollToPosition(index));
                     break;
                 case IMPORT_FROM_GALLERY_CODE:
                     ArrayList<String> paths = data.getStringArrayListExtra("selection");
@@ -523,8 +535,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             public void onAnimationEnd(Animation anim) {
                 int base = (int) getResources().getDimension(R.dimen.recycler_view_padding);
                 int button = menuLayout.getHeight();
-                mRecyclerView.setPadding(base, base, base, button);
-                mRecyclerView.setClipToPadding(false);
+                recyclerView.setPadding(base, base, base, button);
+                recyclerView.setClipToPadding(false);
             }
 
             @Override
@@ -547,7 +559,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         menuLayout.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_bottom));
         menuLayout.setVisibility(View.GONE);
         int dimen = (int) getResources().getDimension(R.dimen.recycler_view_padding);
-        mRecyclerView.setPadding(dimen, dimen, dimen, dimen);
+        recyclerView.setPadding(dimen, dimen, dimen, dimen);
         toolbar.setTitle(title);
         fab.show();
     }

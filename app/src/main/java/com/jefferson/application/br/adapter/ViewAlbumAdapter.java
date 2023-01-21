@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jefferson.application.br.R;
@@ -36,10 +37,7 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.List
     private final List<String> items;
     private final SparseBooleanArray selectedItems;
 
-    public ViewAlbumAdapter(List<String> modelData) {
-        if (modelData == null) {
-            throw new IllegalArgumentException("modelData must not be null");
-        }
+    public ViewAlbumAdapter(@NonNull List<String> modelData) {
         items = modelData;
         selectedItems = new SparseBooleanArray();
     }
@@ -49,6 +47,7 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.List
         notifyItemRemoved(position);
     }
 
+    @NonNull
     @Override
     public ListItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View itemView = LayoutInflater.

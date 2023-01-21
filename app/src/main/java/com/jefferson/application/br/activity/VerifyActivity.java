@@ -13,7 +13,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br.activity;
 
@@ -24,26 +24,26 @@ import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
-import android.widget.PopupMenu;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
+
 import com.jefferson.application.br.MaterialLockView;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.util.BlurUtils;
 import com.jefferson.application.br.util.MyPreferences;
 import com.jefferson.application.br.util.PasswordManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -75,17 +75,17 @@ public class VerifyActivity extends MyCompatActivity {
         if (sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false))
             openBiometricPrompt();
 
-        materialLockView = (MaterialLockView) findViewById(R.id.pattern);
+        materialLockView = findViewById(R.id.pattern);
         materialLockView.setTactileFeedbackEnabled(false);
         handler = new Handler();
         Runnable = () -> materialLockView.clearPattern();
         materialLockView.setOnPatternListener(new MyPatternListener());
     }
+
     private void setNavigationAndStatusBarTransparent() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
-        }
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+
     }
 
     private void setWallpaper() {
@@ -138,13 +138,6 @@ public class VerifyActivity extends MyCompatActivity {
     @Override
     protected void onApplyCustomTheme() {
         setTheme(R.style.LauncherTheme);
-    }
-
-    private void startPopupMenu(View view) {
-        PopupMenu popMenu = new PopupMenu(this, view);
-        popMenu.getMenuInflater().inflate(R.menu.menu_recovery_pass, popMenu.getMenu());
-        popMenu.setOnMenuItemClickListener(p1 -> false);
-        popMenu.show();
     }
 
     @Override

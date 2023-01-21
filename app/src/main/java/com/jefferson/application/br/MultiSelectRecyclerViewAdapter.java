@@ -13,60 +13,61 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br;
 
 import android.content.Context;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.jefferson.application.br.model.MediaModel;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 
 public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelectRecyclerViewAdapter.ViewHolder> {
 
-    public ArrayList<MediaModel> mListItemsModels;
     private static Context context;
-    private ViewHolder.ClickListener clickListener;
-	private int mediaType;
-    
+    public ArrayList<MediaModel> mListItemsModels;
+    private final ViewHolder.ClickListener clickListener;
+    private final int mediaType;
+
     public MultiSelectRecyclerViewAdapter(Context context, ArrayList<MediaModel> arrayList, ViewHolder.ClickListener clickListener, int mediaType) {
 
         this.mListItemsModels = arrayList;
-        this.context = context;
+        MultiSelectRecyclerViewAdapter.context = context;
         this.clickListener = clickListener;
-		this.mediaType = mediaType;
+        this.mediaType = mediaType;
 
     }
 
     public ArrayList<String> getSelectedItemsPath() {
         ArrayList<String> selectedItemsPath = new ArrayList<>();
-    
+
         for (int position : getSelectedItems()) {
-           selectedItemsPath.add(mListItemsModels.get(position).getPath());
+            selectedItemsPath.add(mListItemsModels.get(position).getPath());
         }
-        
-        return selectedItemsPath; 
+        return selectedItemsPath;
     }
-   
-    public ArrayList getListItemsPath() {
+
+    public ArrayList<String> getListItemsPath() {
         ArrayList<String> arrayListPath = new ArrayList<>();
 
         for (MediaModel mm : mListItemsModels) {
             arrayListPath.add(mm.getPath());
         }
-
         return arrayListPath;
     }
 
     public void updateItemDuration(String path, String time) {
-
         for (int i = 0; i < mListItemsModels.size(); i++) {
             MediaModel model = mListItemsModels.get(i);
             if (model.getPath().equals(path)) {
@@ -77,112 +78,93 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         }
     }
 
-	public void removeAll(ArrayList<String> paths) {
+    public void removeAll(@NonNull ArrayList<String> paths) {
+        ArrayList<MediaModel> deletionList = new ArrayList<>();
 
-        if (paths == null) {
-            return;
+        for (MediaModel item : mListItemsModels) {
+            if (paths.contains(item.getPath())) {
+                deletionList.add(item);
+            }
         }
-        
-        ArrayList <MediaModel > deletetionList = new ArrayList<>();
-        Iterator<MediaModel> iterator = mListItemsModels.iterator();
-        
-        while (iterator.hasNext()) { 
-            MediaModel item = iterator.next(); 
 
-            if (paths.contains(item.getPath())) { 
-                deletetionList.add(item);
-            } 
-        }
-        
-        mListItemsModels.removeAll(deletetionList);
-		notifyDataSetChanged();
-	}
+        mListItemsModels.removeAll(deletionList);
+        notifyDataSetChanged();
+    }
 
-    public void removeItem(String path) {
-
-        if (path == null) {
-            return;
-        }
-        
+    public void removeItem(@NonNull String path) {
         Iterator<MediaModel> iterator = mListItemsModels.iterator();
         MediaModel item = null;
-        
-        while (iterator.hasNext()) { 
-            item = iterator.next(); 
-            
-            if (item.getPath().equals(path)) { 
+
+        while (iterator.hasNext()) {
+            item = iterator.next();
+
+            if (item.getPath().equals(path)) {
                 break;
             }
         }
-        
-        removeItem(item);
+        if (item != null) removeItem(item);
     }
 
-	public void removeItem(MediaModel item) {
-        
-        if (item == null) {
-            return;
-        }
-        
-		int index = mListItemsModels.indexOf(item);
+    public void removeItem(@NonNull MediaModel item) {
+        int index = mListItemsModels.indexOf(item);
 
         if (index != -1) {
-			mListItemsModels.remove(index);
-			notifyItemRemoved(index);
-		}
-	}
+            mListItemsModels.remove(index);
+            notifyItemRemoved(index);
+        }
+    }
 
+    @NonNull
     @Override
     public MultiSelectRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.generic_gridview_item, null);
+        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.generic_gridview_item,  parent, false);
         ViewHolder viewHolder = new ViewHolder(itemLayoutView, clickListener);
 
         if (mediaType == 1) {
-			//viewHolder.playView.setVisibility(View.VISIBLE);
-		}
+            //viewHolder.playView.setVisibility(View.VISIBLE);
+        }
         return viewHolder;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
 
-		viewHolder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
-		Glide.with(App.getAppContext()).load("file://" + mListItemsModels.get(position).getPath()).skipMemoryCache(true).into(viewHolder.imageView);
+        viewHolder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
+        Glide.with(App.getAppContext()).load("file://" + mListItemsModels.get(position).getPath()).skipMemoryCache(true).into(viewHolder.imageView);
         String result = mListItemsModels.get(position).getDuration();
 
         if (result != null) {
             viewHolder.timeView.setVisibility(View.VISIBLE);
             viewHolder.textView.setText(result);
-            //Debug.toast("Result => " + result);
         } else {
 
         }
 
- 	}
+    }
 
     @Override
     public int getItemCount() {
         return mListItemsModels.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener, View.OnLongClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
-        public ImageView imageView;
-        private ClickListener listener;
         private final View selectedOverlay;
+        public ImageView imageView;
         public TextView textView;
-		public ImageView smallView;
-        private View timeView;
+        public ImageView smallView;
+        private final ClickListener listener;
+        private final View timeView;
 
         public ViewHolder(View rootView, ClickListener listener) {
             super(rootView);
-
             this.listener = listener;
-		    imageView = (ImageView) rootView.findViewById(R.id.image);
-			smallView = (ImageView) rootView.findViewById(R.id.folder_small_icon_view);
+            imageView = (ImageView) rootView.findViewById(R.id.image);
+            smallView = (ImageView) rootView.findViewById(R.id.folder_small_icon_view);
             textView = rootView.findViewById(R.id.gridview_itemTextView);
             selectedOverlay = itemView.findViewById(R.id.selected_overlay);
-		    timeView = rootView.findViewById(R.id.timeViewLayout);
+            timeView = rootView.findViewById(R.id.timeViewLayout);
+
             rootView.setOnClickListener(this);
             rootView.setOnLongClickListener(this);
         }
@@ -206,10 +188,10 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
         public interface ClickListener {
 
-            public void onItemClicked(int position, View v);
+            void onItemClicked(int position, View v);
 
-            public boolean onItemLongClicked(int position);
+            boolean onItemLongClicked(int position);
         }
-	}
+    }
 }
 
