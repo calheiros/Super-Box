@@ -192,6 +192,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
                 return false;
             }
         });
+
         if (position == itemToHighlight) {
             holder.itemView.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), R.anim.blink));
             itemToHighlight = -1;

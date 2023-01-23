@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -35,41 +36,51 @@ import java.util.Iterator;
 
 public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelectRecyclerViewAdapter.ViewHolder> {
 
-    private static Context context;
-    public ArrayList<MediaModel> mListItemsModels;
+    private final Context context;
+    public ArrayList<MediaModel> items;
     private final ViewHolder.ClickListener clickListener;
     private final int mediaType;
 
-    public MultiSelectRecyclerViewAdapter(Context context, ArrayList<MediaModel> arrayList, ViewHolder.ClickListener clickListener, int mediaType) {
-
-        this.mListItemsModels = arrayList;
-        MultiSelectRecyclerViewAdapter.context = context;
+    public MultiSelectRecyclerViewAdapter(Context context, ArrayList<MediaModel> arrayList,
+                                          ViewHolder.ClickListener clickListener, int mediaType) {
+        this.items = arrayList;
+        this.context = context;
         this.clickListener = clickListener;
         this.mediaType = mediaType;
 
     }
+    public void toggleItemSelected(int position) {
+        toggleSelection(position);
+        for(int i: getSelectedItemsHash().keySet()) {
+            if (i != position) {
+                notifyItemChanged(i);
+            }
+        }
+    }
+
+    private Object getItem(int position) {
+        return items.get(position);
+    }
 
     public ArrayList<String> getSelectedItemsPath() {
         ArrayList<String> selectedItemsPath = new ArrayList<>();
-
         for (int position : getSelectedItems()) {
-            selectedItemsPath.add(mListItemsModels.get(position).getPath());
+            selectedItemsPath.add(items.get(position).getPath());
         }
         return selectedItemsPath;
     }
 
     public ArrayList<String> getListItemsPath() {
         ArrayList<String> arrayListPath = new ArrayList<>();
-
-        for (MediaModel mm : mListItemsModels) {
+        for (MediaModel mm : items) {
             arrayListPath.add(mm.getPath());
         }
         return arrayListPath;
     }
 
     public void updateItemDuration(String path, String time) {
-        for (int i = 0; i < mListItemsModels.size(); i++) {
-            MediaModel model = mListItemsModels.get(i);
+        for (int i = 0; i < items.size(); i++) {
+            MediaModel model = items.get(i);
             if (model.getPath().equals(path)) {
                 model.setDuration(time);
                 notifyItemChanged(i);
@@ -81,23 +92,21 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
     public void removeAll(@NonNull ArrayList<String> paths) {
         ArrayList<MediaModel> deletionList = new ArrayList<>();
 
-        for (MediaModel item : mListItemsModels) {
+        for (MediaModel item : items) {
             if (paths.contains(item.getPath())) {
                 deletionList.add(item);
             }
         }
-
-        mListItemsModels.removeAll(deletionList);
+        items.removeAll(deletionList);
         notifyDataSetChanged();
     }
 
     public void removeItem(@NonNull String path) {
-        Iterator<MediaModel> iterator = mListItemsModels.iterator();
+        Iterator<MediaModel> iterator = items.iterator();
         MediaModel item = null;
 
         while (iterator.hasNext()) {
             item = iterator.next();
-
             if (item.getPath().equals(path)) {
                 break;
             }
@@ -106,64 +115,61 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
     }
 
     public void removeItem(@NonNull MediaModel item) {
-        int index = mListItemsModels.indexOf(item);
+        int index = items.indexOf(item);
 
         if (index != -1) {
-            mListItemsModels.remove(index);
+            items.remove(index);
             notifyItemRemoved(index);
         }
     }
 
-    @NonNull
-    @Override
+    @NonNull @Override
     public MultiSelectRecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.generic_gridview_item,  parent, false);
-        ViewHolder viewHolder = new ViewHolder(itemLayoutView, clickListener);
-
-        if (mediaType == 1) {
-            //viewHolder.playView.setVisibility(View.VISIBLE);
-        }
-        return viewHolder;
+        View itemLayoutView = LayoutInflater.from(parent.getContext()).inflate(R.layout.generic_gridview_item,
+                parent, false);
+        return new ViewHolder(itemLayoutView, clickListener);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-
-        viewHolder.selectedOverlay.setVisibility(isSelected(position) ? View.VISIBLE : View.INVISIBLE);
-        Glide.with(App.getAppContext()).load("file://" + mListItemsModels.get(position).getPath()).skipMemoryCache(true).into(viewHolder.imageView);
-        String result = mListItemsModels.get(position).getDuration();
+        Glide.with(App.getAppContext()).load("file://" + items.get(position).getPath()).skipMemoryCache(true).into(viewHolder.imageView);
+        String result = items.get(position).getDuration();
 
         if (result != null) {
-            viewHolder.timeView.setVisibility(View.VISIBLE);
-            viewHolder.textView.setText(result);
-        } else {
-
+            viewHolder.mediaLengthLabel.setVisibility(View.VISIBLE);
+            viewHolder.mediaLengthLabel.setText(result);
         }
 
+        boolean isSelected = isSelected(position);
+        viewHolder.selectionModeOverlay.setVisibility(isSelected ? View.VISIBLE : View.INVISIBLE);
+
+        if (isSelected) {
+            viewHolder.selectedCountLabel.setText(String.valueOf(getSelectedItemPosition(position) + 1));
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mListItemsModels.size();
+        return items.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
-        private final View selectedOverlay;
+        private final View selectionModeOverlay;
+        private final TextView selectedCountLabel;
         public ImageView imageView;
-        public TextView textView;
+        public TextView mediaLengthLabel;
         public ImageView smallView;
         private final ClickListener listener;
-        private final View timeView;
 
         public ViewHolder(View rootView, ClickListener listener) {
             super(rootView);
             this.listener = listener;
             imageView = (ImageView) rootView.findViewById(R.id.image);
             smallView = (ImageView) rootView.findViewById(R.id.folder_small_icon_view);
-            textView = rootView.findViewById(R.id.gridview_itemTextView);
-            selectedOverlay = itemView.findViewById(R.id.selected_overlay);
-            timeView = rootView.findViewById(R.id.timeViewLayout);
+            mediaLengthLabel = rootView.findViewById(R.id.gridview_itemTextView);
+            selectedCountLabel = rootView.findViewById(R.id.selected_item_count_label);
+            selectionModeOverlay = rootView.findViewById(R.id.item_selected_overlay);
 
             rootView.setOnClickListener(this);
             rootView.setOnLongClickListener(this);
@@ -171,7 +177,6 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
         @Override
         public void onClick(View v) {
-
             if (listener != null) {
                 listener.onItemClicked(getAdapterPosition(), v);
             }
@@ -179,7 +184,6 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
         @Override
         public boolean onLongClick(View view) {
-
             if (listener != null) {
                 return listener.onItemLongClicked(getAdapterPosition());
             }
@@ -187,9 +191,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         }
 
         public interface ClickListener {
-
             void onItemClicked(int position, View v);
-
             boolean onItemLongClicked(int position);
         }
     }

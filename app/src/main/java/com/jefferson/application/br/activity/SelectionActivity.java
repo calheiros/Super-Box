@@ -89,7 +89,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
                 } else {
                     for (int i = 0; i < models.size(); i++) {
                         if (!mAdapter.isSelected(i)) {
-                            mAdapter.toggleSelection(i);
+                            mAdapter.toggleItemSelected(i);
                         }
                     }
                 }
@@ -120,7 +120,7 @@ public class SelectionActivity extends MyCompatActivity implements MultiSelectRe
     }
 
     private void updateItem(int position) {
-        mAdapter.toggleSelection(position);
+        mAdapter.toggleItemSelected(position);
         updateActionBarTitle();
         toogleSelectViewIcon();
     }

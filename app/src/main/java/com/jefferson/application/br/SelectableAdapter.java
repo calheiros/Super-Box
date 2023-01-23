@@ -28,10 +28,9 @@ public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder> exte
     
 	@SuppressWarnings("unused")
 
-	private SparseBooleanArray selectedItems;
-
+	private final LinkedHashMap<Integer,Boolean> selectedItems;
 	public SelectableAdapter() {
-		selectedItems = new SparseBooleanArray();
+		selectedItems = new LinkedHashMap<Integer, Boolean>();
 	}
 	/**
 	 * Indicates if the item at position position is selected
@@ -46,13 +45,23 @@ public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder> exte
 	 * Toggle the selection status of the item at a given position
 	 * @param position Position of the item to toggle the selection status for
 	 */
-	public void toggleSelection(int position) {
-		if (selectedItems.get(position, false)) {
-			selectedItems.delete(position);
+	protected void toggleSelection(int position) {
+		if (Boolean.TRUE.equals(selectedItems.get(position))) {
+			selectedItems.remove(position);
 		} else {
 			selectedItems.put(position, true);
 		}
 		notifyItemChanged(position);
+	}
+	public HashMap<Integer, Boolean> getSelectedItemsHash() {
+		return selectedItems;
+	}
+	public int getSelectedItemPosition(int position) {
+		Object[] keys = selectedItems.keySet().toArray();
+		for (int i = 0; i < keys.length; i++) {
+			if ((int)keys[i] == position) return i;
+		}
+		return -1;
 	}
 
 	/**
@@ -80,10 +89,6 @@ public abstract class SelectableAdapter<VH extends RecyclerView.ViewHolder> exte
 	 */
 
 	public List<Integer> getSelectedItems() {
-		List<Integer> items = new ArrayList<>(selectedItems.size());
-		for (int i = 0; i < selectedItems.size(); ++i) {
-			items.add(selectedItems.keyAt(i));
-		}
-		return items;
+		return new ArrayList<>(selectedItems.keySet());
 	}
 }

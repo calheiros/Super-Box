@@ -13,11 +13,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br.activity;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
@@ -27,7 +26,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -89,7 +87,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     final int minItemWidth = 110;
     private boolean selectionMode;
     private Toolbar toolbar;
-    private MultiSelectRecyclerViewAdapter mAdapter;
+    private MultiSelectRecyclerViewAdapter adapter;
     private int position;
     private View menuLayout;
     private RecyclerView recyclerView;
@@ -115,10 +113,9 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         recyclerView = findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
         GridLayoutManager layoutManager = new GridLayoutManager(this, getAutoSpan());
-        layoutManager.setAutoMeasureEnabled(true);
         recyclerView.setLayoutManager(layoutManager);
-        mAdapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, filePaths, this, position);
-        recyclerView.setAdapter(mAdapter);
+        adapter = new MultiSelectRecyclerViewAdapter(ViewAlbum.this, filePaths, this, position);
+        recyclerView.setAdapter(adapter);
 
         fab = findViewById(R.id.view_album_fab_button);
         menuLayout = findViewById(R.id.lock_layout);
@@ -145,7 +142,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         if (position == 1) {
-            updateDatabase(filePaths, mAdapter);
+            updateDatabase(filePaths, adapter);
         }
 
         float threshold = getHeightPixels() / 100; //1%
@@ -191,6 +188,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         return displayMetrics.heightPixels;
     }
+
     private void configureBlurView(ViewGroup view) {
         BlurView blurView = findViewById(R.id.blurView);
         float radius = 13f;
@@ -203,25 +201,20 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
     }
 
-    @SuppressLint("NonConstantResourceId")
     @Override
     public void onClick(View view) {
+        int id = view.getId();
 
-        switch (view.getId()) {
-            case R.id.deleteView:
-                deleteFilesDialog();
-                break;
-            case R.id.moveView:
-                changeFilesDirectory();
-                break;
-            case R.id.unlockView:
-                exportToGallery();
-                break;
-            case R.id.selectView:
-                toggleSelection();
-                break;
-            case R.id.view_album_fab_button:
-                importFromGallery();
+        if (id == R.id.deleteView) {
+            deleteFilesDialog();
+        } else if (id == R.id.moveView) {
+            changeFilesDirectory();
+        } else if (id == R.id.unlockView) {
+            exportToGallery();
+        } else if (id == R.id.selectView) {
+            toggleSelection();
+        } else if (id == R.id.view_album_fab_button) {
+            importFromGallery();
         }
     }
 
@@ -238,12 +231,12 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private void toggleSelection() {
-        if (mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size()) {
-            mAdapter.clearSelection();
+        if (adapter.getSelectedItemCount() == adapter.items.size()) {
+            adapter.clearSelection();
         } else {
-            for (int i = 0; i < mAdapter.mListItemsModels.size(); i++) {
-                if (!mAdapter.isSelected(i)) {
-                    mAdapter.toggleSelection(i);
+            for (int i = 0; i < adapter.items.size(); i++) {
+                if (!adapter.isSelected(i)) {
+                    toggleItemSelected(i);
                 }
             }
         }
@@ -253,10 +246,10 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
     private void exportToGallery() {
 
-        if (mAdapter.getSelectedItemCount() == 0) {
+        if (adapter.getSelectedItemCount() == 0) {
             Toast.makeText(getApplicationContext(), getString(R.string.selecionar_um), Toast.LENGTH_LONG).show();
         } else {
-            int count = mAdapter.getSelectedItemCount();
+            int count = adapter.getSelectedItemCount();
             String item = count + " " + getItemName(count);
             String message = String.format(getString(R.string.mover_galeria), item);
 
@@ -277,7 +270,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private void deleteFilesDialog() {
-        int count = mAdapter.getSelectedItemCount();
+        int count = adapter.getSelectedItemCount();
 
         if (count == 0) {
             Toast.makeText(ViewAlbum.this, getString(R.string.selecionar_um), Toast.LENGTH_SHORT).show();
@@ -307,7 +300,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
     private void changeFilesDirectory() {
 
-        if (mAdapter.getSelectedItemCount() == 0) {
+        if (adapter.getSelectedItemCount() == 0) {
             Toast.makeText(ViewAlbum.this, getString(R.string.selecionar_um), Toast.LENGTH_SHORT).show();
             return;
         }
@@ -324,7 +317,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private void showFilesInfo() {
-        ArrayList<String> files = mAdapter.getSelectedItemsPath();
+        ArrayList<String> files = adapter.getSelectedItemsPath();
         int size = files.size();
         int resId;
         View view;
@@ -362,7 +355,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     private void synchronizeMainActivity() {
-        int visibility = (mAdapter.getItemCount() == 0) ? View.VISIBLE : View.GONE;
+        int visibility = (adapter.getItemCount() == 0) ? View.VISIBLE : View.GONE;
         MainActivity mainActivity = MainActivity.getInstance();
         emptyView.setVisibility(visibility);
 
@@ -381,7 +374,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
                     exitSelectionMode();
                     ArrayList<String> list = data.getStringArrayListExtra("moved_files");
                     Toast.makeText(this, list.size() + " file(s) moved", Toast.LENGTH_SHORT).show();
-                    mAdapter.removeAll(list);
+                    adapter.removeAll(list);
                     synchronizeMainActivity();
                     break;
                 case VIDEO_PLAY_CODE:
@@ -409,25 +402,25 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     }
 
     public void updateRecyclerView() {
-        ArrayList<MediaModel> mListItemsPath = new ArrayList<>();
+        ArrayList<MediaModel> listItemsPath = new ArrayList<>();
 
         for (File file : Objects.requireNonNull(folder.listFiles())) {
-            mListItemsPath.add(new MediaModel(file.getAbsolutePath()));
+            listItemsPath.add(new MediaModel(file.getAbsolutePath()));
         }
 
-        mAdapter.mListItemsModels = mListItemsPath;
-        mAdapter.notifyDataSetChanged();
+        adapter.items = listItemsPath;
+        adapter.notifyDataSetChanged();
 
         if (position == 1) {
-            updateDatabase(mListItemsPath, mAdapter);
+            updateDatabase(listItemsPath, adapter);
         }
     }
 
     private void retrieveDataAndUpdate() {
-        if (mAdapter != null) {
-            ArrayList<MediaModel> list = mAdapter.mListItemsModels;
+        if (adapter != null) {
+            ArrayList<MediaModel> list = adapter.items;
             if (list != null) {
-                updateDatabase(list, mAdapter);
+                updateDatabase(list, adapter);
             }
         }
     }
@@ -439,7 +432,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             if (baseNameDirectory == null) {
                 baseNameDirectory = (title.length() <= 20) ? title + " ( %s )" : title.substring(0, 20) + "... ( %s )";
             }
-            String count = String.valueOf(mAdapter.getSelectedItemCount());
+            String count = String.valueOf(adapter.getSelectedItemCount());
             toolbar.setTitle(String.format(baseNameDirectory, count));
         }
         return super.onCreateOptionsMenu(menu);
@@ -474,7 +467,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             }
             return;
         }
-        toggleSelection(item_position);
+        toggleItemSelected(item_position);
         invalidateOptionsMenu();
         switchSelectButtonIcon();
     }
@@ -482,14 +475,14 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private void startPreviewActivity(Class<?> previewActivity, int position, View v) {
         Intent intent = new Intent(this, previewActivity);
         intent.putExtra("position", position);
-        intent.putExtra("filepath", mAdapter.getListItemsPath());
+        intent.putExtra("filepath", adapter.getListItemsPath());
         ActivityOptions opts = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight()); // Request the activity be started, using the custom animation options.
         startActivityForResult(intent, VIDEO_PLAY_CODE, opts.toBundle());
     }
 
     @Override
     public boolean onItemLongClicked(int position) {
-        toggleSelection(position);
+        toggleItemSelected(position);
         invalidateOptionsMenu();
         switchSelectButtonIcon();
 
@@ -502,18 +495,18 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
     private ArrayList<String> getSelectedItemsPath() {
         ArrayList<String> selectedItems = new ArrayList<>();
 
-        for (int i : mAdapter.getSelectedItems()) {
-            selectedItems.add(mAdapter.mListItemsModels.get(i).getPath());
+        for (int i : adapter.getSelectedItems()) {
+            selectedItems.add(adapter.items.get(i).getPath());
         }
         return selectedItems;
     }
 
-    private void toggleSelection(int position) {
-        mAdapter.toggleSelection(position);
+    private void toggleItemSelected(int position) {
+        adapter.toggleItemSelected(position);
     }
 
     private void switchSelectButtonIcon() {
-        boolean allSelected = mAdapter.getSelectedItemCount() == mAdapter.mListItemsModels.size();
+        boolean allSelected = adapter.getSelectedItemCount() == adapter.items.size();
         String text = allSelected ? "Unselect all" : "Select all";
         selectAllTextView.setText(text);
         selectImageView.setImageResource(allSelected ? R.drawable.ic_select : R.drawable.ic_select_all);
@@ -552,8 +545,8 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         selectionMode = false;
         invalidateOptionsMenu();
 
-        if (!mAdapter.mListItemsModels.isEmpty()) {
-            mAdapter.clearSelection();
+        if (!adapter.items.isEmpty()) {
+            adapter.clearSelection();
         }
 
         menuLayout.setAnimation(AnimationUtils.loadAnimation(getApplicationContext(), R.anim.slide_bottom));
@@ -593,7 +586,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         TextView itemCountLabel = findViewById(R.id.text_view_item_count);
         TextView albumNameLabel = findViewById(R.id.album_name_label);
 
-        int resId = position == 0? R.plurals.imagem_total_plural : R.plurals.video_total_plural;
+        int resId = position == 0 ? R.plurals.imagem_total_plural : R.plurals.video_total_plural;
         String itemCount = getResources().getQuantityString(resId, filePaths.size());
         itemCount = String.format(itemCount, filePaths.size());
 
@@ -629,7 +622,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         protected void onInterrupted() {
             super.onInterrupted();
 
-            if (threadInterrupted && !mAdapter.mListItemsModels.isEmpty()) {
+            if (threadInterrupted && !adapter.items.isEmpty()) {
                 updateRecyclerView();
             }
             synchronizeMainActivity();
@@ -639,7 +632,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         public void onFinished() {
             super.onFinished();
 
-            if (mAdapter.mListItemsModels.isEmpty()) {
+            if (adapter.items.isEmpty()) {
                 finish();
             } else if (threadInterrupted) {
                 updateRecyclerView();
@@ -650,7 +643,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         @Override
         protected void onUpdated(Object[] get) {
             super.onUpdated(get);
-            mAdapter.removeItem((String) get[0]);
+            adapter.removeItem((String) get[0]);
         }
     }
 
@@ -850,7 +843,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         private void retrieveInfo() {
-            if (myThread != null && myThread.cancelled() && mAdapter.getItemCount() > 0) {
+            if (myThread != null && myThread.cancelled() && adapter.getItemCount() > 0) {
                 retrieveDataAndUpdate();
             }
         }
@@ -874,7 +867,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
             Storage.scanMediaFiles((String[]) mArrayPath.toArray());
             mySimpleDialog.dismiss();
 
-            if (mAdapter.mListItemsModels.isEmpty()) {
+            if (adapter.items.isEmpty()) {
                 deleteFolder();
                 finish();
             }
@@ -886,7 +879,7 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
 
             if (!junkList.isEmpty()) {
                 for (String s : junkList) {
-                    mAdapter.removeItem(s);
+                    adapter.removeItem(s);
                 }
                 junkList.clear();
             }
