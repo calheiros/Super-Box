@@ -23,7 +23,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -132,12 +131,13 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int position) {
-        Glide.with(App.getAppContext()).load("file://" + items.get(position).getPath()).skipMemoryCache(true).into(viewHolder.imageView);
-        String result = items.get(position).getDuration();
+        String mediaDuration = items.get(position).getDuration();
+        Glide.with(App.getAppContext()).load("file://" + items.get(position).getPath()).
+                skipMemoryCache(false).dontAnimate().into(viewHolder.imageView);
 
-        if (result != null) {
-            viewHolder.mediaLengthLabel.setVisibility(View.VISIBLE);
-            viewHolder.mediaLengthLabel.setText(result);
+        if (mediaDuration != null) {
+            viewHolder.durationLabel.setVisibility(View.VISIBLE);
+            viewHolder.durationLabel.setText(mediaDuration);
         }
 
         boolean isSelected = isSelected(position);
@@ -158,7 +158,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
         private final View selectionModeOverlay;
         private final TextView selectedCountLabel;
         public ImageView imageView;
-        public TextView mediaLengthLabel;
+        public TextView durationLabel;
         public ImageView smallView;
         private final ClickListener listener;
 
@@ -167,7 +167,7 @@ public class MultiSelectRecyclerViewAdapter extends SelectableAdapter<MultiSelec
             this.listener = listener;
             imageView = (ImageView) rootView.findViewById(R.id.image);
             smallView = (ImageView) rootView.findViewById(R.id.folder_small_icon_view);
-            mediaLengthLabel = rootView.findViewById(R.id.gridview_itemTextView);
+            durationLabel = rootView.findViewById(R.id.gridview_itemTextView);
             selectedCountLabel = rootView.findViewById(R.id.selected_item_count_label);
             selectionModeOverlay = rootView.findViewById(R.id.item_selected_overlay);
 

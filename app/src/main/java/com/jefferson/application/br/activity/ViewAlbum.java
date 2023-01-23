@@ -146,7 +146,6 @@ public class ViewAlbum extends MyCompatActivity implements MultiSelectRecyclerVi
         }
 
         float threshold = getHeightPixels() / 100; //1%
-
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
