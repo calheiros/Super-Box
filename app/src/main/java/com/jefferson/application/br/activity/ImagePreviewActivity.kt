@@ -31,8 +31,9 @@ import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.fragment.ImagePreviewFragment
 
 class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
-    private var viewPager: ViewPager? = null
-    private var filepath: ArrayList<String>? = null
+    private lateinit var viewPager: ViewPager
+    private lateinit var filepath: ArrayList<String>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.video_player_layout)
@@ -41,13 +42,15 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         val exportButton = findViewById<View>(R.id.export_imageview)
         val intent = intent
         val position = intent.extras!!.getInt("position")
-        filepath = intent.getStringArrayListExtra("filepath")
+        filepath = intent.getStringArrayListExtra("filepath") as ArrayList<String>
         val optionLayout = findViewById<View>(R.id.options_layout)
-        val PagerAdapter = ImagePagerAdapter(supportFragmentManager, optionLayout)
-        viewPager.setAdapter(PagerAdapter)
-        viewPager.setOffscreenPageLimit(4)
-        viewPager.setPageMargin(20)
-        viewPager.setCurrentItem(position)
+        val pagerAdapter = ImagePagerAdapter(supportFragmentManager, optionLayout)
+        //configure view pager
+        viewPager.adapter = pagerAdapter
+        viewPager.offscreenPageLimit = 4
+        viewPager.pageMargin = 20
+        viewPager.currentItem = position
+
         viewPager.setOnClickListener(this)
         exportButton.setOnClickListener(this)
         deleteButton.setOnClickListener(this)
@@ -70,7 +73,7 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         builder.setTitle(getString(R.string.apagar))
         builder.setMessage(getString(R.string.apagar_image_mensagem))
         builder.setPositiveButton(
-            getString(android.R.string.yes),
+            getString(android.R.string.ok),
             object : OnDialogClickListener() {
                 override fun onClick(dialog: SimpleDialog): Boolean {
                     return true
@@ -80,10 +83,13 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         builder.show()
     }
 
-    private fun exportImage() {}
+    private fun exportImage() {
+        //TODO: export single image logic here
+    }
+
     override fun onBackPressed() {
         val intent = Intent()
-        intent.putExtra("index", viewPager!!.currentItem)
+        intent.putExtra("index", viewPager.currentItem)
         setResult(RESULT_OK, intent)
         super.onBackPressed()
     }
@@ -99,11 +105,11 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         }
 
         override fun getCount(): Int {
-            return filepath!!.size
+            return filepath.size
         }
 
         override fun getItem(position: Int): Fragment {
-            return ImagePreviewFragment(filepath!![position], optionsTrigger)
+            return ImagePreviewFragment(filepath[position], optionsTrigger)
         }
     }
 }

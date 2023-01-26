@@ -19,11 +19,7 @@ package com.jefferson.application.br
 import androidx.recyclerview.widget.RecyclerView
 
 abstract class SelectableAdapter<VH : RecyclerView.ViewHolder?> : RecyclerView.Adapter<VH>() {
-    private val selectedItems: LinkedHashMap<Int, Boolean>
-
-    init {
-        selectedItems = LinkedHashMap()
-    }
+    private val selectedItems: LinkedHashMap<Int, Boolean> = LinkedHashMap()
 
     /**
      * Indicates if the item at position position is selected
@@ -51,9 +47,9 @@ abstract class SelectableAdapter<VH : RecyclerView.ViewHolder?> : RecyclerView.A
         get() = selectedItems
 
     fun getSelectedItemPosition(position: Int): Int {
-        val keys: Array<Any> = selectedItems.keys.toTypedArray()
+        val keys: Array<Int> = selectedItems.keys.toTypedArray()
         for (i in keys.indices) {
-            if (keys[i] as Int == position) return i
+            if (keys[i] == position) return i
         }
         return -1
     }

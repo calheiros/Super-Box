@@ -32,8 +32,12 @@ class MultiSelectRecyclerViewAdapter(
     private val context: Context, var items: ArrayList<MediaModel>,
     private val clickListener: ClickListener, private val mediaType: Int
 ) : SelectableAdapter<MultiSelectRecyclerViewAdapter.ViewHolder?>() {
+
     fun toggleItemSelected(position: Int) {
         toggleSelection(position)
+        /*
+        * update all selected items positions
+        * */
         for (i in selectedItemsHash.keys) {
             if (i != position) {
                 notifyItemChanged(i)
@@ -80,7 +84,7 @@ class MultiSelectRecyclerViewAdapter(
                 deletionList.add(item)
             }
         }
-        items.removeAll(deletionList)
+        items.removeAll(deletionList.toSet())
         notifyDataSetChanged()
     }
 
@@ -121,8 +125,8 @@ class MultiSelectRecyclerViewAdapter(
             viewHolder.durationLabel.text = mediaDuration
         }
         val isSelected = isSelected(position)
-        viewHolder.selectionModeOverlay.visibility =
-            if (isSelected) View.VISIBLE else View.INVISIBLE
+        viewHolder.selectionModeOverlay.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
+
         if (isSelected) {
             viewHolder.selectedCountLabel.text = (getSelectedItemPosition(position) + 1).toString()
         }
@@ -134,15 +138,13 @@ class MultiSelectRecyclerViewAdapter(
 
     class ViewHolder(rootView: View, private val listener: ClickListener?) :
         RecyclerView.ViewHolder(rootView), View.OnClickListener, OnLongClickListener {
-        private val selectionModeOverlay: View
-        private val selectedCountLabel: TextView
+        val selectionModeOverlay: View
+        val selectedCountLabel: TextView
         var imageView: ImageView
         var durationLabel: TextView
-        var smallView: ImageView
 
         init {
             imageView = rootView.findViewById<View>(R.id.image) as ImageView
-            smallView = rootView.findViewById<View>(R.id.folder_small_icon_view) as ImageView
             durationLabel = rootView.findViewById(R.id.gridview_itemTextView)
             selectedCountLabel = rootView.findViewById(R.id.selected_item_count_label)
             selectionModeOverlay = rootView.findViewById(R.id.item_selected_overlay)

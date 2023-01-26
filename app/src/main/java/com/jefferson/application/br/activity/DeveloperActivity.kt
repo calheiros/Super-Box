@@ -42,6 +42,7 @@ import java.io.File
 class DeveloperActivity : MyCompatActivity() {
     private var observer: FileObserver? = null
     private var wifi: WifiManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         wifi = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
@@ -56,7 +57,7 @@ class DeveloperActivity : MyCompatActivity() {
         fileObserver()
     }
 
-    fun toogleWifi(state: Boolean) {
+    private fun toggleWifi(state: Boolean) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) wifi!!.isWifiEnabled = true else {
             val panelIntent = Intent(Settings.Panel.ACTION_WIFI)
             startActivityForResult(panelIntent, 1)
@@ -69,12 +70,12 @@ class DeveloperActivity : MyCompatActivity() {
     }
 
     fun enableWifi(v: View?) {
-        toogleWifi(true)
+        toggleWifi(true)
         Toast.makeText(this, "Wifi ON", Toast.LENGTH_LONG).show()
     }
 
     fun disableWifi(vi: View?) {
-        toogleWifi(false)
+        toggleWifi(false)
         Toast.makeText(this, "Wifi OFF", Toast.LENGTH_LONG).show()
     }
 
@@ -91,8 +92,8 @@ class DeveloperActivity : MyCompatActivity() {
         simple.setTitle(R.string.unicode_shrug)
         simple.setMessage("Mensagem de teste")
         simple.progress = 76
-        simple.setPositiveButton("ok", null)
-        simple.setNegativeButton("cancelar", null)
+        simple.setPositiveButton(getString(android.R.string.ok), null)
+        simple.setNegativeButton(getString(android.R.string.cancel), null)
         simple.show()
     }
 
@@ -112,7 +113,7 @@ class DeveloperActivity : MyCompatActivity() {
                     applicationContext.packageName
                 )
         ) {
-            //We dont have access 
+            //no have access
             val intent =
                 Intent("android.settings.ACTION_NOTIFICATION_LISTENER_SETTINGS") //For API level 22+ you can directly use Settings.ACTION_NOTIFICATION_LISTENER_SETTINGS
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -126,19 +127,17 @@ class DeveloperActivity : MyCompatActivity() {
     }
 
     fun camera(v: View) {
-        val i = Intent(this, VerifyActivity::class.java)
-        var b: Bundle? = null
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            //
-            b = ActivityOptions.makeScaleUpAnimation(
-                v, 0, 0, v.width,  // 
-                v.height
-            ).toBundle()
-            val bitmap = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
-            bitmap.eraseColor(Color.parseColor("#308cf8"))
-            b = ActivityOptions.makeThumbnailScaleUpAnimation(v, bitmap, 0, 0).toBundle()
-        }
-        startActivity(i, b)
+        val intent = Intent(this, VerifyActivity::class.java)
+        var bundle: Bundle? = null
+        //
+        bundle = ActivityOptions.makeScaleUpAnimation(
+            v, 0, 0, v.width,  //
+            v.height
+        ).toBundle()
+        val bitmap = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.ARGB_8888)
+        bitmap.eraseColor(Color.parseColor("#308cf8"))
+        bundle = ActivityOptions.makeThumbnailScaleUpAnimation(v, bitmap, 0, 0).toBundle()
+        startActivity(intent, bundle)
         //startActivity(new);
     }
 
@@ -153,7 +152,7 @@ class DeveloperActivity : MyCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) MyObserver(file) else MyObserver(
                 file.absolutePath
             )
-        observer.startWatching()
+        (observer as MyObserver).startWatching()
     }
 
     private inner class MyObserver : FileObserver {
@@ -170,7 +169,7 @@ class DeveloperActivity : MyCompatActivity() {
 
     fun testThread(v: View?) {
         val dialog = SimpleDialog(this, SimpleDialog.STYLE_PROGRESS)
-        dialog.setTitle("thread teste")
+        dialog.setTitle("thread test")
         dialog.max = 100
         dialog.show()
         object : JTask() {
@@ -192,7 +191,7 @@ class DeveloperActivity : MyCompatActivity() {
                         break
                     }
                     if (progress >= 56) {
-                        throw RuntimeException("Teste de Exceção!")
+                        throw RuntimeException("Exception test!")
                     }
                     sendUpdate(progress)
                     progress++
