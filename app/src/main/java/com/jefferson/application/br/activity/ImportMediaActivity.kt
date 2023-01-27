@@ -47,6 +47,7 @@ import com.jefferson.application.br.util.Storage
 import com.jefferson.application.br.view.CircleProgressView
 import java.lang.Exception
 import java.util.*
+import kotlin.math.max
 
 class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStartedListener,
     OnFinishedListener {
@@ -57,9 +58,9 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     private lateinit  var titleTextView: TextView
     private lateinit var button: Button
     private lateinit var prepareTitleView: TextView
+    private lateinit var messageTextView: TextView
 
     private var importTask: ImportTask? = null
-    private var messageTextView: TextView? = null
     private var builderTask: FileModelBuilderTask? = null
     private var animateText: AnimateProgressText? = null
     private var allowCancel = false
@@ -153,14 +154,15 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
             R.color.red
         ) else getAttrColor(R.attr.commonColor)
         val msg =
-            if (criticalError != null) getString(R.string.erro_critico) else if (failures > 0) res.getQuantityString(
+            if (criticalError != null) getString(R.string.erro_critico)
+            else if (failures > 0) res.getQuantityString(
                 R.plurals.falha_plural, failures, failures
             ) else if (importTask!!.isInterrupted) "Cancelled!" else getString(R.string.transferencia_sucesso)
         titleTextView.text = getString(R.string.resultado)
-        messageTextView!!.setTextColor(color)
-        messageTextView!!.text = msg
-        messageTextView!!.maxLines = 5
-        messageTextView!!.ellipsize = TextUtils.TruncateAt.END
+        messageTextView.setTextColor(color)
+        messageTextView.text = msg
+        messageTextView.maxLines = 5
+        messageTextView.ellipsize = TextUtils.TruncateAt.END
         button.setTextColor(getAttrColor(R.attr.colorAccent))
         button.text = getString(android.R.string.ok)
     }
@@ -188,17 +190,17 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-
-                if (values.size >= 2) {
-                    messageTextView?.text = values[1] as String?
+                val msg : String? = values[1] as String?
+                if (msg != null) {
+                    messageTextView.text = msg
                 }
-
-                if (values.size >= 3) {
-                    progressView.progress = values[2] as Double
+                val progress: Double? = values[2] as Double?
+                if (progress != null) {
+                    progressView.progress = progress
                 }
-
-                if (values.size > 4) {
-                    progressView.max = values[3] as Double
+                val maxProgress: Double? = values[3] as Double?
+                if (maxProgress != null) {
+                    progressView.max = maxProgress
                 }
             }
             -2 -> showNoSpaceAlert(importTask, values[1].toString())
