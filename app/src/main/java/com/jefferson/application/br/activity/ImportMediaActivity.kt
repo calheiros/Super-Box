@@ -17,11 +17,7 @@
 package com.jefferson.application.br.activity
 
 import android.graphics.Color
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.text.Html
 import android.text.TextUtils
 import android.view.View
@@ -45,9 +41,7 @@ import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.task.JTask.*
 import com.jefferson.application.br.util.Storage
 import com.jefferson.application.br.view.CircleProgressView
-import java.lang.Exception
 import java.util.*
-import kotlin.math.max
 
 class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStartedListener,
     OnFinishedListener {
@@ -55,7 +49,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     private lateinit var parent: FrameLayout
     private lateinit var prepareTextView: TextView
     private lateinit var progressView: CircleProgressView
-    private lateinit  var titleTextView: TextView
+    private lateinit var titleTextView: TextView
     private lateinit var button: Button
     private lateinit var prepareTitleView: TextView
     private lateinit var messageTextView: TextView
@@ -84,7 +78,8 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         button = findViewById<View>(R.id.import_media_button) as Button
         val mainActivity = MainActivity.getInstance()
         adview =
-            Objects.requireNonNull(if (mainActivity == null) MainActivity.createSquareAdview(this) else mainActivity.squareAdView)
+            Objects.requireNonNull(if (mainActivity == null) MainActivity.createSquareAdview(this)
+            else mainActivity.squareAdView)
         removeParent(adview)
         parent = findViewById(R.id.ad_view_layout)
         parent.addView(adview)
@@ -135,7 +130,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
 
     private val isTaskNotRunning: Boolean
         get() = builderTask != null && importTask != null && builderTask!!.status !=
-                JTask.Status.STARTED && importTask!!.status != JTask.Status.STARTED
+                Status.STARTED && importTask!!.status != Status.STARTED
 
     override fun onBeingStarted() {
         prepareTitleView.text = getString(R.string.transferido)
@@ -176,6 +171,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                     values[1],
                     values[2]
                 )
+                @Suppress("DEPRECATION")
                 val styledText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) Html.fromHtml(
                     format,
                     Html.FROM_HTML_MODE_LEGACY
@@ -190,7 +186,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                         Toast.LENGTH_SHORT
                     ).show()
                 }
-                val msg : String? = values[1] as String?
+                val msg: String? = values[1] as String?
                 if (msg != null) {
                     messageTextView.text = msg
                 }
@@ -250,7 +246,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
             } else {
                 allowCancel = true
                 Snackbar.make(
-                    messageTextView!!,
+                    messageTextView,
                     "Press back button again to cancel!",
                     Snackbar.LENGTH_SHORT
                 ).show()
@@ -260,22 +256,23 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     }
 
     private fun interruptTask() {
-        if (importTask != null && importTask!!.status == JTask.Status.STARTED) {
+        if (importTask != null && importTask!!.status == Status.STARTED) {
             importTask?.interrupt()
         }
-        if (builderTask != null && builderTask!!.status == JTask.Status.STARTED) {
+        if (builderTask != null && builderTask!!.status == Status.STARTED) {
             builderTask?.cancelTask()
         }
     }
 
-    private class AnimateProgressText(private var textView: TextView, private val task: JTask) : Thread() {
+    private class AnimateProgressText(private var textView: TextView, private val task: JTask) :
+        Thread() {
         private val text: String = textView.text.toString()
         private var suffix = ""
 
         private val updateHandler: Handler = object : Handler(Looper.getMainLooper()) {
             override fun dispatchMessage(msg: Message) {
                 super.dispatchMessage(msg)
-                textView.text = text + suffix
+                textView.text = text.plus(suffix)
             }
         }
 
@@ -285,7 +282,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
 
         override fun run() {
             super.run()
-            while (task.getStatus() == JTask.Status.STARTED) {
+            while (task.getStatus() == Status.STARTED) {
                 try {
                     sleep(500)
                 } catch (e: InterruptedException) {

@@ -92,11 +92,10 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         val actionBar = supportActionBar
-        if (actionBar != null) {
-            actionBar.setDisplayShowHomeEnabled(true)
-            actionBar.setDisplayHomeAsUpEnabled(true)
-            actionBar.title = title
-        }
+        actionBar?.setDisplayShowHomeEnabled(true)
+        actionBar?.setDisplayHomeAsUpEnabled(true)
+        actionBar?.title = title
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -221,7 +220,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
             findViewById<View>(R.id.gallery_album_empty_layout).visibility = View.VISIBLE
         }
         objAdapter = PhotosFolderAdapter(this@ImportGalleryActivity, list, position)
-        myGridView!!.adapter = objAdapter
+        myGridView.adapter = objAdapter
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

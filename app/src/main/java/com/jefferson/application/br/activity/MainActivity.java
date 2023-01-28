@@ -31,6 +31,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
@@ -86,7 +87,7 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
     public static int CURRENT_THEME;
     private static MainActivity instance;
     @SuppressLint("HandlerLeak")
-    private final Handler getSdCardUriHandler = new Handler() {
+    private final Handler getSdCardUriHandler = new Handler(Looper.getMainLooper()) {
 
         @Override
         public void dispatchMessage(Message msg) {
@@ -490,8 +491,8 @@ public class MainActivity extends MyCompatActivity implements View.OnLayoutChang
     }
 
     @Override
-    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-
+    public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft,
+                               int oldTop, int oldRight, int oldBottom) {
         if (oldMargin != v.getHeight()) {
             notifyBottomLayoutChanges(v);
         }
