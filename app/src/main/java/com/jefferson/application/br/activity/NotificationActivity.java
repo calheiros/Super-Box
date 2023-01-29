@@ -26,7 +26,6 @@ import com.jefferson.application.br.R;
 
 public class NotificationActivity extends MyCompatActivity {
 
-    private String TAG = "NotificationActivity";
     private static final int NOTIFICATION_REQUEST_CODE = 7;
 
     @Override
@@ -39,9 +38,9 @@ public class NotificationActivity extends MyCompatActivity {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); 
             startActivityForResult(intent, NOTIFICATION_REQUEST_CODE); 
         } else { //Your own logic 
-            Log.d(TAG, "You have Notification Access"); 
+            String TAG = "NotificationActivity";
+            Log.d(TAG, "You have Notification Access");
             
         }
     }
-
 }
