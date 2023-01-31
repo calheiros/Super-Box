@@ -76,7 +76,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         titleTextView = findViewById<View>(R.id.import_media_title_move_text_view) as TextView
         progressView = findViewById<View>(R.id.circle_progress_view) as CircleProgressView
         button = findViewById<View>(R.id.import_media_button) as Button
-        val mainActivity = MainActivity.getInstance()
+        val mainActivity = MainActivity.instance
         adview =
             Objects.requireNonNull(if (mainActivity == null) MainActivity.createSquareAdview(this)
             else mainActivity.squareAdView)

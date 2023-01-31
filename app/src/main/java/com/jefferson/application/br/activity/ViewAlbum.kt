@@ -316,7 +316,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
     private fun synchronizeMainActivity() {
         val visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
-        val mainActivity = MainActivity.getInstance()
+        val mainActivity = MainActivity.instance
         emptyView.visibility = visibility
         if (mainActivity != null) {
             mainActivity.updateFragment(position)
