@@ -49,7 +49,7 @@ class MultiSelectRecyclerViewAdapter(
         return items[position]
     }
 
-    val selectedItemsPath: ArrayList<String>
+    val selectedItems: ArrayList<String>
         get() {
             val selectedItemsPath = ArrayList<String>()
             for (position in getSelectedItems()) {
@@ -57,6 +57,7 @@ class MultiSelectRecyclerViewAdapter(
             }
             return selectedItemsPath
         }
+
     val listItemsPath: ArrayList<String>
         get() {
             val arrayListPath = ArrayList<String>()

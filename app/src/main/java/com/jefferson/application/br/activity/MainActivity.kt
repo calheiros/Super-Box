@@ -23,7 +23,6 @@ import android.net.Uri
 import android.os.*
 import android.preference.PreferenceManager
 import android.provider.Settings
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.OnLayoutChangeListener
@@ -64,16 +63,15 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         override fun dispatchMessage(msg: Message) {
             super.dispatchMessage(msg)
             Toast.makeText(
-                this@MainActivity,
-                getString(R.string.selecionar_sdcard),
-                Toast.LENGTH_LONG
+                this@MainActivity, getString(R.string.selecionar_sdcard), Toast.LENGTH_LONG
             ).show()
             val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
             startActivityForResult(intent, msg.what)
         }
     }
 
-    public lateinit var mainFragment: MainFragment
+    lateinit var mainFragment: MainFragment
+
     @JvmField
     var calculatorStateEnabled = false
     var oldMargin = 0
@@ -88,16 +86,13 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     private var restarting = false
     private var squareAdview: AdView? = null
     private fun updateCurrentFragment() {
-        if (mainFragment != null) {
-            val pagerPosition = mainFragment!!.pagerPosition
-            updateFragment(pagerPosition)
-        }
+        val pagerPosition = mainFragment.pagerPosition
+        updateFragment(pagerPosition)
     }
 
     fun setupToolbar(toolbar: Toolbar?, title: CharSequence?) {
         setSupportActionBar(toolbar)
-        supportActionBar?.title =
-            title
+        supportActionBar?.title = title
         supportActionBar?.setDisplayShowHomeEnabled(false)
     }
 
@@ -188,9 +183,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         }
 
     fun removeFolder(folderPosition: Int, pagerPosition: Int) {
-        if (mainFragment != null) {
-            mainFragment!!.removeFolder(folderPosition, pagerPosition)
-        }
+        mainFragment.removeFolder(folderPosition, pagerPosition)
     }
 
     private fun createReceiver() {
@@ -210,23 +203,18 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     }
 
     fun updateFragment(position: Int) {
-        if (mainFragment != null) {
-            mainFragment!!.updateFragment(position)
-        }
+        mainFragment.updateFragment(position)
     }
 
     fun updateAllFragments() {
-        if (mainFragment != null) {
-            mainFragment!!.updateAllFragments()
-        }
+        mainFragment.updateAllFragments()
     }
 
     fun requestPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {
                 val intent = Intent(
-                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:$packageName")
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")
                 )
                 startActivityForResult(intent, ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE)
                 return true
@@ -243,8 +231,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         if (startInSetting) {
             settingFragment.setCalculatorEnabled(
                 intent.getBooleanExtra(
-                    "calculator_enabled",
-                    false
+                    "calculator_enabled", false
                 )
             )
         } else {
@@ -255,7 +242,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     }
 
     private val isCalculatorComponentEnabled: Boolean
-        private get() = PackageManager.COMPONENT_ENABLED_STATE_ENABLED == packageManager.getComponentEnabledSetting(
+        get() = PackageManager.COMPONENT_ENABLED_STATE_ENABLED == packageManager.getComponentEnabledSetting(
             ComponentName(this, "com.jefferson.application.br.CalculatorAlias")
         )
 
@@ -272,39 +259,38 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        val id = item.itemId
-        if (id == R.id.main_item1) {
-            changeFragment(mainFragment)
-            return true
-        }
-        if (id == R.id.main_item2) {
-            changeFragment(lockFragment)
-            return true
-        }
-        if (id == R.id.item3) {
-            changeFragment(settingFragment)
-            return true
-        }
-        if (id == R.id.item_4) {
-            try {
-                IntentUtils.shareApp(this)
-            } catch (e: ActivityNotFoundException) {
-                activityNotFound()
+        when (item.itemId) {
+            R.id.main_item1 -> {
+                changeFragment(mainFragment)
             }
-            return true
-        }
-        if (id == R.id.item_5) {
-            try {
-                IntentUtils.reportBug(this)
-            } catch (e: ActivityNotFoundException) {
-                activityNotFound()
+            R.id.main_item2 -> {
+                changeFragment(lockFragment)
             }
-            return true
+            R.id.item3 -> {
+                changeFragment(settingFragment)
+            }
+            R.id.item_4 -> {
+                try {
+                    IntentUtils.shareApp(this)
+                } catch (e: ActivityNotFoundException) {
+                    activityNotFound()
+                }
+            }
+            R.id.item_5 -> {
+                try {
+                    IntentUtils.reportBug(this)
+                } catch (e: ActivityNotFoundException) {
+                    activityNotFound()
+                }
+            }
+            else -> {
+                return false
+            }
         }
-        return false
+        return true
     }
 
-    fun activityNotFound() {
+    private fun activityNotFound() {
         Toast.makeText(this, "Nenhum app encontrado!", Toast.LENGTH_LONG).show()
     }
 
@@ -313,8 +299,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         if (ServiceUtils.isMyServiceRunning(AppLockService::class.java)) {
             startService(
                 Intent(
-                    this,
-                    AppLockService::class.java
+                    this, AppLockService::class.java
                 ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
         }
@@ -389,8 +374,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 finish()
                 return true
             }
-        }
-        )
+        })
         dialog.setNegativeButton(getString(R.string.nao), null).show()
     }
 
@@ -422,13 +406,10 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
             if (enabled != isCalculatorComponentEnabled) {
                 settingFragment.disableLauncherActivity(enabled)
                 settingFragment.setComponentEnabled(
-                    !enabled,
-                    "com.jefferson.application.br.CalculatorAlias"
+                    !enabled, "com.jefferson.application.br.CalculatorAlias"
                 )
                 Toast.makeText(
-                    this,
-                    getString(R.string.aplicando_configuracoes),
-                    Toast.LENGTH_SHORT
+                    this, getString(R.string.aplicando_configuracoes), Toast.LENGTH_SHORT
                 ).show()
             }
         }
@@ -436,8 +417,15 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     }
 
     override fun onLayoutChange(
-        v: View, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int,
-        oldTop: Int, oldRight: Int, oldBottom: Int
+        v: View,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int,
+        oldLeft: Int,
+        oldTop: Int,
+        oldRight: Int,
+        oldBottom: Int
     ) {
         if (oldMargin != v.height) {
             notifyBottomLayoutChanges(v)
@@ -446,7 +434,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     }
 
     private fun notifyBottomLayoutChanges(v: View) {
-        if (mainFragment != null) mainFragment!!.notifyBottomLayoutChanged(v)
+        mainFragment.notifyBottomLayoutChanged(v)
         lockFragment.notifyBottomLayoutChanged(v)
     }
 

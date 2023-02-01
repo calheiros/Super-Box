@@ -284,7 +284,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     private fun showFilesInfo() {
-        val files = adapter.selectedItemsPath
+        val files = adapter.selectedItems
         val size = files.size
         val resId: Int
         val view: View

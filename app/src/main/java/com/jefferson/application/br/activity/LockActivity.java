@@ -47,7 +47,6 @@ public class LockActivity extends MyCompatActivity {
 	protected void onPostCreate(Bundle savedInstanceState) {
 		if (toolbar != null) {
 			setupToolbar();
-
 		}
 		super.onPostCreate(savedInstanceState);
 	}
