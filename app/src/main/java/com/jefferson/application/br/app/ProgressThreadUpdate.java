@@ -80,9 +80,7 @@ public class ProgressThreadUpdate extends Thread {
 			mHandler.postDelayed(mRunnable, 250);
 		}
 	}
-    
-	
-    
+
 	@Override
 	public void run() {
 		while (running) {

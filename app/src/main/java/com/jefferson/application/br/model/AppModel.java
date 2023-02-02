@@ -23,5 +23,5 @@ public class AppModel {
     
     public String appname;
 	public Drawable icon;
-	public String pname;
+	public String name;
 }

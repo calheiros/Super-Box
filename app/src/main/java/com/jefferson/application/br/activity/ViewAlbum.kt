@@ -59,7 +59,7 @@ import java.util.*
 import kotlin.math.abs
 
 class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
-    val minItemWidth = 110
+    private val minItemWidth = 110
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MultiSelectRecyclerViewAdapter
     private lateinit var filePaths: ArrayList<MediaModel>
@@ -197,8 +197,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         adapter: MultiSelectRecyclerViewAdapter?
     ) {
         myThread = RetrieverDataTask(list, adapter)
-        myThread!!.priority = Thread.MAX_PRIORITY
-        myThread!!.start()
+        myThread?.priority = Thread.MAX_PRIORITY
+        myThread?.start()
     }
 
     private fun toggleSelection() {

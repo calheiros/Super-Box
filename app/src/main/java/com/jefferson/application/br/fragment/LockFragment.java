@@ -78,7 +78,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     private ProgressBar mProgressBar;
     private TextView mTextView;
     private ArrayList<AppModel> appModels;
-    private AppLockAdapter appsAdapter;
+    private AppLockAdapter adapter;
     private ListView listView;
     private Intent intent;
     private View parentView;
@@ -145,7 +145,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                     if (mTask.getStatus() == JTask.Status.STARTED) {
                         mySwipeRefreshLayout.setRefreshing(false);
                     } else {
-                        appsAdapter.clear();
+                        adapter.clear();
                         showProgressView();
                         startLoadPackagesTask();
                     }
@@ -167,27 +167,27 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     }
 
     private void applicationFound(int x) {
-        listView.smoothScrollToPositionFromTop(x, (listView.getHeight() / 2) - (appsAdapter.getItemHeight() / 2));
+        listView.smoothScrollToPositionFromTop(x, (listView.getHeight() / 2) - (adapter.getItemHeight() / 2));
         //mListView.smoothScrollToPosition(scrollPosition);
         hideInputMethod(requireActivity().getWindow().getCurrentFocus());
 
         if (x >= firstVisibleItem && x < lastVisibleItem) {
             //Toast.makeText(getContext(), "It's a visible item!", 1).show();
-            appsAdapter.animateSearchedItem(x);
+            adapter.animateSearchedItem(x);
         } else {
-            appsAdapter.setSearchedItem(x);
+            adapter.setSearchedItem(x);
         }
     }
 
     @Override
     public boolean onQueryTextSubmit(String input) {
 
-        if (appsAdapter == null || input.isEmpty()) {
+        if (adapter == null || input.isEmpty()) {
             return false;
         }
 
         AppModel model;
-        ArrayList<AppModel> models = appsAdapter.models;
+        ArrayList<AppModel> models = adapter.getModels();
         int firstContains = -1;
 
         for (int x = 0; x < models.size(); x++) {
@@ -249,7 +249,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
 
         if (!needPermissionForBlocking(getContext())) {
             if (noNeedOverlayPermission) {
-                appsAdapter.toogleSelection(position, view);
+                this.adapter.toggleSelection(position);
                 animateCheckView(lastClickedParentView);
             }
         } else {
@@ -279,7 +279,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     @Override
     public void onPause() {
         super.onPause();
-        if (appsAdapter != null && appsAdapter.isMutable()) {
+        if (adapter != null && adapter.isMutable()) {
             requireContext().startService(new Intent(getContext(), AppLockService.class).setAction(App.ACTION_APPLOCK_SERVICE_UPDATE_DATA));
         }
     }
@@ -288,8 +288,8 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     public void onResume() {
         super.onResume();
 
-        if (appsAdapter != null) {
-            appsAdapter.setMutable(false);
+        if (adapter != null) {
+            adapter.setMutable(false);
         }
     }
 
@@ -299,12 +299,11 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
     }
 
     public void doTaskFinalized() {
-
-        if (appsAdapter == null) {
-            appsAdapter = new AppLockAdapter(getActivity(), appModels);
-            listView.setAdapter(appsAdapter);
+        if (adapter == null) {
+            adapter = new AppLockAdapter(getActivity(), appModels);
+            listView.setAdapter(adapter);
         } else {
-            appsAdapter.putDataSet(appModels);
+            adapter.putDataSet(appModels);
         }
         mProgressBar.setVisibility(View.GONE);
         mTextView.setVisibility(View.GONE);
@@ -335,7 +334,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(getContext())) {
                 return;
             }
-            appsAdapter.toogleSelection(lastClickedItemPosition, parentView);
+            adapter.toggleSelection(lastClickedItemPosition);
             animateCheckView(lastClickedParentView);
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -429,7 +428,7 @@ public class LockFragment extends Fragment implements OnItemClickListener, andro
                 }
                 AppModel newInfo = new AppModel();
                 newInfo.appname = p.loadLabel(pm).toString();
-                newInfo.pname = p.activityInfo.packageName;
+                newInfo.name = p.activityInfo.packageName;
                 newInfo.icon = p.activityInfo.loadIcon(pm);
                 appModels.add(newInfo);
 

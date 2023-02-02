@@ -91,7 +91,7 @@ class DeveloperActivity : MyCompatActivity() {
         val simple = SimpleDialog(this, SimpleDialog.STYLE_PROGRESS)
         simple.setTitle(R.string.unicode_shrug)
         simple.setMessage("Mensagem de teste")
-        simple.progress = 76
+        simple.setProgress(76)
         simple.setPositiveButton(getString(android.R.string.ok), null)
         simple.setNegativeButton(getString(android.R.string.cancel), null)
         simple.show()
@@ -122,8 +122,6 @@ class DeveloperActivity : MyCompatActivity() {
             Log.d(TAG, "You have Notification Access")
             JDebug.toast("You have Notification Access")
         }
-        //Intent inten = new Intent(this, NotificationActivity.class);
-        //startActivity(inten);
     }
 
     fun camera(v: View) {
@@ -156,11 +154,10 @@ class DeveloperActivity : MyCompatActivity() {
     }
 
     private inner class MyObserver : FileObserver {
-        constructor(path: String?) : super(path) {}
+        constructor(path: String?) : super(path)
 
         @RequiresApi(Build.VERSION_CODES.Q)
-        constructor(file: File?) : super(file!!) {
-        }
+        constructor(file: File?) : super(file!!)
 
         override fun onEvent(event: Int, name: String?) {
             JDebug.toast(name)
@@ -170,7 +167,7 @@ class DeveloperActivity : MyCompatActivity() {
     fun testThread(v: View?) {
         val dialog = SimpleDialog(this, SimpleDialog.STYLE_PROGRESS)
         dialog.setTitle("thread test")
-        dialog.max = 100
+        dialog.setMax(100)
         dialog.show()
         object : JTask() {
             override fun onException(e: Exception) {
@@ -199,7 +196,7 @@ class DeveloperActivity : MyCompatActivity() {
             }
 
             override fun onUpdated(vararg args: Any) {
-                dialog.progress = args[0] as Int
+                dialog.setProgress(args[0] as Int)
             }
 
             override fun onInterrupted() {
