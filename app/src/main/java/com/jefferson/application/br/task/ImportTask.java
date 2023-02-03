@@ -13,17 +13,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br.task;
 
 import android.app.Activity;
 import android.widget.Toast;
 
-import com.jefferson.application.br.App;
-import com.jefferson.application.br.FileModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.database.PathsDatabase;
+import com.jefferson.application.br.model.FileModel;
 import com.jefferson.application.br.util.FileTransfer;
 import com.jefferson.application.br.util.Storage;
 import com.jefferson.application.br.util.StringUtils;
@@ -40,18 +39,18 @@ public class ImportTask extends JTask {
     public static final int PREPARATION_UPDATE = 1;
     public static final int PROGRESS_UPDATE = 2;
     private static final String TAG = "ImportTask";
-    private Exception error = null;
     private final ArrayList<String> importedFilesPath = new ArrayList<>();
     private final int maxProgress;
     private final ArrayList<FileModel> models;
-    private WatchTransference watchTransfer;
     private final StringBuilder errorMessage = new StringBuilder();
-    private int failuresCount = 0;
     private final FileTransfer mTransfer;
-    private boolean waiting = false;
     private final Listener listener;
     private final String no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n";
     private final Activity activity;
+    private Exception error = null;
+    private WatchTransference watchTransfer;
+    private int failuresCount = 0;
+    private boolean waiting = false;
 
     public ImportTask(Activity activity, ArrayList<FileModel> models, Listener listener) {
         this.activity = activity;
@@ -91,7 +90,7 @@ public class ImportTask extends JTask {
     @Override
     protected void onTaskCancelled() {
         super.onTaskCancelled();
-        Toast.makeText(App.getAppContext(), "Task cancelled!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(activity, "Task cancelled!", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -103,7 +102,7 @@ public class ImportTask extends JTask {
     }
 
     private void synchronize() {
-        Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]));
+        Storage.scanMediaFiles(importedFilesPath.toArray(new String[importedFilesPath.size()]), activity);
     }
 
     @Override
@@ -121,7 +120,7 @@ public class ImportTask extends JTask {
     @Override
     public void workingThread() {
         double max = 0;
-        PathsDatabase database = PathsDatabase.getInstance(activity, Storage.getDefaultStoragePath());
+        PathsDatabase database = PathsDatabase.getInstance(activity, Storage.getDefaultStoragePath(activity));
         PathsDatabase folderDatabase = PathsDatabase.getInstance(activity);
 
         try {
@@ -130,7 +129,7 @@ public class ImportTask extends JTask {
                 max += file.length();
             }
 
-            File target = new File(Storage.getDefaultStoragePath());
+            File target = new File(Storage.getDefaultStoragePath(activity));
 
             if ((target.getFreeSpace() < max)) {
                 sendUpdate(-2, activity.getString(R.string.sem_espaco_aviso));
@@ -174,7 +173,8 @@ public class ImportTask extends JTask {
                 String parentPath = model.getParentPath();
 
                 if (parentPath == null) {
-                    parentPath = Storage.getFolder(FileModel.IMAGE_TYPE.equals(model.getType()) ? Storage.IMAGE : Storage.VIDEO) + File.separator + randomString2;
+                    parentPath = Storage.getFolder(FileModel.IMAGE_TYPE.equals(model.getType()) ?
+                            Storage.IMAGE : Storage.VIDEO, activity) + File.separator + randomString2;
                 }
 
                 File destFile = new File(parentPath, randomString);
@@ -198,7 +198,7 @@ public class ImportTask extends JTask {
                     String response = mTransfer.transferStream(inputStream, outputStream);
 
                     if (FileTransfer.OK.equals(response)) {
-                        if (Storage.deleteFile(file)) {
+                        if (Storage.deleteFile(file, activity)) {
                             database.insertMediaData(randomString, model.getResource());
                             importedFilesPath.add(file.getAbsolutePath());
                         } else {

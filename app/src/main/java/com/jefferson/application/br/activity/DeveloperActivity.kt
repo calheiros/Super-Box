@@ -48,9 +48,9 @@ class DeveloperActivity : MyCompatActivity() {
         wifi = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
         setContentView(R.layout.developer_layout)
         val switchView = findViewById<Switch>(R.id.developerlayoutSwitch)
-        switchView.isChecked = JDebug.isDebugOn()
+        switchView.isChecked = JDebug.isDebugOn(this)
         switchView.setOnCheckedChangeListener { compButton, checked ->
-            JDebug.setDebug(checked)
+            JDebug.setDebug(checked, this)
             val msg = if (checked) "Debug mode: ENABLED!" else "Debug mode: DISABLED!"
             Toast.makeText(this@DeveloperActivity, msg, Toast.LENGTH_LONG).show()
         }

@@ -19,7 +19,7 @@ package com.jefferson.application.br.task;
 
 import android.content.Context;
 
-import com.jefferson.application.br.FileModel;
+import com.jefferson.application.br.model.FileModel;
 import com.jefferson.application.br.util.JDebug;
 import java.util.ArrayList;
 
@@ -78,15 +78,12 @@ public class FileModelBuilderTask extends JTask {
     
     @Override
     public void onException(Exception e) {
-        JDebug.writeLog(e.getCause());
     }
     
     public void setOnLoopListener(onLoopListener listener) {
-
     }
 
     public void setDestination(String absolutePath) {
-
     }
 
     public static interface onLoopListener {

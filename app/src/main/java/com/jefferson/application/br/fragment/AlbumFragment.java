@@ -30,7 +30,6 @@ import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -40,7 +39,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.jefferson.application.br.FileModel;
+import com.jefferson.application.br.model.FileModel;
 import com.jefferson.application.br.R;
 import com.jefferson.application.br.activity.MainActivity;
 import com.jefferson.application.br.activity.ViewAlbum;
@@ -150,7 +149,7 @@ public class AlbumFragment extends Fragment {
         PathsDatabase database = null;
         ArrayList<SimplifiedAlbum> simplifiedModels = new ArrayList<>();
         ArrayList<FolderModel> models = new ArrayList<FolderModel>();
-        File root = Storage.getFolder(position == 0 ? Storage.IMAGE : Storage.VIDEO);
+        File root = Storage.getFolder(position == 0 ? Storage.IMAGE : Storage.VIDEO, requireContext());
         root.mkdirs();
 
         try {
@@ -227,7 +226,7 @@ public class AlbumFragment extends Fragment {
             public void onException(Exception e) {
                 revokeFinish(true);
                 Toast.makeText(getContext(), "Unknown error occurred! " + e.getMessage(), Toast.LENGTH_LONG).show();
-                JDebug.writeLog(e.getCause());
+                JDebug.writeLog(e.getCause(), requireContext());
             }
 
         };
@@ -287,7 +286,7 @@ public class AlbumFragment extends Fragment {
             if (id == null) {
                 id = randomStr;
                 int strType = position == 0 ? Storage.IMAGE : Storage.VIDEO;
-                File file = new File(Storage.getFolder(strType), randomStr);
+                File file = new File(Storage.getFolder(strType, context), randomStr);
 
                 if (file.mkdirs()) {
                     folder = new FolderModel();

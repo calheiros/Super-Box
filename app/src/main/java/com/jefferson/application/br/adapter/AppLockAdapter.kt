@@ -96,7 +96,7 @@ class AppLockAdapter(private val activity: Activity, var models: ArrayList<AppMo
         val info = models[position]
         val icon = info.icon
         holder.imageView?.setImageDrawable(icon)
-        holder.textView?.text = info.appname
+        holder.textView?.text = info.packageName
         holder.lockCheck?.isChecked = selectionArray[position, false]
 
         val animation = AnimationUtils.loadAnimation(activity, R.anim.zoom_in)

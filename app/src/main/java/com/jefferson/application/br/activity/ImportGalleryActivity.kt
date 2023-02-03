@@ -32,7 +32,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import com.jefferson.application.br.FileModel
+import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.PhotosFolderAdapter
 import com.jefferson.application.br.model.FolderModel

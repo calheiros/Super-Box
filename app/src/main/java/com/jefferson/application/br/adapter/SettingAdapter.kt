@@ -118,13 +118,13 @@ class SettingAdapter(
         val expandableLayout = v.findViewById<View>(R.id.steal_thexpandable_layout)
         val calculator = v.findViewById<View>(R.id.steal_calculator_layout)
         calculatorDescText = v.findViewById(R.id.stealth_expandable_descriptionTextView)
-        calculatorDescText?.text = MyPreferences.getCalculatorCode()
+        calculatorDescText?.text = MyPreferences.getCalculatorCode(settingFragment.requireContext())
         mySwitch = v.findViewById(R.id.my_switch)
         calculator.setOnClickListener { startCalculatorActivity() }
 
         v.setOnClickListener(View.OnClickListener {
             val checked = mySwitch?.isChecked
-            if (!checked!! && MyPreferences.getCalculatorCode() == "4321") {
+            if (!checked!! && MyPreferences.getCalculatorCode(settingFragment.requireContext()) == "4321") {
                 val contentView = settingFragment.requireActivity().layoutInflater.inflate(
                     R.layout.calculator_tip_dialog_layout,
                     null

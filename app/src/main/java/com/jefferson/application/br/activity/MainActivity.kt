@@ -129,7 +129,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 )
             )
         }
-        if (!MyPreferences.userAcceptedAgreement()) {
+        if (!MyPreferences.userAcceptedAgreement(this)) {
             showUserAgreement()
         }
         createFragments()
@@ -225,7 +225,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
 
     private fun createFragments() {
         mainFragment = MainFragment()
-        lockFragment = LockFragment()
+        lockFragment = LockFragment(this)
         settingFragment = SettingFragment()
         val startInSetting = ACTION_START_IN_PREFERENCES == intent.action
         if (startInSetting) {
@@ -296,7 +296,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
         super.onPostCreate(savedInstanceState)
-        if (ServiceUtils.isMyServiceRunning(AppLockService::class.java)) {
+        if (ServiceUtils.isMyServiceRunning(AppLockService::class.java, this)) {
             startService(
                 Intent(
                     this, AppLockService::class.java
@@ -320,7 +320,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 return
             }
             if (requestCode == SettingFragment.CALCULATOR_CREATE_CODE_RESULT) {
-                settingFragment.setCodeDescription(MyPreferences.getCalculatorCode())
+                settingFragment.setCodeDescription(MyPreferences.getCalculatorCode(this))
                 return
             }
             if (requestCode == MainFragment.GET_FILE) {
@@ -338,7 +338,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                         uri!!,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     )
-                    Storage.storeExternalUri(uri.toString())
+                    Storage.storeExternalUri(uri.toString(), this)
                 }
             } else if (requestCode == IMPORT_FROM_GALLERY_CODE) {
                 position = data!!.getIntExtra("position", -1)

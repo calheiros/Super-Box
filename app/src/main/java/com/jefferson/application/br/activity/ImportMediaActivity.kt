@@ -31,7 +31,7 @@ import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.AdView
 import com.google.android.material.snackbar.Snackbar
 import com.jefferson.application.br.App
-import com.jefferson.application.br.FileModel
+import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
@@ -103,7 +103,8 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                     if (type == FileModel.IMAGE_TYPE) R.plurals.quantidade_imagem_total else R.plurals.quantidade_video_total
             }
             if (parent == null) {
-                builderTask!!.setDestination(Storage.getFolder(if (FileModel.IMAGE_TYPE == type) Storage.IMAGE else Storage.VIDEO).absolutePath)
+                builderTask!!.setDestination(Storage.getFolder(if (FileModel.IMAGE_TYPE == type)
+                    Storage.IMAGE else Storage.VIDEO, this).absolutePath)
             }
             builderTask!!.setOnUpdatedListener(this)
             builderTask!!.setOnFinishedListener { startImportTask(builderTask!!.data) }
@@ -181,7 +182,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
             2 -> {
                 if (values.size > 4) {
                     Toast.makeText(
-                        App.getAppContext(),
+                        this,
                         "Invalid arguments: args = " + values.size,
                         Toast.LENGTH_SHORT
                     ).show()

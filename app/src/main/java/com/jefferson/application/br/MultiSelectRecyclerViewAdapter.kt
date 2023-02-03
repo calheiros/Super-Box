@@ -119,7 +119,7 @@ class MultiSelectRecyclerViewAdapter(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val mediaDuration = items[position].duration
-        Glide.with(App.getAppContext()).load("file://" + items[position].path)
+        Glide.with(context).load("file://" + items[position].path)
             .skipMemoryCache(false).dontAnimate().into(viewHolder.imageView)
         if (mediaDuration != null) {
             viewHolder.durationLabel.visibility = View.VISIBLE

@@ -227,7 +227,7 @@ class CalculatorActivity : MyCompatActivity(), OnLongClickListener {
             }
             if (code != null) {
                 if (code == input) {
-                    MyPreferences.putCalculatorCode(input)
+                    MyPreferences.putCalculatorCode(input, this)
                     Toast.makeText(this, "Code confirmed!", Toast.LENGTH_SHORT).show()
                     setResult(RESULT_OK)
                     finish()
@@ -239,7 +239,7 @@ class CalculatorActivity : MyCompatActivity(), OnLongClickListener {
                 editText.text.clear()
                 showHint("Type your code again to confirm it.")
             }
-        } else if (input == MyPreferences.getCalculatorCode()) {
+        } else if (input == MyPreferences.getCalculatorCode(this)) {
             val intent = Intent(this, MainActivity::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS)
             startActivity(intent)

@@ -21,16 +21,15 @@ import android.app.*;
 import android.content.*;
 import android.net.*;
 import android.os.*;
-import androidx.appcompat.app.*;
 import android.widget.*;
 
+import com.jefferson.application.br.model.FileModel;
 import com.jefferson.application.br.task.*;
 import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
 import com.jefferson.application.br.util.JDebug;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.annotation.NonNull;
 import com.jefferson.application.br.activity.ImportMediaActivity;
 
@@ -55,7 +54,7 @@ public class ReceiverMedia extends Activity {
 
 		if (action.equals(Intent.ACTION_SEND)) {
 			Uri uri = intent.getParcelableExtra(Intent.EXTRA_STREAM);
-            String path = Storage.getPath(uri);
+            String path = Storage.getPath(uri, this);
 
             if (path == null) {
                 Toast.makeText(this, "Failed!", Toast.LENGTH_SHORT).show();
@@ -120,7 +119,7 @@ public class ReceiverMedia extends Activity {
                 sendUpdate(++index);
                 String path = null;
                 try {
-                    path = Storage.getPath(uri);
+                    path = Storage.getPath(uri, activity);
                 } catch (Exception e) {
                     JDebug.toast("Trying uribto file " + uri.getPath());
                 }

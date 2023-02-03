@@ -79,5 +79,4 @@ public class MediaModel implements Parcelable {
     public String toString() {
         return absolutePath;
     }
-    
 }

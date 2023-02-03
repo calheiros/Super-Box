@@ -58,7 +58,7 @@ class CreatePattern : MyCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.create_pattern)
         // applyParentViewPadding(findViewById(R.id.create_pattern_parent_layout));
-        passwordManager = PasswordManager()
+        passwordManager = PasswordManager(this)
         oldPass = passwordManager.internalPassword
         action = intent.action
         defaultText = getString(R.string.desenhe_seu_padrao)

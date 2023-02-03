@@ -22,6 +22,7 @@ import android.widget.*;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.app.*;
 import com.jefferson.application.br.database.*;
+import com.jefferson.application.br.model.FileModel;
 import com.jefferson.application.br.util.*;
 import java.io.*;
 import java.util.*;
@@ -29,11 +30,11 @@ import java.util.*;
 public class DeleteFilesTask extends JTask {
 
     public int progress;
-    private List<String> items;
+    private final List<String> items;
     public SimpleDialog dialog;
-    private Activity activity;
-    private int position;
-    private File rootFile;
+    private final Activity activity;
+    private final int position;
+    private final File rootFile;
     private boolean deletedAll;
     private JTask.OnFinishedListener listener;
 
@@ -50,7 +51,7 @@ public class DeleteFilesTask extends JTask {
 
     @Override
     public void workingThread() {
-        PathsDatabase database = PathsDatabase.getInstance(activity, Storage.getDefaultStoragePath());
+        PathsDatabase database = PathsDatabase.getInstance(activity, Storage.getDefaultStoragePath(activity));
         try {
             for (String path : items) {
                 if (isInterrupted()) {

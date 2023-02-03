@@ -48,7 +48,7 @@ class VerifyActivity : MyCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        password = PasswordManager().internalPassword
+        password = PasswordManager(this).internalPassword
         if (password.isEmpty()) {
             startActivity(
                 Intent(
@@ -62,7 +62,7 @@ class VerifyActivity : MyCompatActivity() {
         setNavigationAndStatusBarTransparent()
         setContentView(R.layout.pattern)
         setWallpaper()
-        val sharedPrefs = MyPreferences.getSharedPreferences()
+        val sharedPrefs = MyPreferences.getSharedPreferences(this)
         if (sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false)) openBiometricPrompt()
         materialLockView = findViewById(R.id.pattern)
         materialLockView.isTactileFeedbackEnabled = false

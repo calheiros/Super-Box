@@ -30,7 +30,7 @@ import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.jefferson.application.br.FileModel
+import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.MainActivity.Companion.instance
 import com.jefferson.application.br.adapter.FilePickerAdapter
@@ -192,7 +192,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
 
     private fun getModels(i: Int): List<PickerModel> {
         val arrayList = ArrayList<PickerModel>()
-        val storageAndFolder = Storage.getFolder(if (i == 0) Storage.IMAGE else Storage.VIDEO)
+        val storageAndFolder = Storage.getFolder(if (i == 0) Storage.IMAGE else Storage.VIDEO, this)
         val instance = PathsDatabase.getInstance(this)
         val listFiles = storageAndFolder?.listFiles()!!
         for (file in listFiles) {

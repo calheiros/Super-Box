@@ -60,7 +60,7 @@ public class ImagePreviewFragment extends Fragment implements View.OnClickListen
             parentView = inflater.inflate(R.layout.image_preview_layout, container, false);
             SubsamplingScaleImageView imageView = parentView.findViewById(R.id.imageView);
             ImageView gifView = parentView.findViewById(R.id.gif_view);
-            PathsDatabase database = PathsDatabase.getInstance(getContext(), Storage.getDefaultStoragePath());
+            PathsDatabase database = PathsDatabase.getInstance(getContext(), Storage.getDefaultStoragePath(requireContext()));
             String originPath = database.getMediaPath(new File(path).getName());
             database.close();
 

@@ -36,7 +36,7 @@ public class LockActivity extends MyCompatActivity {
         int frameId = R.id.lock_FrameLayout_conteiner;
 
 		if (conteiner.findViewById(frameId) != null) {
-			getSupportFragmentManager().beginTransaction().add(frameId, new LockFragment()).commit();
+			//getSupportFragmentManager().beginTransaction().add(frameId, new LockFragment(this)).commit();
 		} else {
 			return;
 		}

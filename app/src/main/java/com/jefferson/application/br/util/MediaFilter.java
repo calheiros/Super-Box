@@ -18,6 +18,7 @@
 package com.jefferson.application.br.util;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.net.Uri;
 import androidx.annotation.NonNull;
 import android.util.Log;
@@ -70,10 +71,10 @@ public class MediaFilter {
         return type; 
     }
 
-    public String getMimeTypeFromUri(@NonNull Uri uri) { 
+    public String getMimeTypeFromUri(@NonNull Uri uri, Context context) {
         String mimeType = null; 
         if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) { 
-            ContentResolver cr = App.getAppContext().getContentResolver(); 
+            ContentResolver cr = context.getContentResolver();
             mimeType = cr.getType(uri); 
         } else { 
             String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri .toString()); 

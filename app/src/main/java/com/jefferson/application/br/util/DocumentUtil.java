@@ -32,8 +32,8 @@ import androidx.documentfile.provider.DocumentFile;
 public class DocumentUtil {
 	private static String TAG = "document util";
 
-	public static DocumentFile getDocumentFile(final File file, boolean force) {
-		String baseFolder = getExtSdCardFolder(file);
+	public static DocumentFile getDocumentFile(final File file, boolean force, Context context) {
+		String baseFolder = getExtSdCardFolder(file, context);
 
 		if (baseFolder == null) {
 			return null;
@@ -47,14 +47,14 @@ public class DocumentUtil {
 			return null;
 		}
 
-		Uri treeUri = Storage.getExternalUri(App.getInstance());
+		Uri treeUri = Storage.getExternalUri(context);
 
 		if (treeUri == null) {
 			return null;
 		}
 
 		// start with root of SD card and then parse through document tree.
-		DocumentFile document = DocumentFile.fromTreeUri(App.getInstance(), treeUri);
+		DocumentFile document = DocumentFile.fromTreeUri(context, treeUri);
 
 		String[] parts = relativePath.split("\\/");
 		for (int i = 0; i < parts.length; i++) {
@@ -76,8 +76,8 @@ public class DocumentUtil {
 		return document;
 	}
 
-	public static String getExtSdCardFolder(final File file) {
-		String[] extSdPaths = getExtSdCardPaths();
+	public static String getExtSdCardFolder(final File file, Context context) {
+		String[] extSdPaths = getExtSdCardPaths(context);
 		try {
 			for (int i = 0; i < extSdPaths.length; i++) {
 				if (file.getCanonicalPath().startsWith(extSdPaths[i])) {
@@ -96,8 +96,7 @@ public class DocumentUtil {
 	 * @return A list of external SD card paths.
 	 */
 	@TargetApi(Build.VERSION_CODES.KITKAT)
-	private static String[]  getExtSdCardPaths() {
-		Context context = App.getAppContext();
+	private static String[]  getExtSdCardPaths(Context context) {
 		List<String> paths = new ArrayList<>();
 		for (File file : context.getExternalFilesDirs("external")) {
 			if (file != null && !file.equals(context.getExternalFilesDir("external"))) {

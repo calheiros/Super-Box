@@ -60,7 +60,7 @@ public class PathsDatabase extends SQLiteOpenHelper {
     }
 
     public static PathsDatabase getInstance(Context context) {
-        File file = new File(Storage.getDefaultStoragePath(), "database.db");
+        File file = new File(Storage.getDefaultStoragePath(context), "database.db");
         file.getParentFile().mkdirs();
         return new PathsDatabase(context, file.getAbsolutePath());
     }

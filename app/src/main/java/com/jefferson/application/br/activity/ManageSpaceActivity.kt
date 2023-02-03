@@ -35,7 +35,7 @@ class ManageSpaceActivity : AppCompatActivity() {
         setContentView(R.layout.manage_space_layout)
         pattern = findViewById(R.id.pattern)
         patternLayout = findViewById(R.id.pattern_view)
-        passwd = PasswordManager().internalPassword
+        passwd = PasswordManager(this).internalPassword
         pattern.setOnPatternListener(PatternListener())
         Toast.makeText(this, "ACTION: " + intent.action, Toast.LENGTH_LONG).show()
     }

@@ -57,8 +57,8 @@ public class Storage extends DocumentUtil {
     public static final String VIDEO_DIR_NAME = "bpe8x1svi9jvhmprmawsy3d8";
     public static final String EXTERNAL_URI_KEY = "external_uri";
 
-    public static void storeExternalUri(String uri) {
-        MyPreferences.getSharedPreferencesEditor().putString(Storage.EXTERNAL_URI_KEY, uri).commit();
+    public static void storeExternalUri(String uri, Context context) {
+        MyPreferences.getSharedPreferencesEditor(context).putString(Storage.EXTERNAL_URI_KEY, uri).commit();
     }
 
     public static boolean writeFile(String content, File target) {
@@ -80,8 +80,8 @@ public class Storage extends DocumentUtil {
         return true;
     }
 
-    public static String getRecycleBinPath() {
-        File file = new File(getDefaultStoragePath(), ".trashed");
+    public static String getRecycleBinPath(Context context) {
+        File file = new File(getDefaultStoragePath(context), ".trashed");
         file.mkdirs();
         return file.getAbsolutePath();
     }
@@ -148,15 +148,15 @@ public class Storage extends DocumentUtil {
         return result;
     }
 
-    public static void setNewLocalStorage(int selected) {
+    public static void setNewLocalStorage(int selected, Context context) {
         if (selected == 0 || selected == 1) {
-            PreferenceManager.getDefaultSharedPreferences(App.getAppContext()).
+            PreferenceManager.getDefaultSharedPreferences(context).
                     edit().putString(STORAGE_LOCATION, selected == 0 ? INTERNAL : EXTERNAL).commit();
         }
     }
 
     public static Uri getExternalUri(Context context) {
-        String string = MyPreferences.getSharedPreferences().getString(EXTERNAL_URI_KEY, null);
+        String string = MyPreferences.getSharedPreferences(context).getString(EXTERNAL_URI_KEY, null);
 
         if (string == null) {
             return null;
@@ -165,24 +165,23 @@ public class Storage extends DocumentUtil {
         return Uri.parse(string);
     }
 
-    public static File getFolder(int type) {
-
+    public static File getFolder(int type, Context context) {
         switch (type) {
             case IMAGE:
-                return new File(getDefaultStoragePath(), IMAGE_DIR_NAME);
+                return new File(getDefaultStoragePath(context), IMAGE_DIR_NAME);
             case VIDEO:
-                return new File(getDefaultStoragePath(), VIDEO_DIR_NAME);
+                return new File(getDefaultStoragePath(context), VIDEO_DIR_NAME);
             default:
                 return null;
         }
     }
 
-    public static String getStorageLocation() {
-        return PreferenceManager.getDefaultSharedPreferences(App.getAppContext()).getString(STORAGE_LOCATION, INTERNAL);
+    public static String getStorageLocation(Context context) {
+        return PreferenceManager.getDefaultSharedPreferences(context).getString(STORAGE_LOCATION, INTERNAL);
     }
 
-    public static int getStoragePosition() {
-        String storageLocation = Storage.getStorageLocation();
+    public static int getStoragePosition(Context context) {
+        String storageLocation = Storage.getStorageLocation(context);
 
         if (Storage.INTERNAL.equals(storageLocation)) {
             return 0;
@@ -195,21 +194,20 @@ public class Storage extends DocumentUtil {
         return -1;
     }
 
-    public static String getDefaultStoragePath() {
-        String storageLocation = getStorageLocation();
-        String extPath = getExternalStorage();
+    public static String getDefaultStoragePath(Context context) {
+        String storageLocation = getStorageLocation(context);
+        String extPath = getExternalStorage(context);
 
         if (INTERNAL.equals(storageLocation) || extPath == null) {
-            return getInternalStorage();
+            return getInternalStorage(context);
         } else {
             return extPath;
         }
     }
 
-    public static String getExternalStorage() {
-
+    public static String getExternalStorage(Context context) {
         try {
-            File[] externalFilesDirs = App.getAppContext().getExternalFilesDirs("");
+            File[] externalFilesDirs = context.getExternalFilesDirs("");
 
             if (externalFilesDirs == null)
                 return null;
@@ -221,34 +219,21 @@ public class Storage extends DocumentUtil {
                 Log.i("SD PATH", file.toString());
             }
         } catch (Exception e) {
-            //Toast.makeText(App.getAppContext(), e.toString(), 1).show();
+            e.printStackTrace();
         }
         return (String) null;
     }
 
-    public static String[] toArrayString(ArrayList<String> arrayList, boolean z) {
-        String str = z ? "file://" : "";
-        String[] strArr = new String[arrayList.size()];
-
-        for (int i = 0; i < arrayList.size(); i++) {
-
-            StringBuilder stringBuffer = new StringBuilder();
-            strArr[i] = stringBuffer.append(str).append(arrayList.get(i)).toString();
-        }
-
-        return strArr;
-    }
-
-    public static String getInternalStorage() {
-        File file = new File(Environment.getExternalStorageDirectory() + "/." + App.getAppContext().getPackageName() + "/data");
+    public static String getInternalStorage(Context context) {
+        File file = new File(Environment.getExternalStorageDirectory() + "/." + context.getPackageName() + "/data");
         file.mkdirs();
         return file.getAbsolutePath();
     }
 
-    public static boolean deleteFile(File file) {
+    public static boolean deleteFile(File file, Context context) {
 
         if (VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            DocumentFile documentFile = getDocumentFile(file, false);
+            DocumentFile documentFile = getDocumentFile(file, false, context);
 
             if (documentFile != null)
                 return documentFile.delete();
@@ -257,9 +242,9 @@ public class Storage extends DocumentUtil {
         return file.delete();
     }
 
-    public static void deleteFileFromMediaStore(File file) {
+    public static void deleteFileFromMediaStore(File file, Context context) {
         String canonicalPath;
-        ContentResolver contentResolver = App.getAppContext().getContentResolver();
+        ContentResolver contentResolver = context.getContentResolver();
         try {
             canonicalPath = file.getCanonicalPath();
         } catch (IOException e) {
@@ -281,47 +266,25 @@ public class Storage extends DocumentUtil {
         }
     }
 
-    public static void scanMediaFiles(String[] paths) {
+    public static void scanMediaFiles(String[] paths, Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mediaScannerConnection(paths);
+            mediaScannerConnection(paths, context);
         } else {
             for (String path : paths) {
                 Intent intent = new Intent(Intent.ACTION_MEDIA_MOUNTED);
                 intent.setData(Uri.parse("file://" + path));
-                App.getAppContext().sendBroadcast(intent);
+                context.sendBroadcast(intent);
             }
         }
     }
 
-    /*public static String getPathFromUri(@NonNull Uri uri, Context context) {
-     String filePath = null;
-
-     if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
-     try {
-     String[] proj = { MediaStore.Video.Media.DATA, MediaStore.Images.Media.DATA};
-     Cursor cursor = context.getContentResolver().query(uri, proj, null, null, null);
-     int column_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-     boolean c = cursor.moveToFirst();
-     if (c) {
-     return cursor.getString(column_index);
-     }
-     } catch (IllegalStateException e) {
-     e.printStackTrace();
-     }
-     } else {
-     filePath = uri.getPath();
-     }
-     Log.d("", "Chosen path = " + filePath);
-     return filePath;
-     }
-     */
-    public static String getPath(Uri uri) {
-        return new FileUtils(App.getAppContext()).getPath(uri);
+    public static String getPath(Uri uri, Context context) {
+        return new FileUtils(context).getPath(uri);
     }
 
-    public static void mediaScannerConnection(String[] strArr) {
+    public static void mediaScannerConnection(String[] strArr, Context context) {
 
-        MediaScannerConnection.scanFile(App.getAppContext(), strArr, null, new MediaScannerConnection.OnScanCompletedListener() {
+        MediaScannerConnection.scanFile(context, strArr, null, new MediaScannerConnection.OnScanCompletedListener() {
 
                     @Override
                     public void onScanCompleted(String p1, Uri p2) {

@@ -36,14 +36,14 @@ public class NotificationListener extends NotificationListenerService {
          * You can have an in memory variable regarding it, or persistant variable, 
          * Or you can use Settings to store current state. 
          * You can have your own approach */ 
-         if (!JDebug.isDebugOn()) {
+         if (!JDebug.isDebugOn(this)) {
              return;
          }
          String name = sbm.getPackageName();
          JDebug.toast("Received Notification: " + name);
          
         if (name.equals("com.whatsapp") || "com.aide.ui".equals(name)) {
-             JDebug.toast("Canceling Notification\nTAG: " + name, Toast.LENGTH_LONG);
+             JDebug.toast(this,"Canceling Notification\nTAG: " + name, Toast.LENGTH_LONG);
              cancelAllNotifications();
          }
     } 

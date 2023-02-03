@@ -175,14 +175,14 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE;
                     item.title = getString(R.string.permitir_captura_tela);
                     item.description = getString(R.string.menos_seguro_se_habilitado);
-                    item.checked = MyPreferences.getAllowScreenshot();
+                    item.checked = MyPreferences.getAllowScreenshot(requireContext());
                     break;
                 case 9:
                     item.title = getString(R.string.preferecias_sobre);
                     item.type = PreferenceItem.SECTION_TYPE;
                     break;
                 case 8:
-                    SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences();
+                    SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences(getActivity());
                     boolean checked = sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false);
 
                     item.id = PreferenceItem.ID.FINGERPRINT;
@@ -209,11 +209,11 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     private void setAllEggsFound() {
-        MyPreferences.getSharedPreferencesEditor().putBoolean("eggs_found", true).commit();
+        MyPreferences.getSharedPreferencesEditor(requireContext()).putBoolean("eggs_found", true).commit();
     }
 
     private boolean allEggsFound() {
-        return MyPreferences.getSharedPreferences().getBoolean("eggs_found", false);
+        return MyPreferences.getSharedPreferences(getActivity()).getBoolean("eggs_found", false);
     }
 
     private void enterDebugActivity() {
@@ -243,7 +243,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         } else if (itemId == PreferenceItem.ID.SCREENSHOT) {
             SwitchCompat mySwitch = view.findViewById(R.id.my_switch);
             boolean checked = !mySwitch.isChecked();
-            MyPreferences.setAllowScreenshot(checked);
+            MyPreferences.setAllowScreenshot(checked, requireContext());
             Window window = requireActivity().getWindow();
             int flags = WindowManager.LayoutParams.FLAG_SECURE;
 
@@ -259,7 +259,7 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
             showAbout();
         } else if (itemId == PreferenceItem.ID.FINGERPRINT) {
             SwitchCompat mySwitch = view.findViewById(R.id.my_switch);
-            SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences();
+            SharedPreferences sharedPrefs = MyPreferences.getSharedPreferences(getActivity());
             boolean checked = !mySwitch.isChecked();
             if (supportFingerprint()) {
                 if (sharedPrefs.edit().putBoolean(MyPreferences.KEY_FINGERPRINT, checked).commit())
@@ -283,26 +283,22 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     private void showThemeDialog() {
         ArrayList<SimpleDialog.MenuItem> items = ThemeConfig.getMenuList(requireContext());
         SimpleDialog dialog = new SimpleDialog(requireActivity(), SimpleDialog.STYLE_MENU);
-        dialog.setTitle(getString(R.string.escolha_tema)).setMenuItems(items, new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                dialog.cancel();
-                int themeIndex = ThemeConfig.getThemeIndex();
-                int currentTheme = MainActivity.CURRENT_THEME;
-                int newTheme = ThemeConfig.resolveTheme(getContext(), position);
-                boolean needRefresh = newTheme != currentTheme;
-                if (position != themeIndex) {
-                    ThemeConfig.setThemeIndex(position);
-                }
-
-                if (needRefresh) {
-                    refreshActivity();
-                    return;
-                }
-                //"must update description"
-                updateItemDescription(PreferenceItem.ID.APP_THEME, items.get(position).name);
+        dialog.setTitle(getString(R.string.escolha_tema)).setMenuItems(items, (parent, view, position, id) -> {
+            dialog.cancel();
+            int themeIndex = ThemeConfig.getThemeIndex(requireContext());
+            int currentTheme = MainActivity.CURRENT_THEME;
+            int newTheme = ThemeConfig.resolveTheme(getContext(), position);
+            boolean needRefresh = newTheme != currentTheme;
+            if (position != themeIndex) {
+                ThemeConfig.setThemeIndex(position, getContext());
             }
+
+            if (needRefresh) {
+                refreshActivity();
+                return;
+            }
+            //"must update description"
+            updateItemDescription(PreferenceItem.ID.APP_THEME, items.get(position).name);
         });
         dialog.show();
     }
@@ -333,27 +329,23 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     public void showDialogStorage() {
-        int storagePosition = Storage.getStoragePosition();
+        int storagePosition = Storage.getStoragePosition(requireContext());
         ArrayList<SimpleDialog.MenuItem> options = new ArrayList<>();
         options.add(new SimpleDialog.MenuItem(getString(R.string.armaz_interno), R.drawable.ic_twotone_smartphone));
-        if (Storage.getExternalStorage() != null)
+        if (Storage.getExternalStorage(requireContext()) != null)
             options.add(new SimpleDialog.MenuItem(getString(R.string.armaz_externo), R.drawable.ic_micro_sd));
 
         SimpleDialog dialog = new SimpleDialog(requireActivity(), SimpleDialog.STYLE_MENU);
         dialog.setTitle(getString(R.string.armazenamento));
-        dialog.setMenuItems(options, new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                dialog.dismiss();
-                if (position == storagePosition) {
-                    return;
-                }
-                Storage.setNewLocalStorage(position);
-                ((MainActivity) requireActivity()).mainFragment.reloadFragments();
-                SimpleDialog.MenuItem item = options.get(position);
-                updateItem(PreferenceItem.ID.STORAGE, item.name, item.icon);
+        dialog.setMenuItems(options, (parent, view, position, id) -> {
+            dialog.dismiss();
+            if (position == storagePosition) {
+                return;
             }
+            Storage.setNewLocalStorage(position, requireContext());
+            ((MainActivity) requireActivity()).mainFragment.reloadFragments();
+            SimpleDialog.MenuItem item = options.get(position);
+            updateItem(PreferenceItem.ID.STORAGE, item.name, item.icon);
         });
         dialog.show();
     }
@@ -408,23 +400,19 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         final EditText editText = view.findViewById(R.id.editTextDialogUserInput);
         editText.append(getDialerCode());
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), DialogUtils.getTheme());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext(), DialogUtils.getTheme(requireContext()));
         builder.setTitle("New code");
-        builder.setPositiveButton(getString(R.string.salvar), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.salvar), (p1, p2) -> {
+            String code = editText.getText().toString();
 
-            @Override
-            public void onClick(DialogInterface p1, int p2) {
-                String code = editText.getText().toString();
-
-                if (code.length() < 3) {
-                    Toast.makeText(getContext(), "O Código não pode ser menor que 3 caractéres.", Toast.LENGTH_LONG).show();
-                } else if (code.length() > 15) {
-                    Toast.makeText(getContext(), "O código não pode ter mais que 15 caractéres.", Toast.LENGTH_LONG).show();
-                } else {
-                    mEdit.putString("secret_code", code).commit();
-                    updateItemDescription(PreferenceItem.ID.DIALER_CODE, code);
-                    adapter.notifyDataSetChanged();
-                }
+            if (code.length() < 3) {
+                Toast.makeText(getContext(), "O Código não pode ser menor que 3 caractéres.", Toast.LENGTH_LONG).show();
+            } else if (code.length() > 15) {
+                Toast.makeText(getContext(), "O código não pode ter mais que 15 caractéres.", Toast.LENGTH_LONG).show();
+            } else {
+                mEdit.putString("secret_code", code).commit();
+                updateItemDescription(PreferenceItem.ID.DIALER_CODE, code);
+                adapter.notifyDataSetChanged();
             }
         });
 
@@ -440,15 +428,16 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     public int getComponentEnabledState(String componentName) {
-        return requireActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(getContext(), componentName));
+        return requireActivity().getPackageManager().getComponentEnabledSetting(new ComponentName(
+                getContext(), componentName));
     }
 
     private String getStorageName() {
-        return Storage.getStorageLocation().equals(Storage.INTERNAL) ? getString(R.string.armaz_interno) : getString(R.string.armaz_externo);
+        return Storage.getStorageLocation(requireContext()).equals(Storage.INTERNAL) ? getString(R.string.armaz_interno) : getString(R.string.armaz_externo);
     }
 
     private int getStorageIcon() {
-        return Storage.getStorageLocation().equals(Storage.INTERNAL) ? R.drawable.ic_twotone_smartphone : R.drawable.ic_micro_sd;
+        return Storage.getStorageLocation(requireContext()).equals(Storage.INTERNAL) ? R.drawable.ic_twotone_smartphone : R.drawable.ic_micro_sd;
     }
 
     public void updateItem(PreferenceItem.ID id, String description, int icon) {
@@ -465,7 +454,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     }
 
     private String getLanguageDisplay() {
-        String locale = MyPreferences.getSharedPreferences().getString(LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE);
+        String locale = MyPreferences.getSharedPreferences(getActivity()).getString(LocaleManager
+                .LOCALE_KEY, LocaleManager.SYSTEM_LOCALE);
 
         switch (locale) {
             case LocaleManager.SYSTEM_LOCALE:
@@ -499,20 +489,16 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
         dialog.setPositiveButton(android.R.string.ok, new SimpleDialog.OnDialogClickListener() {
 
             @Override
-            public boolean onClick(SimpleDialog dialog) {
+            public boolean onClick(@NonNull SimpleDialog dialog) {
                 egg = 0;
                 return true;
             }
         });
 
         if (!allEggsFound()) {
-            dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-                @Override
-                public void onDismiss(DialogInterface dialog) {
-                    if (++egg == 7) {
-                        setAllEggsFound();
-                    }
+            dialog.setOnDismissListener(dialog1 -> {
+                if (++egg == 7) {
+                    setAllEggsFound();
                 }
             });
         }
@@ -533,15 +519,13 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
     private void showWarning() {
         View view = requireActivity().getLayoutInflater().inflate(R.layout.dialog_check_box_view, null);
         final CheckBox mCheckBox = view.findViewById(R.id.dialogcheckbox);
-        new AlertDialog.Builder(requireActivity()).setTitle(getString(R.string.information)).setIcon(R.drawable.ic_information).setMessage(String.format("Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", getDialerCode())).setPositiveButton("fechar", null).setView(view).show().setOnDismissListener(new DialogInterface.OnDismissListener() {
-
-            @Override
-            public void onDismiss(DialogInterface dInterface) {
-                if (mCheckBox.isChecked()) {
-                    mEdit.putBoolean("dont_show_info_on_hidden", true);
-                }
-            }
-        });
+        new AlertDialog.Builder(requireActivity()).setTitle(getString(R.string.information)).setIcon(
+                R.drawable.ic_information).setMessage(String.format("Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", getDialerCode()))
+                .setPositiveButton("fechar", null).setView(view).show().setOnDismissListener(dInterface -> {
+                    if (mCheckBox.isChecked()) {
+                        mEdit.putBoolean("dont_show_info_on_hidden", true);
+                    }
+                });
     }
 
     private void showLanguageDialog() {
@@ -575,7 +559,8 @@ public class SettingFragment extends Fragment implements OnItemClickListener, On
                         break;
                 }
 
-                if (!locale.equals(MyPreferences.getSharedPreferences().getString(LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE))) {
+                if (!locale.equals(MyPreferences.getSharedPreferences(requireContext()).getString(
+                        LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE))) {
                     LocaleManager.setNewLocale(getContext(), locale);
                     refreshActivity();
                 }

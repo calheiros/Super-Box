@@ -69,7 +69,7 @@ open class MyCompatActivity : AppCompatActivity() {
 
     override fun attachBaseContext(newBase: Context) {
         val context =
-            LocaleManager.updateResources(newBase, LocaleManager.getLanguage(App.getAppContext()))
+            LocaleManager.updateResources(newBase, LocaleManager.getLanguage(newBase))
         super.attachBaseContext(context)
     }
 
@@ -98,7 +98,7 @@ open class MyCompatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         onApplyCustomTheme()
         super.onCreate(savedInstanceState)
-        if (!MyPreferences.getAllowScreenshot()) window.setFlags(
+        if (!MyPreferences.getAllowScreenshot(this)) window.setFlags(
             WindowManager.LayoutParams.FLAG_SECURE,
             WindowManager.LayoutParams.FLAG_SECURE
         )

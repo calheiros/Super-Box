@@ -18,10 +18,10 @@
 package com.jefferson.application.br.util;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.Window;
-import com.jefferson.application.br.App;
 import com.jefferson.application.br.R;
 //import android.support.v7.app.AlertDialog;
 
@@ -41,8 +41,8 @@ public class DialogUtils {
         setWindowAttributes(dialog.getWindow());
     }
     
-    public static int getTheme() {
-       return ThemeConfig.getDialogTheme(App.getAppContext());
+    public static int getTheme(Context context) {
+       return ThemeConfig.getDialogTheme(context);
     }
     
 }

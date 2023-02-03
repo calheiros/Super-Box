@@ -34,11 +34,11 @@ import android.content.Intent;
 
 public class ServiceUtils {
 
-	public static String getTopActivityApplication() {
+	public static String getTopActivityApplication(Context context) {
 		String currentApp = "";
         
 		if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
-			UsageStatsManager usm = (UsageStatsManager)App.getInstance().getSystemService(Context.USAGE_STATS_SERVICE);
+			UsageStatsManager usm = (UsageStatsManager)context.getSystemService(Context.USAGE_STATS_SERVICE);
 			long time = System.currentTimeMillis();
 			List<UsageStats> appList = usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY,  time - 1000 * 1000, time);
 			if (appList != null && appList.size() > 0) {
@@ -51,7 +51,7 @@ public class ServiceUtils {
 				}
 			}
 		} else {
-			ActivityManager mActivityManager = (ActivityManager)App.getInstance().getSystemService(Context.ACTIVITY_SERVICE);
+			ActivityManager mActivityManager = (ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE);
 			List<ActivityManager.RunningTaskInfo> RunningTask = mActivityManager.getRunningTasks(1);
 			ActivityManager.RunningTaskInfo ar = RunningTask.get(0);
 			currentApp = ar.topActivity.getPackageName();
@@ -59,8 +59,8 @@ public class ServiceUtils {
 		return currentApp;
 	}
 
-	public static boolean isMyServiceRunning(Class<?> serviceClass) {
-		for (ActivityManager.RunningServiceInfo service : ((ActivityManager)App.getInstance().getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
+	public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
+		for (ActivityManager.RunningServiceInfo service : ((ActivityManager)context.getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE)) {
 			if (serviceClass.getName().equals(service.service.getClassName())) {
 				return false;
 			}
@@ -96,8 +96,7 @@ public class ServiceUtils {
         return packageName;
     }
     
-    public static void startForegroundService(Class<?> service) {
-        Context context = App.getAppContext();
+    public static void startForegroundService(Class<?> service, Context context) {
         Intent intent = new Intent(context, service);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         

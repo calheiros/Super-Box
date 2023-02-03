@@ -26,7 +26,7 @@ public class ReceiverRestartService extends BroadcastReceiver {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-        ServiceUtils.startForegroundService(AppLockService.class);
+        ServiceUtils.startForegroundService(AppLockService.class, context);
 	}
 }
 

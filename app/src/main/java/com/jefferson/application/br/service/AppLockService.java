@@ -257,7 +257,6 @@ public class AppLockService extends Service {
 
                     if (appLockWindow.isLocked() && !activityOnTop.isEmpty()) {
                         appLockWindow.unlock();
-                        JDebug.toast(activityOnTop, Toast.LENGTH_LONG);
                     }
 				}
 			}

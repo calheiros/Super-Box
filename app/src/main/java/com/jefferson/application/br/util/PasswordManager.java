@@ -18,13 +18,10 @@
 package com.jefferson.application.br.util;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.Log;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Scanner;
 
 public class PasswordManager {
 
@@ -33,10 +30,9 @@ public class PasswordManager {
     private static final String PIN_KEY = "pin_key";
     public static String PATTERN_KEY = "pattern";
 
-    public PasswordManager() {
-        
-        this.file = new File(Storage.getInternalStorage(), ".SECRETY_KEY");
-        this.sharedPrefers = MyPreferences.getSharedPreferences();
+    public PasswordManager(Context context) {
+        this.file = new File(Storage.getInternalStorage(context), ".SECRETY_KEY");
+        this.sharedPrefers = MyPreferences.getSharedPreferences(context);
     }
     
     public void setPasswordToFile(String password) {

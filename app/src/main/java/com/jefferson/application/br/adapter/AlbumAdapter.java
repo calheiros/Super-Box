@@ -13,12 +13,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -34,9 +33,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.jefferson.application.br.App;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.activity.ViewAlbum;
 import com.jefferson.application.br.app.SimpleDialog;
 import com.jefferson.application.br.fragment.AlbumFragment;
 import com.jefferson.application.br.model.FolderModel;
@@ -88,7 +85,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
             models.remove(position);
             notifyItemRemoved(position);
         } else {
-            Toast.makeText(App.getAppContext(), "Can not remove item at: " + position, Toast.LENGTH_LONG).show();
+            Toast.makeText(fragment.requireContext(), "Can not remove item at: " + position, Toast.LENGTH_LONG).show();
         }
 
     }
@@ -123,7 +120,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
             models.remove(key);
             notifyItemRemoved(key);
         } else {
-            Toast.makeText(App.getAppContext(), "Can not find folder index for item " + item.getName(), Toast.LENGTH_LONG).show();
+            Toast.makeText(fragment.requireContext(), "Can not find folder index for item " + item.getName(), Toast.LENGTH_LONG).show();
         }
         removeSimplifiedItem(item.getName());
     }

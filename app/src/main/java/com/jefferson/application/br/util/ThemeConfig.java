@@ -43,7 +43,7 @@ public class ThemeConfig {
     }
 
     public static int getTheme(Context context) {
-        int index = getThemeIndex();
+        int index = getThemeIndex(context);
         return resolveTheme(context, index);
     }
     
@@ -60,12 +60,12 @@ public class ThemeConfig {
         }
     }
     
-    public static int getThemeIndex() {
-        return MyPreferences.getSharedPreferences().getInt("app_theme", 1);
+    public static int getThemeIndex(Context context) {
+        return MyPreferences.getSharedPreferences(context).getInt("app_theme", 1);
     }
 
-    public static boolean setThemeIndex(int themePosition) {
-       return MyPreferences.getSharedPreferencesEditor().putInt("app_theme", themePosition).commit();
+    public static boolean setThemeIndex(int themePosition, Context context) {
+       return MyPreferences.getSharedPreferencesEditor(context).putInt("app_theme", themePosition).commit();
     }
 
     public static String[] getThemesOptions(Context context) {
@@ -96,7 +96,7 @@ public class ThemeConfig {
     }
 
     public static String getCurrentThemeName(Context context) {
-        int i = getThemeIndex();
+        int i = getThemeIndex(context);
         return getThemesOptions(context)[i];
     }
 }

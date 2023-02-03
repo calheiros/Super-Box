@@ -46,7 +46,6 @@ public class CodeManager {
 	public static final int UNLUCK_TO_ENTER = 87;
 	public static final int UNLOCK_TO_FINISH = 53;
 
-
 	public static void finishAllActivity(Activity activity) {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			activity.finishAffinity();
@@ -145,24 +144,7 @@ public class CodeManager {
 	public static boolean deleteContact(Context ctx, String phone, String name) {
 		Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_FILTER_URI, Uri.encode(phone));
 		Cursor cur = ctx.getContentResolver().query(contactUri, null, null, null, null);
-		/*try {
-			if (cur.moveToFirst()) {
-				do {
-					if (cur.getString(cur.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)).equalsIgnoreCase(name)) {
-						String lookupKey = cur.getString(cur.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
-						Uri uri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, lookupKey);
-						ctx.getContentResolver().delete(uri, null, null);
-						return true;
-					}
 
-				} while (cur.moveToNext());
-			}
-
-		} catch (Exception e) {
-			System.out.println(e.getStackTrace());
-		} finally {
-			cur.close();
-		}*/
 		return false;
 	}
 

@@ -21,7 +21,7 @@ import android.graphics.drawable.*;
 
 public class AppModel {
     
-    public String appname;
+    public String packageName;
 	public Drawable icon;
 	public String name;
 }
