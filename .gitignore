@@ -3,3 +3,7 @@ app/build
 app/src/main/java/com/jefferson/application/br/util/EncrytionUtil.java
 local.properties
 build/
+
+#hidden files
+.idea/
+.gradle/
