@@ -15,18 +15,20 @@
  * limitations under the License.
 */
 
-package com.jefferson.application.br;
+package com.jefferson.application.br.receiver;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import com.jefferson.application.br.database.AppLockDatabase;
 import com.jefferson.application.br.service.AppLockService;
-import com.jefferson.application.br.util.ServiceUtils;
 
-public class ReceiverRestartService extends BroadcastReceiver {
-
+public class ScreenOnOff extends BroadcastReceiver {
 	@Override
 	public void onReceive(Context context, Intent intent) {
-        ServiceUtils.startForegroundService(AppLockService.class, context);
-	}
+		if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+			new AppLockDatabase(context).clearUnlockedApps();
+			AppLockService.pActivity = null;
+		}
+    }
 }
-

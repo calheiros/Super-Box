@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.jefferson.application.br
+package com.jefferson.application.br.adapter
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -25,7 +25,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.jefferson.application.br.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
+import com.jefferson.application.br.R
+import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
 import com.jefferson.application.br.model.MediaModel
 
 class MultiSelectRecyclerViewAdapter(
@@ -33,18 +34,13 @@ class MultiSelectRecyclerViewAdapter(
     private val clickListener: ClickListener, private val mediaType: Int
 ) : SelectableAdapter<MultiSelectRecyclerViewAdapter.ViewHolder?>() {
 
-    fun toggleItemSelected(position: Int) {
-        toggleSelection(position)
-        /*
-        * update all selected items positions
-        * */
-        for (i in selectedItemsHash.keys) {
-            if (i != position) {
-                notifyItemChanged(i)
-            }
-        }
-    }
+    fun toggleItemSelected(position: Int, notifyAll: Boolean) {
+        toggleSelection(position, notifyAll)
 
+    }
+    fun toggleAllSelection() {
+
+    }
     private fun getItem(position: Int): Any {
         return items[position]
     }

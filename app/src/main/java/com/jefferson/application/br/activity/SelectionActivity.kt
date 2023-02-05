@@ -10,8 +10,8 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.jefferson.application.br.MultiSelectRecyclerViewAdapter
-import com.jefferson.application.br.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
+import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
+import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
 import com.jefferson.application.br.R
 import com.jefferson.application.br.model.MediaModel
 import com.jefferson.application.br.util.BlurUtils
@@ -63,9 +63,12 @@ class SelectionActivity : MyCompatActivity(), ClickListener, View.OnClickListene
                     var i = 0
                     while (i < models!!.size) {
                         if (!adapter.isSelected(i)) {
-                            adapter.toggleItemSelected(i)
+                            adapter.toggleItemSelected(i, false)
                         }
                         i++
+                    }
+                    if (i > 0) {
+                        adapter.notifyDataSetChanged()
                     }
                 }
                 updateActionBarTitle()
@@ -97,7 +100,7 @@ class SelectionActivity : MyCompatActivity(), ClickListener, View.OnClickListene
     }
 
     private fun updateItem(position: Int) {
-        adapter.toggleItemSelected(position)
+        adapter.toggleItemSelected(position, true)
         updateActionBarTitle()
         toggleSelectViewIcon()
     }

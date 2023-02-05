@@ -187,7 +187,7 @@ public class AlbumFragment extends Fragment {
                         }
 
                         ArrayList<MediaModel> items = model.getItems();
-                        String thumb = items.size() > 0 ? items.get(0).getPath() : null;
+                        String thumb = items.size() > 0 ? items.get(0).getPath() : "";
                         simplifiedModels.add(new SimplifiedAlbum(folderName, thumb));
                         models.add(model);
                     }

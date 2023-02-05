@@ -29,11 +29,9 @@ public class BootCompletedReceiver extends BroadcastReceiver {
     
 	@Override
 	public void onReceive(Context context, Intent arg1) {
-
 		Log.w("boot_broadcast_poc", "starting service...");
 		new AppLockDatabase(context).clearUnlockedApps();
         ServiceUtils.startForegroundService(AppLockService.class, context);
 		//context.startService(new Intent(context, AppLockService.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
 	}
 }
-

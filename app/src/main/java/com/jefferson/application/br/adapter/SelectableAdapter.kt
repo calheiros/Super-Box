@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-package com.jefferson.application.br
+package com.jefferson.application.br.adapter
 
 import androidx.recyclerview.widget.RecyclerView
 
@@ -33,18 +33,27 @@ abstract class SelectableAdapter<VH : RecyclerView.ViewHolder?> : RecyclerView.A
     /**
      * Toggle the selection status of the item at a given position
      * @param position Position of the item to toggle the selection status for
+     * @param notifyAll Notify changes to all selected items
      */
-    protected fun toggleSelection(position: Int) {
-        if (java.lang.Boolean.TRUE == selectedItems[position]) {
+    protected fun toggleSelection(position: Int, notifyAll: Boolean) {
+        val toRemove = true == selectedItems[position]
+        if (toRemove) {
             selectedItems.remove(position)
         } else {
             selectedItems[position] = true
         }
         notifyItemChanged(position)
+        /**
+         * Notify changes to all selected items if needed
+        * */
+        if (notifyAll && toRemove) {
+            for (i in selectedItems.keys) {
+                if (i != position) {
+                    notifyItemChanged(i)
+                }
+            }
+        }
     }
-
-    val selectedItemsHash: HashMap<Int, Boolean>
-        get() = selectedItems
 
     fun getSelectedItemPosition(position: Int): Int {
         val keys: Array<Int> = selectedItems.keys.toTypedArray()

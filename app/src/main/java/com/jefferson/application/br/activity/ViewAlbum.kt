@@ -38,8 +38,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.jefferson.application.br.MultiSelectRecyclerViewAdapter
-import com.jefferson.application.br.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
+import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
+import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
 import com.jefferson.application.br.R
 import com.jefferson.application.br.app.ProgressThreadUpdate
 import com.jefferson.application.br.app.SimpleDialog
@@ -205,7 +205,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         } else {
             for (i in 0 until adapter.itemCount) {
                 if (!adapter.isSelected(i)) {
-                    toggleItemSelected(i)
+                    toggleItemSelected(i, false)
                 }
             }
         }
@@ -375,10 +375,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     private fun retrieveDataAndUpdate() {
-        if (adapter != null) {
-            val list = adapter.items
-            updateDatabase(list, adapter)
-        }
+        val list = adapter.items
+        updateDatabase(list, adapter)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -422,7 +420,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             }
             return
         }
-        toggleItemSelected(item_position)
+        toggleItemSelected(item_position, true)
         invalidateOptionsMenu()
         switchSelectButtonIcon()
     }
@@ -442,7 +440,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     override fun onItemLongClicked(position: Int): Boolean {
-        toggleItemSelected(position)
+        toggleItemSelected(position, true)
         invalidateOptionsMenu()
         switchSelectButtonIcon()
         if (!selectionMode) {
@@ -452,7 +450,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     private val selectedItemsPath: ArrayList<String?>
-        private get() {
+        get() {
             val selectedItems = ArrayList<String?>()
             for (i in adapter.getSelectedItems()) {
                 selectedItems.add(adapter.items[i].path)
@@ -460,8 +458,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             return selectedItems
         }
 
-    private fun toggleItemSelected(position: Int) {
-        adapter.toggleItemSelected(position)
+    private fun toggleItemSelected(position: Int, notifyAll: Boolean) {
+        adapter.toggleItemSelected(position, notifyAll)
     }
 
     private fun switchSelectButtonIcon() {

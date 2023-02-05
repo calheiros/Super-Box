@@ -330,7 +330,7 @@ Copyright (C) 2023 Jefferson Calheiros
         <receiver
             android:exported="true"
             tools:node="merge"
-            android:name=".ScreenOnOff">
+            android:name=".receiver.ScreenOnOff">
 
             <intent-filter>
 
@@ -358,7 +358,7 @@ Copyright (C) 2023 Jefferson Calheiros
         <receiver
             android:exported="true"
             tools:node="merge"
-            android:name=".ReceiverRestartService">
+            android:name=".receiver.ReceiverRestartService">
 
             <intent-filter>
                 <action android:name="RestartBlockService"/>

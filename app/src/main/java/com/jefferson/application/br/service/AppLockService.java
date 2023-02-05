@@ -32,12 +32,12 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.widget.Toast;
+
 import androidx.annotation.RequiresApi;
 import com.jefferson.application.br.App;
 import com.jefferson.application.br.AppLockWindow;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.ScreenOnOff;
+import com.jefferson.application.br.receiver.ScreenOnOff;
 import com.jefferson.application.br.adapter.AppLockAdapter;
 import com.jefferson.application.br.database.AppLockDatabase;
 import com.jefferson.application.br.receiver.KeyWatcher;

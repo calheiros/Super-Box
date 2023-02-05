@@ -81,8 +81,7 @@ Copyright (C) 2023 Jefferson Calheiros
             android:textColor="@color/white"
             android:gravity="center"
             android:text="0"
-            android:textStyle="bold"
-            android:textSize="15sp"
+            android:textSize="14sp"
             android:background="@drawable/bg_checked_item"
             tools:ignore="ContentDescription" />
     </FrameLayout>

@@ -30,6 +30,7 @@ import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
 import com.jefferson.application.br.database.AppLockDatabase
+import com.jefferson.application.br.receiver.ScreenOnOff
 import com.jefferson.application.br.util.JDebug
 
 class AppLockAccessibilityService : AccessibilityService() {
