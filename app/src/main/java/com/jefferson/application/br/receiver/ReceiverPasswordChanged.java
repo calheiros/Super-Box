@@ -19,12 +19,9 @@ package com.jefferson.application.br.receiver;
 import android.content.*;
 import android.widget.*;
 
-public class ReceiverPasswordChanged extends BroadcastReceiver
-{
-
+public class ReceiverPasswordChanged extends BroadcastReceiver {
 	@Override
-	public void onReceive(Context context, Intent intent)
-	{
+	public void onReceive(Context context, Intent intent) {
 		String newPass = (String) intent.getExtras().get("pass");
 	}
 }

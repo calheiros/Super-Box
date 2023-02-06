@@ -92,7 +92,7 @@ public class AlbumFragment extends Fragment {
 
     }
 
-    public AlbumFragment(int position, MainFragment mainFragment) {
+    public AlbumFragment(int position, MainFragment mainFragzment) {
         this.position = position;
     }
 
@@ -381,7 +381,7 @@ public class AlbumFragment extends Fragment {
         dialog.setPositiveButton(activity.getString(R.string.concluir), new SimpleDialog.OnDialogClickListener() {
 
             @Override
-            public boolean onClick(SimpleDialog dialog) {
+            public boolean onClick(@NonNull SimpleDialog dialog) {
                 String text = editText.getText().toString();
                 String result = validateFolderName(text, getContext());
 
@@ -438,7 +438,7 @@ public class AlbumFragment extends Fragment {
         simpleDialog.setMessage(getString(R.string.apagar_pasta_aviso, name));
         simpleDialog.setPositiveButton(getString(R.string.sim), new SimpleDialog.OnDialogClickListener() {
             @Override
-            public boolean onClick(SimpleDialog dialog) {
+            public boolean onClick(@NonNull SimpleDialog dialog) {
                 final File root = new File(model.getPath());
                 final DeleteFilesTask task = new DeleteFilesTask(requireActivity(), model.getItemsPath(), position, root);
                 task.setOnFinishedListener(new JTask.OnFinishedListener() {
