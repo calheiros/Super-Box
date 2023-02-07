@@ -589,7 +589,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         }
 
     companion object {
-        val CALCULATOR_CREATE_CODE_RESULT = 85
-        private val REQUEST_CODE = 109
+        public const val CALCULATOR_CREATE_CODE_RESULT = 85
+        private const val REQUEST_CODE = 109
     }
 }

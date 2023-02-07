@@ -34,9 +34,10 @@ import com.jefferson.application.br.model.PreferenceItem
 import com.jefferson.application.br.util.MyAnimationUtils
 import com.jefferson.application.br.util.MyPreferences
 
+@Suppress("NAME_SHADOWING")
 class SettingAdapter(
-    var preferenceItems: ArrayList<PreferenceItem>,
-    var settingFragment: SettingFragment
+    private var preferenceItems: ArrayList<PreferenceItem>,
+    private var settingFragment: SettingFragment
 ) : BaseAdapter() {
     var inflater: LayoutInflater = settingFragment.requireActivity()
         .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

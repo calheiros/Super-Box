@@ -23,12 +23,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.jefferson.application.br.R;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +54,7 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.List
     }
 
     @Override
-    public void onBindViewHolder(ListItemViewHolder viewHolder, int position) {
+    public void onBindViewHolder(@NonNull ListItemViewHolder viewHolder, int position) {
         String model = items.get(position);
         //viewHolder.itemView.setActivated(selectedItems.get(position, false));
     }
@@ -96,14 +93,14 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.List
     public final static class ListItemViewHolder extends RecyclerView.ViewHolder {
 
         public ImageView image;
-        public TextView fname;
-        public TextView fsize;
+        public TextView name;
+        public TextView size;
 
         public ListItemViewHolder(View view) {
             super(view);
             image = (ImageView) view.findViewById(R.id.image);
-            fname = (TextView) view.findViewById(R.id.tv_folder);
-            fsize = (TextView) view.findViewById(R.id.tv_folder2);
+            name = (TextView) view.findViewById(R.id.tv_folder);
+            size = (TextView) view.findViewById(R.id.folder_size_label);
         }
     }
 }

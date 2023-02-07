@@ -13,15 +13,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
+package com.jefferson.application.br.model
 
-package com.jefferson.application.br.model;
+import android.graphics.drawable.Drawable
 
-import android.graphics.drawable.*;
-
-public class AppModel {
-    
-    public String packageName;
-	public Drawable icon;
-	public String name;
+class AppModel {
+    var packageName: String? = null
+    var icon: Drawable? = null
+    var name: String? = null
 }

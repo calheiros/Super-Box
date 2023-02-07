@@ -71,7 +71,7 @@ class PhotosFolderAdapter(
             convertView =
                 LayoutInflater.from(context).inflate(R.layout.adapter_photosfolder, parent, false)
             mViewHolder.folderNameLabel = convertView.findViewById<View>(R.id.tv_folder) as TextView
-            mViewHolder.itemCountLabel = convertView.findViewById<View>(R.id.tv_folder2) as TextView
+            mViewHolder.itemCountLabel = convertView.findViewById<View>(R.id.folder_size_label) as TextView
             mViewHolder.imageView = convertView.findViewById<View>(R.id.iv_image) as ImageView
             mViewHolder.parentLayout =
                 convertView.findViewById<View>(R.id.adapter_photosfolderParentView) as RelativeLayout
