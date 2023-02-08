@@ -161,16 +161,14 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
         var firstContains = -1
         for (x in models.indices) {
             model = models[x]
-            val lowerName = model.packageName.lowercase(Locale.getDefault())
+            val lowerName = model.packageName!!.lowercase(Locale.getDefault())
             val lowerInput = input.lowercase(Locale.getDefault())
             if (lowerName.startsWith(lowerInput)) {
-                //JDebug.toast("match + " + models.get(x).appname);
                 applicationFound(x)
                 return true
             } else if (firstContains == -1) {
                 if (lowerName.contains(lowerInput)) {
                     firstContains = x
-                    //JDebug.toast(lowerName + " contains => " + input + " position " + firstContains);
                 }
             }
         }
@@ -318,12 +316,7 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_message_history, menu)
-
-//      SearchManager searchManager =(SearchManager) getContext().getSystemService(Context.SEARCH_SERVICE);
         val searchView = menu.findItem(R.id.search).actionView as SearchView?
-        //      searchView.setSearchableInfo(
-//      searchManager.getSearchableInfo(getActivity().getComponentName()));
-//
         searchView!!.setOnQueryTextFocusChangeListener { view, hasFocus ->
             if (hasFocus) {
                 showInputMethod(view.findFocus())

@@ -284,9 +284,9 @@ class PathsDatabase private constructor(context: Context, path: String) :
         val createMediaTableSql: String
             get() = ("CREATE TABLE IF NOT EXISTS " + MEDIA_TABLE_NAME + " (" + MEDIA_ID_COL + " TEXT NOT NULL,"
                     + MEDIA_NAME_COL + " TEXT, " + MEDIA_DURATION_COL + " INTEGER DEFAULT -1);")
-
+        @JvmStatic
         fun getInstance(context: Context, path: String): PathsDatabase {
-            return PathsDatabase(context, path + "/" + DATABASE_NAME)
+            return PathsDatabase(context, "$path/$DATABASE_NAME")
         }
 
         @JvmStatic

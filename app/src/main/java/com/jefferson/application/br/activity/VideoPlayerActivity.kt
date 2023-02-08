@@ -134,7 +134,7 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
         override fun getItem(position: Int): VideoPlayerFragment {
             var fragment: VideoPlayerFragment? = fragments?.get(position)
             if (fragment == null) {
-                fragment = VideoPlayerFragment(filesPath[position])
+                fragment = VideoPlayerFragment(filesPath[position]!!)
                 fragments?.set(position, fragment)
             }
             return fragment

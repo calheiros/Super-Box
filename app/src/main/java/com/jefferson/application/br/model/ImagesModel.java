@@ -13,31 +13,29 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br.model;
 
 import java.util.ArrayList;
 
-public class ModelImages
-{
+public class ImagesModel {
     String str_folder;
     ArrayList<String> al_imagepath;
 
-    public String getStr_folder()
-	{
+    public String getStr_folder() {
         return str_folder;
     }
-    public void setStr_folder(String str_folder)
-	{
+
+    public void setStr_folder(String str_folder) {
         this.str_folder = str_folder;
     }
-    public ArrayList<String> getAl_imagepath()
-	{
+
+    public ArrayList<String> getAl_imagepath() {
         return al_imagepath;
     }
-    public void setAl_imagepath(ArrayList<String> al_imagepath)
-	{
+
+    public void setAl_imagepath(ArrayList<String> al_imagepath) {
         this.al_imagepath = al_imagepath;
     }
 }

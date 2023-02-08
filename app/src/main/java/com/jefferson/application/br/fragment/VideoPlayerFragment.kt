@@ -17,7 +17,6 @@
 package com.jefferson.application.br.fragment
 
 import android.media.MediaPlayer
-import android.media.MediaPlayer.OnPreparedListener
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater

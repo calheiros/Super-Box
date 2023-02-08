@@ -65,11 +65,13 @@ class AppLockDatabase(context: Context?) : SQLiteOpenHelper(context, DATABASE_NA
         return false
     }
 
-    fun removeLockedApp(appName: String) {
+    fun removeLockedApp(appName: String?) {
+        if (appName == null) return
         writableDatabase.execSQL("DELETE FROM LOCKED_APP_TABLE WHERE PACKAGE = '$appName'")
     }
 
     fun addUnlockedApp(pack: String?) {
+        if (pack == null) return
         val database = this.writableDatabase
         val values = ContentValues()
         values.put("PACKAGE", pack)
@@ -78,6 +80,7 @@ class AppLockDatabase(context: Context?) : SQLiteOpenHelper(context, DATABASE_NA
     }
 
     fun addLockedApp(name: String?): Boolean {
+        if (name == null) return false
         val db = this.writableDatabase
         val contentValues = ContentValues()
         contentValues.put("PACKAGE", name)
