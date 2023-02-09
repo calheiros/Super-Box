@@ -150,7 +150,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     }
 
     private val currentFragment: AlbumFragment
-        private get() {
+        get() {
             val pos = viewPager!!.currentItem
             return pagerAdapter!!.getItem(pos)
         }
@@ -164,7 +164,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
                 SearchActivity.EXTRA_SIMPLE_MODELS,
                 fragment.simplifiedModels
             )
-            activityResultLauncher!!.launch(intent)
+            activityResultLauncher?.launch(intent)
         }
     }
 
@@ -201,8 +201,8 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     }
 
     override fun onLongClick(view: View): Boolean {
-        val fragment = pagerAdapter!!.getItem(viewPager!!.currentItem)
-        fragment.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER)
+        val fragment = pagerAdapter?.getItem(viewPager!!.currentItem)
+        fragment?.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER)
         return true
     }
 
@@ -227,15 +227,13 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     }
 
     fun updateFragment(id: Int) {
-        if (pagerAdapter != null) {
-            pagerAdapter!!.update(id)
-        }
+        pagerAdapter?.update(id)
     }
 
     fun updateAllFragments() {
         if (pagerAdapter != null) {
             for (i in 0 until pagerAdapter!!.count) {
-                pagerAdapter!!.update(i)
+                pagerAdapter?.update(i)
             }
         }
     }
@@ -269,8 +267,8 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         val fragments = arrayOfNulls<AlbumFragment>(Companion.SIZE)
         fun update(
             position: Int,
-            models: ArrayList<FolderModel?>?,
-            simplifiedModels: ArrayList<SimplifiedAlbum?>?
+            models: ArrayList<FolderModel>?,
+            simplifiedModels: ArrayList<SimplifiedAlbum>?
         ) {
             getItem(position).putModels(models, simplifiedModels)
         }
