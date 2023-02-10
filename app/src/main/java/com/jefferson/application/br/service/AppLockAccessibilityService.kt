@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
-package com.jefferson.application.br
+package com.jefferson.application.br.service
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
@@ -29,6 +29,7 @@ import android.util.Log
 import android.view.KeyEvent
 import android.view.accessibility.AccessibilityEvent
 import android.widget.Toast
+import com.jefferson.application.br.AppLockWindow
 import com.jefferson.application.br.database.AppLockDatabase
 import com.jefferson.application.br.receiver.ScreenOnOff
 import com.jefferson.application.br.util.JDebug
