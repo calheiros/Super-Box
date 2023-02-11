@@ -19,6 +19,9 @@ package com.jefferson.application.br.task;
 
 import android.app.Activity;
 import android.widget.*;
+
+import androidx.annotation.NonNull;
+
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.app.*;
 import com.jefferson.application.br.database.*;
@@ -83,7 +86,7 @@ public class DeleteFilesTask extends JTask {
             .showPositiveButton(false)
             .setNegativeButton(activity.getString(R.string.cancelar), new SimpleDialog.OnDialogClickListener(){
                 @Override
-                public boolean onClick(SimpleDialog dialog) {
+                public boolean onClick(@NonNull SimpleDialog dialog) {
                     interrupt();
                     return true;
                 }
