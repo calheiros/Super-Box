@@ -76,7 +76,7 @@ class SearchViewAdapter(
             holder = convertView.tag as Holder
         }
         holder.textView?.text = item.name
-        Glide.with(context).load(item.thumbPath).into(holder.thumbView!!)
+        Glide.with(context).load(item.thumbnailPath).into(holder.thumbView!!)
         return tempConvertView!!
     }
 

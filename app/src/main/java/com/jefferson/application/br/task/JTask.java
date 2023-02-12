@@ -226,5 +226,3 @@ interface JTaskListener {
     void onException(Exception e);
 
 }
-
-

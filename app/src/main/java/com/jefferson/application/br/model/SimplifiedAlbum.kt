@@ -22,17 +22,17 @@ import android.os.Parcelable.Creator
 
 class SimplifiedAlbum : Parcelable {
     var name: String
-    var thumbPath: String
+    var thumbnailPath: String
         private set
 
-    constructor(name: String, thumb: String) {
+    constructor(name: String, thumbnail: String) {
         this.name = name
-        thumbPath = thumb
+        thumbnailPath = thumbnail
     }
 
     private constructor(parcel: Parcel) {
         name = parcel.readString() as String
-        thumbPath = parcel.readString() as String
+        thumbnailPath = parcel.readString() as String
     }
 
     override fun describeContents(): Int {
@@ -41,7 +41,7 @@ class SimplifiedAlbum : Parcelable {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {
         dest.writeString(name)
-        dest.writeString(thumbPath)
+        dest.writeString(thumbnailPath)
     }
 
     companion object {

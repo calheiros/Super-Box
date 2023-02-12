@@ -22,14 +22,14 @@ public class PickerModel {
     private String name;
     private String path;
     private int size;
-    private String tumb_path;
+    private String thumbnailPath;
  
-    public void setTumbPath(String str) {
-        this.tumb_path = str;
+    public void setThumbnailPath(String str) {
+        this.thumbnailPath = str;
     }
  
-    public String getTumbPath() {
-        return this.tumb_path;
+    public String getThumbnailPath() {
+        return this.thumbnailPath;
     }
  
     public void setName(String str) {

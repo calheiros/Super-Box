@@ -35,10 +35,10 @@ class FileModel : Parcelable {
     }
 
     constructor() {}
-    private constructor(p: Parcel) {
-        resource = p.readString()
-        type = p.readString()
-        parentPath = p.readString()
+    private constructor(parcel: Parcel) {
+        resource = parcel.readString()
+        type = parcel.readString()
+        parentPath = parcel.readString()
     }
 
     companion object {

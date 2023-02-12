@@ -67,18 +67,18 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
 
         override fun onBeingStarted() {
             dialog = SimpleDialog(this@FolderPickerActivity, SimpleDialog.STYLE_PROGRESS)
-            dialog!!.setMax(paths!!.size)
-            dialog!!.setTitle(getString(R.string.movendo))
-            dialog!!.setProgress(0)
-            dialog!!.show()
+            dialog?.setMax(paths!!.size)
+            dialog?.setTitle(getString(R.string.movendo))
+            dialog?.setProgress(0)
+            dialog?.show()
         }
 
         override fun onUpdated(objArr: Array<Any>) {
-            dialog!!.setProgress((objArr[0] as Int))
+            dialog?.setProgress((objArr[0] as Int))
         }
 
         override fun onFinished() {
-            dialog!!.dismiss()
+            dialog?.dismiss()
             val intent = Intent()
             intent.putExtra("moved_files", movedArray)
             setResult(RESULT_OK, intent)
@@ -106,7 +106,6 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
         position = intent.getIntExtra("position", -1)
         paths = intent.getStringArrayListExtra("selection")
         currentPath = intent.getStringExtra("current_path")
-        // applyParentViewPadding(mListView);
         filePickerAdapter = FilePickerAdapter(getModels(position), this, position)
         mListView.adapter = filePickerAdapter
         mListView.onItemClickListener = this
@@ -209,7 +208,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
                 assert(dirList != null)
                 val length = dirList!!.size
                 if (length > 0) {
-                    pickerModel.tumbPath = dirList[0].absolutePath
+                    pickerModel.thumbnailPath = dirList[0].absolutePath
                 }
                 pickerModel.path = file.absolutePath
                 pickerModel.name = folderName

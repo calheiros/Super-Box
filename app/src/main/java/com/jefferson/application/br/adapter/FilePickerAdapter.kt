@@ -85,7 +85,7 @@ class FilePickerAdapter(
         holder.titleLabel?.setTextColor(color)
         holder.titleLabel?.text = pickerModel.name
         holder.sizeLabel?.text = folderSize
-        Glide.with(context).load("file://" + pickerModel.tumbPath).centerCrop()
+        Glide.with(context).load("file://" + pickerModel.thumbnailPath).centerCrop()
             .into(holder.imageView!!)
         return view
     }

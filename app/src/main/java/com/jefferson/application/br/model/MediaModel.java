@@ -19,6 +19,8 @@ package com.jefferson.application.br.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import androidx.annotation.NonNull;
+
 public class MediaModel implements Parcelable {
 
     private String absolutePath;
@@ -75,7 +77,7 @@ public class MediaModel implements Parcelable {
         parcel.writeString(duration);
     }
 
-    @Override
+    @NonNull @Override
     public String toString() {
         return absolutePath;
     }

@@ -25,13 +25,13 @@ import android.util.Log;
 
 public class KeyWatcher { 
     static final String TAG = "hg"; 
-    private Context mContext; 
+    private Context context;
     private IntentFilter mFilter;
     private OnHomePressedListener mListener; 
     private InnerReceiver mReceiver; 
     
     public KeyWatcher(Context context) {
-        mContext = context; 
+        this.context = context;
         mFilter = new IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS); 
     } 
 
@@ -40,13 +40,13 @@ public class KeyWatcher {
 
     public void startWatch() {
         if (mReceiver != null) {
-            mContext.registerReceiver(mReceiver, mFilter);
+            context.registerReceiver(mReceiver, mFilter);
         } 
     }
     
     public void stopWatch() {
         if (mReceiver != null) { 
-            mContext.unregisterReceiver(mReceiver); 
+            context.unregisterReceiver(mReceiver);
         }
     }
     
