@@ -14,22 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+package com.jefferson.application.br.model
 
-package com.jefferson.application.br.activity;
-
-import android.app.*;
-import android.content.*;
-import android.os.*;
-import com.jefferson.application.br.*;
-
-public class Launcher extends Activity {
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-        
-        Intent intent = new Intent(Launcher.this, VerifyActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-	}
+class PickerModel {
+    var name: String? = null
+    var path: String? = null
+    var size = 0
+    var thumbnailPath: String? = null
 }

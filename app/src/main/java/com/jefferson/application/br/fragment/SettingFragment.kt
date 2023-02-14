@@ -109,13 +109,13 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 }
                 1 -> {
                     item.id = ID.PASSWORD
-                    item.icon_res_id = R.drawable.ic_key
+                    item.iconResId = R.drawable.ic_key
                     item.title = getString(R.string.mudar_senha)
                     item.type = PreferenceItem.ITEM_TYPE
                 }
                 2 -> {
                     item.id = ID.LANGUAGE
-                    item.icon_res_id = R.drawable.ic_language
+                    item.iconResId = R.drawable.ic_language
                     item.title = getString(R.string.idioma)
                     item.type = PreferenceItem.ITEM_TYPE
                     item.description = languageDisplay
@@ -123,7 +123,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 3 -> {
                     item.id = ID.APP_THEME
                     item.type = PreferenceItem.ITEM_TYPE
-                    item.icon_res_id = R.drawable.ic_palette
+                    item.iconResId = R.drawable.ic_palette
                     item.title = getString(R.string.tema_applicativo)
                     item.description = ThemeConfig.getCurrentThemeName(requireContext())
                 }
@@ -134,21 +134,21 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 5 -> {
                     item.id = ID.STORAGE
                     item.type = PreferenceItem.ITEM_TYPE
-                    item.icon_res_id = storageIcon
+                    item.iconResId = storageIcon
                     item.title = getString(R.string.local_armazenamento)
                     item.description = storageName
                 }
                 6 -> {
                     item.id = ID.APP_ICON
                     item.title = getString(R.string.disfarce_calculadora)
-                    item.icon_res_id = R.drawable.ic_calculator_variant
+                    item.iconResId = R.drawable.ic_calculator_variant
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE
                     item.description = getString(R.string.ocultar_descricao)
                     item.checked = isCalculatorEnabledInSettings
                 }
                 7 -> {
                     item.id = ID.SCREENSHOT
-                    item.icon_res_id = R.drawable.ic_cellphone_screenshot
+                    item.iconResId = R.drawable.ic_cellphone_screenshot
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE
                     item.title = getString(R.string.permitir_captura_tela)
                     item.description = getString(R.string.menos_seguro_se_habilitado)
@@ -164,13 +164,13 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                     item.id = ID.FINGERPRINT
                     item.title = "Use fingerprint"
                     item.type = PreferenceItem.ITEM_SWITCH_TYPE
-                    item.icon_res_id = R.drawable.ic_fingerprint
+                    item.iconResId = R.drawable.ic_fingerprint
                     item.description = "Enable fingerprint unlock"
                     item.checked = checked
                 }
                 10 -> {
                     item.id = ID.ABOUT
-                    item.icon_res_id = R.drawable.ic_about
+                    item.iconResId = R.drawable.ic_about
                     item.title = getString(R.string.app_name)
                     item.type = PreferenceItem.ITEM_TYPE
                     try {
@@ -465,7 +465,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
             val item = adapter!!.getItem(i)
             if (item.id == id) {
                 item.description = description
-                if (icon != -1) item.icon_res_id = icon
+                if (icon != -1) item.iconResId = icon
                 adapter!!.notifyDataSetChanged()
                 //Toast.makeText(getContext(), "fount item to update! " + description, 1).show();
                 break

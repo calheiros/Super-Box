@@ -67,7 +67,7 @@ class SettingAdapter(
                 val iconView = view.findViewById<ImageView>(R.id.ic_view)
                 val mySwitch = view.findViewById<SwitchCompat>(R.id.my_switch)
                 val descriptionText = view.findViewById<TextView>(R.id.description_text_view)
-                iconView.setImageResource(preferenceItem.icon_res_id)
+                iconView.setImageResource(preferenceItem.iconResId)
                 mySwitch.isChecked = preferenceItem.checked
 
                 if (preferenceItem.id == PreferenceItem.ID.APP_ICON) {
@@ -95,7 +95,7 @@ class SettingAdapter(
                 val descriptionText = view.findViewById<TextView>(R.id.description_text_view)
                 val iconView = view.findViewById<ImageView>(R.id.ic_view)
                 (view.findViewById<View>(R.id.item_title) as TextView).text = preferenceItem.title
-                iconView.setImageResource(preferenceItem.icon_res_id)
+                iconView.setImageResource(preferenceItem.iconResId)
                 if (preferenceItem.description != null) {
                     descriptionText.visibility = View.VISIBLE
                     descriptionText.text = preferenceItem.description

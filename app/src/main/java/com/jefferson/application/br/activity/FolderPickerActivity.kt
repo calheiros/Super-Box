@@ -16,6 +16,7 @@
 */
 package com.jefferson.application.br.activity
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -57,8 +58,8 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
             Toast.makeText(this@FolderPickerActivity, "Error!", Toast.LENGTH_SHORT).show()
         }
 
-        var movedArray: ArrayList<String> = ArrayList()
-        var folder: String
+        private var movedArray: ArrayList<String> = ArrayList()
+        private var folder: String
         var dialog: SimpleDialog? = null
 
         init {
@@ -97,8 +98,8 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
         }
     }
 
-    override fun onCreate(bundle: Bundle?) {
-        super.onCreate(bundle)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.file_picker_layout)
         val mListView = findViewById<ListView>(R.id.androidList)
         val mToolbar = findViewById<Toolbar>(R.id.toolbar)
@@ -116,13 +117,12 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
         actionBar?.title = "Move to"
 
         fab = findViewById(R.id.fab)
-        fab.setOnClickListener(View.OnClickListener {
+        fab.setOnClickListener{
             MoveFilesTask(
-                filePickerAdapter.models[filePickerAdapter.selectedItem].path
+                filePickerAdapter.models[filePickerAdapter.selectedItem].path!!
             ).start()
             fab.hide()
         }
-        )
         fab.visibility = View.GONE
     }
 
@@ -150,6 +150,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
         mainActivity!!.updateFragment(position)
     }
 
+    @SuppressLint("InflateParams")
     private fun createFolder() {
         val contentView = layoutInflater.inflate(R.layout.dialog_edit_text, null)
         val editText = contentView.findViewById<EditText>(R.id.editTextInput)
@@ -222,10 +223,10 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
         }
         //sort files in alphabetically
         arrayList.sortWith { model1: PickerModel, model2: PickerModel ->
-            model1.name.lowercase(
+            model1.name!!.lowercase(
                 Locale.getDefault()
             ).compareTo(
-                model2.name.lowercase(Locale.getDefault())
+                model2.name!!.lowercase(Locale.getDefault())
             )
         }
         return arrayList
