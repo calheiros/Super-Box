@@ -610,7 +610,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                                 }
                                 val time =
                                     StringUtils.getFormattedVideoDuration(duration.toString())
-                                runOnUiThread { adapter!!.updateItemDuration(model.path, time) }
+                                runOnUiThread { adapter?.updateItemDuration(model.path!!, time) }
                             } catch (e: Exception) {
                                 e.printStackTrace()
                             }

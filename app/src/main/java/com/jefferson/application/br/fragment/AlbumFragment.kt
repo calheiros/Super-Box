@@ -152,7 +152,7 @@ class AlbumFragment : Fragment {
                     }
                     folderName = folderName ?: s
                     val model = FolderModel()
-                    model.name = folderName
+                    model.name = folderName!!
                     model.path = file.absolutePath
                     model.isFavorite = favorite
                     if (folderList != null) for (value in folderList) {
@@ -161,7 +161,7 @@ class AlbumFragment : Fragment {
                     }
                     val items = model.items
                     val thumb = if (items.size > 0) items[0].path else ""
-                    simplifiedModels.add(SimplifiedAlbum(folderName!!, thumb))
+                    simplifiedModels.add(SimplifiedAlbum(folderName, thumb ?: ""))
                     models.add(model)
                 }
             }
@@ -267,7 +267,7 @@ class AlbumFragment : Fragment {
                             )
                         ) {
                             message = "Folder renamed to \"$text\"."
-                            val index = albumAdapter!!.getItemPosition(model.path)
+                            val index = albumAdapter?.getItemPosition(model.path!!)
                             //FolderModel model = albumAdapter.getItem(index);
                             if (index != -1) {
                                 val simplifiedAlbum = albumAdapter!!
@@ -276,7 +276,7 @@ class AlbumFragment : Fragment {
                                     simplifiedAlbum.name = text
                                 }
                                 model.name = text
-                                albumAdapter!!.notifyItemChanged(index)
+                                albumAdapter?.notifyItemChanged(index!!)
                             }
                         } else {
                             message = "Failed to rename folder! :("

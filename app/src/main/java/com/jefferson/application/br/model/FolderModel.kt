@@ -23,11 +23,6 @@ import java.util.*
 
 class FolderModel : Parcelable {
     var name = NO_FOLDER_NAME
-        set(name) {
-            if (name != null) {
-                field = name
-            }
-        }
     var path: String? = ""
     var isFavorite = false
     val items = ArrayList<MediaModel>()
@@ -35,7 +30,7 @@ class FolderModel : Parcelable {
     constructor() {}
     private constructor(p: Parcel) {
         path = p.readString()
-        p.readTypedList(items, MediaModel.CREATOR)
+        p.readTypedList(items as List<MediaModel?>, MediaModel.CREATOR)
     }
 
     val tag: String?
@@ -57,7 +52,7 @@ class FolderModel : Parcelable {
         get() {
             val list = ArrayList<String>()
             for (model in items) {
-                list.add(model.path)
+                list.add(model.path as String)
             }
             return list
         }
