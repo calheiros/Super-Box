@@ -58,10 +58,6 @@ open class MyCompatActivity : AppCompatActivity() {
         isAlive = true
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-    }
-
     override fun startActivity(intent: Intent) {
         allowQuit = true
         super.startActivity(intent)
@@ -130,24 +126,27 @@ open class MyCompatActivity : AppCompatActivity() {
             val uri = Uri.fromParts("package", packageName, null)
             intent.data = uri
             startActivityForResult(intent, REQUEST_WRITE_READ_PERMSSION_CODE)
-        } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )
-            ) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
+            return
+        }
+        
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )
+        ) {
+            // Show an explanation to the user *asynchronously* -- don't block
+            // this thread waiting for the user's response! After the user
+            // sees the explanation, try again to request the permission.
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 val intent = Intent(Intent.ACTION_APPLICATION_PREFERENCES)
                 startActivity(intent)
-            } else {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    REQUEST_WRITE_READ_PERMSSION_CODE
-                )
             }
+        } else {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                REQUEST_WRITE_READ_PERMSSION_CODE
+            )
         }
     }
 
