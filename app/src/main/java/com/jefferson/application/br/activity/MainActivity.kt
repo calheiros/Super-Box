@@ -324,7 +324,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 return
             }
             if (requestCode == MainFragment.GET_FILE) {
-                var uri: Uri? = null
+                val uri: Uri?
                 if (data != null) {
                     uri = data.data
                     Toast.makeText(this, uri!!.path, Toast.LENGTH_LONG).show()
@@ -332,10 +332,10 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 return
             }
             if (requestCode == GET_SDCARD_URI_CODE) {
-                val uri = data!!.data
+                val uri = data?.data ?: return
                 if (Storage.checkIfSDCardRoot(uri)) {
                     contentResolver.takePersistableUriPermission(
-                        uri!!,
+                        uri,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                     )
                     Storage.storeExternalUri(uri.toString(), this)

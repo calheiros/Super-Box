@@ -761,7 +761,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
 
         private fun kill() {
-            Storage.scanMediaFiles(mArrayPath.toTypedArray() as Array<String?>, this@ViewAlbum)
+            Storage.scanMediaFiles(mArrayPath.toTypedArray(), this@ViewAlbum)
             mySimpleDialog.dismiss()
             if (adapter.items.isEmpty()) {
                 deleteFolder()
@@ -825,7 +825,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         fun getOutputStream(file: File): OutputStream {
             var result: OutputStream? = null
             if (Build.VERSION.SDK_INT >= 21) if (Environment.isExternalStorageRemovable(file)) {
-                val document = Storage.getDocumentFile(file, true, this@ViewAlbum)
+                val document = DocumentUtil.getDocumentFile(file, true, this@ViewAlbum)
                 if (document != null) result =
                     this@ViewAlbum.contentResolver.openOutputStream(document.uri)
             } else {

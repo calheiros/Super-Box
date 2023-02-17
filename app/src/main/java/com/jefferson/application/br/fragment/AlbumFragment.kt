@@ -86,11 +86,9 @@ class AlbumFragment : Fragment {
         if (view == null) {
             view = inflater.inflate(R.layout.main_gallery, container, false)
             progressBar = view?.findViewById(R.id.main_galery_progressBar)
+            recyclerView = view?.findViewById(R.id.recyclerView)
             emptyView = view?.findViewById(R.id.empty_linearLayout)
             val storagePermissionView = view?.findViewById<View>(R.id.storage_permission_layout)
-            val sharedPref = PreferenceManager.getDefaultSharedPreferences(activity)
-            val root = Environment.getExternalStorageDirectory().absolutePath
-            recyclerView = view?.findViewById(R.id.recyclerView)
             val layoutManager = GridLayoutManager(activity, 2)
             recyclerView?.layoutManager = layoutManager
             recyclerView?.clipToPadding = false
@@ -128,6 +126,7 @@ class AlbumFragment : Fragment {
         val models = ArrayList<FolderModel>()
         val root =
             Storage.getFolder(if (position == 0) Storage.IMAGE else Storage.VIDEO, requireContext())
+                ?: return result
         root.mkdirs()
         val database: PathsDatabase? = try {
             getInstance(requireContext())

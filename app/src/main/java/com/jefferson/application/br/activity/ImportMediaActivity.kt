@@ -104,7 +104,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
             }
             if (parent == null) {
                 builderTask!!.setDestination(Storage.getFolder(if (FileModel.IMAGE_TYPE == type)
-                    Storage.IMAGE else Storage.VIDEO, this).absolutePath)
+                    Storage.IMAGE else Storage.VIDEO, this)!!.absolutePath)
             }
             builderTask!!.setOnUpdatedListener(this)
             builderTask!!.setOnFinishedListener { startImportTask(builderTask!!.data) }
