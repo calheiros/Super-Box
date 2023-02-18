@@ -21,7 +21,7 @@ import java.util.ArrayList;
 
 public class ImagesModel {
     String str_folder;
-    ArrayList<String> al_imagepath;
+    ArrayList<String> files;
 
     public String getStr_folder() {
         return str_folder;
@@ -31,11 +31,11 @@ public class ImagesModel {
         this.str_folder = str_folder;
     }
 
-    public ArrayList<String> getAl_imagepath() {
-        return al_imagepath;
+    public ArrayList<String> getFiles() {
+        return files;
     }
 
-    public void setAl_imagepath(ArrayList<String> al_imagepath) {
-        this.al_imagepath = al_imagepath;
+    public void setFiles(ArrayList<String> files) {
+        this.files = files;
     }
 }
