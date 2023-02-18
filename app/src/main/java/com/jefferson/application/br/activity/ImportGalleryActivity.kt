@@ -187,14 +187,14 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
                 if (folderPosition == -1) {
                     val model = FolderModel()
                     val mm = MediaModel(absolutePathOfImage)
-                    if (position == 1) mm.duration = StringUtils.getFormattedVideoDuration(duration)
+                    if (position == 1) mm.duration = StringUtils.getFormattedVideoDuration(duration.toString())
                     model.name = cursor.getString(columnIndexFolderName)
                     model.addItem(mm)
                     galleryItems.add(model)
                 } else {
                     val mm = MediaModel(absolutePathOfImage)
                     if (position == 1) {
-                        val formattedTime = StringUtils.getFormattedVideoDuration(duration)
+                        val formattedTime = StringUtils.getFormattedVideoDuration(duration.toString())
                         mm.duration = formattedTime
                     }
                     galleryItems[folderPosition].addItem(mm)

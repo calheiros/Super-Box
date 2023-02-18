@@ -13,35 +13,36 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br.util;
 
 import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
-import androidx.annotation.NonNull;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
-import com.jefferson.application.br.App;
+
+import androidx.annotation.NonNull;
+
 import java.io.File;
 
 public class MediaFilter {
 
-	final static String[] imageExt = {".jpg", ".png", ".gif", ".jpeg", ".webp"};
-	final static String[] videoExt = {".mp4", ".3gp", ".flv", ".webm"};
+    final static String[] imageExt = {".jpg", ".png", ".gif", ".jpeg", ".webp"};
+    final static String[] videoExt = {".mp4", ".3gp", ".flv", ".webm"};
 
-	public static boolean isVideo(@NonNull File file) {
+    public static boolean isVideo(@NonNull File file) {
 
         for (String extension : videoExt) {
-			Log.i("MediaFilter", "Extension: " + extension);
+            Log.i("MediaFilter", "Extension: " + extension);
 
             if (file.getName().toLowerCase().endsWith(extension)) {
-				Log.i("MediaFilter", "Returning TRUE for VIDEO in: " + file);
+                Log.i("MediaFilter", "Returning TRUE for VIDEO in: " + file);
                 return true;
             }
         }
-		Log.i("MediaFilter", "Returning FALSE for VIDEO in: " + file);
+        Log.i("MediaFilter", "Returning FALSE for VIDEO in: " + file);
 
         return false;
     }
@@ -49,36 +50,37 @@ public class MediaFilter {
     public static boolean isImage(@NonNull File file) {
 
         for (String extension : imageExt) {
-			Log.i("MediaFilter", "Extension: " + extension);
+            Log.i("MediaFilter", "Extension: " + extension);
 
             if (file.getName().toLowerCase().endsWith(extension)) {
-				Log.i("MediaFilter", "Returning TRUE for IMAGE in: " + file);
+                Log.i("MediaFilter", "Returning TRUE for IMAGE in: " + file);
 
                 return true;
             }
         }
-		Log.i("MediaFilter", "Returning FALSE for IMAGE: " + file);
+        Log.i("MediaFilter", "Returning FALSE for IMAGE: " + file);
 
         return false;
     }
 
     public static String getMimeType(@NonNull String url) {
-        String type = null; 
-        String extension = MimeTypeMap.getFileExtensionFromUrl(url); 
-        if (extension != null) { 
-            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension); 
+        String type = null;
+        String extension = MimeTypeMap.getFileExtensionFromUrl(url);
+        if (extension != null) {
+            type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         }
-        return type; 
+        return type;
     }
 
     public String getMimeTypeFromUri(@NonNull Uri uri, Context context) {
-        String mimeType = null; 
-        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) { 
+        String mimeType;
+        if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) {
             ContentResolver cr = context.getContentResolver();
-            mimeType = cr.getType(uri); 
-        } else { 
-            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri .toString()); 
+            mimeType = cr.getType(uri);
+        } else {
+            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri.toString());
             mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(fileExtension.toLowerCase());
-        } return mimeType;
+        }
+        return mimeType;
     }
 }

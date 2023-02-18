@@ -295,10 +295,12 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             val sizeText = view.findViewById<TextView>(R.id.file_size_info)
             val originText = view.findViewById<TextView>(R.id.file_origin_text_view)
             val filePath = database.getMediaPath(file.name)
-            val name = File(filePath).name
-            nameText.text = name
-            sizeText.text = StringUtils.getFormattedFileSize(file.length())
-            originText.text = filePath
+            if (filePath != null) {
+                val name = File(filePath).name
+                nameText.text = name
+                sizeText.text = StringUtils.getFormattedFileSize(file.length())
+                originText.text = filePath
+            }
         } else return
         SimpleDialog(this).setTitle(getString(R.string.information)).setContentView(view)
             .setPositiveButton(android.R.string.ok, null).show()
@@ -316,11 +318,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         val visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
         val mainActivity = MainActivity.instance
         emptyView.visibility = visibility
-        if (mainActivity != null) {
-            mainActivity.updateFragment(position)
-        } else {
+        mainActivity?.updateFragment(position) ?:
             Toast.makeText(this, "Can't synchronize MainActivity!", Toast.LENGTH_SHORT).show()
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

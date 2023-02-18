@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit
 object StringUtils {
     var Dictionary = "abcdefghijklmnopqrstuvwxyz01234567890123456789"
     private const val TAG = "StringUtils"
-    fun replaceEach(text: String, operators: ArrayMap<Char?, Char?>): String {
+    fun replaceEach(text: String, operators: ArrayMap<Char, Char>): String {
         // Create a buffer sufficiently large that re-allocations are minimized.
         val builder = StringBuilder(text.length)
         for (element in text) {
@@ -83,10 +83,10 @@ object StringUtils {
             seconds
         ) else String.format("%d:%02d", minutes, seconds)
     }
-
+    @JvmStatic
     val formattedDate: String
         get() = getFormattedDate("dd-MM-yyyy_HH-mm-ss")
-
+    @JvmStatic
     fun getFormattedDate(format: String?): String {
         val calendar = Calendar.getInstance()
         val now = calendar.time
