@@ -16,7 +16,6 @@
 */
 package com.jefferson.application.br.util
 
-import android.R
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
@@ -55,7 +54,7 @@ object BlurUtils {
     fun setupWith(blurView: BlurView, activity: Activity, radius: Float) {
         val decorView = activity.window.decorView
         // ViewGroup you want to start blur from. Choose root as close to BlurView in hierarchy as possible.
-        val rootView = decorView.findViewById<ViewGroup>(R.id.content)
+        val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
         val windowBackground = decorView.background
         blurView.outlineProvider = ViewOutlineProvider.BACKGROUND
         blurView.clipToOutline = true

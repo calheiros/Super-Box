@@ -267,11 +267,11 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         val items = ThemeConfig.getMenuList(requireContext())
         val dialog = SimpleDialog(requireActivity(), SimpleDialog.STYLE_MENU)
         dialog.setTitle(getString(R.string.escolha_tema))
-            .setMenuItems(items, { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
+            .setMenuItems(items) { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
                 dialog.cancel()
                 val themeIndex: Int = ThemeConfig.getThemeIndex(requireContext())
                 val currentTheme: Int = MainActivity.CURRENT_THEME
-                val newTheme: Int = ThemeConfig.resolveTheme(context, position)
+                val newTheme: Int = ThemeConfig.resolveTheme(requireContext(), position)
                 val needRefresh: Boolean = newTheme != currentTheme
                 if (position != themeIndex) {
                     ThemeConfig.setThemeIndex(position, context)
@@ -281,8 +281,8 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                     return@setMenuItems
                 }
                 //"must update description"
-                updateItemDescription(ID.APP_THEME, items.get(position).name)
-            })
+                updateItemDescription(ID.APP_THEME, items[position].name)
+            }
         dialog.show()
     }
 

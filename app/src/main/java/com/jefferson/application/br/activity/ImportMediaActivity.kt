@@ -97,18 +97,19 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                 getIntent().getStringArrayListExtra(MEDIA_LIST_KEY) as ArrayList<String>?
             val parent = intent.getStringExtra(PARENT_KEY)
             val type = intent.getStringExtra(TYPE_KEY)
-            builderTask = FileModelBuilderTask(this, filesPath, type, parent)
+            builderTask = FileModelBuilderTask(this, filesPath!!, type, parent)
             if (type != null) {
                 typeQuantityRes =
-                    if (type == FileModel.IMAGE_TYPE) R.plurals.quantidade_imagem_total else R.plurals.quantidade_video_total
+                    if (type == FileModel.IMAGE_TYPE) R.plurals.quantidade_imagem_total
+                    else R.plurals.quantidade_video_total
             }
             if (parent == null) {
-                builderTask!!.setDestination(Storage.getFolder(if (FileModel.IMAGE_TYPE == type)
+                builderTask?.setDestination(Storage.getFolder(if (FileModel.IMAGE_TYPE == type)
                     Storage.IMAGE else Storage.VIDEO, this)!!.absolutePath)
             }
-            builderTask!!.setOnUpdatedListener(this)
-            builderTask!!.setOnFinishedListener { startImportTask(builderTask!!.data) }
-            builderTask!!.start()
+            builderTask?.setOnUpdatedListener(this)
+            builderTask?.setOnFinishedListener { startImportTask(builderTask!!.data) }
+            builderTask?.start()
             prepareTitleView.text = "Checking"
         }
     }
