@@ -142,7 +142,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
 
     override fun onFinished() {
         window.clearFlags(flagKeepScreenOn)
-        animateText!!.cancel()
+        animateText?.cancel()
         val res = resources
         val criticalError: Exception? = importTask?.error()
         val failures = importTask!!.failuresCount
