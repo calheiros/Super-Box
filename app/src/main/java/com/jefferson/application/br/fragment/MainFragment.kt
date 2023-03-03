@@ -35,14 +35,13 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.ImportGalleryActivity
 import com.jefferson.application.br.activity.MainActivity
 import com.jefferson.application.br.activity.SearchActivity
-import com.jefferson.application.br.model.FolderModel
+import com.jefferson.application.br.model.AlbumModel
 import com.jefferson.application.br.model.SimplifiedAlbum
 
 class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnLongClickListener {
@@ -135,7 +134,6 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
                     if (action == SearchActivity.ACTION_OPEN_ALBUM) {
                         openAlbum(albumName)
                     }
-                    //Toast.makeText(App.getAppContext(),"name: " + name, Toast.LENGTH_SHORT ).show();
                 }
             }
         }
@@ -267,10 +265,9 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         val fragments = arrayOfNulls<AlbumFragment>(Companion.SIZE)
         fun update(
             position: Int,
-            models: ArrayList<FolderModel>?,
-            simplifiedModels: ArrayList<SimplifiedAlbum>?
+            models: ArrayList<AlbumModel>?
         ) {
-            getItem(position).putModels(models, simplifiedModels)
+            getItem(position).putModels(models)
         }
 
         override fun getItem(position: Int): AlbumFragment {

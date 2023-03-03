@@ -57,7 +57,7 @@ class SimplifiedAlbum : Parcelable {
         }
 
         @JvmStatic
-        fun createFrom(item: FolderModel): SimplifiedAlbum {
+        fun createFrom(item: AlbumModel): SimplifiedAlbum {
             val itemsPath = item.itemsPath
             val name = item.name
             val thumb = if (itemsPath.size > 0) itemsPath[0] else ""

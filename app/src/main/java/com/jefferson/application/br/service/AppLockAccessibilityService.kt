@@ -38,16 +38,16 @@ class AppLockAccessibilityService : AccessibilityService() {
     private lateinit var activityOnTop: String
     private lateinit var database: AppLockDatabase
     private lateinit var appLockWindow: AppLockWindow
-    private lateinit var mybroadcast: ScreenOnOff
+    private lateinit var broadcast: ScreenOnOff
     private var pActivity = ""
 
     override fun onCreate() {
         super.onCreate()
         database = AppLockDatabase(this)
         appLockWindow = AppLockWindow(this, database)
-        mybroadcast = ScreenOnOff()
-        registerReceiver(mybroadcast, IntentFilter(Intent.ACTION_SCREEN_ON))
-        registerReceiver(mybroadcast, IntentFilter(Intent.ACTION_SCREEN_OFF))
+        broadcast = ScreenOnOff()
+        registerReceiver(broadcast, IntentFilter(Intent.ACTION_SCREEN_ON))
+        registerReceiver(broadcast, IntentFilter(Intent.ACTION_SCREEN_OFF))
     }
 
     override fun onAccessibilityEvent(accessibilityEvent: AccessibilityEvent) {
@@ -138,7 +138,7 @@ class AppLockAccessibilityService : AccessibilityService() {
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(mybroadcast)
+        unregisterReceiver(broadcast)
     }
 
     override fun onKeyEvent(event: KeyEvent): Boolean {

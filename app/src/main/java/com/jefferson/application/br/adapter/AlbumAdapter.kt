@@ -26,37 +26,30 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
-import com.jefferson.application.br.app.SimpleDialog.Companion.getMenuItems
+import com.jefferson.application.br.app.SimpleDialog.Companion.createMenuItems
 import com.jefferson.application.br.fragment.AlbumFragment
-import com.jefferson.application.br.model.FolderModel
+import com.jefferson.application.br.model.AlbumModel
 import com.jefferson.application.br.model.SimplifiedAlbum
 import com.jefferson.application.br.model.SimplifiedAlbum.Companion.createFrom
+import com.jefferson.application.br.util.AlbumUtils
 
 class AlbumAdapter(
     private val fragment: AlbumFragment,
-    private var models: ArrayList<FolderModel>,
-    simplifiedModels: ArrayList<SimplifiedAlbum>
+    public var models: ArrayList<AlbumModel>,
 ) : RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
-    private val pagerPosition: Int = fragment.pagerPosition
     private var group: View? = null
-    var simplifiedModels: ArrayList<SimplifiedAlbum>
-        private set
     private var itemToHighlight = -1
 
-    init {
-        this.simplifiedModels = simplifiedModels
-    }
 
-    fun getItem(itemPosition: Int): FolderModel? {
+    fun getItem(itemPosition: Int): AlbumModel? {
         return if (itemPosition in (0 until itemCount)) {
             models[itemPosition]
         } else null
     }
 
-    fun insertItem(item: FolderModel) {
+    fun insertItem(item: AlbumModel) {
         models.add(item)
-        FolderModel.sort(models)
-        simplifiedModels.add(createFrom(item))
+        AlbumModel.sort(models)
         val position = models.indexOf(item)
         if (position != -1) {
             notifyItemInserted(position)
@@ -68,7 +61,6 @@ class AlbumAdapter(
 
     fun removeItem(position: Int) {
         if (position in (0 until itemCount)) {
-            removeSimplifiedItem(models[position].name)
             models.removeAt(position)
             notifyItemRemoved(position)
         } else {
@@ -81,11 +73,9 @@ class AlbumAdapter(
     }
 
     fun updateModels(
-        newAlbumModels: ArrayList<FolderModel>,
-        newSimplifiedAlbums: ArrayList<SimplifiedAlbum>
+        newAlbumModels: ArrayList<AlbumModel>,
     ) {
         models = newAlbumModels
-        simplifiedModels = newSimplifiedAlbums
         notifyDataSetChanged()
     }
 
@@ -96,7 +86,7 @@ class AlbumAdapter(
         return ViewHolder(view)
     }
 
-    fun notifyItemChanged(f_model: FolderModel) {
+    fun notifyItemChanged(f_model: AlbumModel) {
         for (i in 0 until itemCount) {
             if ((f_model.name == getItem(i)!!.name)) {
                 notifyItemChanged(i)
@@ -105,7 +95,7 @@ class AlbumAdapter(
         }
     }
 
-    fun removeItem(item: FolderModel) {
+    fun removeItem(item: AlbumModel) {
         val key = models.indexOf(item)
         if (key != -1) {
             models.removeAt(key)
@@ -117,17 +107,9 @@ class AlbumAdapter(
                 Toast.LENGTH_LONG
             ).show()
         }
-        removeSimplifiedItem(item.name)
     }
 
-    private fun removeSimplifiedItem(name: String) {
-        val model = getSimplifiedAlbumByName(name)
-        if (model != null) {
-            simplifiedModels.remove(model)
-        }
-    }
-
-    fun getItemPosition(path: String): Int {
+    fun getAlbumPositionByPath(path: String): Int {
         for (i in models.indices) {
             val model = models[i]
             if ((model.path == path)) {
@@ -170,7 +152,7 @@ class AlbumAdapter(
             )
             val dialog = SimpleDialog(fragment.requireActivity())
             dialog.setMenuItems(
-                getMenuItems(options, icons),
+                createMenuItems(options, icons),
                 DialogMenuListener(model, dialog)
             )
             dialog.show()
@@ -200,7 +182,7 @@ class AlbumAdapter(
         return -1
     }
 
-    private fun getItemPosition(f_model: FolderModel): Int {
+    private fun getAlbumPositionByPath(f_model: AlbumModel): Int {
         for (i in 0 until itemCount) {
             if ((getItem(i) == f_model)) {
                 notifyItemChanged(i)
@@ -209,16 +191,6 @@ class AlbumAdapter(
         }
         return -1
     }
-
-    fun getSimplifiedAlbumByName(name: String): SimplifiedAlbum? {
-        for (item: SimplifiedAlbum in simplifiedModels) {
-            if ((name == item.name)) {
-                return item
-            }
-        }
-        return null
-    }
-
     fun setItemToHighlight(position: Int) {
         itemToHighlight = position
     }
@@ -241,19 +213,18 @@ class AlbumAdapter(
         }
     }
 
-    private inner class DialogMenuListener(var f_model: FolderModel, var dialog: SimpleDialog) :
+    private inner class DialogMenuListener(var f_model: AlbumModel, var dialog: SimpleDialog) :
         OnItemClickListener {
         override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
             when (position) {
                 0 -> fragment.inputFolderDialog(f_model, AlbumFragment.ACTION_RENAME_FOLDER)
                 1 -> fragment.deleteFolder(f_model)
                 2 -> {
-                    val startPosition = getItemPosition(f_model)
-                    if (f_model.isFavorite) fragment.removeFromFavorites(f_model) else fragment.addToFavorites(
-                        f_model
-                    )
-                    FolderModel.sort(models)
-                    val endPosition = getItemPosition(f_model)
+                    val startPosition = getAlbumPositionByPath(f_model)
+                    if (f_model.isFavorite) AlbumUtils.removeFromFavorites(f_model, fragment.
+                    requireContext()) else fragment.addToFavorites (f_model)
+                    AlbumModel.sort(models)
+                    val endPosition = getAlbumPositionByPath(f_model)
                     notifyItemMoved(startPosition, endPosition)
                 }
             }

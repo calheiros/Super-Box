@@ -30,7 +30,6 @@ import android.widget.TextView
 import com.jefferson.application.br.R
 import com.jefferson.application.br.database.AppLockDatabase
 import com.jefferson.application.br.model.AppModel
-import com.jefferson.application.br.service.AppLockService
 import com.jefferson.application.br.util.JDebug
 import com.jefferson.application.br.widget.LockCheck
 
@@ -173,10 +172,5 @@ class AppLockAdapter(private val activity: Activity, var models: ArrayList<AppMo
 
     override fun getItemId(position: Int): Long {
         return position.toLong()
-    }
-
-    companion object {
-        @JvmField
-        var service: AppLockService? = null
     }
 }

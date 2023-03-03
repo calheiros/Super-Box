@@ -21,13 +21,13 @@ import android.os.Parcelable
 import android.os.Parcelable.Creator
 import java.util.*
 
-class FolderModel : Parcelable {
-    var name = NO_FOLDER_NAME
+class AlbumModel : Parcelable {
+    var name = NO_ALBUM_NAME
     var path: String? = ""
     var isFavorite = false
     val items = ArrayList<MediaModel>()
 
-    constructor() {}
+    constructor()
     private constructor(p: Parcel) {
         path = p.readString()
         p.readTypedList(items as List<MediaModel?>, MediaModel.CREATOR)
@@ -65,23 +65,27 @@ class FolderModel : Parcelable {
         parcel.writeString(path)
         parcel.writeTypedList(items)
     }
-
+    fun getSimplifiedAlbum() : SimplifiedAlbum {
+        val firstItem = items.firstOrNull()?.path ?: ""
+        return SimplifiedAlbum(name, firstItem)
+    }
     companion object {
-        const val NO_FOLDER_NAME = "0"
+        const val NO_ALBUM_NAME = "0"
+
         @JvmField
-        val CREATOR: Creator<FolderModel?> = object : Creator<FolderModel?> {
-            override fun createFromParcel(`in`: Parcel): FolderModel {
-                return FolderModel(`in`)
+        val CREATOR: Creator<AlbumModel?> = object : Creator<AlbumModel?> {
+            override fun createFromParcel(`in`: Parcel): AlbumModel {
+                return AlbumModel(`in`)
             }
 
-            override fun newArray(size: Int): Array<FolderModel?> {
+            override fun newArray(size: Int): Array<AlbumModel?> {
                 return arrayOfNulls(size)
             }
         }
 
-        fun sort(models: ArrayList<FolderModel>?) {
+        fun sort(models: ArrayList<AlbumModel>?) {
             if (models == null) return
-            models.sortWith(Comparator { f1: FolderModel, f2: FolderModel ->
+            models.sortWith(Comparator { f1: AlbumModel, f2: AlbumModel ->
                 if (f1.isFavorite && !f2.isFavorite) return@Comparator -1
                 if (f2.isFavorite && !f1.isFavorite) return@Comparator 1
                 f1.name.lowercase(Locale.getDefault())

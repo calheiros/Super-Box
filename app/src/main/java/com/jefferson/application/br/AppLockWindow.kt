@@ -121,16 +121,16 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
     private fun createView() {
         lastView = view
         view = createParentView()
-        iconImageView = view!!.findViewById<View>(R.id.icon_super_view) as ImageView
-        materialLockView = view!!.findViewById<View>(R.id.pattern) as MaterialLockView
-        if (lockePackageName != null) iconImageView!!.setImageDrawable(
+        iconImageView = view?.findViewById<View>(R.id.icon_super_view) as ImageView
+        materialLockView = view?.findViewById<View>(R.id.pattern) as MaterialLockView
+        if (lockePackageName != null) iconImageView?.setImageDrawable(
             getIconDrawable(
                 lockePackageName!!
             )
         )
         if (materialLockView != null) {
-            materialLockView!!.isTactileFeedbackEnabled = false
-            materialLockView!!.setOnPatternListener(
+            materialLockView?.isTactileFeedbackEnabled = false
+            materialLockView?.setOnPatternListener(
                 PatternListener(
                     context
                 )
@@ -141,17 +141,9 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
     fun lock(appName: String) {
         isLocked = true
         lockePackageName = appName
-        iconImageView!!.setImageDrawable(getIconDrawable(appName))
+        iconImageView?.setImageDrawable(getIconDrawable(appName))
         windowManager.addView(view, params)
     }
-
-    //    private void openFakeDialog(String appName) {
-    //        Intent intent = new Intent(context, FakeDialogActivity.class);
-    //        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-    //        intent.putExtra("app_name", appName);
-    //        context.startActivity(intent);
-    //    }
-    //
     fun unlock() {
         try {
             windowManager.removeView(view)

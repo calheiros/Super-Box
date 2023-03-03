@@ -18,7 +18,6 @@
 package com.jefferson.application.br.util;
 
 public class MathUtils {
-    
     //The following code was taken from a stackoverflow response, answered by Boann. Thank you to him
     //Source: https://stackoverflow.com/questions/3422673/how-to-evaluate-a-math-expression-given-in-string-form
     

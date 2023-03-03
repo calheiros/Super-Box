@@ -38,13 +38,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
-import com.jefferson.application.br.R
 import com.jefferson.application.br.app.ProgressThreadUpdate
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.database.PathsDatabase
+import com.jefferson.application.br.model.AlbumModel
 import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.model.MediaModel
 import com.jefferson.application.br.task.DeleteFilesTask
@@ -65,6 +66,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private lateinit var emptyView: View
     private lateinit var menuLayout: View
     private lateinit var toolbar: Toolbar
+    private lateinit var albumLabel: TextView
+    // private lateinit var albumModel: AlbumModel
 
     private var selectionMode = false
     private var position = 0
@@ -83,7 +86,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         title = intent.getStringExtra("name")
         folder = intent.getStringExtra("folder")?.let { File(it) }
         filePaths = intent.getParcelableArrayListExtra("data")!!
-
+        //albumModel = intent.getParcelableExtra("model")
         val layoutManager = GridLayoutManager(this, autoSpan)
         recyclerView = findViewById(R.id.my_recycler_view)
         recyclerView.setHasFixedSize(true)
@@ -91,20 +94,26 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         adapter = MultiSelectRecyclerViewAdapter(this@ViewAlbum, filePaths, this, position)
         recyclerView.adapter = adapter
 
-        fab = findViewById(R.id.view_album_fab_button)
-        menuLayout = findViewById(R.id.lock_layout)
         val mViewUnlock = findViewById<View>(R.id.unlockView)
         val mViewDelete = findViewById<View>(R.id.deleteView)
         val mViewSelect = findViewById<View>(R.id.selectView)
-        selectAllTextView = findViewById(R.id.options_album_selectTextView)
-        selectImageView = findViewById(R.id.selectImageView)
         val mViewMove = findViewById<View>(R.id.moveView)
-        emptyView = findViewById(R.id.view_album_empty_view)
+
         mViewUnlock.setOnClickListener(this)
         mViewDelete.setOnClickListener(this)
         mViewMove.setOnClickListener(this)
         mViewSelect.setOnClickListener(this)
+
+        fab = findViewById(R.id.view_album_fab_button)
+        menuLayout = findViewById(R.id.lock_layout)
+        albumLabel = findViewById<TextView>(R.id.album_name_label)
+        selectAllTextView = findViewById(R.id.options_album_selectTextView)
+        selectImageView = findViewById(R.id.selectImageView)
+        emptyView = findViewById(R.id.view_album_empty_view)
+
         fab.setOnClickListener(this)
+        albumLabel.setOnClickListener(this)
+
         initToolbar()
         configureBlurView(recyclerView)
 
@@ -166,6 +175,9 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
     override fun onClick(view: View) {
         when (view.id) {
+            R.id.album_name_label -> {
+                renameAlbum()
+            }
             R.id.deleteView -> {
                 deleteFilesDialog()
             }
@@ -318,8 +330,11 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         val visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
         val mainActivity = MainActivity.instance
         emptyView.visibility = visibility
-        mainActivity?.updateFragment(position) ?:
-            Toast.makeText(this, "Can't synchronize MainActivity!", Toast.LENGTH_SHORT).show()
+        mainActivity?.updateFragment(position) ?: Toast.makeText(
+            this,
+            "Can't synchronize MainActivity!",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -407,19 +422,19 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         return false
     }
 
-    override fun onItemClicked(item_position: Int, v: View?) {
+    override fun onItemClicked(position: Int, v: View?) {
         if (!selectionMode) {
             val mClass: Class<*>
-            when (position) {
-                0 -> startPreviewActivity(ImagePreviewActivity::class.java, item_position, v)
+            when (this.position) {
+                0 -> startPreviewActivity(ImagePreviewActivity::class.java, position, v)
                 1 -> {
                     mClass = VideoPlayerActivity::class.java
-                    startPreviewActivity(mClass, item_position, v)
+                    startPreviewActivity(mClass, position, v)
                 }
             }
             return
         }
-        toggleItemSelected(item_position, true)
+        toggleItemSelected(position, true)
         invalidateOptionsMenu()
         switchSelectButtonIcon()
     }
@@ -488,6 +503,36 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         fab.hide()
     }
 
+    private fun renameAlbum() {
+        val model = AlbumModel()
+        model.path = folder!!.absolutePath
+        val dialog = SimpleDialog(this, SimpleDialog.STYLE_INPUT)
+        val input = dialog.getInputEdiText()
+        input.requestFocus()
+        input.setText(title)
+        input.setSelection(title!!.length)
+        dialog.setTitle(getString(R.string.renomear_pasta))
+        dialog.setPositiveButton(getString(R.string.renomear), object : OnDialogClickListener() {
+            override fun onClick(dialog: SimpleDialog): Boolean {
+                val inputText = dialog.getInputText()
+                if (inputText.isEmpty()) {
+                    return false
+                }
+                val success = AlbumUtils.renameAlbum(this@ViewAlbum, model, inputText, position)
+                if (success) {
+                    MainActivity.instance?.updateFragment(position)
+                    albumLabel.text = inputText
+                }
+                return true
+            }
+        })
+        dialog.show()
+    }
+
+    fun toast(msg: String) {
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+
     fun exitSelectionMode() {
         selectionMode = false
         invalidateOptionsMenu()
@@ -522,10 +567,10 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE) // sets the text color of the collapsed title
         collapsingToolbar.setExpandedTitleColor(Color.TRANSPARENT) // sets the text color of the expanded title
         collapsingToolbar.scrimAnimationDuration = 150
-        setAlbumDetails()
+        setAlbumHeader()
     }
 
-    private fun setAlbumDetails() {
+    private fun setAlbumHeader() {
         val roundedImageView = findViewById<RoundedImageView>(R.id.thumbnail_image_view)
         val itemCountLabel = findViewById<TextView>(R.id.text_view_item_count)
         val albumNameLabel = findViewById<TextView>(R.id.album_name_label)
@@ -548,7 +593,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         override fun onBeingStarted() {
             super.onBeingStarted()
             if (myThread != null && myThread!!.isWorking) {
-                myThread!!.stopWork()
+                myThread?.stopWork()
                 threadInterrupted = true
             }
             exitSelectionMode()
@@ -587,7 +632,10 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         private var cancelled = false
         override fun run() {
             try {
-                PathsDatabase.getInstance(this@ViewAlbum, Storage.getDefaultStoragePath(this@ViewAlbum))
+                PathsDatabase.getInstance(
+                    this@ViewAlbum,
+                    Storage.getDefaultStoragePath(this@ViewAlbum)
+                )
                     .use { database ->
                         for (model in list!!) {
                             if (!isWorking) break
@@ -705,7 +753,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
         override fun onBeingStarted() {
             if (myThread != null && myThread!!.isWorking) {
-                myThread!!.stopWork()
+                myThread?.stopWork()
             }
             mySimpleDialog.resetDialog()
             mySimpleDialog.showProgressBar(true)

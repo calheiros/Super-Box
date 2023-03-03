@@ -22,6 +22,7 @@ import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AnimationUtils
@@ -34,7 +35,6 @@ import androidx.core.content.ContextCompat
 import com.jefferson.application.br.MaterialLockView
 import com.jefferson.application.br.MaterialLockView.OnPatternListener
 import com.jefferson.application.br.R
-import com.jefferson.application.br.activity.CreatePattern
 import com.jefferson.application.br.util.BlurUtils
 import com.jefferson.application.br.util.MyPreferences
 import com.jefferson.application.br.util.PasswordManager
@@ -66,7 +66,7 @@ class VerifyActivity : MyCompatActivity() {
         if (sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false)) openBiometricPrompt()
         materialLockView = findViewById(R.id.pattern)
         materialLockView.isTactileFeedbackEnabled = false
-        handler = Handler()
+        handler = Handler(Looper.getMainLooper())
         runnable = Runnable { materialLockView.clearPattern() }
         materialLockView.setOnPatternListener(MyPatternListener())
     }
@@ -137,8 +137,8 @@ class VerifyActivity : MyCompatActivity() {
 
     private fun wrongPasswdAnimation() {
         val shakeAnim = AnimationUtils.loadAnimation(this, R.anim.shake_anim)
-        val view = findViewById<View>(R.id.icon_super_view)
-        view?.startAnimation(shakeAnim)
+        val iconView = findViewById<View>(R.id.icon_super_view)
+        iconView?.startAnimation(shakeAnim)
     }
 
     override fun onRequestPermissionsResult(

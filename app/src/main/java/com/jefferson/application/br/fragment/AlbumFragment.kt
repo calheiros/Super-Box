@@ -17,15 +17,12 @@
 package com.jefferson.application.br.fragment
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabaseCorruptException
 import android.os.*
-import android.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
@@ -41,14 +38,14 @@ import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.database.PathsDatabase
 import com.jefferson.application.br.database.PathsDatabase.Companion.getInstance
 import com.jefferson.application.br.model.FileModel
-import com.jefferson.application.br.model.FolderModel
+import com.jefferson.application.br.model.AlbumModel
 import com.jefferson.application.br.model.MediaModel
 import com.jefferson.application.br.model.SimplifiedAlbum
 import com.jefferson.application.br.task.DeleteFilesTask
 import com.jefferson.application.br.task.JTask
+import com.jefferson.application.br.util.AlbumUtils
 import com.jefferson.application.br.util.JDebug
 import com.jefferson.application.br.util.Storage
-import com.jefferson.application.br.util.StringUtils
 import java.io.File
 
 class AlbumFragment : Fragment {
@@ -98,7 +95,7 @@ class AlbumFragment : Fragment {
         return view
     }
 
-    fun openAlbum(f_model: FolderModel?) {
+    fun openAlbum(f_model: AlbumModel?) {
         val intent = Intent(context, ViewAlbum::class.java)
         intent.putExtra("position", pagerPosition)
         intent.putExtra("name", f_model!!.name)
@@ -114,25 +111,17 @@ class AlbumFragment : Fragment {
         }
     }
 
-    class BuildResult {
-        var simplifiedAlbums: ArrayList<SimplifiedAlbum> = ArrayList()
-        var folderModels: ArrayList<FolderModel> = ArrayList()
-
-    }
-
-    fun buildModels(position: Int): BuildResult {
-        val result = BuildResult()
-        val simplifiedModels = ArrayList<SimplifiedAlbum>()
-        val models = ArrayList<FolderModel>()
+    fun buildModels(position: Int): ArrayList<AlbumModel> {
+        val models = ArrayList<AlbumModel>()
         val root =
             Storage.getFolder(if (position == 0) Storage.IMAGE else Storage.VIDEO, requireContext())
-                ?: return result
+                ?: return models
         root.mkdirs()
         val database: PathsDatabase? = try {
             getInstance(requireContext())
         } catch (e: SQLiteDatabaseCorruptException) {
             //do something
-            return result
+            return models
         }
         val bookmark = database?.favoritesFolder
         if (root.exists()) {
@@ -150,7 +139,7 @@ class AlbumFragment : Fragment {
                         favorite = java.lang.Boolean.TRUE == bookmark[file.name]
                     }
                     folderName = folderName ?: s
-                    val model = FolderModel()
+                    val model = AlbumModel()
                     model.name = folderName!!
                     model.path = file.absolutePath
                     model.isFavorite = favorite
@@ -158,37 +147,30 @@ class AlbumFragment : Fragment {
                         val mm = MediaModel(value.absolutePath)
                         model.addItem(mm)
                     }
-                    val items = model.items
-                    val thumb = if (items.size > 0) items[0].path else ""
-                    simplifiedModels.add(SimplifiedAlbum(folderName, thumb ?: ""))
                     models.add(model)
                 }
             }
         }
-        FolderModel.sort(models)
-        result.folderModels = models
-        result.simplifiedAlbums = simplifiedModels
+        AlbumModel.sort(models)
         database?.close()
-        return result
+        return models
     }
 
     private fun populateRecyclerView() {
         retrieveMedia = object : JTask() {
-            private var simplifiedModels: ArrayList<SimplifiedAlbum>? = null
-            private var albumsModel: ArrayList<FolderModel>? = null
+            private var albumsModel: ArrayList<AlbumModel>? = null
             override fun workingThread() {
                 val result = buildModels(
                     pagerPosition
                 )
-                albumsModel = result.folderModels
-                this.simplifiedModels = result.simplifiedAlbums
+                albumsModel = result
             }
 
             override fun onBeingStarted(){
             }
 
             override fun onFinished() {
-                putModels(albumsModel, simplifiedModels)
+                putModels(albumsModel)
                 notifyDataUpdated()
             }
 
@@ -207,11 +189,11 @@ class AlbumFragment : Fragment {
         recyclerView!!.scrollToPosition(position)
     }
 
-    fun putModels(models: ArrayList<FolderModel>?, simplifiedModels: ArrayList<SimplifiedAlbum>?) {
+    fun putModels(models: ArrayList<AlbumModel>?) {
         if (albumAdapter != null) {
-            albumAdapter?.updateModels(models!!, simplifiedModels!!)
+            albumAdapter?.updateModels(models!!)
         } else {
-            albumAdapter = AlbumAdapter(this@AlbumFragment, models!!, simplifiedModels!!)
+            albumAdapter = AlbumAdapter(this@AlbumFragment, models!!)
             notifyDataUpdated()
         }
     }
@@ -232,11 +214,13 @@ class AlbumFragment : Fragment {
         corruptedWarnHandler.sendEmptyMessage(0)
     }
 
-    fun inputFolderDialog(model: FolderModel?, action: Int) {
+    fun inputFolderDialog(model: AlbumModel?, action: Int) {
         val activity: Activity = requireActivity()
-        val contentView = requireActivity().layoutInflater.inflate(R.layout.dialog_edit_text, null)
-        val editText = contentView.findViewById<EditText>(R.id.editTextInput)
         val title: String?
+        val dialog = SimpleDialog(activity, SimpleDialog.STYLE_INPUT)
+        val editText = dialog.getInputEdiText()
+        editText.requestFocus()
+
         if (action == ACTION_RENAME_FOLDER) {
             val name = model!!.name
             title = getString(R.string.renomear_pasta)
@@ -245,43 +229,31 @@ class AlbumFragment : Fragment {
         } else {
             title = getString(R.string.criar_pasta)
         }
-        val dialog = SimpleDialog(activity, SimpleDialog.STYLE_INPUT)
         dialog.setTitle(title)
-        dialog.setContentView(contentView)
         dialog.setPositiveButton(
             activity.getString(R.string.concluir),
             object : OnDialogClickListener() {
                 override fun onClick(dialog: SimpleDialog): Boolean {
                     val text = editText.text.toString()
-                    val result = validateFolderName(text, context)
-                    if (result != FOLDER_NAME_OKAY) {
-                        Toast.makeText(context, result, Toast.LENGTH_LONG).show()
+                    val result = AlbumUtils.validateName(text, context)
+                    if (!result.ok) {
+                        Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
                         return false
                     }
                     val success = true
                     var message: String? = null
                     when (action) {
-                        ACTION_RENAME_FOLDER -> if (success == renameFolder(
+                        ACTION_RENAME_FOLDER -> if (success == AlbumUtils.renameAlbum(
                                 context, model!!, text, pagerPosition
                             )
                         ) {
                             message = "Folder renamed to \"$text\"."
-                            val index = albumAdapter?.getItemPosition(model.path!!)
-                            //FolderModel model = albumAdapter.getItem(index);
-                            if (index != -1) {
-                                val simplifiedAlbum = albumAdapter!!
-                                    .getSimplifiedAlbumByName(model.name)
-                                if (simplifiedAlbum != null) {
-                                    simplifiedAlbum.name = text
-                                }
-                                model.name = text
-                                albumAdapter?.notifyItemChanged(index!!)
-                            }
+                            albumAdapter?.notifyItemChanged(model)
                         } else {
                             message = "Failed to rename folder! :("
                         }
                         ACTION_CREATE_FOLDER -> {
-                            val folder = createFolder(context, text, pagerPosition)
+                            val folder = AlbumUtils.createAlbum(context, text, pagerPosition)
                             if (folder != null) {
                                 message = "Folder \"$text\" created."
                                 albumAdapter!!.insertItem(folder)
@@ -297,7 +269,7 @@ class AlbumFragment : Fragment {
             }).setNegativeButton(getString(R.string.cancelar), null).show()
     }
 
-    fun deleteFolder(model: FolderModel?) {
+    fun deleteFolder(model: AlbumModel?) {
         if (model == null) {
             return
         }
@@ -307,7 +279,7 @@ class AlbumFragment : Fragment {
         simpleDialog.setMessage(getString(R.string.apagar_pasta_aviso, name))
         simpleDialog.setPositiveButton(getString(R.string.sim), object : OnDialogClickListener() {
             override fun onClick(dialog: SimpleDialog): Boolean {
-                val root = File(model.path)
+                val root = File(model.path!!)
                 val task = DeleteFilesTask(requireActivity(), model.itemsPath, pagerPosition, root)
                 task.setOnFinishedListener {
                     if (task.deletedAll()) {
@@ -329,9 +301,9 @@ class AlbumFragment : Fragment {
         populateRecyclerView()
     }
 
-    fun addToFavorites(f_model: FolderModel) {
+    fun addToFavorites(f_model: AlbumModel) {
         val database = getInstance(requireContext())
-        val file = File(f_model.path)
+        val file = File(f_model.path!!)
         val name = file.name
         val success = database.setFavoriteFolder(name)
         database.close()
@@ -351,20 +323,8 @@ class AlbumFragment : Fragment {
             retrieveMedia?.cancelTask()
 
         progressBar?.visibility = View.VISIBLE
-        albumAdapter?.updateModels(ArrayList(), ArrayList())
+        albumAdapter?.updateModels(ArrayList())
         populateRecyclerView()
-    }
-
-    fun removeFromFavorites(f_model: FolderModel) {
-        val database = getInstance(requireContext())
-        val file = File(f_model.path)
-        val name = file.name
-        if (!database.removeFavoriteFolder(name)) {
-            Toast.makeText(requireContext(), "failed to remove from bookmark", Toast.LENGTH_SHORT)
-                .show()
-            return
-        }
-        f_model.isFavorite = false
     }
 
     fun setBottomPadding(paddingBottom: Int) {
@@ -378,10 +338,18 @@ class AlbumFragment : Fragment {
         get() = retrieveMedia!!.getStatus() == JTask.Status.STARTED
 
     val simplifiedModels: ArrayList<SimplifiedAlbum>
-        get() = albumAdapter!!.simplifiedModels
+        get() {
+            val models = albumAdapter?.models!!
+            val result = ArrayList<SimplifiedAlbum>()
+            for (model in models) {
+                result.add(model.getSimplifiedAlbum())
+            }
+            return result
+        }
 
     fun scrollToAlbum(albumName: String?) {
-        val position = albumAdapter!!.getItemPositionByName(albumName!!)
+        albumName ?: return
+        val position = albumAdapter!!.getItemPositionByName(albumName)
         if (position != -1) {
             val smoothScroller: SmoothScroller = object : LinearSmoothScroller(requireContext()) {
                 override fun getVerticalSnapPreference(): Int {
@@ -390,8 +358,8 @@ class AlbumFragment : Fragment {
 
                 override fun onStop() {
                     super.onStop()
-                    albumAdapter!!.setItemToHighlight(position)
-                    albumAdapter!!.notifyItemChanged(position)
+                    albumAdapter?.setItemToHighlight(position)
+                    albumAdapter?.notifyItemChanged(position)
                 }
             }
             smoothScroller.targetPosition = position
@@ -400,98 +368,11 @@ class AlbumFragment : Fragment {
     }
 
     companion object {
-        const val FOLDER_NAME_OKAY = "folder_name_okay"
+        const val ALBUM_NAME_OKAY = "folder_name_okay"
         const val ACTION_CREATE_FOLDER = 122
         const val ACTION_RENAME_FOLDER = 54
-        fun renameFolder(
-            context: Context?,
-            model: FolderModel,
-            newName: String,
-            position: Int
-        ): Boolean {
-            var folderDatabase: PathsDatabase? = null
-            try {
-                val folderType = if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
-                folderDatabase = getInstance(context!!)
-                val file = File(model.path)
-                val id = file.name
-                val folderName = folderDatabase.getFolderName(id, folderType)
-                //JDebug.toast("ID => " + folderName + "\n NAME => " + model.getName());
-                val newFolderId = folderDatabase.getFolderIdFromName(newName, folderType)
-                if (folderName != null && folderName == newName) {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.pasta_mesmo_nome),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    folderDatabase.close()
-                    return false
-                }
-                if (newFolderId != null) {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.pasta_existe),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    folderDatabase.close()
-                    return false
-                }
-                if (folderName == null) {
-                    folderDatabase.addFolderName(id, newName, folderType)
-                } else {
-                    folderDatabase.updateFolderName(id, newName, folderType)
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                return false
-            } finally {
-                folderDatabase?.close()
-            }
-            return true
-        }
 
-        fun createFolder(context: Context?, name: String, position: Int): FolderModel? {
-            var database: PathsDatabase? = null
-            var folder: FolderModel? = null
-            try {
-                val type = if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
-                database = getInstance(context!!)
-                var id = database.getFolderIdFromName(name, type)
-                val randomStr = StringUtils.getRandomString(24)
-                if (id == null) {
-                    id = randomStr
-                    val strType = if (position == 0) Storage.IMAGE else Storage.VIDEO
-                    val file = File(Storage.getFolder(strType, context), randomStr)
-                    if (file.mkdirs()) {
-                        folder = FolderModel()
-                        database.addFolderName(id, name, type)
-                        folder.name = name
-                        folder.path = file.absolutePath
-                    }
-                } else {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.pasta_existe),
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-            } finally {
-                database?.close()
-            }
-            return folder
-        }
 
-        fun validateFolderName(name: String, context: Context?): String {
-            val noSpace = name.replace(" ", "")
-            return if (noSpace.isEmpty()) {
-                context!!.getString(R.string.pasta_nome_vazio)
-            } else if (name.length > 50) {
-                context!!.getString(R.string.pasta_nome_muito_grande)
-            } else {
-                FOLDER_NAME_OKAY
-            }
-        }
+
     }
 }

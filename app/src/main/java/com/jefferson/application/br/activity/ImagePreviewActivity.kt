@@ -25,7 +25,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.jefferson.application.br.R
-import com.jefferson.application.br.activity.triggers.SwitchVisibilityTrigger
+import com.jefferson.application.br.triggers.SwitchVisibilityTrigger
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.fragment.ImagePreviewFragment
@@ -101,7 +101,7 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         private val optionsTrigger: SwitchVisibilityTrigger
 
         init {
-            optionsTrigger = SwitchVisibilityTrigger(optionsLayout)
+            optionsTrigger = SwitchVisibilityTrigger(optionsLayout!!)
         }
 
         override fun getCount(): Int {

@@ -29,7 +29,7 @@ import com.bumptech.glide.Glide;
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.activity.triggers.SwitchVisibilityTrigger;
+import com.jefferson.application.br.triggers.SwitchVisibilityTrigger;
 import com.jefferson.application.br.database.PathsDatabase;
 import com.jefferson.application.br.util.Storage;
 import java.io.File;

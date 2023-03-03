@@ -299,7 +299,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         DialogUtils.configureDialog(dialog)
     }
 
-    fun openGithub() {
+    private fun openGithub() {
         val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.github.com/calheiros"))
         try {
             startActivity(intent)
@@ -326,17 +326,17 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         val dialog = SimpleDialog(requireActivity(), SimpleDialog.STYLE_MENU)
         dialog.setTitle(getString(R.string.armazenamento))
         dialog.setMenuItems(
-            options,
-            { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
-                dialog.dismiss()
-                if (position == storagePosition) {
-                    return@setMenuItems
-                }
-                Storage.setNewLocalStorage(position, requireContext())
-                (requireActivity() as MainActivity).mainFragment.reloadFragments()
-                val item: SimpleDialog.MenuItem = options.get(position)
-                updateItem(ID.STORAGE, item.name, item.icon)
-            })
+            options
+        ) { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
+            dialog.dismiss()
+            if (position == storagePosition) {
+                return@setMenuItems
+            }
+            Storage.setNewLocalStorage(position, requireContext())
+            (requireActivity() as MainActivity).mainFragment.reloadFragments()
+            val item: SimpleDialog.MenuItem = options.get(position)
+            updateItem(ID.STORAGE, item.name, item.icon)
+        }
         dialog.show()
     }
 
@@ -414,7 +414,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         editText.append(dialerCode)
         val builder = AlertDialog.Builder(requireContext(), DialogUtils.getTheme(requireContext()))
         builder.setTitle("New code")
-        builder.setPositiveButton(getString(R.string.salvar), { p1: DialogInterface?, p2: Int ->
+        builder.setPositiveButton(getString(R.string.salvar)) { _: DialogInterface?, _: Int ->
             val code: String = editText.text.toString()
             if (code.length < 3) {
                 Toast.makeText(
@@ -433,7 +433,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 updateItemDescription(ID.DIALER_CODE, code)
                 adapter!!.notifyDataSetChanged()
             }
-        })
+        }
         builder.setNegativeButton(getString(R.string.cancelar), null)
         builder.setView(view)
         val dialog = builder.create()
@@ -454,11 +454,12 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     private val storageName: String
-        get() = if ((Storage.getStorageLocation(requireContext()) == Storage.INTERNAL)) getString(
-            R.string.armaz_interno
-        ) else getString(R.string.armaz_externo)
+        get() = if ((Storage.getStorageLocation(requireContext()) == Storage.INTERNAL))
+            getString(R.string.armaz_interno) else getString(R.string.armaz_externo)
+
     private val storageIcon: Int
-        get() = if ((Storage.getStorageLocation(requireContext()) == Storage.INTERNAL)) R.drawable.ic_twotone_smartphone else R.drawable.ic_micro_sd
+        get() = if ((Storage.getStorageLocation(requireContext()) == Storage.INTERNAL))
+            R.drawable.ic_twotone_smartphone else R.drawable.ic_micro_sd
 
     fun updateItem(id: ID, description: String?, icon: Int) {
         for (i in 0 until adapter!!.count) {

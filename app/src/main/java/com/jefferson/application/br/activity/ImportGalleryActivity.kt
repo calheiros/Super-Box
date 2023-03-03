@@ -37,9 +37,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.PhotosFolderAdapter
-import com.jefferson.application.br.model.FolderModel
+import com.jefferson.application.br.model.AlbumModel
 import com.jefferson.application.br.model.MediaModel
-import com.jefferson.application.br.task.ImportTask
 import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.util.FileUtils
 import com.jefferson.application.br.util.StringUtils
@@ -60,7 +59,6 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         setContentView(R.layout.import_gallery)
         myGridView = findViewById(R.id.gv_folder)
         position = intent.extras!!.getInt("position")
-        Toast.makeText(this, "position: $position", Toast.LENGTH_LONG).show()
         swipeRefreshLayout = findViewById(R.id.swipe_refresh)
         swipeRefreshLayout.setOnRefreshListener(this)
         swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary)
@@ -140,9 +138,9 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         Toast.makeText(this, "Not implemented!", Toast.LENGTH_SHORT).show()
     }
 
-    val galleryItems: ArrayList<FolderModel>
+    val galleryItems: ArrayList<AlbumModel>
         get() {
-            val galleryItems = ArrayList<FolderModel>()
+            val galleryItems = ArrayList<AlbumModel>()
             val uri: Uri
             val cursor: Cursor?
             val orderBy: String
@@ -194,7 +192,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
                 val folderName = cursor.getString(columnIndexFolderName)
                 val folderPosition = getFolderIndex(galleryItems, folderName)
                 if (folderPosition == -1) {
-                    val model = FolderModel()
+                    val model = AlbumModel()
                     val mm = MediaModel(absolutePathOfImage)
                     if (duration != null)
                         mm.duration = StringUtils.getFormattedVideoDuration(duration)
@@ -211,13 +209,13 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
                 }
             }
             cursor.close()
-            FolderModel.sort(galleryItems)
+            AlbumModel.sort(galleryItems)
             return galleryItems
         }
 
-    private fun getFolderIndex(list: ArrayList<FolderModel>, name: String?): Int {
+    private fun getFolderIndex(list: ArrayList<AlbumModel>, name: String?): Int {
         @Suppress("NAME_SHADOWING")
-        val name: String = name ?: FolderModel.NO_FOLDER_NAME
+        val name: String = name ?: AlbumModel.NO_ALBUM_NAME
         for (i in list.indices) {
             val folderName = list[i].name
             if (name == folderName) return i
@@ -225,7 +223,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         return -1
     }
 
-    private fun setAdapter(list: ArrayList<FolderModel>) {
+    private fun setAdapter(list: ArrayList<AlbumModel>) {
         if (list.isEmpty()) {
             findViewById<View>(R.id.gallery_album_empty_layout).visibility = View.VISIBLE
         }
@@ -290,7 +288,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
     }
 
     private inner class RetrieveMediaTask : JTask() {
-        private var result: ArrayList<FolderModel>? = null
+        private var result: ArrayList<AlbumModel>? = null
         private lateinit var progressBar: ProgressBar
 
         override fun workingThread() {
@@ -313,8 +311,8 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         }
 
         override fun onException(e: Exception) {
-            e.printStackTrace()
             Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+            progressBar.visibility = View.GONE
         }
     }
 

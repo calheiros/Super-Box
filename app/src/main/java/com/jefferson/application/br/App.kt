@@ -19,12 +19,12 @@ package com.jefferson.application.br
 import android.app.AlarmManager
 import android.app.Application
 import android.app.PendingIntent
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
+import android.widget.Toast
 import com.jefferson.application.br.activity.CrashActivity
 import com.jefferson.application.br.activity.MyCompatActivity
 import com.jefferson.application.br.service.AppLockService
@@ -33,7 +33,7 @@ import com.jefferson.application.br.util.ServiceUtils
 import kotlin.system.exitProcess
 
 class App : Application(), Thread.UncaughtExceptionHandler {
-    private var mDefaultExceptionHandler: Thread.UncaughtExceptionHandler? = null
+    private var defaultExceptionHandler: Thread.UncaughtExceptionHandler? = null
     private val mHandler = Handler(Looper.getMainLooper())
     private val activities = ArrayList<MyCompatActivity>()
 
@@ -70,7 +70,7 @@ class App : Application(), Thread.UncaughtExceptionHandler {
         } catch (e: Exception) {
             JDebug.writeLog(e.cause, this)
         }
-        mDefaultExceptionHandler?.uncaughtException(thread, thow)
+        defaultExceptionHandler?.uncaughtException(thread, thow)
     }
 
     private fun startCrashActivity(error: String) {
@@ -84,20 +84,25 @@ class App : Application(), Thread.UncaughtExceptionHandler {
 
     override fun onCreate() {
         super.onCreate()
-        mDefaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+        defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(this)
-        startServiceNotRunning()
+        try {
+            startServiceNotRunning()
+        } catch (e: Exception) {
+            Toast.makeText(this, "error: " + e.message, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun startServiceNotRunning() {
-        if (ServiceUtils.isMyServiceRunning(AppLockService::class.java, this)) {
-            val intent = Intent(this, AppLockService::class.java)
+        if (ServiceUtils.isMyServiceRunning(AppLockService::class.java, applicationContext)) {
+            val intent = Intent(applicationContext, AppLockService::class.java)
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent)
             } else {
                 startService(intent)
             }
+            Toast.makeText(this, "starting service...", Toast.LENGTH_SHORT).show()
         }
     }
 

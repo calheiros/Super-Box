@@ -28,16 +28,16 @@ import com.bumptech.glide.Glide
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.ImportGalleryActivity
 import com.jefferson.application.br.activity.SelectionActivity
-import com.jefferson.application.br.model.FolderModel
+import com.jefferson.application.br.model.AlbumModel
 
 class PhotosFolderAdapter(
     private val mGalleryAlbum: ImportGalleryActivity,
-    private var items: ArrayList<FolderModel>,
+    private var items: ArrayList<AlbumModel>,
     private val option: Int
-) : ArrayAdapter<FolderModel>(
+) : ArrayAdapter<AlbumModel>(
     mGalleryAlbum, R.layout.adapter_photosfolder, items
 ) {
-    fun set(newItems: ArrayList<FolderModel>) {
+    fun set(newItems: ArrayList<AlbumModel>) {
         items = newItems
         if (newItems.size > 0) notifyDataSetChanged() else notifyDataSetInvalidated()
     }

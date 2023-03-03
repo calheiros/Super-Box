@@ -38,9 +38,9 @@ import com.jefferson.application.br.adapter.FilePickerAdapter
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.database.PathsDatabase
-import com.jefferson.application.br.fragment.AlbumFragment
 import com.jefferson.application.br.model.PickerModel
 import com.jefferson.application.br.task.JTask
+import com.jefferson.application.br.util.AlbumUtils
 import com.jefferson.application.br.util.Storage
 import java.io.File
 import java.util.*
@@ -161,13 +161,13 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
         dialog.setPositiveButton(getString(android.R.string.ok), object : OnDialogClickListener() {
             override fun onClick(dialog: SimpleDialog): Boolean {
                 val name = editText.text.toString()
-                val result = AlbumFragment.validateFolderName(name, this@FolderPickerActivity)
-                if (result != AlbumFragment.FOLDER_NAME_OKAY) {
-                    Toast.makeText(this@FolderPickerActivity, result, Toast.LENGTH_SHORT).show()
+                val result = AlbumUtils.validateName(name, this@FolderPickerActivity)
+                if (!result.ok) {
+                    Toast.makeText(this@FolderPickerActivity, result.message, Toast.LENGTH_SHORT).show()
                     return false
                 }
                 val success =
-                    AlbumFragment.createFolder(this@FolderPickerActivity, name, position) != null
+                    AlbumUtils.createAlbum(this@FolderPickerActivity, name, position) != null
                 if (success) {
                     update()
                 }

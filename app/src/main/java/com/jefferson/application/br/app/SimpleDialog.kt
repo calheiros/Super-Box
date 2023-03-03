@@ -44,6 +44,7 @@ class SimpleDialog {
     private val activity: Activity
     private lateinit var parentView: ViewGroup
     private lateinit var progressBarDialog: SimpleDialog
+    private lateinit var input: EditText
 
     private val mHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
@@ -119,6 +120,7 @@ class SimpleDialog {
         editTextLayout = parentView.findViewById(R.id.dialog_edit_text_layout)
         iconView = parentView.findViewById(R.id.dialog_icon)
         buttonsLayout = parentView.findViewById(R.id.dialog_buttons_layout)
+        input = parentView.findViewById(R.id.editTextInput)
         dialog = JDialog(activity, style == STYLE_INPUT)
         val color = ContextCompat.getColor(activity, R.color.colorAccent)
         progressBar.max = 100
@@ -166,9 +168,10 @@ class SimpleDialog {
             STYLE_ALERT_HIGH -> setIcon(R.drawable.ic_alert_rounded_auth)
             STYLE_ALERT_MEDIUM, STYLE_MENU -> createMenu()
             STYLE_PROGRESS -> showProgressBar(true)
-            STYLE_INPUT -> {}
+            STYLE_INPUT -> showEditText(true)
         }
     }
+
 
     private fun createMenu() {
         val menuView = (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
@@ -198,7 +201,7 @@ class SimpleDialog {
     }
 
     fun setCancelable(cancelable: Boolean): SimpleDialog {
-        dialog?.setCancelable(false)
+        dialog?.setCancelable(cancelable)
         return this
     }
 
@@ -215,10 +218,6 @@ class SimpleDialog {
     fun setOnDismissListener(listener: DialogInterface.OnDismissListener?): SimpleDialog {
         dialog?.setOnDismissListener(listener)
         return this
-    }
-
-    fun dismiss() {
-        dialog?.dismiss()
     }
 
     fun showProgressBar(show: Boolean): SimpleDialog {
@@ -245,8 +244,11 @@ class SimpleDialog {
         get() = activity
 
     fun show(): SimpleDialog {
-        dialog!!.show()
+        dialog?.show()
         return this
+    }
+    fun dismiss() {
+        dialog?.dismiss()
     }
 
     fun setTitle(title: String): SimpleDialog {
@@ -276,8 +278,8 @@ class SimpleDialog {
         if (buttonsLayout.visibility != View.VISIBLE) {
             buttonsLayout.visibility = View.VISIBLE
         }
-        negativeButton!!.text = buttonText
-        negativeButton!!.setOnClickListener(OnClickListener(listener))
+        negativeButton?.text = buttonText
+        negativeButton?.setOnClickListener(OnClickListener(listener))
         return this
     }
 
@@ -290,6 +292,12 @@ class SimpleDialog {
         iconView?.setColorFilter(color)
     }
 
+    fun getInputText(): String {
+        return input.text.toString()
+    }
+    fun getInputEdiText():EditText {
+        return input
+    }
     abstract class OnDialogClickListener {
         abstract fun onClick(dialog: SimpleDialog): Boolean
     }
@@ -339,7 +347,7 @@ class SimpleDialog {
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
-            var convertView = convertView
+            @Suppress("NAME_SHADOWING") var convertView = convertView
             val holder: DialogHolder
             val item = options[position]
             if (convertView == null) {
@@ -418,7 +426,7 @@ class SimpleDialog {
         private const val STYLE_ALERT_MEDIUM = 555
 
         @JvmStatic
-        fun getMenuItems(names: Array<String>, icons: IntArray): List<MenuItem> {
+        fun createMenuItems(names: Array<String>, icons: IntArray): List<MenuItem> {
             val menu: MutableList<MenuItem> = ArrayList()
             for (i in names.indices) {
                 menu.add(MenuItem(names[i], icons[i]))

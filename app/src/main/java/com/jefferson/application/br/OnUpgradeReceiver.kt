@@ -14,25 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+package com.jefferson.application.br
 
-package com.jefferson.application.br;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
-import com.jefferson.application.br.service.AppLockService;
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import com.jefferson.application.br.service.AppLockService
 
-public class OnUpgradeReceiver extends BroadcastReceiver {
-	
-    @Override
-	public void onReceive(final Context context, Intent intent) {
-        Intent serviceIntent = new Intent(context, AppLockService.class);
-        serviceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        
+class OnUpgradeReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {
+        val serviceIntent = Intent(context, AppLockService::class.java)
+        serviceIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(serviceIntent);
+            context.startForegroundService(serviceIntent)
         } else {
-            context.startService(serviceIntent);
+            context.startService(serviceIntent)
         }
-	}
+    }
 }
