@@ -13,33 +13,30 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br;
 
-import android.content.*;
-import android.telephony.*;
-import android.util.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.telephony.SmsMessage;
+import android.util.Log;
 
-public class MySMSMonitor
-extends BroadcastReceiver
-{
+public class MySMSMonitor extends BroadcastReceiver {
     private static final String ACTION = "android.provider.Telephony.SMS_RECEIVED";
-	
-    @Override 
-    public void onReceive(Context context, Intent intent) 
-    {
-        if(intent!=null && 
-		   intent.getAction()!=null && 
-		   ACTION.compareToIgnoreCase(intent.getAction())==0)
-        {
-            Object[]pduArray= (Object[]) intent.getExtras().get("pdus");
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent != null && intent.getAction() != null &&
+                ACTION.compareToIgnoreCase(intent.getAction()) == 0) {
+            Object[] pduArray = (Object[]) intent.getExtras().get("pdus");
             SmsMessage[] messages = new SmsMessage[pduArray.length];
 
-            for (int i = 0; i<pduArray.length; i++) {
-                messages[i] = SmsMessage.createFromPdu ((byte[])pduArray [i]); 
+            for (int i = 0; i < pduArray.length; i++) {
+                messages[i] = SmsMessage.createFromPdu((byte[]) pduArray[i]);
             }
-            Log.d("MySMSMonitor","SMS Message Received.");
+            Log.d("MySMSMonitor", "SMS Message Received.");
         }
     }
 }

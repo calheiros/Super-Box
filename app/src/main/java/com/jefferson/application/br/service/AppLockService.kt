@@ -31,7 +31,6 @@ import androidx.annotation.RequiresApi
 import com.jefferson.application.br.App
 import com.jefferson.application.br.AppLockWindow
 import com.jefferson.application.br.R
-import com.jefferson.application.br.adapter.AppLockAdapter
 import com.jefferson.application.br.database.AppLockDatabase
 import com.jefferson.application.br.receiver.KeyWatcher
 import com.jefferson.application.br.receiver.ScreenOnOff
@@ -40,7 +39,7 @@ import com.jefferson.application.br.util.ServiceUtils
 import java.util.*
 
 class AppLockService : Service() {
-    var mHomeWatcher: KeyWatcher? = null
+    var homeWatcher: KeyWatcher? = null
     var lockedApps: ArrayList<String>? = null
     private var lockWindow: AppLockWindow? = null
     private var myBroadcast: ScreenOnOff? = null

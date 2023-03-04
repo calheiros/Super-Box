@@ -36,7 +36,7 @@ public class ImageTouch extends androidx.appcompat.widget.AppCompatImageButton {
     /**
      * The cached bounds of the view.
      */
-    private Rect mCachedBounds = new Rect();
+    private final Rect mCachedBounds = new Rect();
 
     public ImageTouch(Context context) {
         super(context);

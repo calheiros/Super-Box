@@ -162,9 +162,9 @@ public class PrivateContacts extends AppCompatActivity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == RESULT_OK) {
 			for (ContactsData contData: selecionados) {
-				database.addContact(new Contact(contData.nome, contData.numero_phone, contData.photo));
+				database.addContact(new Contact(contData.name, contData.phoneNumber, contData.photo));
 				try {
-					deleteContact(this, contData.numero_phone, contData.nome);
+					deleteContact(this, contData.phoneNumber, contData.name);
 				} catch (Exception e) {
 
 				}

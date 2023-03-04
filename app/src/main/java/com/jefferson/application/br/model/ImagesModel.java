@@ -23,11 +23,11 @@ public class ImagesModel {
     String str_folder;
     ArrayList<String> files;
 
-    public String getStr_folder() {
+    public String getStrFolder() {
         return str_folder;
     }
 
-    public void setStr_folder(String str_folder) {
+    public void setStrFolder(String str_folder) {
         this.str_folder = str_folder;
     }
 

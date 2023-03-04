@@ -13,21 +13,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br;
 
-import androidx.appcompat.app.*;
-import android.os.*;
+import android.os.Bundle;
 
-public class EmailConfig extends AppCompatActivity
-{
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.email_config);
-		finish(); 
-	}
+import androidx.appcompat.app.AppCompatActivity;
+
+public class EmailConfig extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.email_config);
+        finish();
+    }
 }

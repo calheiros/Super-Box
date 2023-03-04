@@ -187,10 +187,10 @@ public class ContactsActivity extends AppCompatActivity {
 
                     if (nome != null) {
                         ContactsData mData = new ContactsData();
-                        mData.nome = nome;
+                        mData.name = nome;
                         mData.email = email;
                         mData.photo = photo;
-                        mData.numero_phone = numero;
+                        mData.phoneNumber = numero;
 
                         contacts.add(mData);
                     }

@@ -39,7 +39,6 @@ class App : Application(), Thread.UncaughtExceptionHandler {
 
     var isCounting = false
         private set
-    var appLockService: AppLockService? = null
 
     private val mRunnable: Runnable = Runnable {
         if (isAnyNotRunning) {
@@ -102,7 +101,6 @@ class App : Application(), Thread.UncaughtExceptionHandler {
             } else {
                 startService(intent)
             }
-            Toast.makeText(this, "starting service...", Toast.LENGTH_SHORT).show()
         }
     }
 

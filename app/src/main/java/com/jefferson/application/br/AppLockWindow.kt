@@ -91,7 +91,6 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
                 return true
             }
         }
-
         //layout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
         layout.isFocusable = true
         return LayoutInflater.from(context).inflate(R.layout.pattern, layout)

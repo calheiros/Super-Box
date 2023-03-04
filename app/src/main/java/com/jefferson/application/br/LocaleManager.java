@@ -44,8 +44,8 @@ public class LocaleManager {
     }
 
     public static String getLanguage(Context c) { 
-		SharedPreferences mSheredPreferences = MyPreferences.getSharedPreferences(c);
-        String locale = mSheredPreferences.getString(LOCALE_KEY, SYSTEM_LOCALE);
+		SharedPreferences sharedPreferences = MyPreferences.getSharedPreferences(c);
+        String locale = sharedPreferences.getString(LOCALE_KEY, SYSTEM_LOCALE);
         
         if (SYSTEM_LOCALE.equals(locale)) {
             return getSystemLocale(c);

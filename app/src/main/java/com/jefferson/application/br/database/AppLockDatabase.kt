@@ -90,6 +90,11 @@ class AppLockDatabase(context: Context?) : SQLiteOpenHelper(context, DATABASE_NA
     }
 
     companion object {
+        @JvmStatic
+        fun getInstance(context: Context): AppLockDatabase {
+            return AppLockDatabase(context)
+        }
+
         const val DATABASE_NAME = "PACKAGES_DB"
     }
 }

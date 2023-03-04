@@ -27,7 +27,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.jefferson.application.br.R;
+
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 
@@ -77,8 +77,8 @@ public class ContatosAdapter extends BaseAdapter
 		CheckBox checkW = (CheckBox)vi.findViewById(R.id.check_contacts);
 
 		ContactsData myContact = contacts.get(position);
-		nome.setText(myContact.nome);
-		numero.setText(myContact.numero_phone);
+		nome.setText(myContact.name);
+		numero.setText(myContact.phoneNumber);
 
 
        if (myContact.photo == null){

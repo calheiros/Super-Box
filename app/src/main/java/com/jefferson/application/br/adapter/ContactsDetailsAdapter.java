@@ -15,24 +15,27 @@
  * limitations under the License.
 */
 
-package com.jefferson.application.br;
+package com.jefferson.application.br.adapter;
 import android.content.*;
 import android.view.*;
 import android.widget.*;
+
+import com.jefferson.application.br.R;
+
 import java.util.*;
 
 public class ContactsDetailsAdapter extends BaseAdapter {
 	
-	List<String> listItens;
+	List<String> listItems;
 	LayoutInflater layoutInflater;
 	
-	public ContactsDetailsAdapter(Context context, List<String> listItens) {
-		this.listItens = listItens;
-		layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
+	public ContactsDetailsAdapter(Context context, List<String> listItems) {
+		this.listItems = listItems;
+		layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 	@Override
 	public int getCount() {
-		return listItens.size();
+		return listItems.size();
 	}
 
 	@Override
@@ -47,13 +50,10 @@ public class ContactsDetailsAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		
 		if (convertView == null)
-			convertView = layoutInflater.inflate(R.layout.contact_details_items, null);
-			
-		TextView text=(TextView)convertView.findViewById(R.id.contact_details_name);
-		text.setText(listItens.get(position));
-
+			convertView = layoutInflater.inflate(R.layout.contact_details_items, parent, false);
+		TextView text = convertView.findViewById(R.id.contact_details_name);
+		text.setText(listItems.get(position));
 		return convertView;
 	}
 

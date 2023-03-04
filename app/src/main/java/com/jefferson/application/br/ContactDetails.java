@@ -13,24 +13,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br;
-import android.os.*;
 
-import androidx.appcompat.app.*;
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.jefferson.application.br.adapter.ContactsDetailsAdapter;
 
-public class ContactDetails extends AppCompatActivity
-{
-	ContactsDetailsAdapter adapter;
-	@Override
-	protected void onCreate(Bundle savedInstanceState)
-	{
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.contact_details);
-		CollapsingToolbarLayout collapsing = (CollapsingToolbarLayout)findViewById(R.id.collapsingToolbar);
+public class ContactDetails extends AppCompatActivity {
+    ContactsDetailsAdapter adapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.contact_details);
+        CollapsingToolbarLayout collapsing = findViewById(R.id.collapsingToolbar);
 		/*CircleImageView circleImag = (CircleImageView)findViewById(R.id.imagePhoto);
 		ListView list = (ListView)findViewById(R.id.contact_info);
         
@@ -59,6 +60,6 @@ public class ContactDetails extends AppCompatActivity
 		adapter = new ContactsDetailsAdapter(this,ArrayList);
 		list.setAdapter(adapter);
 		*/
-	}
+    }
 
 }

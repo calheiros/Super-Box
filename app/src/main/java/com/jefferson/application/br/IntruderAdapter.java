@@ -13,118 +13,122 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
 package com.jefferson.application.br;
 
-import android.content.*;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.*;
-
-import android.view.*;
-import android.view.View.*;
-import android.widget.*;
-
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
-//import com.squareup.picasso.*;
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHolder> {
 
-	ArrayList<String> data;
-	Context context;
-	public static class ViewHolder extends RecyclerView.ViewHolder {
-		ImageView mImage;
+    ArrayList<String> data;
+    Context context;
 
-		public ViewHolder(View view) {
-			super(view);
-			mImage = (ImageView) view.findViewById(R.id.image_intruder);
-		}
-	}
-    
-	public IntruderAdapter(ArrayList<String> mData, Context mContext) {
+    public IntruderAdapter(ArrayList<String> mData, Context mContext) {
 
-		this.data = mData;
-		this.context = mContext;
-	}
-    
-	@NonNull
-	@Override
-	public IntruderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-		View vi = LayoutInflater.from(parent.getContext())
-			.inflate(R.layout.intruder_item, parent, false);
+        this.data = mData;
+        this.context = mContext;
+    }
 
-		return  new ViewHolder(vi);
-	}
+    @NonNull
+    @Override
+    public IntruderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
+        View vi = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.intruder_item, parent, false);
 
-	@Override
-	public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
-		super.onBindViewHolder(holder, position, payloads);
+        return new ViewHolder(vi);
+    }
 
-	}
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        super.onBindViewHolder(holder, position, payloads);
 
-	@Override
-	public void onBindViewHolder(ViewHolder holder, int position) {
+    }
 
-		File tnome = new File(data.get(position));
+    @Override
+    public void onBindViewHolder(ViewHolder holder, int position) {
 
-		//Picasso.with(mContext).load(tnome).centerCrop().fit().into(holder.mImage);
-		holder.mImage.setOnLongClickListener(new OnLongClickListener(){
+        File tnome = new File(data.get(position));
 
-				@Override
-				public boolean onLongClick(View v) {
-					int position = holder.getAdapterPosition();
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        //Picasso.with(mContext).load(tnome).centerCrop().fit().into(holder.mImage);
+        holder.mImage.setOnLongClickListener(new OnLongClickListener() {
 
-					builder.setTitle(R.string.excluir)
+            @Override
+            public boolean onLongClick(View v) {
+                int position = holder.getAdapterPosition();
+                final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                builder.setTitle(R.string.excluir)
                         .setMessage(R.string.excluir_face_intruder)
-						.setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface p1, int p2) {
-								if (new File(data.get(position)).delete()) {
+                            @Override
+                            public void onClick(DialogInterface p1, int p2) {
+                                if (new File(data.get(position)).delete()) {
 
-									Toast.makeText(context, "Apagado", Toast.LENGTH_LONG).show();
+                                    Toast.makeText(context, "Apagado", Toast.LENGTH_LONG).show();
                                     data.remove(position);
                                     notifyItemRemoved(position);
                                     notifyItemRangeChanged(position, data.size());
 
-								} else {
-									Toast.makeText(context, "Erro desconhecido", Toast.LENGTH_LONG).show();
-								}
-							}
+                                } else {
+                                    Toast.makeText(context, "Erro desconhecido", Toast.LENGTH_LONG).show();
+                                }
+                            }
                         });
-					builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener(){
+                builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
 
-							@Override
-							public void onClick(DialogInterface p1, int p2) {
-								builder.create().dismiss();
-							}
-                        });
-                    builder.create().show();
-					return true;
-				}
+                    @Override
+                    public void onClick(DialogInterface p1, int p2) {
+                        builder.create().dismiss();
+                    }
+                });
+                builder.create().show();
+                return true;
+            }
 
-			});
+        });
 
-		holder.mImage.setOnClickListener(new OnClickListener(){
+        holder.mImage.setOnClickListener(new OnClickListener() {
 
-				@Override
-				public void onClick(View p1) {
+            @Override
+            public void onClick(View p1) {
 					/*Intent i = new Intent(mContext, Visualizar_Imagem.class);
                      i.putExtra("filepath", mData);
                      i.putExtra("position", position);
                      mContext.startActivity(i);*/
-				}
-			});
-	}
+            }
+        });
+    }
 
-	@Override
-	public int getItemCount() {
-		return data.size();
-	}
+    @Override
+    public int getItemCount() {
+        return data.size();
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView mImage;
+
+        public ViewHolder(View view) {
+            super(view);
+            mImage = view.findViewById(R.id.image_intruder);
+        }
+    }
 
 }
