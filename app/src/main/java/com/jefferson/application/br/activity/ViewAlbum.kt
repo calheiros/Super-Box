@@ -424,12 +424,11 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
     override fun onItemClicked(position: Int, v: View?) {
         if (!selectionMode) {
-            val mClass: Class<*>
             when (this.position) {
                 0 -> startPreviewActivity(ImagePreviewActivity::class.java, position, v)
                 1 -> {
-                    mClass = VideoPlayerActivity::class.java
-                    startPreviewActivity(mClass, position, v)
+                    val videoPlayerClass = VideoPlayerActivity::class.java
+                    startPreviewActivity(videoPlayerClass, position, v)
                 }
             }
             return
@@ -480,7 +479,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         val allSelected = adapter.selectedItemCount == adapter.itemCount
         val text = if (allSelected) "Unselect all" else "Select all"
         selectAllTextView!!.text = text
-        selectImageView!!.setImageResource(if (allSelected) R.drawable.ic_select else R.drawable.ic_select_all)
+        selectImageView!!.setImageResource(
+            if (allSelected) R.drawable.ic_select else R.drawable.ic_select_all)
     }
 
     private fun enterSelectionMode() {
@@ -640,7 +640,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                         for (model in list!!) {
                             if (!isWorking) break
                             try {
-                                val file = File(model.path)
+                                val file = File(model.path!!)
                                 var duration = database.getDuration(file.name)
                                 if (duration == -1 || duration == 0) {
                                     duration = try {
@@ -680,12 +680,12 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
     inner class ExportTask(
         private val selectedItems: List<String?>,
-        private val mySimpleDialog: SimpleDialog
+        private val simpleDialog: SimpleDialog
     ) : JTask() {
         private val mArrayPath = ArrayList<String>()
         private val mTransfer = FileTransfer()
         private val junkList = ArrayList<String?>()
-        private val mUpdate: ProgressThreadUpdate = ProgressThreadUpdate(mTransfer, mySimpleDialog)
+        private val progressThreadUpdate: ProgressThreadUpdate = ProgressThreadUpdate(mTransfer, simpleDialog)
         private val database: PathsDatabase =
             PathsDatabase.getInstance(this@ViewAlbum, Storage.getDefaultStoragePath(this@ViewAlbum))
         private var allowListModification = true
@@ -698,8 +698,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                     max += file.length()
                 }
                 max /= 1024
-                mUpdate.setMax(max)
-                mUpdate.start()
+                progressThreadUpdate.setMax(max)
+                progressThreadUpdate.start()
                 var start = System.currentTimeMillis()
                 for (item in selectedItems) {
                     try {
@@ -710,29 +710,31 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                         val path = database.getMediaPath(file.name)
                             ?: //need something 0.o
                             continue
-                        var fileOut = File(path)
-                        if (fileOut.exists()) fileOut = File(getNewFileName(fileOut))
-                        Objects.requireNonNull(fileOut.parentFile).mkdirs()
-                        sendUpdate(null, fileOut.name)
-                        if (file.renameTo(fileOut)) {
-                            mArrayPath.add(fileOut.absolutePath)
+                        var fileOutput = File(path)
+                        if (fileOutput.exists()) {
+                            fileOutput = File(getNewFileName(fileOutput))
+                        }
+                        fileOutput.parentFile?.mkdirs()
+                        sendUpdate(null, fileOutput.name)
+                        if (file.renameTo(fileOutput)) {
+                            mArrayPath.add(fileOutput.absolutePath)
                             database.deleteMediaData(file.name)
                             addJunkItem(item)
                             //sendUpdate(ACTION_ADD_JUNK, item);
-                            mTransfer.increment((fileOut.length() / 1024f).toDouble())
+                            mTransfer.increment((fileOutput.length() / 1024f).toDouble())
                         } else {
-                            val output = getOutputStream(fileOut)
+                            val output = getOutputStream(fileOutput)
                             val input: InputStream = FileInputStream(file)
                             val response = mTransfer.transferStream(input, output)
                             if (FileTransfer.OK == response) {
                                 if (file.delete()) {
-                                    mArrayPath.add(fileOut.absolutePath)
+                                    mArrayPath.add(fileOutput.absolutePath)
                                     database.deleteMediaData(file.name)
                                     addJunkItem(item)
                                     //sendUpdate(ACTION_ADD_JUNK, item);
                                 }
                             } else {
-                                Storage.deleteFile(fileOut, this@ViewAlbum)
+                                Storage.deleteFile(fileOutput, this@ViewAlbum)
                             }
                         }
                         if (System.currentTimeMillis() - start >= 600 && junkList.size > 0) {
@@ -746,7 +748,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                     sendUpdate(Companion.ACTION_UPDATE_ADAPTER)
                 }
             } finally {
-                mUpdate.destroy()
+                progressThreadUpdate.destroy()
                 database.close()
             }
         }
@@ -755,13 +757,13 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             if (myThread != null && myThread!!.isWorking) {
                 myThread?.stopWork()
             }
-            mySimpleDialog.resetDialog()
-            mySimpleDialog.showProgressBar(true)
-            mySimpleDialog.setTitle(getString(R.string.mover))
-            mySimpleDialog.setMessage("")
-            mySimpleDialog.setSingleLineMessage(true)
-            mySimpleDialog.setCancelable(false)
-            mySimpleDialog.setNegativeButton(
+            simpleDialog.resetDialog()
+            simpleDialog.showProgressBar(true)
+            simpleDialog.setTitle(getString(R.string.mover))
+            simpleDialog.setMessage("")
+            simpleDialog.setSingleLineMessage(true)
+            simpleDialog.setCancelable(false)
+            simpleDialog.setNegativeButton(
                 getString(R.string.cancelar),
                 object : OnDialogClickListener() {
                     override fun onClick(dialog: SimpleDialog): Boolean {
@@ -777,7 +779,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 updateAdapter()
             } else {
                 val name = get[1] as String
-                mySimpleDialog.setMessage(name)
+                simpleDialog.setMessage(name)
             }
         }
 
@@ -809,7 +811,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
         private fun kill() {
             Storage.scanMediaFiles(mArrayPath.toTypedArray(), this@ViewAlbum)
-            mySimpleDialog.dismiss()
+            simpleDialog.dismiss()
             if (adapter.items.isEmpty()) {
                 deleteFolder()
                 finish()
@@ -830,7 +832,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
         private fun deleteFolder() {
             val database = PathsDatabase.getInstance(this@ViewAlbum)
-            if (folder!!.delete()) {
+            if (folder?.delete() == true) {
                 database.deleteFolder(
                     folder!!.name,
                     if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE

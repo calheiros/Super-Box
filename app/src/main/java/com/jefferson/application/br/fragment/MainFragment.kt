@@ -31,21 +31,22 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentPagerAdapter
-import androidx.viewpager.widget.ViewPager
+import androidx.fragment.app.FragmentActivity
+
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
+import com.google.android.material.tabs.TabLayoutMediator
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.ImportGalleryActivity
 import com.jefferson.application.br.activity.MainActivity
 import com.jefferson.application.br.activity.SearchActivity
 import com.jefferson.application.br.model.AlbumModel
-import com.jefferson.application.br.model.SimplifiedAlbum
 
 class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnLongClickListener {
-    private var viewPager: ViewPager? = null
+    private var viewPager: ViewPager2? = null
     private var toolbar: Toolbar? = null
     private var view: View? = null
     private var pagerAdapter: PagerAdapter? = null
@@ -61,11 +62,12 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         val main = activity as MainActivity?
         if (view == null) {
             view = inflater.inflate(R.layout.main_fragment, null)
-            pagerAdapter = PagerAdapter(requireActivity().supportFragmentManager)
+            pagerAdapter = PagerAdapter(requireActivity())
             toolbar = view?.findViewById(R.id.toolbar)
             viewPager = view?.findViewById(R.id.mainViewPager)
             viewPager?.adapter = pagerAdapter
-            viewPager?.setOnPageChangeListener(this)
+            viewPager?.isSaveEnabled = false
+            //viewPager?.setOnPageChangeListener(this)
             tabLayout = view?.findViewById(R.id.tab_layout)
 
             val searchView = view?.findViewById<View>(R.id.search_bar)
@@ -73,10 +75,13 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             val unselected = resources.getColor(R.color.tab_unselected)
 
             tabLayout?.setTabTextColors(unselected, selected)
-            tabLayout?.setupWithViewPager(viewPager)
-            tabLayout?.getTabAt(0)!!.text = getString(R.string.imagens)
-            tabLayout?.getTabAt(1)!!.text = getString(R.string.videos)
-            tabLayout?.isInlineLabel = true
+            TabLayoutMediator(tabLayout!!, viewPager!!) { tab, position ->
+                tab.text = when(position) {
+                    0 -> getString(R.string.imagens)
+                    1 -> getString(R.string.videos)
+                    else -> ""
+                }
+            }.attach()
             fab = view?.findViewById(R.id.fab)
             fab?.setOnClickListener(this)
             fab?.setOnLongClickListener(this)
@@ -85,12 +90,10 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             adjustViewsPadding()
             createActivityResultLauncher()
         }
-        assert(main != null)
-        main!!.setupToolbar(toolbar, getToolbarName(viewPager!!.currentItem))
+        main?.setupToolbar(toolbar, getToolbarName(viewPager!!.currentItem))
         return view
     }
 
-    @SuppressLint("NonConstantResourceId")
     override fun onClick(v: View) {
         when (v.id) {
             R.id.fab -> {
@@ -118,7 +121,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     }
 
     private fun createActivityResultLauncher() {
-        activityResultLauncher = registerForActivityResult<Intent, ActivityResult>(
+        activityResultLauncher = registerForActivityResult (
             ActivityResultContracts.StartActivityForResult()
         ) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -150,12 +153,12 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     private val currentFragment: AlbumFragment
         get() {
             val pos = viewPager!!.currentItem
-            return pagerAdapter!!.getItem(pos)
+            return pagerAdapter!!.createFragment(pos)
         }
 
     private fun openSearchView() {
         val pos = viewPager!!.currentItem
-        val fragment = pagerAdapter!!.getItem(pos)
+        val fragment = pagerAdapter!!.createFragment(pos)
         if (!fragment.isLoading) {
             val intent = Intent(requireActivity(), SearchActivity::class.java)
             intent.putParcelableArrayListExtra(
@@ -175,7 +178,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         if (pagerAdapter != null) {
             val fragments = pagerAdapter!!.fragments
             for (i in fragments.indices) {
-                val album = pagerAdapter!!.getItem(i)
+                val album = pagerAdapter!!.createFragment(i)
                 album.setBottomPadding(paddingBottom)
             }
         }
@@ -199,7 +202,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     }
 
     override fun onLongClick(view: View): Boolean {
-        val fragment = pagerAdapter?.getItem(viewPager!!.currentItem)
+        val fragment = pagerAdapter?.createFragment(viewPager!!.currentItem)
         fragment?.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER)
         return true
     }
@@ -210,7 +213,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
 
     fun removeFolder(folderPosition: Int, pagerPosition: Int) {
         if (pagerAdapter != null) {
-            val fragment = pagerAdapter!!.getItem(pagerPosition)
+            val fragment = pagerAdapter!!.createFragment(pagerPosition)
             fragment.removeFolder(folderPosition)
         }
     }
@@ -230,7 +233,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
 
     fun updateAllFragments() {
         if (pagerAdapter != null) {
-            for (i in 0 until pagerAdapter!!.count) {
+            for (i in 0 until pagerAdapter!!.itemCount) {
                 pagerAdapter?.update(i)
             }
         }
@@ -253,28 +256,21 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
 
     fun reloadFragments() {
         if (pagerAdapter != null) {
-            for (i in 0 until pagerAdapter!!.count) {
+            for (i in 0 until pagerAdapter!!.itemCount) {
                 pagerAdapter!!.reload(i)
             }
         }
     }
 
-    private inner class PagerAdapter(fm: FragmentManager?) : FragmentPagerAdapter(
-        fm!!
+    private inner class PagerAdapter(fa: FragmentActivity) : FragmentStateAdapter (
+        fa
     ) {
         val fragments = arrayOfNulls<AlbumFragment>(Companion.SIZE)
         fun update(
             position: Int,
             models: ArrayList<AlbumModel>?
         ) {
-            getItem(position).putModels(models)
-        }
-
-        override fun getItem(position: Int): AlbumFragment {
-            if (fragments[position] == null) {
-                fragments[position] = AlbumFragment(position, this@MainFragment)
-            }
-            return fragments[position]!!
+            createFragment(position).putModels(models)
         }
 
         fun update(position: Int) {
@@ -282,12 +278,19 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             fragment?.update()
         }
 
-        override fun getCount(): Int {
+        fun reload(i: Int) {
+            fragments[i]?.reload()
+        }
+
+        override fun getItemCount(): Int {
             return Companion.SIZE
         }
 
-        fun reload(i: Int) {
-            fragments[i]!!.reload()
+        override fun createFragment(position: Int): AlbumFragment {
+            if (fragments[position] == null) {
+                fragments[position] = AlbumFragment(position, this@MainFragment)
+            }
+            return fragments[position]!!
         }
     }
 

@@ -569,7 +569,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     private val languageMenuItems: List<SimpleDialog.MenuItem>
-        private get() {
+        get() {
             val languages = arrayOf(
                 getString(R.string.padrao_do_sistema),
                 "English",
@@ -579,7 +579,8 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 "日本語"
             )
             val flags = intArrayOf(
-                R.drawable.ic_auto_fix, R.drawable.flag_us, R.drawable.flag_es, R.drawable.flag_de,
+                R.drawable.ic_auto_fix, R.drawable.flag_us,
+                R.drawable.flag_es, R.drawable.flag_de,
                 R.drawable.flag_br, R.drawable.flag_jp
             )
             val items: MutableList<SimpleDialog.MenuItem> = ArrayList()

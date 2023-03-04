@@ -33,10 +33,11 @@ Copyright (C) 2023 Jefferson Calheiros
         tools:ignore="ContentDescription" />
 
     <RelativeLayout
-        android:background="@color/darkTransparent"
+        android:id="@+id/background_overlay"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:paddingBottom="20dp"
         android:orientation="vertical">
 
         <com.jefferson.application.br.MaterialLockView

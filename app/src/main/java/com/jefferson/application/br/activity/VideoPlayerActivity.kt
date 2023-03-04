@@ -24,33 +24,25 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.ArrayRes
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import androidx.viewpager.widget.ViewPager
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.jefferson.application.br.R
 import com.jefferson.application.br.fragment.VideoPlayerFragment
 import kotlin.math.roundToInt
 
 class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
     private lateinit var pagerAdapter: VideoPagerAdapter
-    private lateinit var viewPager: ViewPager
-
-    inner class MyPageListener(private var lastFragmentPosition: Int) : OnPageChangeListener {
-        override fun onPageScrolled(p1: Int, p2: Float, p3: Int) {}
-        override fun onPageSelected(position: Int) {
-            val lastFragment = pagerAdapter.getItem(lastFragmentPosition)
-            lastFragment.stop()
-            lastFragmentPosition = position
-        }
-
-        override fun onPageScrollStateChanged(state: Int) {}
-    }
+    private lateinit var viewPager: ViewPager2
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.video_player_layout)
+        setContentView(R.layout.media_view_pager_layout)
         val exportImageView = findViewById<ImageView>(R.id.export_imageview)
         val deleteImageView = findViewById<ImageView>(R.id.delete_imageview)
         val optionsLayout = findViewById<View>(R.id.options_layout)
@@ -63,14 +55,14 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
         val choice = intent.extras!!.getInt("position")
         val filesPath = intent.getStringArrayListExtra("filepath")
         fullscreen()
-        pagerAdapter = VideoPagerAdapter(supportFragmentManager, filesPath!!)
-        viewPager = findViewById<View>(R.id.view_pager) as ViewPager
+        pagerAdapter = VideoPagerAdapter(this, filesPath!!)
+        viewPager = findViewById<View>(R.id.view_pager) as ViewPager2
         viewPager.adapter = pagerAdapter
-        viewPager.setOnPageChangeListener(MyPageListener(choice))
+        //viewPager.setOnPageChangeListener(MyPageListener(choice))
         viewPager.currentItem = choice
         viewPager.offscreenPageLimit = 3
-        viewPager.pageMargin = dpToPx(5)
-        pagerAdapter.getItem(choice).setPlayOnCreate(true)
+        //viewPager.pageMargin = dpToPx(5)
+        pagerAdapter.getFragment(choice)?.setPlayOnCreate(true)
         viewPager.requestFocus()
         viewPager.setOnClickListener(this)
     }
@@ -121,9 +113,9 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
     }
 
     private class VideoPagerAdapter(
-        fm: FragmentManager?, private val filesPath: ArrayList<String?>
-    ) : FragmentStatePagerAdapter(
-        fm!!
+        fm: FragmentActivity, private val filesPath: ArrayList<String?>
+    ) : FragmentStateAdapter(
+        fm
     ) {
         private val fragments: Array<VideoPlayerFragment?>?
 
@@ -131,17 +123,19 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
             fragments = arrayOfNulls(filesPath.size)
         }
 
-        override fun getItem(position: Int): VideoPlayerFragment {
+        override fun getItemCount(): Int {
+            return filesPath.size
+        }
+        fun getFragment(position: Int): VideoPlayerFragment? {
+            return fragments?.get(position)
+        }
+        override fun createFragment(position: Int): VideoPlayerFragment {
             var fragment: VideoPlayerFragment? = fragments?.get(position)
             if (fragment == null) {
                 fragment = VideoPlayerFragment(filesPath[position]!!)
                 fragments?.set(position, fragment)
             }
             return fragment
-        }
-
-        override fun getCount(): Int {
-            return filesPath.size
         }
     }
 

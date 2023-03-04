@@ -20,6 +20,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -28,6 +29,7 @@ import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
@@ -54,7 +56,9 @@ class VerifyActivity : MyCompatActivity() {
                 Intent(
                     applicationContext, CreatePattern::class.java
                 ).setAction(CreatePattern.ENTER_FIST_CREATE)
-                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)
+                    .addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION
+                            or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            or Intent.FLAG_ACTIVITY_NEW_TASK)
             )
             overridePendingTransition(0, 0)
             return
@@ -79,6 +83,12 @@ class VerifyActivity : MyCompatActivity() {
     }
 
     private fun setWallpaper() {
+        val backgroundOverlay = findViewById<View>(R.id.background_overlay)
+        val color = R.color.darkTransparent
+        backgroundOverlay.setBackgroundColor(
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) getColor(color)
+            else resources.getColor(color)
+        )
         try {
             val imageView = findViewById<ImageView>(R.id.wallpaper_image_view) ?: return
             val asset = assets
@@ -96,7 +106,8 @@ class VerifyActivity : MyCompatActivity() {
         val promptInfo = PromptInfo.Builder().setTitle(getString(R.string.biometric_title))
             .setSubtitle(getString(R.string.biometric_subtitle))
             .setDescription(getString(R.string.biometric_desc))
-            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_WEAK
+                    or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
             .setConfirmationRequired(false).build()
         val biometricPrompt =
             BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
@@ -159,7 +170,9 @@ class VerifyActivity : MyCompatActivity() {
 
     private fun startMainActivity() {
         val intent = Intent(applicationContext, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                or Intent.FLAG_ACTIVITY_NO_ANIMATION)
         startActivity(intent)
         overridePendingTransition(0, 0)
     }

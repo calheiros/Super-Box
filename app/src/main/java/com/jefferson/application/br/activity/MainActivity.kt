@@ -58,7 +58,6 @@ import java.util.*
 class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener,
     BottomNavigationView.OnNavigationItemSelectedListener {
-    @SuppressLint("HandlerLeak")
     private val getSdCardUriHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun dispatchMessage(msg: Message) {
             super.dispatchMessage(msg)
@@ -113,14 +112,13 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         instance = this
-        MobileAds.initialize(this) { initializationStatus: InitializationStatus? ->
+        MobileAds.initialize(this) {
             squareAdview = createSquareAdview(this@MainActivity)
         }
         setContentView(R.layout.main_activity)
         CURRENT_THEME = ThemeConfig.getTheme(this)
         buttonNavigationView = findViewById(R.id.navigationView)
         buttonNavigationView.setOnNavigationItemSelectedListener(this)
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this)
         calculatorStateEnabled = isCalculatorComponentEnabled
         if (savedInstanceState != null) {
             startActivity(
@@ -129,9 +127,9 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 )
             )
         }
-        if (!MyPreferences.userAcceptedAgreement(this)) {
+       /* if (!MyPreferences.userAcceptedAgreement(this)) {
             showUserAgreement()
-        }
+        }*/
         createFragments()
         createAdView()
         createReceiver()
@@ -249,7 +247,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     private fun changeFragment(fragment: Fragment?) {
         if (fragment !== supportFragmentManager.findFragmentById(R.id.fragment_container)) {
             val transaction = supportFragmentManager.beginTransaction()
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             if (oldFrag != null) transaction.detach(oldFrag!!)
             transaction.replace(R.id.fragment_container, fragment!!)
             transaction.attach(fragment)

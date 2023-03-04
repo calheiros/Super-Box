@@ -69,7 +69,6 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:id="@+id/album_name_label"
                     android:drawablePadding="4dp"
                     android:textSize="22sp"
-                    android:background="@android:color/black"
                     app:drawableRightCompat="@drawable/ic_rename" />
 
                 <TextView

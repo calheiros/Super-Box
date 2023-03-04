@@ -18,49 +18,56 @@ package com.jefferson.application.br.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.view.View
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.core.view.marginLeft
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
 import com.jefferson.application.br.R
-import com.jefferson.application.br.triggers.SwitchVisibilityTrigger
 import com.jefferson.application.br.app.SimpleDialog
-import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.fragment.ImagePreviewFragment
+import com.jefferson.application.br.triggers.SwitchVisibilityTrigger
+import com.jefferson.application.br.util.MediaUtils
 
 class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
-    private lateinit var viewPager: ViewPager
+    private lateinit var viewPager: ViewPager2
     private lateinit var filepath: ArrayList<String>
-
+    private lateinit var pagerAdapter: ImagePagerAdapter
+    private lateinit var deletedFiles: ArrayList<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.video_player_layout)
+        setContentView(R.layout.media_view_pager_layout)
         viewPager = findViewById(R.id.view_pager)
         val deleteButton = findViewById<View>(R.id.delete_imageview)
         val exportButton = findViewById<View>(R.id.export_imageview)
-        val intent = intent
         val position = intent.extras!!.getInt("position")
-        filepath = intent.getStringArrayListExtra("filepath") as ArrayList<String>
         val optionLayout = findViewById<View>(R.id.options_layout)
-        val pagerAdapter = ImagePagerAdapter(supportFragmentManager, optionLayout)
+        filepath = intent.getStringArrayListExtra("filepath") as ArrayList<String>
+        pagerAdapter = ImagePagerAdapter(this, optionLayout)
         //configure view pager
         viewPager.adapter = pagerAdapter
         viewPager.offscreenPageLimit = 4
-        viewPager.pageMargin = 20
         viewPager.currentItem = position
 
         viewPager.setOnClickListener(this)
         exportButton.setOnClickListener(this)
         deleteButton.setOnClickListener(this)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+
     }
 
     override fun onClick(v: View) {
         val id = v.id
         if (id == R.id.delete_imageview) {
-            dialogDeletionConfirmation()
+            val position = viewPager.currentItem
+            val path = filepath[position]
+            deletionConfirmation(path, position)
             return
         }
         if (id == R.id.export_imageview) {
@@ -68,17 +75,23 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         }
     }
 
-    private fun dialogDeletionConfirmation() {
+    private fun deletionConfirmation(path: String, position: Int) {
         val builder = SimpleDialog(this, SimpleDialog.STYLE_ALERT_HIGH)
         builder.setTitle(getString(R.string.apagar))
         builder.setMessage(getString(R.string.apagar_image_mensagem))
-        builder.setPositiveButton(
-            getString(android.R.string.ok),
-            object : OnDialogClickListener() {
-                override fun onClick(dialog: SimpleDialog): Boolean {
-                    return true
+        builder.setPositiveButton(getString(android.R.string.ok), object : SimpleDialog.OnDialogClickListener() {
+            override fun onClick(dialog: SimpleDialog): Boolean {
+                val success = MediaUtils.deleteMedia(this@ImagePreviewActivity, path)
+                if (success) {
+                    filepath.removeAt(position)
+                    pagerAdapter.notifyDataSetChanged()
+                    Toast.makeText(
+                        this@ImagePreviewActivity, "deleted!", Toast.LENGTH_SHORT
+                    ).show()
                 }
-            })
+                return true
+            }
+        })
         builder.setNegativeButton(getString(android.R.string.cancel), null)
         builder.show()
     }
@@ -94,21 +107,20 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         super.onBackPressed()
     }
 
-    private inner class ImagePagerAdapter(fm: FragmentManager?, optionsLayout: View?) :
-        FragmentStatePagerAdapter(
-            fm!!
-        ) {
+    private inner class ImagePagerAdapter(fa: FragmentActivity, optionsLayout: View?) :
+        FragmentStateAdapter(fa) {
+
         private val optionsTrigger: SwitchVisibilityTrigger
 
         init {
             optionsTrigger = SwitchVisibilityTrigger(optionsLayout!!)
         }
 
-        override fun getCount(): Int {
+        override fun getItemCount(): Int {
             return filepath.size
         }
 
-        override fun getItem(position: Int): Fragment {
+        override fun createFragment(position: Int): Fragment {
             return ImagePreviewFragment(filepath[position], optionsTrigger)
         }
     }
