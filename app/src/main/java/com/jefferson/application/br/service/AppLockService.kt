@@ -65,8 +65,8 @@ class AppLockService : Service() {
         super.onCreate()
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val action = intent.action
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val action = intent?.action
         if (App.ACTION_APPLOCK_SERVICE_UPDATE_PASSWORD == action) {
             val key = intent.extras?.getString("key")
             if (key != null && lockWindow != null) {

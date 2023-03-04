@@ -127,7 +127,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 )
             )
         }
-       /* if (!MyPreferences.userAcceptedAgreement(this)) {
+        /* if (!MyPreferences.userAcceptedAgreement(this)) {
             showUserAgreement()
         }*/
         createFragments()
