@@ -32,14 +32,12 @@ import com.jefferson.application.br.App
 import com.jefferson.application.br.AppLockWindow
 import com.jefferson.application.br.R
 import com.jefferson.application.br.database.AppLockDatabase
-import com.jefferson.application.br.receiver.KeyWatcher
 import com.jefferson.application.br.receiver.ScreenOnOff
-import com.jefferson.application.br.util.JDebug.toast
 import com.jefferson.application.br.util.ServiceUtils
 import java.util.*
 
 class AppLockService : Service() {
-    var homeWatcher: KeyWatcher? = null
+
     var lockedApps: ArrayList<String>? = null
     private var lockWindow: AppLockWindow? = null
     private var myBroadcast: ScreenOnOff? = null
@@ -87,12 +85,8 @@ class AppLockService : Service() {
             builder = Notification.Builder(this)
         }
         val notification = builder.setContentTitle(resources.getString(R.string.app_name))
-            .setTicker(resources.getString(R.string.app_name))
-            .setContentText("Running")
-            .setSmallIcon(R.drawable.ic_super)
-            .setContentIntent(null)
-            .setOngoing(true)
-            .build()
+            .setTicker(resources.getString(R.string.app_name)).setContentText("Running")
+            .setSmallIcon(R.drawable.ic_super).setContentIntent(null).setOngoing(true).build()
         startForeground(9999, notification)
     }
 
@@ -114,13 +108,11 @@ class AppLockService : Service() {
     }
 
     override fun onDestroy() {
-        toast("DESTROY CALLED!")
         dataBusReceiver?.let { unregisterReceiver(it) }
-        //mHomeWatcher.stopWatch();
         if (myBroadcast != null) {
             unregisterReceiver(myBroadcast)
         }
-        sendBroadcast(Intent(ACTION_RESTART_SERVICE))
+        //sendBroadcast(Intent(ACTION_RESTART_SERVICE))
         super.onDestroy()
     }
 
@@ -131,7 +123,7 @@ class AppLockService : Service() {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            toast(e.message)
+            e.printStackTrace()
         }
     }
 
@@ -152,8 +144,7 @@ class AppLockService : Service() {
 
     inner class ToastHandler : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
-            val activityOnTop = ServiceUtils.getForegroundPackage(usageStats)
-                ?: return
+            val activityOnTop = ServiceUtils.getForegroundPackage(usageStats) ?: return
             if (lockedApps == null) {
                 lockedApps = database!!.lockedPackages
             }

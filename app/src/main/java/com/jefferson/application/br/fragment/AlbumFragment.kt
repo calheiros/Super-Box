@@ -20,6 +20,7 @@ import android.app.Activity
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabaseCorruptException
 import android.os.*
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +45,6 @@ import com.jefferson.application.br.model.SimplifiedAlbum
 import com.jefferson.application.br.task.DeleteFilesTask
 import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.util.AlbumUtils
-import com.jefferson.application.br.util.JDebug
 import com.jefferson.application.br.util.Storage
 import java.io.File
 
@@ -111,7 +111,7 @@ class AlbumFragment : Fragment {
         }
     }
 
-    fun buildModels(position: Int): ArrayList<AlbumModel> {
+    fun buildModels(position: Int, jTask: JTask): ArrayList<AlbumModel> {
         val models = ArrayList<AlbumModel>()
         val root =
             Storage.getFolder(if (position == 0) Storage.IMAGE else Storage.VIDEO, requireContext())
@@ -127,6 +127,10 @@ class AlbumFragment : Fragment {
         if (root.exists()) {
             val files = root.list()
             if (files != null) for (s in files) {
+                if (jTask.isCancelled) {
+                    Log.i("Album: BuildModels", "canceled work")
+                    break
+                }
                 val file = File(root, s)
                 if (file.isDirectory) {
                     val folderList = file.listFiles()
@@ -161,7 +165,8 @@ class AlbumFragment : Fragment {
             private var albumsModel: ArrayList<AlbumModel>? = null
             override fun workingThread() {
                 val result = buildModels(
-                    pagerPosition
+                    position = pagerPosition,
+                    jTask = this
                 )
                 albumsModel = result
             }
@@ -174,11 +179,9 @@ class AlbumFragment : Fragment {
                 notifyDataUpdated()
             }
 
-            override fun onException(e: Exception) {
+            override fun onException(e: Exception?) {
                 revokeFinish(true)
-                Toast.makeText(context, "Unknown error occurred! " + e.message, Toast.LENGTH_LONG)
-                    .show()
-                JDebug.writeLog(e.cause, requireContext())
+                e?.printStackTrace()
             }
         }
         (retrieveMedia as JTask).setThreadPriority(Thread.MAX_PRIORITY)
@@ -188,7 +191,12 @@ class AlbumFragment : Fragment {
     fun scrollTo(position: Int) {
         recyclerView!!.scrollToPosition(position)
     }
-
+    override fun onDestroy() {
+        if (retrieveMedia?.isCancelled == false) {
+            retrieveMedia?.cancelTask()
+        }
+        super.onDestroy()
+    }
     fun putModels(models: ArrayList<AlbumModel>?) {
         if (albumAdapter != null) {
             albumAdapter?.updateModels(models!!)
@@ -371,8 +379,5 @@ class AlbumFragment : Fragment {
         const val ALBUM_NAME_OKAY = "folder_name_okay"
         const val ACTION_CREATE_FOLDER = 122
         const val ACTION_RENAME_FOLDER = 54
-
-
-
     }
 }

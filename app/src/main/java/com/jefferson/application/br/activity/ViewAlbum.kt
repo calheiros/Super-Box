@@ -20,8 +20,6 @@ import android.app.Activity
 import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
-import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -32,6 +30,8 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -50,6 +50,7 @@ import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.model.MediaModel
 import com.jefferson.application.br.task.DeleteFilesTask
 import com.jefferson.application.br.task.JTask
+import com.jefferson.application.br.task.RetrieveMediaTimeTask
 import com.jefferson.application.br.util.*
 import com.jefferson.application.br.view.RoundedImageView
 import eightbitlab.com.blurview.BlurView
@@ -73,7 +74,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private var position = 0
     private var title: String? = null
     private var folder: File? = null
-    private var myThread: RetrieverDataTask? = null
+    private var myThread: RetrieveMediaTimeTask? = null
     private var baseNameDirectory: String? = null
     private var selectAllTextView: TextView? = null
     private var selectImageView: ImageView? = null
@@ -106,11 +107,10 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
         fab = findViewById(R.id.view_album_fab_button)
         menuLayout = findViewById(R.id.lock_layout)
-        albumLabel = findViewById<TextView>(R.id.album_name_label)
+        albumLabel = findViewById(R.id.album_name_label)
         selectAllTextView = findViewById(R.id.options_album_selectTextView)
         selectImageView = findViewById(R.id.selectImageView)
         emptyView = findViewById(R.id.view_album_empty_view)
-
         fab.setOnClickListener(this)
         albumLabel.setOnClickListener(this)
 
@@ -145,6 +145,57 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 }
             }
         })
+    }
+
+    private val startPreviewForResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val index = intent.getIntExtra("index", 0)
+            recyclerView.post { recyclerView.smoothScrollToPosition(index) }
+        }
+    }
+
+    private val changeDirectoryResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            exitSelectionMode()
+            val list = result.data!!.getStringArrayListExtra("moved_files")
+            Toast.makeText(
+                this,
+                list!!.size.toString() + " file(s) moved",
+                Toast.LENGTH_SHORT
+            ).show()
+            adapter.removeAll(list)
+            synchronizeMainActivity()
+        }
+    }
+
+    private val importResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            updateRecyclerView()
+            synchronizeMainActivity()
+        }
+    }
+
+    private val galleryResult = registerForActivityResult(
+        ActivityResultContracts
+            .StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            val data = result.data
+            val paths = data!!.getStringArrayListExtra("selection")
+            val type = data.getStringExtra("type")
+            val intent = Intent(this, ImportMediaActivity::class.java)
+            intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
+            intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
+            //intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
+            intent.putExtra(ImportMediaActivity.PARENT_KEY, folder!!.absolutePath)
+            importResult.launch(intent)
+        }
     }
 
     // Convert the minimum width to pixels
@@ -199,14 +250,14 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private fun importFromGallery() {
         val intent = Intent(this, ImportGalleryActivity::class.java)
         intent.putExtra("position", position)
-        startActivityForResult(intent, IMPORT_FROM_GALLERY_CODE)
+        galleryResult.launch(intent)
     }
 
     private fun updateDatabase(
         list: ArrayList<MediaModel>?,
         adapter: MultiSelectRecyclerViewAdapter?
     ) {
-        myThread = RetrieverDataTask(list, adapter)
+        myThread = RetrieveMediaTimeTask(list, adapter, this)
         myThread?.priority = Thread.MAX_PRIORITY
         myThread?.start()
     }
@@ -263,7 +314,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         dialog.setPositiveButton(getString(R.string.sim), object : OnDialogClickListener() {
             override fun onClick(dialog: SimpleDialog): Boolean {
                 dialog.dismiss()
-                val task = DeleteFiles(this@ViewAlbum, selectedItemsPath, position, folder)
+                val task = DeleteFiles(this@ViewAlbum, selectedItemsPath, position, folder!!)
                 task.start()
                 return true
             }
@@ -282,7 +333,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         intent.putExtra("selection", selectedItemsPath)
         intent.putExtra("position", position)
         intent.putExtra("current_path", folder!!.absolutePath)
-        startActivityForResult(intent, CHANGE_DIRECTORY_CODE)
+        changeDirectoryResult.launch(intent)
     }
 
     private fun getItemName(count: Int): String {
@@ -335,43 +386,6 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             "Can't synchronize MainActivity!",
             Toast.LENGTH_SHORT
         ).show()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == RESULT_OK) {
-            when (requestCode) {
-                CHANGE_DIRECTORY_CODE -> {
-                    exitSelectionMode()
-                    val list = data!!.getStringArrayListExtra("moved_files")
-                    Toast.makeText(
-                        this,
-                        list!!.size.toString() + " file(s) moved",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    adapter.removeAll(list)
-                    synchronizeMainActivity()
-                }
-                VIDEO_PLAY_CODE -> {
-                    val index = data!!.getIntExtra("index", 0)
-                    recyclerView.post { recyclerView.smoothScrollToPosition(index) }
-                }
-                IMPORT_FROM_GALLERY_CODE -> {
-                    val paths = data!!.getStringArrayListExtra("selection")
-                    val type = data.getStringExtra("type")
-                    val intent = Intent(this, ImportMediaActivity::class.java)
-                    intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
-                    intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
-                    //intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
-                    intent.putExtra(ImportMediaActivity.PARENT_KEY, folder!!.absolutePath)
-                    startActivityForResult(intent, IMPORT_FROM_VIEW_ALBUM_CODE)
-                }
-                IMPORT_FROM_VIEW_ALBUM_CODE -> {
-                    updateRecyclerView()
-                    synchronizeMainActivity()
-                }
-            }
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 
     fun updateRecyclerView() {
@@ -449,7 +463,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             v!!.width,
             v.height
         ) // Request the activity be started, using the custom animation options.
-        startActivityForResult(intent, VIDEO_PLAY_CODE, opts.toBundle())
+        startPreviewForResult.launch(intent)
     }
 
     override fun onItemLongClicked(position: Int): Boolean {
@@ -462,11 +476,11 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         return true
     }
 
-    private val selectedItemsPath: ArrayList<String?>
+    private val selectedItemsPath: ArrayList<String>
         get() {
-            val selectedItems = ArrayList<String?>()
+            val selectedItems = ArrayList<String>()
             for (i in adapter.getSelectedItems()) {
-                selectedItems.add(adapter.items[i].path)
+                selectedItems.add(adapter.items[i].path!!)
             }
             return selectedItems
         }
@@ -480,7 +494,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         val text = if (allSelected) "Unselect all" else "Select all"
         selectAllTextView!!.text = text
         selectImageView!!.setImageResource(
-            if (allSelected) R.drawable.ic_select else R.drawable.ic_select_all)
+            if (allSelected) R.drawable.ic_select else R.drawable.ic_select_all
+        )
     }
 
     private fun enterSelectionMode() {
@@ -587,7 +602,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
     }
 
-    inner class DeleteFiles(activity: Activity?, p1: ArrayList<String?>?, p3: Int, p4: File?) :
+    inner class DeleteFiles(activity: Activity, p1: ArrayList<String>, p3: Int, p4: File) :
         DeleteFilesTask(activity, p1, p3, p4) {
         private var threadInterrupted = false
         override fun onBeingStarted() {
@@ -623,61 +638,6 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
     }
 
-    inner class RetrieverDataTask(
-        private val list: ArrayList<MediaModel>?,
-        private val adapter: MultiSelectRecyclerViewAdapter?
-    ) : Thread() {
-        var isWorking = true
-            private set
-        private var cancelled = false
-        override fun run() {
-            try {
-                PathsDatabase.getInstance(
-                    this@ViewAlbum,
-                    Storage.getDefaultStoragePath(this@ViewAlbum)
-                )
-                    .use { database ->
-                        for (model in list!!) {
-                            if (!isWorking) break
-                            try {
-                                val file = File(model.path!!)
-                                var duration = database.getDuration(file.name)
-                                if (duration == -1 || duration == 0) {
-                                    duration = try {
-                                        val uri = Uri.parse(model.path)
-                                        val mmr = MediaMetadataRetriever()
-                                        mmr.setDataSource(this@ViewAlbum, uri)
-                                        val durationStr =
-                                            mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                                        durationStr!!.toInt()
-                                    } catch (e: Exception) {
-                                        -2
-                                    }
-                                    database.updateMediaDuration(file.name, duration)
-                                }
-                                val time =
-                                    StringUtils.getFormattedVideoDuration(duration.toString())
-                                runOnUiThread { adapter?.updateItemDuration(model.path!!, time) }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            }
-                        }
-                    }
-            } finally {
-                isWorking = false
-            }
-        }
-
-        fun cancelled(): Boolean {
-            return cancelled
-        }
-
-        fun stopWork() {
-            cancelled = true
-            isWorking = false
-        }
-    }
-
     inner class ExportTask(
         private val selectedItems: List<String?>,
         private val simpleDialog: SimpleDialog
@@ -685,7 +645,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         private val mArrayPath = ArrayList<String>()
         private val mTransfer = FileTransfer()
         private val junkList = ArrayList<String?>()
-        private val progressThreadUpdate: ProgressThreadUpdate = ProgressThreadUpdate(mTransfer, simpleDialog)
+        private val progressThreadUpdate: ProgressThreadUpdate =
+            ProgressThreadUpdate(mTransfer, simpleDialog)
         private val database: PathsDatabase =
             PathsDatabase.getInstance(this@ViewAlbum, Storage.getDefaultStoragePath(this@ViewAlbum))
         private var allowListModification = true
@@ -789,7 +750,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
 
         private fun retrieveInfo() {
-            if (myThread != null && myThread!!.cancelled() && adapter.itemCount > 0) {
+            if (myThread != null && myThread!!.isCancelled() && adapter.itemCount > 0) {
                 retrieveDataAndUpdate()
             }
         }

@@ -98,7 +98,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     private val dialerCode: String?
         get() = sharedPreferences!!.getString("secret_code", "#4321")
 
-    fun createItemsList(): ArrayList<PreferenceItem> {
+    private fun createItemsList(): ArrayList<PreferenceItem> {
         val items = ArrayList<PreferenceItem>()
         for (i in 0..10) {
             val item = PreferenceItem()
@@ -341,7 +341,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     private fun refreshActivity() {
-        val activity = requireActivity() as MainActivity
+        val activity = activity as MainActivity? ?: return
         activity.setRestarting(true)
         val intent = Intent(context, MainActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK)

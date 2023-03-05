@@ -63,9 +63,7 @@ public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-
         File tnome = new File(data.get(position));
-
         //Picasso.with(mContext).load(tnome).centerCrop().fit().into(holder.mImage);
         holder.mImage.setOnLongClickListener(new OnLongClickListener() {
 
@@ -109,10 +107,12 @@ public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHo
 
             @Override
             public void onClick(View p1) {
-					/*Intent i = new Intent(mContext, Visualizar_Imagem.class);
+					/*
+					 Intent i = new Intent(mContext, Visualizar_Imagem.class);
                      i.putExtra("filepath", mData);
                      i.putExtra("position", position);
-                     mContext.startActivity(i);*/
+                     mContext.startActivity(i);
+                     */
             }
         });
     }
@@ -130,5 +130,4 @@ public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHo
             mImage = view.findViewById(R.id.image_intruder);
         }
     }
-
 }

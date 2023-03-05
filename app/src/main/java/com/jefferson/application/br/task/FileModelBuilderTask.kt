@@ -50,9 +50,5 @@ class FileModelBuilderTask(
 
     override fun onFinished() {}
     override fun onException(e: Exception) {}
-    fun setOnLoopListener(listener: onLoopListener?) {}
     fun setDestination(absolutePath: String?) {}
-    interface onLoopListener {
-        fun onLoop(path: String?)
-    }
 }

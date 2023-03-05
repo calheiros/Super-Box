@@ -62,7 +62,6 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     private var adapter: AppLockAdapter? = null
     private var intent: Intent? = null
     private var parentView: View? = null
-
     private var activity: MainActivity
     private var listView: ListView? = null
     private var mTask: LoadApplicationsTask? = null

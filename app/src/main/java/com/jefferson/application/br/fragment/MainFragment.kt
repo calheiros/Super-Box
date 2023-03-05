@@ -16,7 +16,6 @@
 */
 package com.jefferson.application.br.fragment
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -125,7 +124,6 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             ActivityResultContracts.StartActivityForResult()
         ) { result: ActivityResult ->
             if (result.resultCode == Activity.RESULT_OK) {
-                // There are no request codes
                 val data = result.data
                 if (data != null) {
                     val albumName = data.getStringExtra("result")
@@ -261,7 +259,6 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             }
         }
     }
-
     private inner class PagerAdapter(fa: FragmentActivity) : FragmentStateAdapter (
         fa
     ) {
