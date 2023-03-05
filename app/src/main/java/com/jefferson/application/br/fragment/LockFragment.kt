@@ -19,6 +19,7 @@ package com.jefferson.application.br.fragment
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.net.Uri
 import android.os.Build
@@ -50,13 +51,14 @@ import java.util.*
 
 class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener,
     SearchView.OnQueryTextListener {
+    var firstVisibleItem = -1
+    var lastVisibleItem = -1
+
     private var lastClickedParentView: View? = null
     private var lastClickedItemPosition = 0
-    private var firstVisibleItem = -1
-    private var lastVisibleItem = -1
     private var visibleCount = -1
     private var totalItemCount = -1
-    private var mProgressBar: ProgressBar? = null
+    private var progressBar: ProgressBar? = null
     private var mTextView: TextView? = null
     private var appModels: ArrayList<AppModel>? = null
     private var adapter: AppLockAdapter? = null
@@ -64,8 +66,9 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     private var parentView: View? = null
     private var activity: MainActivity
     private var listView: ListView? = null
-    private var mTask: LoadApplicationsTask? = null
-    private var mySwipeRefreshLayout: SwipeRefreshLayout? = null
+    private var loadApplicationsTask: LoadApplicationsTask? = null
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    var mPreviousVisibleItem: Int = 0
     var paddingBottom = 0
 
     init {
@@ -79,10 +82,10 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     ): View? {
         if (parentView == null) {
             parentView = inflater.inflate(R.layout.list_view_app, container, false) as View
-            mProgressBar = parentView!!.findViewById(R.id.progressApps)
+            progressBar = parentView!!.findViewById(R.id.progressApps)
             mTextView = parentView!!.findViewById(R.id.porcent)
             listView = parentView!!.findViewById(R.id.appList)
-            mySwipeRefreshLayout = parentView!!.findViewById(R.id.swipe_refresh)
+            swipeRefreshLayout = parentView!!.findViewById(R.id.swipe_refresh)
             listView?.itemsCanFocus = true
             listView?.clipToPadding = false
             setListViewPaddingBottom()
@@ -90,8 +93,8 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
             val theme = activity.theme
             theme?.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true)
             val color = typedValue.data
-            mySwipeRefreshLayout?.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary)
-            mySwipeRefreshLayout?.setProgressBackgroundColorSchemeColor(color) // .setProgressBackgroundColor(color);
+            swipeRefreshLayout?.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary)
+            swipeRefreshLayout?.setProgressBackgroundColorSchemeColor(color) // .setProgressBackgroundColor(color);
             listView?.setOnScrollListener(object : AbsListView.OnScrollListener {
                 override fun onScrollStateChanged(p1: AbsListView, p2: Int) {}
                 override fun onScroll(
@@ -100,25 +103,30 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
                     visibleItemCount: Int,
                     totalItemCount: Int
                 ) {
+                    if (firstVisibleItem < mPreviousVisibleItem) {
+                        adapter?.scrollState = AppLockAdapter.Companion.ScrollState.UP
+                    } else if (firstVisibleItem > mPreviousVisibleItem) {
+                        adapter?.scrollState = AppLockAdapter.Companion.ScrollState.DOWN
+                    }
+                    mPreviousVisibleItem = firstVisibleItem
                     lastVisibleItem = firstVisibleItem + visibleItemCount
                     this@LockFragment.firstVisibleItem = firstVisibleItem
                     visibleCount = visibleItemCount
                     this@LockFragment.totalItemCount = totalItemCount
                 }
             })
-            if (mTask != null) {
-                val status = mTask!!.getStatus()
-                if (status == JTask.Status.FINISHED) {
-                    doTaskFinalized()
-                } else {
-                    showProgressView()
-                }
+
+            if (loadApplicationsTask?.getStatus() == JTask.Status.FINISHED) {
+                doTaskFinalized()
+            } else {
+                showProgressView()
             }
+
             intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             listView?.onItemClickListener = this
-            mySwipeRefreshLayout?.setOnRefreshListener {
-                if (mTask?.getStatus() == JTask.Status.STARTED) {
-                    mySwipeRefreshLayout?.isRefreshing = false
+            swipeRefreshLayout?.setOnRefreshListener {
+                if (loadApplicationsTask?.getStatus() == JTask.Status.STARTED) {
+                    swipeRefreshLayout?.isRefreshing = false
                 } else {
                     adapter?.clear()
                     showProgressView()
@@ -126,8 +134,8 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
                 }
             }
         } else {
-            if (mySwipeRefreshLayout?.isRefreshing == true) {
-                mySwipeRefreshLayout?.isRefreshing = false
+            if (swipeRefreshLayout?.isRefreshing == true) {
+                swipeRefreshLayout?.isRefreshing = false
             }
         }
         val toolbar = parentView?.findViewById<Toolbar>(R.id.toolbar)
@@ -185,10 +193,10 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     }
 
     private fun showProgressView() {
-        if (mProgressBar == null || mTextView == null) return
-        mProgressBar?.progress = 0
-        mProgressBar?.isIndeterminate = true
-        mProgressBar?.visibility = View.VISIBLE
+        if (progressBar == null || mTextView == null) return
+        progressBar?.progress = 0
+        progressBar?.isIndeterminate = true
+        progressBar?.visibility = View.VISIBLE
         mTextView?.text = ""
         mTextView?.visibility = View.VISIBLE
     }
@@ -253,7 +261,8 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
 
     override fun onPause() {
         super.onPause()
-        if (adapter != null && adapter!!.isMutable) {
+        adapter?.scrollState = AppLockAdapter.Companion.ScrollState.STOP
+        if (adapter?.isMutable == true) {
             activity.startService(
                 Intent(
                     context, AppLockService::class.java
@@ -268,21 +277,21 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     }
 
     private fun startLoadPackagesTask() {
-        mTask = LoadApplicationsTask(activity)
-        mTask?.start()
+        loadApplicationsTask = LoadApplicationsTask(activity)
+        loadApplicationsTask?.start()
     }
 
     fun doTaskFinalized() {
         if (adapter == null) {
-            adapter = AppLockAdapter(activity, appModels!!)
+            adapter = AppLockAdapter(this, appModels!!)
             listView?.adapter = adapter
         } else {
             adapter?.putDataSet(appModels!!)
         }
-        mProgressBar?.visibility = View.GONE
+        progressBar?.visibility = View.GONE
         mTextView?.visibility = View.GONE
-        if (mySwipeRefreshLayout?.isRefreshing == true) {
-            mySwipeRefreshLayout?.isRefreshing = false
+        if (swipeRefreshLayout?.isRefreshing == true) {
+            swipeRefreshLayout?.isRefreshing = false
         }
         appModels = null
     }
@@ -292,9 +301,9 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     }
 
     override fun onDestroy() {
-        if (mTask?.getStatus() != JTask.Status.FINISHED) {
-            mTask?.revokeFinish(true)
-            mTask?.interrupt()
+        if (loadApplicationsTask?.getStatus() != JTask.Status.FINISHED) {
+            loadApplicationsTask?.revokeFinish(true)
+            loadApplicationsTask?.interrupt()
         }
         super.onDestroy()
     }
@@ -363,10 +372,17 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
         }
 
         override fun workingThread() {
-            val launch = Intent(Intent.ACTION_MAIN, null)
-            launch.addCategory(Intent.CATEGORY_LAUNCHER)
+            val intent = Intent(Intent.ACTION_MAIN, null)
+            intent.addCategory(Intent.CATEGORY_LAUNCHER)
             val pm = context.packageManager
-            val apps = pm.queryIntentActivities(launch, 0)
+            val apps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                context.packageManager.queryIntentActivities(
+                    intent,
+                    PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong())
+                )
+            } else {
+                context.packageManager.queryIntentActivities(intent, 0)
+            }
             Collections.sort(apps, ResolveInfo.DisplayNameComparator(pm))
             for (i in apps.indices) {
                 if (this.isInterrupted) {
@@ -376,11 +392,11 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
                 if (p.activityInfo.packageName == context.packageName) {
                     continue
                 }
-                val newInfo = AppModel()
-                newInfo.packageName = p.loadLabel(pm).toString()
-                newInfo.name = p.activityInfo.packageName
-                newInfo.icon = p.activityInfo.loadIcon(pm)
-                appModels!!.add(newInfo)
+                val model = AppModel()
+                model.packageName = p.loadLabel(pm).toString()
+                model.name = p.activityInfo.packageName
+                model.icon = p.activityInfo.loadIcon(pm)
+                appModels?.add(model)
                 progress = 100.0 / apps.size * i
                 sendUpdate()
             }
@@ -398,12 +414,12 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
             if (mTextView != null) {
                 mTextView?.text = progress.toInt().toString().plus("%")
             }
-            if (mProgressBar != null) {
-                if (mProgressBar?.isIndeterminate == true) {
-                    mProgressBar?.isIndeterminate = false
-                    mProgressBar?.max = 100
+            if (progressBar != null) {
+                if (progressBar?.isIndeterminate == true) {
+                    progressBar?.isIndeterminate = false
+                    progressBar?.max = 100
                 }
-                mProgressBar?.progress = progress.toInt()
+                progressBar?.progress = progress.toInt()
             }
         }
     }

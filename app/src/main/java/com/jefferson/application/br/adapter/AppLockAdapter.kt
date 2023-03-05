@@ -27,26 +27,29 @@ import android.view.animation.AnimationUtils
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import com.jefferson.application.br.ImageDetailFragment
 import com.jefferson.application.br.R
 import com.jefferson.application.br.database.AppLockDatabase
+import com.jefferson.application.br.fragment.LockFragment
 import com.jefferson.application.br.model.AppModel
 import com.jefferson.application.br.util.JDebug
 import com.jefferson.application.br.widget.LockCheck
 
 @Suppress("NAME_SHADOWING")
-class AppLockAdapter(private val activity: Activity, var models: ArrayList<AppModel>) :
+class AppLockAdapter(private val fragment: LockFragment, var models: ArrayList<AppModel>) :
     BaseAdapter() {
+    var scrollState: ScrollState = ScrollState.STOP
     private var selectionArray = SparseBooleanArray()
     var inflater: LayoutInflater
-    var database: AppLockDatabase = AppLockDatabase(activity)
+    var database: AppLockDatabase = AppLockDatabase(fragment.context)
     var isMutable = false
     private val cachedViews: HashMap<Int, View?> = HashMap()
     private var searchedItemPosition = -1
 
     init {
         syncSelection()
-        inflater = activity
-            .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        inflater = fragment.context
+            ?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     }
 
     fun animateSearchedItem(x: Int) {
@@ -59,7 +62,7 @@ class AppLockAdapter(private val activity: Activity, var models: ArrayList<AppMo
     }
 
     private val blinkAnimation: Animation
-        get() = AnimationUtils.loadAnimation(activity, R.anim.blink)
+        get() = AnimationUtils.loadAnimation(fragment.context, R.anim.blink)
 
     fun setSearchedItem(x: Int) {
         searchedItemPosition = x
@@ -97,18 +100,34 @@ class AppLockAdapter(private val activity: Activity, var models: ArrayList<AppMo
         holder.imageView?.setImageDrawable(icon)
         holder.textView?.text = info.packageName
         holder.lockCheck?.isChecked = selectionArray[position, false]
-
-        val animation = AnimationUtils.loadAnimation(activity, R.anim.zoom_in)
-        animation.setAnimationListener(object : Animation.AnimationListener {
-            override fun onAnimationStart(p1: Animation) {}
-            override fun onAnimationEnd(anim: Animation) {
-                animateIfSearchedItem(position)
+        if (scrollState != ScrollState.STOP) {
+            val animation = AnimationUtils.loadAnimation(
+                fragment.context, when (scrollState) {
+                    ScrollState.UP -> R.anim.slide_bottom
+                    ScrollState.DOWN -> R.anim.slide_up
+                    else -> 0
+                }
+            )
+            animation.setAnimationListener(object : Animation.AnimationListener {
+                override fun onAnimationStart(p1: Animation) {}
+                override fun onAnimationEnd(anim: Animation) {
+                    animateIfSearchedItem(position)
+                }
+                override fun onAnimationRepeat(p1: Animation) {}
             }
+            )
 
-            override fun onAnimationRepeat(p1: Animation) {}
+            val middleOfList = (fragment.lastVisibleItem - fragment.firstVisibleItem) / 2
+            //FIX: wrong animation on top and bottom
+            if (scrollState == Companion.ScrollState.UP &&
+                fragment.firstVisibleItem > position - middleOfList
+                || scrollState == Companion.ScrollState.DOWN &&
+                (fragment.firstVisibleItem < position - middleOfList)) {
+
+                convertView?.startAnimation(animation)
+            }
         }
-        )
-        convertView?.startAnimation(animation)
+
         cachedViews[position] = convertView
         return convertView
     }
@@ -172,5 +191,13 @@ class AppLockAdapter(private val activity: Activity, var models: ArrayList<AppMo
 
     override fun getItemId(position: Int): Long {
         return position.toLong()
+    }
+
+    companion object {
+        enum class ScrollState {
+            UP,
+            DOWN,
+            STOP,
+        }
     }
 }

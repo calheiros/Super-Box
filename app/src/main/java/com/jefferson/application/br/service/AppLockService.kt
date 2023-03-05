@@ -47,8 +47,6 @@ class AppLockService : Service() {
     override fun onBind(intent: Intent): IBinder? {
         throw UnsupportedOperationException("operation not implemented!")
     }
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
     override fun onCreate() {
         startForeground()
         database = AppLockDatabase(this)

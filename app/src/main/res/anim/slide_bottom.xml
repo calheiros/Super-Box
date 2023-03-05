@@ -19,9 +19,9 @@ Copyright (C) 2023 Jefferson Calheiros
 
 	<translate
         android:interpolator="@android:anim/accelerate_interpolator"
-		android:fromYDelta="0"
-		android:toYDelta="100%" 
-		android:duration="200"/>
+		android:fromYDelta="-100%"
+		android:toYDelta="0"
+		android:duration="300"/>
 	
 </set>
 
