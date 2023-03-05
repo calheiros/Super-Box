@@ -19,6 +19,7 @@ package com.jefferson.application.br.task
 import android.app.Activity
 import android.widget.Toast
 import com.jefferson.application.br.R
+import com.jefferson.application.br.database.PathsDatabase
 import com.jefferson.application.br.database.PathsDatabase.Companion.getInstance
 import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.util.FileTransfer
@@ -53,6 +54,7 @@ class ImportTask(
         failuresCount = 1
         revokeFinish(false)
         errorMessage.append(e.message)
+        e.printStackTrace()
     }
 
     override fun onBeingStarted() {
@@ -86,103 +88,102 @@ class ImportTask(
     public override fun onUpdated(values: Array<Any>) {}
     override fun workingThread() {
         var max = 0.0
-        val database = getInstance(
+        val database: PathsDatabase = getInstance(
             activity, Storage.getDefaultStoragePath(
                 activity
             )
         )
-        database.use {
-            for (resource in models) {
-                val file = File(resource.resource!!)
-                max += file.length().toDouble()
-            }
-            val target = File(
-                Storage.getDefaultStoragePath(
-                    activity
-                )
+        for (resource in models) {
+            val file = File(resource.resource!!)
+            max += file.length().toDouble()
+        }
+        val target = File(
+            Storage.getDefaultStoragePath(
+                activity
             )
-            if (target.freeSpace < max) {
-                sendUpdate(-2, activity.getString(R.string.sem_espaco_aviso))
-                waitForResponse()
+        )
+        if (target.freeSpace < max) {
+            sendUpdate(-2, activity.getString(R.string.sem_espaco_aviso))
+            waitForResponse()
+        }
+        max /= 1024.0
+        sendUpdate(PROGRESS_UPDATE, null, null, max)
+        watchTransfer = WatchTransference(this, mTransfer)
+        watchTransfer?.start()
+        for (i in models.indices) {
+            if (isInterrupted) {
+                break
             }
-            max /= 1024.0
-            sendUpdate(PROGRESS_UPDATE, null, null, max)
-            watchTransfer = WatchTransference(this, mTransfer)
-            watchTransfer!!.start()
-            for (i in models.indices) {
-                if (isInterrupted) {
-                    break
-                }
-                val model = models[i]
-                val file = File(model.resource!!)
-                if (!file.exists()) {
-                    failuresCount++
-                    errorMessage.append(
-                        """
+            val model = models[i]
+            val file = File(model.resource!!)
+            if (!file.exists()) {
+                failuresCount++
+                errorMessage.append(
+                    """
     ${activity.getString(R.string.erro)} $failuresCount: O arquivo "${file.name}" não existe!
     """
-                    )
+                )
+                continue
+            }
+            sendUpdate(PROGRESS_UPDATE, file.name, null, null)
+            val folderName = file.parentFile?.name ?: ""
+            val randomString = StringUtils.getRandomString(24)
+            var randomString2 = StringUtils.getRandomString(24)
+            val folderId = database.getFolderIdFromName(folderName, model.type!!)
+            if (folderId == null) {
+                database.addFolderName(randomString2, folderName, model.type)
+            } else {
+                randomString2 = folderId
+            }
+            var parentPath = model.parentPath
+            if (parentPath == null) {
+                parentPath = Storage.getFolder(
+                    if (FileModel.IMAGE_TYPE == model.type) Storage.IMAGE else Storage.VIDEO,
+                    activity
+                ).toString() + File.separator + randomString2
+            }
+            val destFile = File(parentPath, randomString)
+            destFile.parentFile?.mkdirs()
+            if (file.renameTo(destFile)) {
+                database.insertMediaData(randomString, model.resource)
+                importedFilesPath.add(file.absolutePath)
+                mTransfer.increment(destFile.length().toDouble() / 1024.0)
+                //Log.i(TAG, "Succesfully moved to: " + destFile);
+            } else {
+                var inputStream: InputStream?
+                var outputStream: FileOutputStream?
+                try {
+                    inputStream = FileInputStream(file)
+                    outputStream = FileOutputStream(destFile)
+                } catch (e: FileNotFoundException) {
+                    failuresCount++
                     continue
                 }
-                sendUpdate(PROGRESS_UPDATE, file.name, null, null)
-                val folderName = file.parentFile?.name ?: ""
-                val randomString = StringUtils.getRandomString(24)
-                var randomString2 = StringUtils.getRandomString(24)
-                val folderId = database.getFolderIdFromName(folderName, model.type!!)
-                if (folderId == null) {
-                    database.addFolderName(randomString2, folderName, model.type)
-                } else {
-                    randomString2 = folderId
-                }
-                var parentPath = model.parentPath
-                if (parentPath == null) {
-                    parentPath = Storage.getFolder(
-                        if (FileModel.IMAGE_TYPE == model.type) Storage.IMAGE else Storage.VIDEO,
-                        activity
-                    ).toString() + File.separator + randomString2
-                }
-                val destFile = File(parentPath, randomString)
-                destFile.parentFile?.mkdirs()
-                if (file.renameTo(destFile)) {
-                    database.insertMediaData(randomString, model.resource)
-                    importedFilesPath.add(file.absolutePath)
-                    mTransfer.increment(destFile.length().toDouble() / 1024.0)
-                    //Log.i(TAG, "Succesfully moved to: " + destFile);
-                } else {
-                    var inputStream: InputStream?
-                    var outputStream: FileOutputStream?
-                    try {
-                        inputStream = FileInputStream(file)
-                        outputStream = FileOutputStream(destFile)
-                    } catch (e: FileNotFoundException) {
-                        failuresCount++
-                        continue
-                    }
-                    val response = mTransfer.transferStream(inputStream, outputStream)
-                    if (FileTransfer.OK == response) {
-                        if (Storage.deleteFile(file, activity)) {
-                            database.insertMediaData(randomString, model.resource)
-                            importedFilesPath.add(file.absolutePath)
-                        } else {
-                            destFile.delete()
-                        }
+                val response = mTransfer.transferStream(inputStream, outputStream)
+                if (FileTransfer.OK == response) {
+                    if (Storage.deleteFile(file, activity)) {
+                        database.insertMediaData(randomString, model.resource)
+                        importedFilesPath.add(file.absolutePath)
                     } else {
                         destFile.delete()
-                        failuresCount++
-                        if (FileTransfer.Error.NO_LEFT_SPACE == response) {
-                            errorMessage.append(no_left_space_error_message)
-                        } else {
-                            errorMessage.append(
-                                """
+                    }
+                } else {
+                    destFile.delete()
+                    failuresCount++
+                    if (FileTransfer.Error.NO_LEFT_SPACE == response) {
+                        errorMessage.append(no_left_space_error_message)
+                    } else {
+                        errorMessage.append(
+                            """
     ${activity.getString(R.string.erro)}$failuresCount: $response when moving: ${file.name}
     """
-                            )
-                        }
+                        )
                     }
                 }
-                sendUpdate(PREPARATION_UPDATE, i + 1 - failuresCount, models.size)
             }
+            sendUpdate(PREPARATION_UPDATE, i + 1 - failuresCount, models.size)
         }
+        database.close()
     }
 
     private fun waitForResponse() {

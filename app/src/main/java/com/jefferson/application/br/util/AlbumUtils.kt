@@ -43,10 +43,9 @@ object AlbumUtils {
         newName: String,
         position: Int
     ): Boolean {
-        var database: PathsDatabase? = null
+        val database: PathsDatabase = PathsDatabase.getInstance(context!!)
         try {
             val folderType = if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
-            database = PathsDatabase.getInstance(context!!)
             val file = File(model.path!!)
             val id = file.name
             val folderName = database.getFolderName(id, folderType)
@@ -78,17 +77,16 @@ object AlbumUtils {
             e.printStackTrace()
             return false
         } finally {
-            database?.close()
+            database.close()
         }
         return true
     }
 
     fun createAlbum(context: Context?, name: String, position: Int): AlbumModel? {
-        var database: PathsDatabase? = null
+        val database: PathsDatabase = PathsDatabase.getInstance(context!!)
         var folder: AlbumModel? = null
         try {
             val type = if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
-            database = PathsDatabase.getInstance(context!!)
             var id = database.getFolderIdFromName(name, type)
             val randomStr = StringUtils.getRandomString(24)
             if (id == null) {
@@ -111,7 +109,7 @@ object AlbumUtils {
         } catch (e: Exception) {
             e.printStackTrace()
         } finally {
-            database?.close()
+            database.close()
         }
         return folder
     }

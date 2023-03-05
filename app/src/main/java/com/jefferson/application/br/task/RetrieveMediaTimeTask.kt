@@ -9,7 +9,6 @@ import com.jefferson.application.br.model.MediaModel
 import com.jefferson.application.br.util.Storage
 import com.jefferson.application.br.util.StringUtils
 import java.io.File
-import java.util.ArrayList
 
 class RetrieveMediaTimeTask(
     private val list: ArrayList<MediaModel>?,
@@ -21,36 +20,36 @@ class RetrieveMediaTimeTask(
     private var cancelled = false
     override fun run() {
         try {
-            PathsDatabase.getInstance( activity,
+            val database = PathsDatabase.getInstance(
+                activity,
                 Storage.getDefaultStoragePath(activity)
             )
-                .use { database ->
-                    for (model in list!!) {
-                        if (!isWorking) break
-                        try {
-                            val file = File(model.path!!)
-                            var duration = database.getDuration(file.name)
-                            if (duration == -1 || duration == 0) {
-                                duration = try {
-                                    val uri = Uri.parse(model.path)
-                                    val mmr = MediaMetadataRetriever()
-                                    mmr.setDataSource(activity, uri)
-                                    val durationStr =
-                                        mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
-                                    durationStr!!.toInt()
-                                } catch (e: Exception) {
-                                    -2
-                                }
-                                database.updateMediaDuration(file.name, duration)
-                            }
-                            val time =
-                                StringUtils.getFormattedVideoDuration(duration.toString())
-                            activity.runOnUiThread { adapter?.updateItemDuration(model.path!!, time) }
+            for (model in list!!) {
+                if (!isWorking) break
+                try {
+                    val file = File(model.path!!)
+                    var duration = database.getDuration(file.name)
+                    if (duration == -1 || duration == 0) {
+                        duration = try {
+                            val uri = Uri.parse(model.path)
+                            val mmr = MediaMetadataRetriever()
+                            mmr.setDataSource(activity, uri)
+                            val durationStr =
+                                mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                            durationStr!!.toInt()
                         } catch (e: Exception) {
-                            e.printStackTrace()
+                            -2
                         }
+                        database.updateMediaDuration(file.name, duration)
                     }
+                    val time =
+                        StringUtils.getFormattedVideoDuration(duration.toString())
+                    activity.runOnUiThread { adapter?.updateItemDuration(model.path!!, time) }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
+            }
+
         } finally {
             isWorking = false
         }

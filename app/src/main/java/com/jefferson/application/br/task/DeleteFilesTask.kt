@@ -25,7 +25,6 @@ import com.jefferson.application.br.database.PathsDatabase.Companion.getInstance
 import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.util.Storage.getDefaultStoragePath
 import java.io.File
-import java.util.ArrayList
 
 open class DeleteFilesTask(
     activity: Activity, items: ArrayList<String>, position: Int, rootFile: File
@@ -51,30 +50,29 @@ open class DeleteFilesTask(
     }
 
     override fun workingThread() {
-        getInstance(activity, getDefaultStoragePath(activity)).use { database ->
-                for (path in items) {
-                    if (isInterrupted) {
-                        break
-                    }
-                    val file = File(path!!)
-                    if (file.delete()) {
-                        progress++
-                        var name: String?
-                        if (database.getMediaPath(file.name).also { name = it } != null) {
-                            database.deleteMediaData(file.name)
-                        }
-                        sendUpdate(path, name)
-                    }
-                }
-                database.close()
+        val database = getInstance(activity, getDefaultStoragePath(activity))
+        for (path in items) {
+            if (isInterrupted) {
+                break
             }
+            val file = File(path!!)
+            if (file.delete()) {
+                progress++
+                var name: String?
+                if (database.getMediaPath(file.name).also { name = it } != null) {
+                    database.deleteMediaData(file.name)
+                }
+                sendUpdate(path, name)
+            }
+        }
+        database.close()
     }
 
     override fun onBeingStarted() {
         dialog = SimpleDialog(activity)
         dialog.showProgressBar(items.isNotEmpty()).setTitle("Deleting").setMax(items.size)
-            .setProgress(0).showPositiveButton(false).setNegativeButton(
-                activity.getString(R.string.cancelar),
+            .setProgress(0).showPositiveButton(false)
+            .setNegativeButton(activity.getString(R.string.cancelar),
                 object : OnDialogClickListener() {
                     override fun onClick(dialog: SimpleDialog): Boolean {
                         interrupt()
@@ -116,13 +114,12 @@ open class DeleteFilesTask(
     }
 
     private fun deleteFolder(file: File) {
-        getInstance(activity).use { database ->
-            if (file.delete()) {
-                database.deleteFolder(
-                    file.name, if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
-                )
-            }
-            database.close()
+        val database = getInstance(activity)
+        if (file.delete()) {
+            database.deleteFolder(
+                file.name, if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
+            )
         }
+        database.close()
     }
 }
