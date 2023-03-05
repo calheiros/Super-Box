@@ -1,6 +1,7 @@
 #ignore build files
 app/build
 app/src/main/java/com/jefferson/application/br/util/EncrytionUtil.java
+app/google-services.json
 local.properties
 build/
 
