@@ -16,7 +16,6 @@
 */
 package com.jefferson.application.br.adapter
 
-import android.app.Activity
 import android.content.Context
 import android.util.SparseBooleanArray
 import android.view.LayoutInflater
@@ -27,7 +26,6 @@ import android.view.animation.AnimationUtils
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import com.jefferson.application.br.ImageDetailFragment
 import com.jefferson.application.br.R
 import com.jefferson.application.br.database.AppLockDatabase
 import com.jefferson.application.br.fragment.LockFragment
@@ -103,8 +101,8 @@ class AppLockAdapter(private val fragment: LockFragment, var models: ArrayList<A
         if (scrollState != ScrollState.STOP) {
             val animation = AnimationUtils.loadAnimation(
                 fragment.context, when (scrollState) {
-                    ScrollState.UP -> R.anim.slide_bottom
-                    ScrollState.DOWN -> R.anim.slide_up
+                    ScrollState.UP -> R.anim.app_slide_bottom
+                    ScrollState.DOWN -> R.anim.app_slide_up
                     else -> 0
                 }
             )

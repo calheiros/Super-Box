@@ -15,20 +15,21 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<androidx.cardview.widget.CardView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/lock_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="3dp"
-    android:paddingBottom="3dp"
-    android:layout_margin="8dp"
     android:visibility="gone"
+    android:orientation="vertical"
     android:layout_alignParentBottom="true"
-    android:background="@android:color/transparent"
-    android:elevation="8dp"
-    app:cardCornerRadius="12dp">
+    android:background="@android:color/transparent">
+    <View
+        android:alpha="0.7"
+        android:background="?commonColorDark"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
 
     <eightbitlab.com.blurview.BlurView
         android:id="@+id/blurView"
@@ -38,6 +39,7 @@ Copyright (C) 2023 Jefferson Calheiros
         app:blurOverlayColor="?colorDialogBackground">
 
         <LinearLayout
+            android:padding="3dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:baselineAligned="false">
@@ -56,7 +58,7 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:src="@drawable/ic_export"
-                    app:tint="?colorTextMedium" />
+                    app:tint="?commonColorLight" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -84,7 +86,7 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:src="@drawable/ic_delete_outline"
-                    app:tint="?colorTextMedium" />
+                    app:tint="?commonColorLight" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -112,7 +114,7 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:src="@drawable/ic_folder_move_outline"
-                    app:tint="?colorTextMedium" />
+                    app:tint="?commonColorLight" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -141,7 +143,7 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:layout_width="26dp"
                     android:layout_height="26dp"
                     android:src="@drawable/ic_select_all"
-                    app:tint="?colorTextMedium" />
+                    app:tint="?commonColorLight" />
 
                 <TextView
                     android:id="@+id/options_album_selectTextView"
@@ -157,4 +159,4 @@ Copyright (C) 2023 Jefferson Calheiros
             </LinearLayout>
         </LinearLayout>
     </eightbitlab.com.blurview.BlurView>
-</androidx.cardview.widget.CardView>
+</LinearLayout>

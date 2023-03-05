@@ -15,13 +15,12 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<set xmlns:android="http://schemas.android.com/apk/res/android" >
+<set xmlns:android="http://schemas.android.com/apk/res/android">
 
-	<translate
+    <translate
         android:interpolator="@android:anim/accelerate_interpolator"
-		android:fromYDelta="0"
-		android:toYDelta="100%"
-		android:duration="200"/>
-	
-</set>
+        android:fromYDelta="100%"
+        android:toYDelta="0"
+        android:duration="300"/>
 
+</set>
