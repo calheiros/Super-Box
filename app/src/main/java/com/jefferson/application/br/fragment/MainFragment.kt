@@ -28,24 +28,25 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-
 import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.ImportGalleryActivity
+import com.jefferson.application.br.activity.ImportMediaActivity
 import com.jefferson.application.br.activity.MainActivity
 import com.jefferson.application.br.activity.SearchActivity
 import com.jefferson.application.br.model.AlbumModel
 
 class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnLongClickListener {
-    private var viewPager: ViewPager2? = null
+    private lateinit var viewPager: ViewPager2
     private var toolbar: Toolbar? = null
     private var view: View? = null
     private var pagerAdapter: PagerAdapter? = null
@@ -63,18 +64,18 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             view = inflater.inflate(R.layout.main_fragment, null)
             pagerAdapter = PagerAdapter(requireActivity())
             toolbar = view?.findViewById(R.id.toolbar)
-            viewPager = view?.findViewById(R.id.mainViewPager)
-            viewPager?.adapter = pagerAdapter
-            viewPager?.isSaveEnabled = false
+            viewPager = view?.findViewById(R.id.mainViewPager) as ViewPager2
+            viewPager.adapter = pagerAdapter
+            viewPager.isSaveEnabled = false
             //viewPager?.setOnPageChangeListener(this)
             tabLayout = view?.findViewById(R.id.tab_layout)
 
             val searchView = view?.findViewById<View>(R.id.search_bar)
-            val selected = resources.getColor(R.color.tab_selected)
-            val unselected = resources.getColor(R.color.tab_unselected)
+            val selected = ContextCompat.getColor(requireContext(), R.color.tab_selected)
+            val unselected = ContextCompat.getColor(requireContext(), R.color.tab_unselected)
 
             tabLayout?.setTabTextColors(unselected, selected)
-            TabLayoutMediator(tabLayout!!, viewPager!!) { tab, position ->
+            TabLayoutMediator(tabLayout!!, viewPager) { tab, position ->
                 tab.text = when(position) {
                     0 -> getString(R.string.imagens)
                     1 -> getString(R.string.videos)
@@ -93,16 +94,33 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         return view
     }
 
+    private val importMediaResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) {
+        result: ActivityResult -> if (result.resultCode == Activity.RESULT_OK) {
+            updateFragment(viewPager.currentItem)
+        }
+    }
+
+    private val gallerySelectionResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == AppCompatActivity.RESULT_OK) {
+            val data = result.data
+            val position = data!!.getIntExtra("position", -1)
+            val type = data.getStringExtra("type")
+            val paths = data.getStringArrayListExtra("selection")
+            val intent = Intent(context, ImportMediaActivity::class.java)
+            intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
+            intent.putExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
+            intent.putExtra(ImportMediaActivity.POSITION_KEY, position)
+            importMediaResult.launch(intent)
+        }
+    }
+
     override fun onClick(v: View) {
         when (v.id) {
             R.id.fab -> {
-                val intent = Intent(context, ImportGalleryActivity::class.java)
-                requireActivity().startActivityForResult(
-                    intent.putExtra(
-                        "position",
-                        viewPager!!.currentItem
-                    ), MainActivity.IMPORT_FROM_GALLERY_CODE
-                )
+               importFromGallery()
             }
             R.id.ad_view -> {
                 val position = pagerPosition
@@ -133,14 +151,14 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
                         return@registerForActivityResult
                     }
                     if (action == SearchActivity.ACTION_OPEN_ALBUM) {
-                        openAlbum(albumName)
+                        openAlbum(albumName!!)
                     }
                 }
             }
         }
     }
 
-    private fun openAlbum(albumName: String?) {
+    private fun openAlbum(albumName: String) {
         currentFragment.openAlbum(albumName)
     }
 
@@ -150,12 +168,12 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
 
     private val currentFragment: AlbumFragment
         get() {
-            val pos = viewPager!!.currentItem
+            val pos = viewPager.currentItem
             return pagerAdapter!!.createFragment(pos)
         }
 
     private fun openSearchView() {
-        val pos = viewPager!!.currentItem
+        val pos = viewPager.currentItem
         val fragment = pagerAdapter!!.createFragment(pos)
         if (!fragment.isLoading) {
             val intent = Intent(requireActivity(), SearchActivity::class.java)
@@ -195,18 +213,10 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
     override fun onLongClick(view: View): Boolean {
-        val fragment = pagerAdapter?.createFragment(viewPager!!.currentItem)
+        val fragment = pagerAdapter?.createFragment(viewPager.currentItem)
         fragment?.inputFolderDialog(null, AlbumFragment.ACTION_CREATE_FOLDER)
         return true
-    }
-
-    fun showSnackBar(message: String?, length: Int) {
-        Snackbar.make(fab!!, message!!, length).show()
     }
 
     fun removeFolder(folderPosition: Int, pagerPosition: Int) {
@@ -217,12 +227,12 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     }
 
     val pagerPosition: Int
-        get() = viewPager!!.currentItem
+        get() = viewPager.currentItem
 
-    fun importFromGallery() {
+    private fun importFromGallery() {
         val intent = Intent(context, ImportGalleryActivity::class.java)
-        intent.putExtra("position", viewPager!!.currentItem)
-        activity?.startActivityForResult(intent, 23)
+        intent.putExtra("position", pagerPosition)
+        gallerySelectionResult.launch(intent)
     }
 
     fun updateFragment(id: Int) {

@@ -31,11 +31,11 @@ import com.jefferson.application.br.activity.SelectionActivity
 import com.jefferson.application.br.model.AlbumModel
 
 class PhotosFolderAdapter(
-    private val mGalleryAlbum: ImportGalleryActivity,
+    private val galleryAlbum: ImportGalleryActivity,
     private var items: ArrayList<AlbumModel>,
     private val option: Int
 ) : ArrayAdapter<AlbumModel>(
-    mGalleryAlbum, R.layout.adapter_photosfolder, items
+    galleryAlbum, R.layout.adapter_photosfolder, items
 ) {
     fun set(newItems: ArrayList<AlbumModel>) {
         items = newItems
@@ -77,12 +77,12 @@ class PhotosFolderAdapter(
                 convertView.findViewById<View>(R.id.adapter_photosfolderParentView) as RelativeLayout
             //mViewHolder.smallView = (ImageView) convertView.findViewById(R.id.folder_small_icon_view);
             mViewHolder.parentLayout?.setOnClickListener {
-                val intent = Intent(mGalleryAlbum, SelectionActivity::class.java)
+                val intent = Intent(galleryAlbum, SelectionActivity::class.java)
                 intent.putExtra("name", items[position].name)
                 intent.putExtra("data", items[position].items)
-                intent.putExtra("type", mGalleryAlbum.type)
+                intent.putExtra("type", galleryAlbum.type)
                 intent.putExtra("position", option)
-                mGalleryAlbum.startActivityForResult(intent, ImportGalleryActivity.GET_CODE)
+                galleryAlbum.selectionResult.launch(intent)
             }
             convertView.tag = mViewHolder
         } else {
@@ -93,7 +93,7 @@ class PhotosFolderAdapter(
         mViewHolder.itemCountLabel?.text = item.items.size.toString()
 
         if (item.items.size != 0) {
-            Glide.with(mGalleryAlbum).load("file://" + item.items[0])
+            Glide.with(galleryAlbum).load("file://" + item.items[0])
                 .skipMemoryCache(true)
                 .into(mViewHolder.imageView!!)
         }

@@ -104,8 +104,8 @@ class AlbumFragment : Fragment {
         requireActivity().startActivity(intent)
     }
 
-    fun openAlbum(albumName: String?) {
-        val pos = albumAdapter!!.getItemPositionByName(albumName!!)
+    fun openAlbum(albumName: String) {
+        val pos = albumAdapter!!.getItemPositionByName(albumName)
         if (pos != -1) {
             openAlbum(albumAdapter!!.getItem(pos))
         }

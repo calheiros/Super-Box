@@ -1,6 +1,7 @@
 package com.jefferson.application.br.activity
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -19,7 +20,6 @@ import eightbitlab.com.blurview.BlurView
 
 class SelectionActivity : MyCompatActivity(), ClickListener, View.OnClickListener {
     private lateinit var adapter: MultiSelectRecyclerViewAdapter
-
     private var name: String? = null
     private var selectAllImageView: ImageView? = null
     private var models: ArrayList<MediaModel>? = null
@@ -34,11 +34,12 @@ class SelectionActivity : MyCompatActivity(), ClickListener, View.OnClickListene
         selectAllTextView = findViewById<View>(R.id.options_selectTextView) as TextView
         val blurView = findViewById<BlurView>(R.id.blurView)
         val selectAllLayout = findViewById<View>(R.id.selectView)
-
         BlurUtils.setupWith(blurView, this, 13f)
-        val intent = intent
+
         name = intent.getStringExtra("name")
-        models = intent.getParcelableArrayListExtra("data")
+        models = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            intent.getParcelableArrayListExtra("data", MediaModel::class.java)
+        else @Suppress("DEPRECATION") intent.getParcelableArrayListExtra("data")
         val position = intent.getIntExtra("position", 0)
         val mLayoutManager = GridLayoutManager(this, 3)
 
@@ -57,7 +58,7 @@ class SelectionActivity : MyCompatActivity(), ClickListener, View.OnClickListene
     override fun onClick(view: View) {
         when (view.id) {
             R.id.selectView -> {
-                if (adapter.selectedItemCount == models!!.size) {
+                if (adapter.selectedItemCount == models?.size) {
                     adapter.clearSelection()
                 } else {
                     var i = 0
@@ -117,8 +118,8 @@ class SelectionActivity : MyCompatActivity(), ClickListener, View.OnClickListene
     private fun setupToolbar() {
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayShowHomeEnabled(true)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun updateActionBarTitle() {
@@ -131,10 +132,10 @@ class SelectionActivity : MyCompatActivity(), ClickListener, View.OnClickListene
     }
 
     private fun toggleSelectViewIcon() {
-        val allSelected = adapter.selectedItemCount == models!!.size
+        val allSelected = adapter.selectedItemCount == models?.size
         val text = if (allSelected) "Unselect all" else "Select all"
         val resId = if (allSelected) R.drawable.ic_select else R.drawable.ic_select_all
-        selectAllImageView!!.setImageResource(resId)
-        selectAllTextView!!.text = text
+        selectAllImageView?.setImageResource(resId)
+        selectAllTextView?.text = text
     }
 }

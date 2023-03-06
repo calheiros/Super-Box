@@ -24,8 +24,6 @@ class MediaModel : Parcelable {
     var path: String? = null
     var duration: String? = null
 
-    constructor()
-
     private constructor(p: Parcel) {
         path = p.readString()
         duration = p.readString()

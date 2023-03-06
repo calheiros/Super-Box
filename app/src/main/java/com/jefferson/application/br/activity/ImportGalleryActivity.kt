@@ -16,6 +16,7 @@
  */
 package com.jefferson.application.br.activity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -30,14 +31,16 @@ import android.view.View
 import android.widget.GridView
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.core.database.getStringOrNull
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
-import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.PhotosFolderAdapter
 import com.jefferson.application.br.model.AlbumModel
+import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.model.MediaModel
 import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.util.FileUtils
@@ -49,9 +52,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
     private lateinit var context: Context
     private var objAdapter: PhotosFolderAdapter? = null
     private var position = 0
-
     private var title: String? = null
-
     private var retrieveMediaTask: RetrieveMediaTask? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,9 +75,42 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         setupToolbar()
     }
 
+    private val externalAppResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            val mediaList: ArrayList<String> = ArrayList()
+            val data = result.data
+            val fileUtils = FileUtils(this)
+            if (data?.clipData != null) {
+                val count = data.clipData!!.itemCount
+                for (i in 0 until count) {
+                    val imageUri = data.clipData!!.getItemAt(i).uri
+                    val path = fileUtils.getPath(imageUri)
+                    mediaList.add(path)
+                }
+            } else if (data?.data != null) {
+                val selectedImageUri = data.data
+                val path = fileUtils.getPath(selectedImageUri)
+                mediaList.add(path)
+            }
+            sendResult(mediaList)
+        }
+    }
+
+    val selectionResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val mediaList = result.data?.extras?.getStringArrayList("selection")
+            if (mediaList != null)
+                sendResult(mediaList)
+        }
+    }
+
     override fun onRefresh() {
         if (retrieveMediaTask!!.getStatus() == JTask.Status.FINISHED) {
-            objAdapter!!.clear()
+            objAdapter?.clear()
             retrieveMediaTask = RetrieveMediaTask()
             retrieveMediaTask!!.start()
         } else {
@@ -88,7 +122,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         get() = when (position) {
             0 -> FileModel.IMAGE_TYPE
             1 -> FileModel.VIDEO_TYPE
-            else -> throw IllegalArgumentException("can not find type for position: $position")
+            else -> throw IllegalArgumentException("could not determine media type for position: $position")
         }
 
     private fun setupToolbar() {
@@ -122,21 +156,16 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
             intent.type = intentType
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             intent.action = Intent.ACTION_GET_CONTENT
-            startActivityForResult(
-                Intent.createChooser(intent, "Select Picture"),
-                PICK_CONTENT_FROM_EXTERNAL_APP
+            externalAppResult.launch(
+                Intent.createChooser(intent, "Select Picture")
             )
         }
     private val intentType: String
-         get() = when (position) {
+        get() = when (position) {
             0 -> "image/*"
             1 -> "video/*"
-            else -> throw RuntimeException("can not find intent type for position $position")
+            else -> throw RuntimeException("could not find intent type for position $position")
         }
-
-    private fun notImplemented() {
-        Toast.makeText(this, "Not implemented!", Toast.LENGTH_SHORT).show()
-    }
 
     val galleryItems: ArrayList<AlbumModel>
         get() {
@@ -166,10 +195,10 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
                 0 -> arrayOf(MediaStore.MediaColumns.DATA, bucketName)
 
                 1 -> arrayOf(
-                        MediaStore.Video.VideoColumns.DURATION,
-                        MediaStore.MediaColumns.DATA,
-                        bucketName
-                    )
+                    MediaStore.Video.VideoColumns.DURATION,
+                    MediaStore.MediaColumns.DATA,
+                    bucketName
+                )
                 else -> null
             }
             cursor = applicationContext.contentResolver.query(
@@ -202,7 +231,8 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
                 } else {
                     val mm = MediaModel(absolutePathOfImage)
                     if (position == 1) {
-                        val formattedTime = StringUtils.getFormattedVideoDuration(duration.toString())
+                        val formattedTime =
+                            StringUtils.getFormattedVideoDuration(duration.toString())
                         mm.duration = formattedTime
                     }
                     galleryItems[folderPosition].addItem(mm)
@@ -224,46 +254,19 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
     }
 
     private fun setAdapter(list: ArrayList<AlbumModel>) {
-        if (list.isEmpty()) {
-            findViewById<View>(R.id.gallery_album_empty_layout).visibility = View.VISIBLE
-        }
+        val emptyLayout = findViewById<View>(R.id.gallery_album_empty_layout)
+        emptyLayout.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
         objAdapter = PhotosFolderAdapter(this@ImportGalleryActivity, list, position)
         myGridView.adapter = objAdapter
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (resultCode == RESULT_OK) {
-            var mediaList: ArrayList<String?>? = ArrayList()
-            if (requestCode == PICK_CONTENT_FROM_EXTERNAL_APP) {
-                val fileUtils = FileUtils(this)
-                if (data!!.clipData != null) {
-                    val count = data.clipData!!.itemCount
-                    for (i in 0 until count) {
-                        val imageUri = data.clipData!!.getItemAt(i).uri //do what do you want to do
-                        val path = fileUtils.getPath(imageUri)
-                        mediaList!!.add(path)
-                    }
-                } else if (data.data != null) {
-                    val selectedImageUri = data.data //do what do you want to do
-                    val path = fileUtils.getPath(selectedImageUri)
-                    mediaList!!.add(path)
-                } else {
-                    return
-                }
-            } else {
-                mediaList = data!!.extras!!.getStringArrayList("selection")
-            }
-            if (mediaList!!.isEmpty()) {
-                return
-            }
-            val i = Intent()
-            i.putExtra("selection", mediaList)
-            i.putExtra("type", type)
-            i.putExtra("position", position)
-            setResult(RESULT_OK, i)
-            finish()
-        }
-        super.onActivityResult(requestCode, resultCode, data)
+    private fun sendResult(mediaList: ArrayList<String>) {
+        val intent = Intent()
+        intent.putExtra("selection", mediaList)
+        intent.putExtra("type", type)
+        intent.putExtra("position", position)
+        setResult(RESULT_OK, intent)
+        finish()
     }
 
     override fun onRequestPermissionsResult(
@@ -319,7 +322,6 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
     companion object {
         const val GET_CODE = 5658
         private const val REQUEST_PERMISSIONS = 100
-        private const val TAG = "ImportGalleryActivity"
-        private const val PICK_CONTENT_FROM_EXTERNAL_APP = 1
     }
+
 }

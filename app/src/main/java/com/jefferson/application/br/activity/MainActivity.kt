@@ -16,6 +16,7 @@
  */
 package com.jefferson.application.br.activity
 
+import androidx.activity.result.ActivityResult
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -26,6 +27,7 @@ import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -122,9 +124,6 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 )
             )
         }
-        /* if (!MyPreferences.userAcceptedAgreement(this)) {
-            showUserAgreement()
-        }*/
         createFragments()
         createAdView()
         createReceiver()
@@ -308,10 +307,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
             }
         }
         if (resultCode == RESULT_OK) {
-            if (requestCode == 69) {
-                updateFragment(position)
-                return
-            }
+
             if (requestCode == SettingFragment.CALCULATOR_CREATE_CODE_RESULT) {
                 settingFragment.setCodeDescription(MyPreferences.getCalculatorCode(this))
                 return
@@ -333,15 +329,6 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                     )
                     Storage.storeExternalUri(uri.toString(), this)
                 }
-            } else if (requestCode == IMPORT_FROM_GALLERY_CODE) {
-                position = data!!.getIntExtra("position", -1)
-                val type = data.getStringExtra("type")
-                val paths = data.getStringArrayListExtra("selection")
-                val intent = Intent(this, ImportMediaActivity::class.java)
-                intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
-                intent.putExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
-                intent.putExtra(ImportMediaActivity.POSITION_KEY, position)
-                this.startActivityForResult(intent, 69)
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -434,7 +421,6 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     companion object {
         const val ACTION_START_IN_PREFERENCES =
             "com.jefferson.application.action.START_IN_PREFERENCES"
-        const val IMPORT_FROM_GALLERY_CODE = 43
         const val ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS"
         private const val ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12
         private const val GET_SDCARD_URI_CODE = 98

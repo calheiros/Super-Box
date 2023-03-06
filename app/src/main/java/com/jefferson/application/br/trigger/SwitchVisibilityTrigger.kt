@@ -1,4 +1,4 @@
-package com.jefferson.application.br.triggers
+package com.jefferson.application.br.trigger
 
 import android.view.View
 

@@ -35,7 +35,7 @@ class ImportTask(
     private val models: ArrayList<FileModel>
     private val errorMessage = StringBuilder()
     private val mTransfer: FileTransfer
-    private val no_left_space_error_message = "\nNão há espaço suficiente no dispositivo\n"
+    private val noLeftSpaceErrorMessage = "\nNão há espaço suficiente no dispositivo\n"
     private var error: Exception? = null
     private var watchTransfer: WatchTransference? = null
     var failuresCount = 0
@@ -148,7 +148,6 @@ class ImportTask(
                 database.insertMediaData(randomString, model.resource)
                 importedFilesPath.add(file.absolutePath)
                 mTransfer.increment(destFile.length().toDouble() / 1024.0)
-                //Log.i(TAG, "Succesfully moved to: " + destFile);
             } else {
                 var inputStream: InputStream?
                 var outputStream: FileOutputStream?
@@ -171,7 +170,7 @@ class ImportTask(
                     destFile.delete()
                     failuresCount++
                     if (FileTransfer.Error.NO_LEFT_SPACE == response) {
-                        errorMessage.append(no_left_space_error_message)
+                        errorMessage.append(noLeftSpaceErrorMessage)
                     } else {
                         errorMessage.append(
                             """

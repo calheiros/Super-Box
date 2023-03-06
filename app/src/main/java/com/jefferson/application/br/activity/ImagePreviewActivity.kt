@@ -18,21 +18,17 @@ package com.jefferson.application.br.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
-import androidx.core.view.marginLeft
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.fragment.ImagePreviewFragment
-import com.jefferson.application.br.triggers.SwitchVisibilityTrigger
+import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
 import com.jefferson.application.br.util.MediaUtils
 
 class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
@@ -59,7 +55,6 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         exportButton.setOnClickListener(this)
         deleteButton.setOnClickListener(this)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-
     }
 
     override fun onClick(v: View) {

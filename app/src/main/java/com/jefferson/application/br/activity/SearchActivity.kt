@@ -40,6 +40,11 @@ class SearchActivity : MyCompatActivity(), OnItemClickListener, OnItemLongClickL
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_activity_layout)
         val models = intent.getParcelableArrayListExtra<SimplifiedAlbum>(EXTRA_SIMPLE_MODELS)
+        if (models?.isEmpty() == true) {
+            val hint = findViewById<View>(R.id.empty_hint_layout)
+            hint.visibility = View.VISIBLE
+            return
+        }
         configureSearchView(models)
     }
 
@@ -80,6 +85,7 @@ class SearchActivity : MyCompatActivity(), OnItemClickListener, OnItemLongClickL
 
     private fun sendActionAndFinish(action: String, position: Int) {
         editText.clearFocus()
+        editText.getText()
         input.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
         val choice = adapter.getItem(position)
         val intent = Intent()

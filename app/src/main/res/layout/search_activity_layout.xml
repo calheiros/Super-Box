@@ -15,9 +15,10 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:paddingTop="10dp">
 
@@ -25,14 +26,43 @@ Copyright (C) 2023 Jefferson Calheiros
         layout="@layout/search_view_layout"/>
 
     <View
+        android:layout_below="@+id/search_edit_text"
         android:layout_marginTop="5dp"
+        android:id="@+id/search_view_divider"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
         android:background="?commonColorDark" />
 
     <ListView
+        android:layout_below="@+id/search_view_divider"
         android:id="@+id/items_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@null" />
-</LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/empty_hint_layout"
+        android:visibility="gone"
+        android:alpha="0.6"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_marginTop="-100dp"
+            app:tint="?commonColorDark"
+            android:src="@drawable/ic_folder"
+            android:layout_width="120dp"
+            android:layout_height="100dp"/>
+
+        <TextView
+            android:textColor="?commonColorDark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:text="No album to search"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</RelativeLayout>

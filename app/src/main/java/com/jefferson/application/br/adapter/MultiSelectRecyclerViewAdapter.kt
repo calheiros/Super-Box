@@ -38,9 +38,7 @@ class MultiSelectRecyclerViewAdapter(
         toggleSelection(position, notifyAll)
 
     }
-    fun toggleAllSelection() {
 
-    }
     private fun getItem(position: Int): Any {
         return items[position]
     }
@@ -128,7 +126,8 @@ class MultiSelectRecyclerViewAdapter(
         viewHolder.selectionModeOverlay.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
 
         if (isSelected) {
-            viewHolder.selectedCountLabel.text = (getSelectedItemPosition(position) + 1).toString()
+            val realPosition = (getSelectedItemPosition(position) + 1).toString()
+            viewHolder.selectedCountLabel.text = realPosition
         }
     }
 
