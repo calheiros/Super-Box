@@ -83,12 +83,9 @@ class VerifyActivity : MyCompatActivity() {
     }
 
     private fun setWallpaper() {
-        val backgroundOverlay = findViewById<View>(R.id.background_overlay)
-        val color = R.color.darkTransparent
-        backgroundOverlay.setBackgroundColor(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) getColor(color)
-            else resources.getColor(color)
-        )
+        val backgroundOverlay= findViewById<View>(R.id.background_overlay) ?: return
+        val color = ContextCompat.getColor(this, R.color.darkTransparent)
+        backgroundOverlay.setBackgroundColor(color)
         try {
             val imageView = findViewById<ImageView>(R.id.wallpaper_image_view) ?: return
             val asset = assets

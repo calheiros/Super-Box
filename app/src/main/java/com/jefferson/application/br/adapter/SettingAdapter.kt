@@ -58,6 +58,9 @@ class SettingAdapter(
     }
 
     override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View? {
+        /*
+         * TODO: PRECISA SER REFEITO URGENTE
+        */
         var view = view
         val preferenceItem = preferenceItems[i]
         when (preferenceItem.type) {
@@ -127,30 +130,14 @@ class SettingAdapter(
             val checked = mySwitch?.isChecked
             if (!checked!! && MyPreferences.getCalculatorCode(settingFragment.requireContext()) == "4321") {
                 val contentView = settingFragment.requireActivity().layoutInflater.inflate(
-                    R.layout.calculator_tip_dialog_layout,
-                    null
+                    R.layout.calculator_tip_dialog_layout, null
                 )
-                val dialog = SimpleDialog(settingFragment.activity as Activity)
-                dialog.setContentView(contentView)
-                dialog.setTitle(R.string.aviso)
-                //dialog.setMessage("The app icon you be changed to a fake one!");
-                dialog.setPositiveButton(android.R.string.ok, object : OnDialogClickListener() {
-                    override fun onClick(dialog: SimpleDialog): Boolean {
-                        startCalculatorActivity()
-                        switchCancelled = true
-                        return true
-                    }
-                }
-                )
-                dialog.setNegativeButton(android.R.string.cancel, null)
-                dialog.setCanceledOnTouchOutside(false)
-                dialog.show()
+                showNoticeDialog(contentView)
                 return@OnClickListener
             }
             mySwitch?.isChecked = !checked
-        }
-        )
-        mySwitch?.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { _, checked ->
+        })
+        mySwitch?.setOnCheckedChangeListener { _, checked ->
             settingFragment.setCalculatorEnabled(checked)
             val main = settingFragment.requireActivity() as MainActivity
             if (main.calculatorStateEnabled != checked) {
@@ -166,15 +153,29 @@ class SettingAdapter(
                 MyAnimationUtils.collapse(expandableLayout)
             }
         }
-        )
+    }
+
+    private fun showNoticeDialog(contentView: View) {
+        val dialog = SimpleDialog(settingFragment.activity as Activity)
+        dialog.setContentView(contentView)
+        dialog.setTitle(R.string.aviso)
+        dialog.setPositiveButton(android.R.string.ok, object : OnDialogClickListener() {
+            override fun onClick(dialog: SimpleDialog): Boolean {
+                startCalculatorActivity()
+                switchCancelled = true
+                return true
+            }
+        })
+        dialog.setNegativeButton(android.R.string.cancel, null)
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
     }
 
     private fun startCalculatorActivity() {
         val intent = Intent(settingFragment.activity, CalculatorActivity::class.java)
         intent.action = CalculatorActivity.ACTION_CREATE_CODE
         settingFragment.requireActivity().startActivityForResult(
-            intent,
-            SettingFragment.CALCULATOR_CREATE_CODE_RESULT
+            intent, SettingFragment.CALCULATOR_CREATE_CODE_RESULT
         )
     }
 }

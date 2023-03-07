@@ -56,20 +56,20 @@ import com.jefferson.application.br.view.RoundedImageView
 import eightbitlab.com.blurview.BlurView
 import java.io.*
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private val minItemWidth = 110
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MultiSelectRecyclerViewAdapter
-    private lateinit var filePaths: ArrayList<MediaModel>
     private lateinit var fab: FloatingActionButton
     private lateinit var emptyView: View
     private lateinit var menuLayout: View
     private lateinit var toolbar: Toolbar
     private lateinit var albumLabel: TextView
+    //private lateinit var filePaths: java.util.ArrayList<MediaModel>
     // private lateinit var albumModel: AlbumModel
-
     private var selectionMode = false
     private var position = 0
     private var title: String? = null
@@ -82,12 +82,11 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.view_album_layout)
-
         position = intent.getIntExtra("position", -1)
         title = intent.getStringExtra("name")
         folder = intent.getStringExtra("folder")?.let { File(it) }
-        filePaths = intent.getParcelableArrayListExtra("data")!!
         //albumModel = intent.getParcelableExtra("model")
+        val filePaths: ArrayList<MediaModel> = intent.getParcelableArrayListExtra("data")!!
         val layoutManager = GridLayoutManager(this, autoSpan)
         recyclerView = findViewById(R.id.my_recycler_view)
         recyclerView.setHasFixedSize(true)
@@ -150,9 +149,20 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private val startPreviewForResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val index = intent.getIntExtra("index", 0)
-            recyclerView.post { recyclerView.smoothScrollToPosition(index) }
+        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            val extras = result.data?.extras
+            val index = extras?.getInt("index", 0)
+            val removeItems = extras?.getStringArrayList(ImagePreviewActivity.EXTRA_REMOVED_ITEMS)
+            //remove all deleted/exported items in preview activity
+            if (removeItems != null && removeItems.isNotEmpty()) {
+                adapter.removeAll(removeItems)
+                setAlbumHeader()
+            }
+            //scroll to last viewed item in preview activity
+            if (index != null)
+            recyclerView.post {
+                recyclerView.smoothScrollToPosition(index)
+            }
         }
     }
 
@@ -163,9 +173,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             exitSelectionMode()
             val list = result.data!!.getStringArrayListExtra("moved_files")
             Toast.makeText(
-                this,
-                list!!.size.toString() + " file(s) moved",
-                Toast.LENGTH_SHORT
+                this, list!!.size.toString() + " file(s) moved", Toast.LENGTH_SHORT
             ).show()
             adapter.removeAll(list)
             synchronizeMainActivity()
@@ -182,8 +190,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     private val galleryResult = registerForActivityResult(
-        ActivityResultContracts
-            .StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             val data = result.data
@@ -254,8 +261,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     private fun updateDatabase(
-        list: ArrayList<MediaModel>?,
-        adapter: MultiSelectRecyclerViewAdapter?
+        list: ArrayList<MediaModel>?, adapter: MultiSelectRecyclerViewAdapter?
     ) {
         myThread = RetrieveMediaTimeTask(list, adapter, this)
         myThread?.priority = Thread.MAX_PRIORITY
@@ -378,13 +384,12 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
 
     private fun synchronizeMainActivity() {
+        setAlbumHeader()
         val visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
         val mainActivity = MainActivity.instance
         emptyView.visibility = visibility
         mainActivity?.updateFragment(position) ?: Toast.makeText(
-            this,
-            "Can't synchronize MainActivity!",
-            Toast.LENGTH_SHORT
+            this, "Can't synchronize MainActivity!", Toast.LENGTH_SHORT
         ).show()
     }
 
@@ -413,8 +418,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             if (baseNameDirectory == null) {
                 baseNameDirectory =
                     if (title!!.length <= 20) "$title ( %s )" else title!!.substring(
-                        0,
-                        20
+                        0, 20
                     ) + "... ( %s )"
             }
             val count = adapter.selectedItemCount.toString()
@@ -457,11 +461,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         intent.putExtra("position", position)
         intent.putExtra("filepath", adapter.listItemsPath)
         val opts = ActivityOptions.makeScaleUpAnimation(
-            v,
-            0,
-            0,
-            v!!.width,
-            v.height
+            v, 0, 0, v!!.width, v.height
         ) // Request the activity be started, using the custom animation options.
         startPreviewForResult.launch(intent)
     }
@@ -554,8 +554,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         if (adapter.items.isNotEmpty()) {
             adapter.clearSelection()
         }
-        menuLayout.animation =
-            AnimationUtils.loadAnimation(applicationContext, R.anim.slide_bottom)
+        menuLayout.animation = AnimationUtils.loadAnimation(applicationContext, R.anim.slide_bottom)
         menuLayout.visibility = View.GONE
         val dimen = resources.getDimension(R.dimen.recycler_view_padding).toInt()
         recyclerView.setPadding(dimen, dimen, dimen, dimen)
@@ -591,13 +590,13 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         val albumNameLabel = findViewById<TextView>(R.id.album_name_label)
         val resId =
             if (position == 0) R.plurals.imagem_total_plural else R.plurals.video_total_plural
-        var itemCount = resources.getQuantityString(resId, filePaths.size)
-        itemCount = String.format(itemCount, filePaths.size)
+        var itemCount = resources.getQuantityString(resId, adapter.itemCount)
+        itemCount = String.format(itemCount, adapter.itemCount)
         itemCountLabel.text = itemCount
         albumNameLabel.text = title
         roundedImageView.setRadius(15f)
-        if (filePaths.isNotEmpty()) {
-            val path = filePaths[0].path
+        if (adapter.items.isNotEmpty()) {
+            val path = adapter.listItemsPath[0]
             Glide.with(this).load(path).into(roundedImageView)
         }
     }
@@ -639,8 +638,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     inner class ExportTask(
-        private val selectedItems: List<String?>,
-        private val simpleDialog: SimpleDialog
+        private val selectedItems: List<String?>, private val simpleDialog: SimpleDialog
     ) : JTask() {
         private val mArrayPath = ArrayList<String>()
         private val mTransfer = FileTransfer()
@@ -668,9 +666,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                             break
                         }
                         val file = File(item!!)
-                        val path = database.getMediaPath(file.name)
-                            ?: //need something 0.o
-                            continue
+                        val path = database.getMediaPath(file.name) ?: //need something 0.o
+                        continue
                         var fileOutput = File(path)
                         if (fileOutput.exists()) {
                             fileOutput = File(getNewFileName(fileOutput))
@@ -724,8 +721,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             simpleDialog.setMessage("")
             simpleDialog.setSingleLineMessage(true)
             simpleDialog.setCancelable(false)
-            simpleDialog.setNegativeButton(
-                getString(R.string.cancelar),
+            simpleDialog.setNegativeButton(getString(R.string.cancelar),
                 object : OnDialogClickListener() {
                     override fun onClick(dialog: SimpleDialog): Boolean {
                         mTransfer.cancel()
@@ -795,8 +791,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             val database = PathsDatabase.getInstance(this@ViewAlbum)
             if (folder?.delete() == true) {
                 database.deleteFolder(
-                    folder!!.name,
-                    if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
+                    folder!!.name, if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
                 )
             }
             database.close()
@@ -816,18 +811,14 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             val path = file.absolutePath
             val lasIndexOf = path.lastIndexOf(".")
             return if (lasIndexOf != -1) concatenateParts(
-                path.substring(0, lasIndexOf),
-                path.substring(lasIndexOf),
-                1
+                path.substring(0, lasIndexOf), path.substring(lasIndexOf), 1
             ) else concatenateParts(path, "", 1)
         }
 
         private fun concatenateParts(part1: String, part2: String, time: Int): String {
             val file = File("$part1($time)$part2")
             return if (file.exists()) concatenateParts(
-                part1,
-                part2,
-                time + 1
+                part1, part2, time + 1
             ) else file.absolutePath
         }
 

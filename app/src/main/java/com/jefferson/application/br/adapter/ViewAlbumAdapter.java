@@ -30,7 +30,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.ListItemViewHolder> {
-
     private final List<String> items;
     private final SparseBooleanArray selectedItems;
 
@@ -91,7 +90,6 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.List
     }
 
     public final static class ListItemViewHolder extends RecyclerView.ViewHolder {
-
         public ImageView image;
         public TextView name;
         public TextView size;

@@ -126,7 +126,7 @@ object Storage : DocumentUtil() {
     fun setNewLocalStorage(selected: Int, context: Context?) {
         if (selected == 0 || selected == 1) {
             PreferenceManager.getDefaultSharedPreferences(context).edit()
-                .putString(STORAGE_LOCATION, if (selected == 0) INTERNAL else EXTERNAL).commit()
+                .putString(STORAGE_LOCATION, if (selected == 0) INTERNAL else EXTERNAL).apply()
         }
     }
 

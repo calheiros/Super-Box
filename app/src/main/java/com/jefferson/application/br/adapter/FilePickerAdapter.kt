@@ -49,8 +49,8 @@ class FilePickerAdapter(
         return models.size
     }
 
-    override fun getItem(i: Int): Any {
-        return i
+    override fun getItem(i: Int): PickerModel {
+        return models[i]
     }
 
     override fun getItemId(i: Int): Long {
@@ -60,7 +60,6 @@ class FilePickerAdapter(
     override fun getView(position: Int, view: View?, viewGroup: ViewGroup): View? {
         @Suppress("NAME_SHADOWING") var view = view
         val holder: Holder
-
         if (view == null) {
             view = mLayoutInflater.inflate(R.layout.file_picker_item, viewGroup, false)
             holder = Holder()

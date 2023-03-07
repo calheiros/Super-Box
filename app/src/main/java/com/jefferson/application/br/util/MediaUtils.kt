@@ -18,7 +18,7 @@ object MediaUtils {
             database.deleteMediaData(id)
         }
         database.close()
-        return false
+        return deleted
     }
 
 }

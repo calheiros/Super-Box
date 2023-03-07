@@ -17,6 +17,7 @@
 package com.jefferson.application.br.activity
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -39,7 +40,14 @@ class SearchActivity : MyCompatActivity(), OnItemClickListener, OnItemLongClickL
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.search_activity_layout)
-        val models = intent.getParcelableArrayListExtra<SimplifiedAlbum>(EXTRA_SIMPLE_MODELS)
+
+        val models = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            intent.getParcelableArrayListExtra(
+                EXTRA_SIMPLE_MODELS, SimplifiedAlbum::class.java
+            )
+        else @Suppress("DEPRECATION")
+        intent.getParcelableArrayListExtra(EXTRA_SIMPLE_MODELS)
+
         if (models?.isEmpty() == true) {
             val hint = findViewById<View>(R.id.empty_hint_layout)
             hint.visibility = View.VISIBLE
@@ -53,22 +61,17 @@ class SearchActivity : MyCompatActivity(), OnItemClickListener, OnItemLongClickL
         editText = findViewById(R.id.search_edit_text)
         input = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         editText.requestFocus()
-        input.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0)
+        input.showSoftInput(editText, 0)
         adapter = SearchViewAdapter(models!!, this)
         listView.adapter = adapter
         listView.onItemClickListener = this
         listView.onItemLongClickListener = this
-        // atualize a lista de itens quando o texto do EditText for alterado
         editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                // filtre a lista de itens com base no texto digitado pelo usuário
-                //adapter.getFilter().filter(s);
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(e: Editable) {
+                adapter.filter(e.toString())
             }
-
-            override fun afterTextChanged(s: Editable) {
-                adapter.filter(s.toString())
-            } // implemente os outros métodos de TextWatcher aqui
         })
     }
 
@@ -84,9 +87,8 @@ class SearchActivity : MyCompatActivity(), OnItemClickListener, OnItemLongClickL
     }
 
     private fun sendActionAndFinish(action: String, position: Int) {
+        input.hideSoftInputFromWindow(editText.windowToken, InputMethodManager.HIDE_IMPLICIT_ONLY)
         editText.clearFocus()
-        editText.getText()
-        input.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0)
         val choice = adapter.getItem(position)
         val intent = Intent()
         intent.putExtra("result", choice.name)

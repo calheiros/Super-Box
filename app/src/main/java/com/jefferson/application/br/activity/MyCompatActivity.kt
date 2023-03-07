@@ -125,7 +125,7 @@ open class MyCompatActivity : AppCompatActivity() {
             val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
             val uri = Uri.fromParts("package", packageName, null)
             intent.data = uri
-            startActivityForResult(intent, REQUEST_WRITE_READ_PERMSSION_CODE)
+            startActivityForResult(intent, REQUEST_WRITE_READ_PERMISSION_CODE)
             return
         }
         
@@ -134,9 +134,6 @@ open class MyCompatActivity : AppCompatActivity() {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
             )
         ) {
-            // Show an explanation to the user *asynchronously* -- don't block
-            // this thread waiting for the user's response! After the user
-            // sees the explanation, try again to request the permission.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 val intent = Intent(Intent.ACTION_APPLICATION_PREFERENCES)
                 startActivity(intent)
@@ -145,7 +142,7 @@ open class MyCompatActivity : AppCompatActivity() {
             ActivityCompat.requestPermissions(
                 this,
                 arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                REQUEST_WRITE_READ_PERMSSION_CODE
+                REQUEST_WRITE_READ_PERMISSION_CODE
             )
         }
     }
@@ -203,7 +200,7 @@ open class MyCompatActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val REQUEST_WRITE_READ_PERMSSION_CODE = 13
+        const val REQUEST_WRITE_READ_PERMISSION_CODE = 13
         var KEY: String? = null
         fun setWindowFlag(activity: Activity, bits: Int, on: Boolean) {
             val win = activity.window

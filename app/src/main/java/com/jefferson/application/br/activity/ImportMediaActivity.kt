@@ -116,10 +116,10 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
 
     private fun startImportTask(data: ArrayList<FileModel>) {
         importTask = ImportTask(this, data, null)
-        importTask!!.setOnUpdatedListener(this)
-        importTask!!.setOnbeingStartedListener(this)
-        importTask!!.setOnFinishedListener(this)
-        importTask!!.start()
+        importTask?.setOnUpdatedListener(this)
+        importTask?.setOnbeingStartedListener(this)
+        importTask?.setOnFinishedListener(this)
+        importTask?.start()
     }
 
     fun buttonClick(v: View?) {

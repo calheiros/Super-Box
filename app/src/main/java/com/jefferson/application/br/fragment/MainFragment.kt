@@ -26,7 +26,6 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -53,7 +52,6 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     private var tabLayout: TabLayout? = null
     private var fab: View? = null
     private var paddingBottom = 0
-    private var activityResultLauncher: ActivityResultLauncher<Intent>? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -76,7 +74,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
 
             tabLayout?.setTabTextColors(unselected, selected)
             TabLayoutMediator(tabLayout!!, viewPager) { tab, position ->
-                tab.text = when(position) {
+                tab.text = when (position) {
                     0 -> getString(R.string.imagens)
                     1 -> getString(R.string.videos)
                     else -> ""
@@ -88,15 +86,15 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
 
             searchView?.setOnClickListener(this)
             adjustViewsPadding()
-            createActivityResultLauncher()
         }
-        main?.setupToolbar(toolbar, getToolbarName(viewPager!!.currentItem))
+        main?.setupToolbar(toolbar, getToolbarName(viewPager.currentItem))
         return view
     }
 
     private val importMediaResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) {
-        result: ActivityResult -> if (result.resultCode == Activity.RESULT_OK) {
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
             updateFragment(viewPager.currentItem)
         }
     }
@@ -120,7 +118,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     override fun onClick(v: View) {
         when (v.id) {
             R.id.fab -> {
-               importFromGallery()
+                importFromGallery()
             }
             R.id.ad_view -> {
                 val position = pagerPosition
@@ -130,29 +128,27 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
                             .setType(if (position == 0) "image/*" else "video/*"), GET_FILE
                     )
                 } catch (e: ActivityNotFoundException) {
-                    Toast.makeText(context, "Sem padrão", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "No external app for this action", Toast.LENGTH_LONG).show()
                 }
             }
             R.id.search_bar -> openSearchView()
         }
     }
 
-    private fun createActivityResultLauncher() {
-        activityResultLauncher = registerForActivityResult (
-            ActivityResultContracts.StartActivityForResult()
-        ) { result: ActivityResult ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val data = result.data
-                if (data != null) {
-                    val albumName = data.getStringExtra("result")
-                    val action = data.action
-                    if (action == SearchActivity.ACTION_GO_TO_ALBUM) {
-                        scrollToAlbum(albumName)
-                        return@registerForActivityResult
-                    }
-                    if (action == SearchActivity.ACTION_OPEN_ALBUM) {
-                        openAlbum(albumName!!)
-                    }
+    private val activityResultLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result: ActivityResult ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val data = result.data
+            if (data != null) {
+                val albumName = data.getStringExtra("result")
+                val action = data.action
+                if (action == SearchActivity.ACTION_GO_TO_ALBUM) {
+                    scrollToAlbum(albumName)
+                    return@registerForActivityResult
+                }
+                if (action == SearchActivity.ACTION_OPEN_ALBUM) {
+                    openAlbum(albumName!!)
                 }
             }
         }
@@ -181,7 +177,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
                 SearchActivity.EXTRA_SIMPLE_MODELS,
                 fragment.simplifiedModels
             )
-            activityResultLauncher?.launch(intent)
+            activityResultLauncher.launch(intent)
         }
     }
 
@@ -254,14 +250,6 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         return if (i == 0) getString(R.string.imagens) else getString(R.string.videos)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     fun reloadFragments() {
         if (pagerAdapter != null) {
             for (i in 0 until pagerAdapter!!.itemCount) {
@@ -269,7 +257,8 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             }
         }
     }
-    private inner class PagerAdapter(fa: FragmentActivity) : FragmentStateAdapter (
+
+    private inner class PagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(
         fa
     ) {
         val fragments = arrayOfNulls<AlbumFragment>(Companion.SIZE)

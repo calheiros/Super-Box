@@ -21,6 +21,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -33,40 +34,50 @@ import com.jefferson.application.br.util.MediaUtils
 
 class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
     private lateinit var viewPager: ViewPager2
-    private lateinit var filepath: ArrayList<String>
+    private lateinit var filesPath: ArrayList<String>
     private lateinit var pagerAdapter: ImagePagerAdapter
-    private lateinit var deletedFiles: ArrayList<String>
+    private val removedItems = ArrayList<String>()
+
+    private fun configureBackPressed() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val intent = Intent()
+                intent.putExtra("index", viewPager.currentItem)
+                intent.putStringArrayListExtra(EXTRA_REMOVED_ITEMS, removedItems)
+                setResult(RESULT_OK, intent)
+                finish()
+            }
+        })
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.media_view_pager_layout)
-        viewPager = findViewById(R.id.view_pager)
         val deleteButton = findViewById<View>(R.id.delete_imageview)
         val exportButton = findViewById<View>(R.id.export_imageview)
         val position = intent.extras!!.getInt("position")
         val optionLayout = findViewById<View>(R.id.options_layout)
-        filepath = intent.getStringArrayListExtra("filepath") as ArrayList<String>
+        filesPath = intent.getStringArrayListExtra("filepath") as ArrayList<String>
         pagerAdapter = ImagePagerAdapter(this, optionLayout)
-        //configure view pager
+        viewPager = findViewById(R.id.view_pager)
         viewPager.adapter = pagerAdapter
         viewPager.offscreenPageLimit = 4
         viewPager.currentItem = position
-
         viewPager.setOnClickListener(this)
         exportButton.setOnClickListener(this)
         deleteButton.setOnClickListener(this)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+        configureBackPressed()
     }
 
     override fun onClick(v: View) {
-        val id = v.id
-        if (id == R.id.delete_imageview) {
-            val position = viewPager.currentItem
-            val path = filepath[position]
-            deletionConfirmation(path, position)
-            return
-        }
-        if (id == R.id.export_imageview) {
-            exportImage()
+        val position = viewPager.currentItem
+        val path = filesPath[position]
+        when (v.id) {
+            R.id.delete_imageview ->
+                deletionConfirmation(path, position)
+            R.id.export_imageview ->
+                exportImage(path, position)
         }
     }
 
@@ -74,49 +85,54 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         val builder = SimpleDialog(this, SimpleDialog.STYLE_ALERT_HIGH)
         builder.setTitle(getString(R.string.apagar))
         builder.setMessage(getString(R.string.apagar_image_mensagem))
-        builder.setPositiveButton(getString(android.R.string.ok), object : SimpleDialog.OnDialogClickListener() {
-            override fun onClick(dialog: SimpleDialog): Boolean {
-                val success = MediaUtils.deleteMedia(this@ImagePreviewActivity, path)
-                if (success) {
-                    filepath.removeAt(position)
-                    pagerAdapter.notifyDataSetChanged()
-                    Toast.makeText(
-                        this@ImagePreviewActivity, "deleted!", Toast.LENGTH_SHORT
-                    ).show()
+        builder.setPositiveButton(getString(android.R.string.ok),
+            object : SimpleDialog.OnDialogClickListener() {
+                override fun onClick(dialog: SimpleDialog): Boolean {
+                    deleteImage(path, position)
+                    return true
                 }
-                return true
-            }
-        })
+            })
         builder.setNegativeButton(getString(android.R.string.cancel), null)
         builder.show()
     }
 
-    private fun exportImage() {
-        //TODO: export single image logic here
+    fun deleteImage(path: String, position: Int) {
+        val success = MediaUtils.deleteMedia(this@ImagePreviewActivity, path)
+        if (success) {
+            filesPath.removeAt(position)
+            pagerAdapter.notifyItemRemoved(position)
+            removedItems.add(path)
+        }
+        Toast.makeText(
+            this@ImagePreviewActivity,
+            if (success) "deleted!: $position" else "failed to delete image",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
-    override fun onBackPressed() {
-        val intent = Intent()
-        intent.putExtra("index", viewPager.currentItem)
-        setResult(RESULT_OK, intent)
-        super.onBackPressed()
+    private fun exportImage(path: String, position: Int) {
+        //TODO: logic to export single image here
     }
 
-    private inner class ImagePagerAdapter(fa: FragmentActivity, optionsLayout: View?) :
+    private inner class ImagePagerAdapter(fa: FragmentActivity, optionsLayout: View) :
         FragmentStateAdapter(fa) {
-
         private val optionsTrigger: SwitchVisibilityTrigger
 
         init {
-            optionsTrigger = SwitchVisibilityTrigger(optionsLayout!!)
+            optionsTrigger = SwitchVisibilityTrigger(optionsLayout)
         }
 
         override fun getItemCount(): Int {
-            return filepath.size
+            return filesPath.size
         }
 
         override fun createFragment(position: Int): Fragment {
-            return ImagePreviewFragment(filepath[position], optionsTrigger)
+            return ImagePreviewFragment(filesPath[position], optionsTrigger)
         }
+
+    }
+
+    companion object {
+        const val EXTRA_REMOVED_ITEMS = "key_removed_items"
     }
 }
