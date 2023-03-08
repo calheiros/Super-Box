@@ -29,13 +29,11 @@ import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.Companion.createMenuItems
 import com.jefferson.application.br.fragment.AlbumFragment
 import com.jefferson.application.br.model.AlbumModel
-import com.jefferson.application.br.model.SimplifiedAlbum
-import com.jefferson.application.br.model.SimplifiedAlbum.Companion.createFrom
 import com.jefferson.application.br.util.AlbumUtils
 
 class AlbumAdapter(
     private val fragment: AlbumFragment,
-    public var models: ArrayList<AlbumModel>,
+    var models: ArrayList<AlbumModel>,
 ) : RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
     private var group: View? = null
     private var itemToHighlight = -1
@@ -103,7 +101,7 @@ class AlbumAdapter(
         } else {
             Toast.makeText(
                 fragment.requireContext(),
-                "Can not find folder index for item " + item.name,
+                "Could not find folder index for item " + item.name,
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -138,7 +136,7 @@ class AlbumAdapter(
         if (holder.smallView.visibility != visibility) {
             holder.smallView.visibility = visibility
         }
-        holder.parent.setOnClickListener{ fragment.openAlbum(model) }
+        holder.parent.setOnClickListener { fragment.openAlbum(model) }
         holder.parent.setOnLongClickListener { view ->
             val context = view.context
             val options = arrayOf(
@@ -191,6 +189,7 @@ class AlbumAdapter(
         }
         return -1
     }
+
     fun setItemToHighlight(position: Int) {
         itemToHighlight = position
     }
@@ -221,8 +220,9 @@ class AlbumAdapter(
                 1 -> fragment.deleteFolder(f_model)
                 2 -> {
                     val startPosition = getAlbumPositionByPath(f_model)
-                    if (f_model.isFavorite) AlbumUtils.removeFromFavorites(f_model, fragment.
-                    requireContext()) else fragment.addToFavorites (f_model)
+                    if (f_model.isFavorite) AlbumUtils.removeFromFavorites(
+                        f_model, fragment.requireContext()
+                    ) else fragment.addToFavorites(f_model)
                     AlbumModel.sort(models)
                     val endPosition = getAlbumPositionByPath(f_model)
                     notifyItemMoved(startPosition, endPosition)

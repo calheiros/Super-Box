@@ -134,7 +134,7 @@ public class ReceiverMedia extends Activity {
         }
 
         @Override
-        public void onBeingStarted() {
+        public void onStarted() {
             mProgressDialog = new ProgressDialog(activity);
             mProgressDialog.setTitle("Preparing...");
             mProgressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);

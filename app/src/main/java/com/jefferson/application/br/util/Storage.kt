@@ -125,7 +125,7 @@ object Storage : DocumentUtil() {
 
     fun setNewLocalStorage(selected: Int, context: Context?) {
         if (selected == 0 || selected == 1) {
-            PreferenceManager.getDefaultSharedPreferences(context).edit()
+            MyPreferences.getSharedPreferences(context!!).edit()
                 .putString(STORAGE_LOCATION, if (selected == 0) INTERNAL else EXTERNAL).apply()
         }
     }
@@ -192,7 +192,7 @@ object Storage : DocumentUtil() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return null as String?
+        return null
     }
 
     @JvmStatic
@@ -214,9 +214,8 @@ object Storage : DocumentUtil() {
     }
 
     fun deleteFileFromMediaStore(file: File, context: Context) {
-        val canonicalPath: String
         val contentResolver = context.contentResolver
-        canonicalPath = try {
+        val canonicalPath: String = try {
             file.canonicalPath
         } catch (e: IOException) {
             file.absolutePath

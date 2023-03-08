@@ -176,8 +176,9 @@ Copyright (C) 2023 Jefferson Calheiros
 	<string name="cancelar">Cancelar</string>
     <string name="apagar_image_mensagem">This image will be deleted forever. Are you sure?</string>
 	<string name="select_all">Select all</string>
+    <string name="maove_to">Move to</string>
 
-	<!--<string-array name="navigation_drawer_items_array">
+    <!--<string-array name="navigation_drawer_items_array">
 
         <item>Imagens</item>
         <item>Fixtures</item>

@@ -30,9 +30,11 @@ import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -86,7 +88,12 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         title = intent.getStringExtra("name")
         folder = intent.getStringExtra("folder")?.let { File(it) }
         //albumModel = intent.getParcelableExtra("model")
-        val filePaths: ArrayList<MediaModel> = intent.getParcelableArrayListExtra("data")!!
+        val filePaths: ArrayList<MediaModel> =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                intent.getParcelableArrayListExtra("data", MediaModel::class.java)!!
+            else @Suppress("DEPRECATION")
+                intent.getParcelableArrayListExtra("data")!!
+
         val layoutManager = GridLayoutManager(this, autoSpan)
         recyclerView = findViewById(R.id.my_recycler_view)
         recyclerView.setHasFixedSize(true)
@@ -116,12 +123,12 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         initToolbar()
         configureBlurView(recyclerView)
 
-        if (filePaths.isEmpty()) {
+        if (filePaths.isEmpty())
             emptyView.visibility = View.VISIBLE
-        }
-        if (position == 1) {
+
+        if (position == 1)
             updateDatabase(filePaths, adapter)
-        }
+
         val threshold = heightPixels / 100 //1%
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -144,8 +151,20 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 }
             }
         })
+        addBackPressedCallback()
     }
-
+    private fun addBackPressedCallback() {
+        onBackPressedDispatcher.addCallback(this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (selectionMode) {
+                        exitSelectionMode()
+                        return
+                    }
+                    finish()
+                }
+            })
+    }
     private val startPreviewForResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
@@ -160,7 +179,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             }
             //scroll to last viewed item in preview activity
             if (index != null)
-            recyclerView.post {
+                recyclerView.post {
                 recyclerView.smoothScrollToPosition(index)
             }
         }
@@ -176,7 +195,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 this, list!!.size.toString() + " file(s) moved", Toast.LENGTH_SHORT
             ).show()
             adapter.removeAll(list)
-            synchronizeMainActivity()
+            notifyChanges()
         }
     }
 
@@ -185,7 +204,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
             updateRecyclerView()
-            synchronizeMainActivity()
+            notifyChanges()
         }
     }
 
@@ -383,25 +402,24 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             else -> null
         }
 
-    private fun synchronizeMainActivity() {
-        setAlbumHeader()
+    private fun notifyChanges() {
         val visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
         val mainActivity = MainActivity.instance
         emptyView.visibility = visibility
         mainActivity?.updateFragment(position) ?: Toast.makeText(
             this, "Can't synchronize MainActivity!", Toast.LENGTH_SHORT
         ).show()
+        setAlbumHeader()
     }
 
     fun updateRecyclerView() {
         val listItemsPath = ArrayList<MediaModel>()
-        for (file in Objects.requireNonNull(
-            folder!!.listFiles()
-        )) {
+        for (file in folder?.listFiles()!!) {
             listItemsPath.add(MediaModel(file.absolutePath))
         }
         adapter.items = listItemsPath
-        adapter.notifyDataSetChanged()
+        adapter.notifyItemRangeChanged(0, listItemsPath.size)
+        /*update video duration database*/
         if (position == 1) {
             updateDatabase(listItemsPath, adapter)
         }
@@ -562,18 +580,10 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         fab.show()
     }
 
-    override fun onBackPressed() {
-        if (selectionMode) {
-            exitSelectionMode()
-            return
-        }
-        super.onBackPressed()
-    }
-
     private fun initToolbar() {
         toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-        toolbar.setTitleTextColor(resources.getColor(android.R.color.white))
+        toolbar.setTitleTextColor(ContextCompat.getColor(this, android.R.color.white))
         supportActionBar?.title = title
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         val collapsingToolbar = findViewById<CollapsingToolbarLayout>(R.id.collapsing_toolbar)
@@ -594,19 +604,21 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         itemCount = String.format(itemCount, adapter.itemCount)
         itemCountLabel.text = itemCount
         albumNameLabel.text = title
-        roundedImageView.setRadius(15f)
+        roundedImageView.cornersRadius = 18f
         if (adapter.items.isNotEmpty()) {
             val path = adapter.listItemsPath[0]
             Glide.with(this).load(path).into(roundedImageView)
+        } else {
+            roundedImageView.setImageResource(R.drawable.ic_image_broken_variant)
         }
     }
 
     inner class DeleteFiles(activity: Activity, p1: ArrayList<String>, p3: Int, p4: File) :
         DeleteFilesTask(activity, p1, p3, p4) {
         private var threadInterrupted = false
-        override fun onBeingStarted() {
-            super.onBeingStarted()
-            if (myThread != null && myThread!!.isWorking) {
+        override fun onStarted() {
+            super.onStarted()
+            if (myThread?.isWorking == true) {
                 myThread?.stopWork()
                 threadInterrupted = true
             }
@@ -618,17 +630,19 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             if (threadInterrupted && adapter.items.isNotEmpty()) {
                 updateRecyclerView()
             }
-            synchronizeMainActivity()
+            notifyChanges()
         }
 
         override fun onFinished() {
             super.onFinished()
+            notifyChanges()
             if (adapter.items.isEmpty()) {
                 finish()
-            } else if (threadInterrupted) {
+                return
+            }
+            if (threadInterrupted) {
                 updateRecyclerView()
             }
-            synchronizeMainActivity()
         }
 
         override fun onUpdated(get: Array<Any>) {
@@ -711,7 +725,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             }
         }
 
-        override fun onBeingStarted() {
+        override fun onStarted() {
             if (myThread != null && myThread!!.isWorking) {
                 myThread?.stopWork()
             }
@@ -773,7 +787,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 deleteFolder()
                 finish()
             }
-            synchronizeMainActivity()
+            notifyChanges()
         }
 
         private fun updateAdapter() {

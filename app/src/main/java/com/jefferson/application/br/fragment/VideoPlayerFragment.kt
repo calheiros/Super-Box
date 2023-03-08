@@ -30,18 +30,23 @@ import android.widget.VideoView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.jefferson.application.br.R
+import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
 import com.jefferson.application.br.ui.JVideoController
 import com.jefferson.application.br.ui.JVideoController.OnButtonPressedListener
 import java.io.File
 
-class VideoPlayerFragment(private val videoPath: String) : Fragment(), View.OnClickListener,
-    OnButtonPressedListener {
+class VideoPlayerFragment(
+    private val videoPath: String,
+    private val optionsTrigger: SwitchVisibilityTrigger
+) : Fragment(), View.OnClickListener, OnButtonPressedListener {
+
     private var videoNotPrepared = false
     private var parentView: View? = null
     private var videoView: VideoView? = null
     private val mediaController: MediaController? = null
     private var thumbView: ImageView? = null
     private var jController: JVideoController? = null
+
     override fun onPressed(playing: Boolean) {
         if (videoNotPrepared) {
             videoNotPrepared = false
@@ -50,13 +55,12 @@ class VideoPlayerFragment(private val videoPath: String) : Fragment(), View.OnCl
         hideThumbView()
     }
 
-    fun showThumbView() {
-        if (thumbView != null && thumbView!!.visibility != View.VISIBLE) {
+    private fun showThumbView() {
+        if (thumbView != null && thumbView?.visibility != View.VISIBLE) {
             thumbView?.visibility = View.VISIBLE
         }
     }
 
-    fun setPlayOnCreate(autoplay: Boolean) {}
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -71,7 +75,7 @@ class VideoPlayerFragment(private val videoPath: String) : Fragment(), View.OnCl
                     .show()
                 return parentView
             }
-            jController = JVideoController(videoView, parentView as ViewGroup?)
+            jController = JVideoController(videoView, parentView as ViewGroup?, optionsTrigger)
             jController?.setOnButtonPressedListener(this)
             videoView?.setOnPreparedListener { mp: MediaPlayer ->
                 mp.isLooping = true
@@ -82,6 +86,7 @@ class VideoPlayerFragment(private val videoPath: String) : Fragment(), View.OnCl
             })
         }
         Glide.with(requireContext()).load("file://$videoPath").into(thumbView!!)
+        //videoView?.setOnClickListener(this)
         return parentView
     }
 
@@ -93,9 +98,13 @@ class VideoPlayerFragment(private val videoPath: String) : Fragment(), View.OnCl
         }
     }
 
-    fun setSelected(selected: Boolean) {}
-
     override fun onClick(view: View) {
+        when (view.id) {
+            R.id.video_view -> {
+                Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show()
+                return
+            }
+        }
         startVideo()
     }
 
@@ -106,14 +115,14 @@ class VideoPlayerFragment(private val videoPath: String) : Fragment(), View.OnCl
         }
     }
 
-    fun prepare() {
+    private fun prepare() {
         if (videoView != null) {
             videoView?.setVideoURI(Uri.parse(videoPath))
             //mVideoView.start();
         }
     }
 
-    fun startVideo() {
+    private fun startVideo() {
         hideThumbView()
         if (videoView != null) {
             videoView?.setVideoURI(Uri.parse(videoPath))
@@ -126,7 +135,7 @@ class VideoPlayerFragment(private val videoPath: String) : Fragment(), View.OnCl
         super.onPause()
     }
 
-    fun stop() {
+    private fun stop() {
         showThumbView()
         if (videoView != null && videoView!!.isPlaying) {
             videoView?.stopPlayback()

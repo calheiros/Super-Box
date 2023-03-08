@@ -48,7 +48,7 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.List
     public ListItemViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
         View itemView = LayoutInflater.
                 from(viewGroup.getContext()).
-                inflate(R.layout.generic_gridview_item, viewGroup, false);
+                inflate(R.layout.recycler_view_item, viewGroup, false);
         return new ListItemViewHolder(itemView);
     }
 

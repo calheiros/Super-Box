@@ -25,7 +25,7 @@ import com.jefferson.application.br.app.SimpleDialog
 object ThemeConfig {
     @JvmStatic
     fun getDialogTheme(context: Context?): Int {
-        val theme = MainActivity.CURRENT_THEME
+        val theme = MainActivity.currentTheme
         return if (theme == R.style.MainTheme) {
             R.style.CustomAlertDialog
         } else {

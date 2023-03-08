@@ -50,8 +50,8 @@ class AppLockAdapter(private val fragment: LockFragment, var models: ArrayList<A
             ?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     }
 
-    fun animateSearchedItem(x: Int) {
-        val view = cachedViews[x]
+    fun animateSearchedItem(position: Int) {
+        val view = cachedViews[position]
         if (view != null) {
             view.startAnimation(blinkAnimation)
         } else {
@@ -62,8 +62,8 @@ class AppLockAdapter(private val fragment: LockFragment, var models: ArrayList<A
     private val blinkAnimation: Animation
         get() = AnimationUtils.loadAnimation(fragment.context, R.anim.blink)
 
-    fun setSearchedItem(x: Int) {
-        searchedItemPosition = x
+    fun setSearchedItem(position: Int) {
+        searchedItemPosition = position
     }
 
     fun clear() {
@@ -73,7 +73,7 @@ class AppLockAdapter(private val fragment: LockFragment, var models: ArrayList<A
         notifyDataSetInvalidated()
     }
 
-    fun putDataSet(newModels: ArrayList<AppModel>) {
+    fun setAppModels(newModels: ArrayList<AppModel>) {
         models = newModels
         syncSelection()
         notifyDataSetChanged()
@@ -176,7 +176,7 @@ class AppLockAdapter(private val fragment: LockFragment, var models: ArrayList<A
             database.addLockedApp(name)
         }
         //        LockCheck lockView = view.findViewById(R.id.check1);
-//        lockView.setChecked(!hasSelected);
+        //        lockView.setChecked(!hasSelected);
     }
 
     override fun getCount(): Int {

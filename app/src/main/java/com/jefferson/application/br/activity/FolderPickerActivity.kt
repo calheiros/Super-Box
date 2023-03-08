@@ -47,7 +47,7 @@ import java.util.*
 
 class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
     private var currentPath: String? = null
-    private lateinit var filePickerAdapter: FilePickerAdapter
+    private lateinit var pickerAdapter: FilePickerAdapter
     private var myOverlay: View? = null
     private var paths: List<String>? = null
     private var position = 0
@@ -66,7 +66,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
             folder = str
         }
 
-        override fun onBeingStarted() {
+        override fun onStarted() {
             dialog = SimpleDialog(this@FolderPickerActivity, SimpleDialog.STYLE_PROGRESS)
             dialog?.setMax(paths!!.size)
             dialog?.setTitle(getString(R.string.movendo))
@@ -101,25 +101,24 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.file_picker_layout)
-        val mListView = findViewById<ListView>(R.id.androidList)
+        val listView = findViewById<ListView>(R.id.androidList)
         val mToolbar = findViewById<Toolbar>(R.id.toolbar)
         myOverlay = findViewById(R.id.myOverlayLayout)
         position = intent.getIntExtra("position", -1)
         paths = intent.getStringArrayListExtra("selection")
         currentPath = intent.getStringExtra("current_path")
-        filePickerAdapter = FilePickerAdapter(getModels(position), this, position)
-        mListView.adapter = filePickerAdapter
-        mListView.onItemClickListener = this
-
+        pickerAdapter = FilePickerAdapter(getModels(position), this, position)
+        listView.adapter = pickerAdapter
+        listView.onItemClickListener = this
         setSupportActionBar(mToolbar)
         val actionBar = supportActionBar
         actionBar?.setDisplayHomeAsUpEnabled(true)
-        actionBar?.title = "Move to"
+        actionBar?.title = getString(R.string.maove_to)
 
         fab = findViewById(R.id.fab)
         fab.setOnClickListener{
             MoveFilesTask(
-                filePickerAdapter.models[filePickerAdapter.selectedItem].path!!
+                pickerAdapter.models[pickerAdapter.selectedItem].path!!
             ).start()
             fab.hide()
         }
@@ -127,7 +126,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
     }
 
     override fun onItemClick(adapterView: AdapterView<*>?, view: View, i: Int, j: Long) {
-        val selectedItem = filePickerAdapter.selectedItem
+        val selectedItem = pickerAdapter.selectedItem
         if (selectedItem == -1) {
             fab.visibility = View.VISIBLE
             val slideUpAnimation =
@@ -140,14 +139,14 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
             val anim = AnimationUtils.loadAnimation(this@FolderPickerActivity, R.anim.fade_in)
             anim.duration = 250
             overlay.startAnimation(anim)
-            filePickerAdapter.selectedItem = i
+            pickerAdapter.selectedItem = i
         }
     }
 
-    fun update() {
-        filePickerAdapter.update(getModels(position))
+    fun updateChanges() {
         val mainActivity = instance
-        mainActivity!!.updateFragment(position)
+        mainActivity?.updateFragment(position)
+        pickerAdapter.update(getModels(position))
     }
 
     @SuppressLint("InflateParams")
@@ -169,7 +168,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
                 val success =
                     AlbumUtils.createAlbum(this@FolderPickerActivity, name, position) != null
                 if (success) {
-                    update()
+                    updateChanges()
                 }
                 return success
             }
@@ -206,7 +205,6 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
                 if (folderName == null) {
                     folderName = file.name
                 }
-                assert(dirList != null)
                 val length = dirList!!.size
                 if (length > 0) {
                     pickerModel.thumbnailPath = dirList[0].absolutePath
@@ -219,7 +217,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
         }
         val visibility = if (arrayList.isEmpty()) View.VISIBLE else View.GONE
         if (myOverlay!!.visibility != visibility) {
-            myOverlay!!.visibility = visibility
+            myOverlay?.visibility = visibility
         }
         //sort files in alphabetically
         arrayList.sortWith { model1: PickerModel, model2: PickerModel ->

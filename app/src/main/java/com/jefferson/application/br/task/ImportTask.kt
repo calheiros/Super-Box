@@ -57,7 +57,7 @@ class ImportTask(
         e.printStackTrace()
     }
 
-    override fun onBeingStarted() {
+    override fun onStarted() {
         listener?.onBeingStarted()
     }
 

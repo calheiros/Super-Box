@@ -51,6 +51,7 @@ Copyright (C) 2023 Jefferson Calheiros
                 android:layout_width="match_parent"
                 android:id="@+id/appList"
                 android:divider="@null"
+				android:clipToPadding="false"
                 android:scrollbarStyle="outsideOverlay"
                 android:choiceMode="multipleChoice"/>
 

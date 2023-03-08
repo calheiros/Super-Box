@@ -18,6 +18,7 @@ package com.jefferson.application.br.activity
 
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.jefferson.application.br.MaterialLockView
@@ -45,7 +46,10 @@ class ManageSpaceActivity : AppCompatActivity() {
         override fun onPatternDetected(cells: List<MaterialLockView.Cell>, SimplePattern: String) {
             super.onPatternDetected(cells, SimplePattern)
             if (SimplePattern == passwd) {
-                patternLayout!!.visibility = View.GONE
+                val slideBottom = AnimationUtils.loadAnimation(
+                    this@ManageSpaceActivity, R.anim.slide_bottom)
+                patternLayout?.startAnimation(slideBottom)
+                patternLayout?.visibility = View.GONE
             } else {
                 pattern.displayMode = MaterialLockView.DisplayMode.Wrong
             }

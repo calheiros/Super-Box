@@ -16,7 +16,6 @@
  */
 package com.jefferson.application.br.activity
 
-import androidx.activity.result.ActivityResult
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -27,7 +26,7 @@ import android.view.View
 import android.view.View.OnLayoutChangeListener
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -36,6 +35,7 @@ import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.android.material.navigation.NavigationView
 import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
@@ -54,7 +54,7 @@ import java.util.*
 
 class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener,
-    BottomNavigationView.OnNavigationItemSelectedListener {
+    OnItemSelectedListener {
     private val getSdCardUriHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun dispatchMessage(msg: Message) {
             super.dispatchMessage(msg)
@@ -66,8 +66,6 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         }
     }
 
-    lateinit var mainFragment: MainFragment
-
     @JvmField
     var calculatorStateEnabled = false
     var oldMargin = 0
@@ -75,7 +73,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     private lateinit var receiver: BroadcastReceiver
     private lateinit var lockFragment: LockFragment
     private lateinit var settingFragment: SettingFragment
-
+    lateinit var mainFragment: MainFragment
     private var oldFrag: Fragment? = null
     private var position = 0
     private lateinit var adview: AdView
@@ -113,9 +111,9 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
             squareAdview = createSquareAdview(this@MainActivity)
         }
         setContentView(R.layout.main_activity)
-        CURRENT_THEME = ThemeConfig.getTheme(this)
+        currentTheme = ThemeConfig.getTheme(this)
         buttonNavigationView = findViewById(R.id.navigationView)
-        buttonNavigationView.setOnNavigationItemSelectedListener(this)
+        buttonNavigationView.setOnItemSelectedListener(this)
         calculatorStateEnabled = isCalculatorComponentEnabled
         if (savedInstanceState != null) {
             startActivity(
@@ -124,10 +122,20 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 )
             )
         }
+
         createFragments()
         createAdView()
         createReceiver()
         configureBlur()
+        configureBackPressed()
+    }
+
+    private fun configureBackPressed() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showExitDialog()
+            }
+        })
     }
 
     private fun showUserAgreement() {
@@ -341,10 +349,6 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         startActivityForResult(intent, 54)
     }
 
-    override fun onBackPressed() {
-        showExitDialog()
-    }
-
     private fun showExitDialog() {
         val dialog = SimpleDialog(this)
         dialog.setTitle(getString(R.string.confirmacao))
@@ -416,6 +420,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     private fun notifyBottomLayoutChanges(v: View) {
         mainFragment.notifyBottomLayoutChanged(v)
         lockFragment.notifyBottomLayoutChanged(v)
+        settingFragment.notifyBottomLayoutChanged(v)
     }
 
     companion object {
@@ -427,7 +432,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         private const val ADS_ID = "ca-app-pub-3062666120925607/2904985113"
 
         @JvmField
-        var CURRENT_THEME = 0
+        var currentTheme = 0
 
         @JvmStatic
         var instance: MainActivity? = null

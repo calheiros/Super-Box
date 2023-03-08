@@ -171,7 +171,7 @@ class AlbumFragment : Fragment {
                 albumsModel = result
             }
 
-            override fun onBeingStarted(){
+            override fun onStarted(){
             }
 
             override fun onFinished() {
@@ -277,10 +277,7 @@ class AlbumFragment : Fragment {
             }).setNegativeButton(getString(R.string.cancelar), null).show()
     }
 
-    fun deleteFolder(model: AlbumModel?) {
-        if (model == null) {
-            return
-        }
+    fun deleteFolder(model: AlbumModel) {
         val name = model.name
         val simpleDialog = SimpleDialog(requireActivity(), SimpleDialog.STYLE_ALERT_HIGH)
         simpleDialog.setTitle(getString(R.string.apagar))

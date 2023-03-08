@@ -42,7 +42,7 @@ class FileModelBuilderTask(
         }
     }
 
-    override fun onBeingStarted() {}
+    override fun onStarted() {}
     override fun onTaskCancelled() {
         super.onTaskCancelled()
         Toast.makeText(context, "Cancelled", Toast.LENGTH_SHORT).show()

@@ -81,13 +81,10 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
             public override fun onAttachedToWindow() {
                 super.onAttachedToWindow()
             }
-
             override fun dispatchKeyEvent(e: KeyEvent): Boolean {
                 if (e.keyCode == KeyEvent.KEYCODE_BACK) {
                     startDefaultLauncher()
-                    JDebug.toast("Back pressed!")
                 }
-                //Toast.makeText(context, "KEY " + e.getKeyCode(), 1).show();
                 return true
             }
         }

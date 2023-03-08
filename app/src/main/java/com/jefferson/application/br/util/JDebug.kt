@@ -14,6 +14,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+@file:Suppress("NAME_SHADOWING")
+
 package com.jefferson.application.br.util
 
 import android.content.Context
@@ -56,13 +58,14 @@ object JDebug {
     }
     @JvmStatic
     fun writeLog(th: Throwable?, context: Context) {
-        writeLogFile(context, null, getStackeTrace(th))
+        writeLogFile(context, null, getStackTrace(th))
     }
 
-    fun getStackeTrace(thow: Throwable?): String {
+    @JvmStatic
+    fun getStackTrace(throwable: Throwable?): String {
         val writer = StringWriter()
         val printWriter = PrintWriter(writer)
-        var throwable = thow
+        var throwable = throwable
         while (throwable != null) {
             throwable.printStackTrace(printWriter)
             throwable = throwable.cause
@@ -78,23 +81,27 @@ object JDebug {
     }
     @JvmStatic
     fun toast(context: Context?, msg: String, duration: Int) {
-        toast(context!!, null, msg, Toast.LENGTH_SHORT)
+        if (context == null) return
+        toast(context, null, msg, Toast.LENGTH_SHORT)
     }
 
     @JvmStatic
-    fun isDebugOn(context: Context): Boolean {
+    fun isDebugOn(context: Context?): Boolean {
+        if (context == null) return false
         val prefs = MyPreferences.getSharedPreferences(context)
         return prefs.getBoolean(PREFERENCE_NAME, false)
     }
     @JvmStatic
-    fun toast(context: Context, tag: String?, msg: String, duration: Int) {
+    fun toast(context: Context?, tag: String?, msg: String, duration: Int) {
+        if (context == null) return
         if (isDebugOn(context)) Handler(Looper.getMainLooper()).post {
             val text = if (tag == null) msg else "$tag: $msg"
             Toast.makeText(context, text, duration).show()
         }
     }
     @JvmStatic
-    fun setDebug(on: Boolean, context: Context) {
+    fun setDebug(on: Boolean, context: Context?) {
+        if (context == null) return
         val prefs = MyPreferences.getSharedPreferences(context)
         prefs.edit().putBoolean(PREFERENCE_NAME, on).apply()
     }

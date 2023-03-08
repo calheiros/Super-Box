@@ -30,11 +30,10 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.AdView
 import com.google.android.material.snackbar.Snackbar
-import com.jefferson.application.br.App
-import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
+import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.task.FileModelBuilderTask
 import com.jefferson.application.br.task.ImportTask
 import com.jefferson.application.br.task.JTask
@@ -78,8 +77,10 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         button = findViewById<View>(R.id.import_media_button) as Button
         val mainActivity = MainActivity.instance
         adview =
-            Objects.requireNonNull(if (mainActivity == null) MainActivity.createSquareAdview(this)
-            else mainActivity.squareAdView)
+            Objects.requireNonNull(
+                if (mainActivity == null) MainActivity.createSquareAdview(this)
+                else mainActivity.squareAdView
+            )
         removeParent(adview)
         parent = findViewById(R.id.ad_view_layout)
         parent.addView(adview)
@@ -104,8 +105,12 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                     else R.plurals.quantidade_video_total
             }
             if (parent == null) {
-                builderTask?.setDestination(Storage.getFolder(if (FileModel.IMAGE_TYPE == type)
-                    Storage.IMAGE else Storage.VIDEO, this)!!.absolutePath)
+                builderTask?.setDestination(
+                    Storage.getFolder(
+                        if (FileModel.IMAGE_TYPE == type)
+                            Storage.IMAGE else Storage.VIDEO, this
+                    )!!.absolutePath
+                )
             }
             builderTask?.setOnUpdatedListener(this)
             builderTask?.setOnFinishedListener { startImportTask(builderTask!!.data) }
@@ -117,7 +122,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     private fun startImportTask(data: ArrayList<FileModel>) {
         importTask = ImportTask(this, data, null)
         importTask?.setOnUpdatedListener(this)
-        importTask?.setOnbeingStartedListener(this)
+        importTask?.setOnStartedListener(this)
         importTask?.setOnFinishedListener(this)
         importTask?.start()
     }
@@ -154,7 +159,8 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
             if (criticalError != null) getString(R.string.erro_critico)
             else if (failures > 0) res.getQuantityString(
                 R.plurals.falha_plural, failures, failures
-            ) else if (importTask!!.isInterrupted) "Cancelled!" else getString(R.string.transferencia_sucesso)
+            ) else if (importTask!!.isInterrupted)
+                "Cancelled!" else getString(R.string.transferencia_sucesso)
         titleTextView.text = getString(R.string.resultado)
         messageTextView.setTextColor(color)
         messageTextView.text = msg
@@ -173,6 +179,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                     values[1],
                     values[2]
                 )
+
                 @Suppress("DEPRECATION")
                 val styledText = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) Html.fromHtml(
                     format,
@@ -252,7 +259,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                     "Press back button again to cancel!",
                     Snackbar.LENGTH_SHORT
                 ).show()
-                Handler().postDelayed({ allowCancel = false }, 2000)
+                Handler(Looper.getMainLooper()).postDelayed({ allowCancel = false }, 2000)
             }
         }
     }

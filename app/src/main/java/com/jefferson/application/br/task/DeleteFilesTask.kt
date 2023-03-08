@@ -68,7 +68,7 @@ open class DeleteFilesTask(
         database.close()
     }
 
-    override fun onBeingStarted() {
+    override fun onStarted() {
         dialog = SimpleDialog(activity)
         dialog.showProgressBar(items.isNotEmpty()).setTitle("Deleting").setMax(items.size)
             .setProgress(0).showPositiveButton(false)

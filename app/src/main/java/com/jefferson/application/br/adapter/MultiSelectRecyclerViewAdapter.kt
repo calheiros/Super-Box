@@ -64,7 +64,7 @@ class MultiSelectRecyclerViewAdapter(
             return arrayListPath
         }
 
-    fun updateItemDuration(path: String, time: String?) {
+    fun updateVideoDuration(path: String, time: String?) {
         for (i in items.indices) {
             val model = items[i]
             if (model.path == path) {
@@ -108,7 +108,7 @@ class MultiSelectRecyclerViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val itemLayoutView = LayoutInflater.from(parent.context).inflate(
-            R.layout.generic_gridview_item,
+            R.layout.recycler_view_item,
             parent, false
         )
         return ViewHolder(itemLayoutView, clickListener)

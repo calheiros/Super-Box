@@ -17,12 +17,12 @@
 package com.jefferson.application.br.fragment
 
 import android.content.*
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.preference.PreferenceManager
 import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
@@ -51,7 +51,9 @@ import com.jefferson.application.br.util.*
 
 class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     OnItemLongClickListener {
+    private var paddingBottom: Int = 0
     private lateinit var storages: Array<String>
+    private var listView: ListView? = null
     var version: String? = null
     private var adapter: SettingAdapter? = null
     private var sharedPreferences: SharedPreferences? = null
@@ -69,122 +71,126 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.config, container, false)
         val mToolbar = view.findViewById<Toolbar>(R.id.toolbar)
         storages = arrayOf(getString(R.string.armaz_interno), getString(R.string.armaz_externo))
         (requireActivity() as MainActivity).setupToolbar(
-            mToolbar,
-            getString(R.string.configuracoes)
+            mToolbar, getString(R.string.configuracoes)
         )
         // calculatorEnabled = PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getComponentEnabledState(CalculatorActivity.class.getCanonicalName());
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+        sharedPreferences = MyPreferences.getSharedPreferences(context as Context)
         editor = sharedPreferences?.edit()
-
-        val listView = view.findViewById<ListView>(R.id.list_config)
-        val items = createItemsList()
-
-        adapter = SettingAdapter(items, this)
-        listView.adapter = adapter
-        listView.divider = null
-        listView.onItemClickListener = this
-        listView.onItemLongClickListener = this
+        listView = view.findViewById(R.id.list_config)
+        adapter = SettingAdapter(itemsList, this)
+        listView?.adapter = adapter
+        listView?.divider = null
+        listView?.onItemClickListener = this
+        listView?.onItemLongClickListener = this
+        if (paddingBottom > 0) {
+            ViewUtils.setViewPaddingBottom(listView, paddingBottom)
+        }
         return view
     }
 
     private val dialerCode: String?
-        get() = sharedPreferences!!.getString("secret_code", "#4321")
+        get() = sharedPreferences?.getString("secret_code", "#4321")
 
-    private fun createItemsList(): ArrayList<PreferenceItem> {
-        val items = ArrayList<PreferenceItem>()
-        for (i in 0..10) {
-            val item = PreferenceItem()
-            when (i) {
-                0 -> {
-                    item.title = getString(R.string.preferecias_gerais)
-                    item.type = PreferenceItem.SECTION_TYPE
-                }
-                1 -> {
-                    item.id = ID.PASSWORD
-                    item.iconResId = R.drawable.ic_key
-                    item.title = getString(R.string.mudar_senha)
-                    item.type = PreferenceItem.ITEM_TYPE
-                }
-                2 -> {
-                    item.id = ID.LANGUAGE
-                    item.iconResId = R.drawable.ic_language
-                    item.title = getString(R.string.idioma)
-                    item.type = PreferenceItem.ITEM_TYPE
-                    item.description = languageDisplay
-                }
-                3 -> {
-                    item.id = ID.APP_THEME
-                    item.type = PreferenceItem.ITEM_TYPE
-                    item.iconResId = R.drawable.ic_palette
-                    item.title = getString(R.string.tema_applicativo)
-                    item.description = ThemeConfig.getCurrentThemeName(requireContext())
-                }
-                4 -> {
-                    item.type = PreferenceItem.SECTION_TYPE
-                    item.title = getString(R.string.preferecias_avancadas)
-                }
-                5 -> {
-                    item.id = ID.STORAGE
-                    item.type = PreferenceItem.ITEM_TYPE
-                    item.iconResId = storageIcon
-                    item.title = getString(R.string.local_armazenamento)
-                    item.description = storageName
-                }
-                6 -> {
-                    item.id = ID.APP_ICON
-                    item.title = getString(R.string.disfarce_calculadora)
-                    item.iconResId = R.drawable.ic_calculator_variant
-                    item.type = PreferenceItem.ITEM_SWITCH_TYPE
-                    item.description = getString(R.string.ocultar_descricao)
-                    item.checked = isCalculatorEnabledInSettings
-                }
-                7 -> {
-                    item.id = ID.SCREENSHOT
-                    item.iconResId = R.drawable.ic_cellphone_screenshot
-                    item.type = PreferenceItem.ITEM_SWITCH_TYPE
-                    item.title = getString(R.string.permitir_captura_tela)
-                    item.description = getString(R.string.menos_seguro_se_habilitado)
-                    item.checked = MyPreferences.getAllowScreenshot(requireContext())
-                }
-                9 -> {
-                    item.title = getString(R.string.preferecias_sobre)
-                    item.type = PreferenceItem.SECTION_TYPE
-                }
-                8 -> {
-                    val sharedPrefs = MyPreferences.getSharedPreferences((activity)!!)
-                    val checked = sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false)
-                    item.id = ID.FINGERPRINT
-                    item.title = "Use fingerprint"
-                    item.type = PreferenceItem.ITEM_SWITCH_TYPE
-                    item.iconResId = R.drawable.ic_fingerprint
-                    item.description = "Enable fingerprint unlock"
-                    item.checked = checked
-                }
-                10 -> {
-                    item.id = ID.ABOUT
-                    item.iconResId = R.drawable.ic_about
-                    item.title = getString(R.string.app_name)
-                    item.type = PreferenceItem.ITEM_TYPE
-                    try {
-                        item.description = requireContext().packageManager.getPackageInfo(
-                            requireContext().packageName,
-                            0
-                        ).versionName
-                    } catch (ignored: PackageManager.NameNotFoundException) {
+    private val itemsList: ArrayList<PreferenceItem>
+        get() {
+            val items = ArrayList<PreferenceItem>()
+            for (i in 0..10) {
+                val item = PreferenceItem()
+                when (i) {
+                    0 -> {
+                        item.title = getString(R.string.preferecias_gerais)
+                        item.type = PreferenceItem.SECTION_TYPE
+                    }
+                    1 -> {
+                        item.id = ID.PASSWORD
+                        item.iconResId = R.drawable.ic_key
+                        item.title = getString(R.string.mudar_senha)
+                        item.type = PreferenceItem.ITEM_TYPE
+                    }
+                    2 -> {
+                        item.id = ID.LANGUAGE
+                        item.iconResId = R.drawable.ic_language
+                        item.title = getString(R.string.idioma)
+                        item.type = PreferenceItem.ITEM_TYPE
+                        item.description = languageDisplay
+                    }
+                    3 -> {
+                        item.id = ID.APP_THEME
+                        item.type = PreferenceItem.ITEM_TYPE
+                        item.iconResId = R.drawable.ic_palette
+                        item.title = getString(R.string.tema_applicativo)
+                        item.description = ThemeConfig.getCurrentThemeName(requireContext())
+                    }
+                    4 -> {
+                        item.type = PreferenceItem.SECTION_TYPE
+                        item.title = getString(R.string.preferecias_avancadas)
+                    }
+                    5 -> {
+                        item.id = ID.STORAGE
+                        item.type = PreferenceItem.ITEM_TYPE
+                        item.iconResId = storageIcon
+                        item.title = getString(R.string.local_armazenamento)
+                        item.description = storageName
+                    }
+                    6 -> {
+                        item.id = ID.APP_ICON
+                        item.title = getString(R.string.disfarce_calculadora)
+                        item.iconResId = R.drawable.ic_calculator_variant
+                        item.type = PreferenceItem.ITEM_SWITCH_TYPE
+                        item.description = getString(R.string.ocultar_descricao)
+                        item.checked = isCalculatorEnabledInSettings
+                    }
+                    7 -> {
+                        item.id = ID.SCREENSHOT
+                        item.iconResId = R.drawable.ic_cellphone_screenshot
+                        item.type = PreferenceItem.ITEM_SWITCH_TYPE
+                        item.title = getString(R.string.permitir_captura_tela)
+                        item.description = getString(R.string.menos_seguro_se_habilitado)
+                        item.checked = MyPreferences.getAllowScreenshot(requireContext())
+                    }
+                    9 -> {
+                        item.title = getString(R.string.preferecias_sobre)
+                        item.type = PreferenceItem.SECTION_TYPE
+                    }
+                    8 -> {
+                        val sharedPrefs = MyPreferences.getSharedPreferences((activity)!!)
+                        val checked = sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false)
+                        item.id = ID.FINGERPRINT
+                        item.title = "Use fingerprint"
+                        item.type = PreferenceItem.ITEM_SWITCH_TYPE
+                        item.iconResId = R.drawable.ic_fingerprint
+                        item.description = "Enable fingerprint unlock"
+                        item.checked = checked
+                    }
+                    10 -> {
+                        item.id = ID.ABOUT
+                        item.iconResId = R.drawable.ic_about
+                        item.title = getString(R.string.app_name)
+                        item.type = PreferenceItem.ITEM_TYPE
+                        item.description =
+                            getPackageInfo(requireContext().packageName, 0).versionName
                     }
                 }
+                items.add(item)
             }
-            items.add(item)
+            return items
         }
-        return items
+
+    @Throws(PackageManager.NameNotFoundException::class)
+    fun getPackageInfo(packageName: String, flags: Int): PackageInfo {
+        val context = requireContext()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+            context.packageManager.getPackageInfo(
+            packageName, PackageManager.PackageInfoFlags.of(flags.toLong())
+        )
+        else @Suppress("DEPRECATION")
+            context.packageManager.getPackageInfo(packageName, flags)
     }
 
     private fun setAllEggsFound() {
@@ -202,12 +208,14 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     override fun onItemLongClick(
-        adapterView: AdapterView<*>?,
-        view: View,
-        position: Int,
-        id: Long
+        adapterView: AdapterView<*>?, view: View, position: Int, id: Long
     ): Boolean {
         return position == 8
+    }
+
+    fun notifyBottomLayoutChanged(view: View) {
+        paddingBottom = view.height
+        ViewUtils.setViewPaddingBottom(listView, paddingBottom)
     }
 
     override fun onItemClick(adapter: AdapterView<*>?, view: View, position: Int, id: Long) {
@@ -253,10 +261,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     private fun setItemChecked(
-        adapter: SettingAdapter,
-        mySwitch: SwitchCompat,
-        position: Int,
-        checked: Boolean
+        adapter: SettingAdapter, mySwitch: SwitchCompat, position: Int, checked: Boolean
     ) {
         val item = adapter.getItem(position)
         mySwitch.isChecked = checked
@@ -270,7 +275,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
             .setMenuItems(items) { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
                 dialog.cancel()
                 val themeIndex: Int = ThemeConfig.getThemeIndex(requireContext())
-                val currentTheme: Int = MainActivity.CURRENT_THEME
+                val currentTheme: Int = MainActivity.currentTheme
                 val newTheme: Int = ThemeConfig.resolveTheme(requireContext(), position)
                 val needRefresh: Boolean = newTheme != currentTheme
                 if (position != themeIndex) {
@@ -295,7 +300,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         egg = 0
     }
 
-    fun configureDialog(dialog: AlertDialog?) {
+    private fun configureDialog(dialog: AlertDialog?) {
         DialogUtils.configureDialog(dialog)
     }
 
@@ -308,19 +313,17 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         }
     }
 
-    fun showDialogStorage() {
+    private fun showDialogStorage() {
         val storagePosition = Storage.getStoragePosition(requireContext())
         val options = ArrayList<SimpleDialog.MenuItem>()
         options.add(
             SimpleDialog.MenuItem(
-                getString(R.string.armaz_interno),
-                R.drawable.ic_twotone_smartphone
+                getString(R.string.armaz_interno), R.drawable.ic_twotone_smartphone
             )
         )
         if (Storage.getExternalStorage(requireContext()) != null) options.add(
             SimpleDialog.MenuItem(
-                getString(R.string.armaz_externo),
-                R.drawable.ic_micro_sd
+                getString(R.string.armaz_externo), R.drawable.ic_micro_sd
             )
         )
         val dialog = SimpleDialog(requireActivity(), SimpleDialog.STYLE_MENU)
@@ -354,15 +357,14 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     fun disableLauncherActivity(disable: Boolean) {
         requireActivity().packageManager.setComponentEnabledSetting(
             ComponentName(
-                (context)!!,
-                "com.jefferson.application.br.LuancherAlias"
+                (context)!!, "com.jefferson.application.br.LuancherAlias"
             ),
             if (disable) PackageManager.COMPONENT_ENABLED_STATE_DISABLED else PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
             PackageManager.DONT_KILL_APP
         )
     }
 
-    fun supportFingerprint(): Boolean {
+    private fun supportFingerprint(): Boolean {
         val biometricManager = BiometricManager.from(requireContext())
         when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)) {
             BiometricManager.BIOMETRIC_SUCCESS -> {
@@ -378,8 +380,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 Log.e("MY_APP_TAG", "No biometric features available on this device.")
             }
             BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> Log.e(
-                "MY_APP_TAG",
-                "Biometric features are currently unavailable."
+                "MY_APP_TAG", "Biometric features are currently unavailable."
             )
             BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
                 // Prompts the user to create credentials that your app accepts.
@@ -393,6 +394,15 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 }
                 requireActivity().startActivityForResult(enrollIntent, REQUEST_CODE)
             }
+            BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
+                TODO()
+            }
+            BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
+                TODO()
+            }
+            BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
+                TODO()
+            }
         }
         return false
     }
@@ -400,15 +410,14 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     fun setComponentEnabled(enabled: Boolean, component: String?) {
         requireActivity().packageManager.setComponentEnabledSetting(
             ComponentName(
-                (context)!!,
-                (component)!!
+                (context)!!, (component)!!
             ),
             if (enabled) PackageManager.COMPONENT_ENABLED_STATE_DISABLED else PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
             PackageManager.DONT_KILL_APP
         )
     }
 
-    fun changeCodeDialog() {
+    private fun changeCodeDialog() {
         val view = requireActivity().layoutInflater.inflate(R.layout.dialog_call, null)
         val editText = view.findViewById<EditText>(R.id.editTextDialogUserInput)
         editText.append(dialerCode)
@@ -418,15 +427,11 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
             val code: String = editText.text.toString()
             if (code.length < 3) {
                 Toast.makeText(
-                    context,
-                    "O Código não pode ser menor que 3 caractéres.",
-                    Toast.LENGTH_LONG
+                    context, "O Código não pode ser menor que 3 caractéres.", Toast.LENGTH_LONG
                 ).show()
             } else if (code.length > 15) {
                 Toast.makeText(
-                    context,
-                    "O código não pode ter mais que 15 caractéres.",
-                    Toast.LENGTH_LONG
+                    context, "O código não pode ter mais que 15 caractéres.", Toast.LENGTH_LONG
                 ).show()
             } else {
                 editor!!.putString("secret_code", code).commit()
@@ -454,14 +459,14 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     private val storageName: String
-        get() = if ((Storage.getStorageLocation(requireContext()) == Storage.INTERNAL))
-            getString(R.string.armaz_interno) else getString(R.string.armaz_externo)
+        get() = if ((Storage.getStorageLocation(requireContext()) == Storage.INTERNAL)) getString(R.string.armaz_interno) else getString(
+            R.string.armaz_externo
+        )
 
     private val storageIcon: Int
-        get() = if ((Storage.getStorageLocation(requireContext()) == Storage.INTERNAL))
-            R.drawable.ic_twotone_smartphone else R.drawable.ic_micro_sd
+        get() = if ((Storage.getStorageLocation(requireContext()) == Storage.INTERNAL)) R.drawable.ic_twotone_smartphone else R.drawable.ic_micro_sd
 
-    fun updateItem(id: ID, description: String?, icon: Int) {
+    private fun updateItem(id: ID, description: String?, icon: Int) {
         for (i in 0 until adapter!!.count) {
             val item = adapter!!.getItem(i)
             if (item.id == id) {
@@ -530,16 +535,13 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
             R.drawable.ic_information
         ).setMessage(
             String.format(
-                "Vc pode abriar a aplicativo efetuando uma chamanda para o código %s",
-                dialerCode
+                "Vc pode abriar a aplicativo efetuando uma chamanda para o código %s", dialerCode
             )
-        )
-            .setPositiveButton("fechar", null).setView(view).show()
-            .setOnDismissListener {
-                if (mCheckBox.isChecked) {
-                    editor?.putBoolean("dont_show_info_on_hidden", true)?.commit()
-                }
+        ).setPositiveButton("fechar", null).setView(view).show().setOnDismissListener {
+            if (mCheckBox.isChecked) {
+                editor?.putBoolean("dont_show_info_on_hidden", true)?.commit()
             }
+        }
     }
 
     private fun showLanguageDialog() {
@@ -548,15 +550,14 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         dialog.setTitle(R.string.escolha_idioma)
         dialog.setMenuItems(items) { _, _, position, _ ->
             dialog.cancel()
-            val locale: String =
-                when (position) {
-                    1 -> "en"
-                    2 -> "es"
-                    3 -> "de"
-                    4 -> "pt"
-                    5 -> "ja"
-                    else -> LocaleManager.SYSTEM_LOCALE
-                }
+            val locale: String = when (position) {
+                1 -> "en"
+                2 -> "es"
+                3 -> "de"
+                4 -> "pt"
+                5 -> "ja"
+                else -> LocaleManager.SYSTEM_LOCALE
+            }
             if (locale != MyPreferences.getSharedPreferences(requireContext()).getString(
                     LocaleManager.LOCALE_KEY, LocaleManager.SYSTEM_LOCALE
                 )
@@ -579,9 +580,12 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 "日本語"
             )
             val flags = intArrayOf(
-                R.drawable.ic_auto_fix, R.drawable.flag_us,
-                R.drawable.flag_es, R.drawable.flag_de,
-                R.drawable.flag_br, R.drawable.flag_jp
+                R.drawable.ic_auto_fix,
+                R.drawable.flag_us,
+                R.drawable.flag_es,
+                R.drawable.flag_de,
+                R.drawable.flag_br,
+                R.drawable.flag_jp
             )
             val items: MutableList<SimpleDialog.MenuItem> = ArrayList()
             for (i in languages.indices) {
@@ -591,7 +595,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         }
 
     companion object {
-        public const val CALCULATOR_CREATE_CODE_RESULT = 85
+        const val CALCULATOR_CREATE_CODE_RESULT = 85
         private const val REQUEST_CODE = 109
     }
 }

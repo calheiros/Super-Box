@@ -112,7 +112,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         if (retrieveMediaTask!!.getStatus() == JTask.Status.FINISHED) {
             objAdapter?.clear()
             retrieveMediaTask = RetrieveMediaTask()
-            retrieveMediaTask!!.start()
+            retrieveMediaTask?.start()
         } else {
             swipeRefreshLayout.isRefreshing = false
         }
@@ -298,7 +298,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
             result = galleryItems
         }
 
-        override fun onBeingStarted() {
+        override fun onStarted() {
             progressBar = findViewById(R.id.galleryalbumProgressBar)
             progressBar.visibility = View.VISIBLE
         }

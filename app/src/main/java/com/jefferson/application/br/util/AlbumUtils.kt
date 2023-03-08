@@ -17,6 +17,7 @@
 package com.jefferson.application.br.util
 
 import android.content.Context
+import android.telephony.mbms.StreamingServiceInfo
 import android.widget.Toast
 import com.jefferson.application.br.R
 import com.jefferson.application.br.database.PathsDatabase
@@ -27,13 +28,15 @@ import java.io.File
 
 object AlbumUtils {
 
-    private fun delete(album: AlbumModel, context: Context, result: Result) {
+    private fun deleteAlbum(albumPath: String, context: Context): Result {
+        val file = File(albumPath)
         val database = PathsDatabase.getInstance(context)
-        val id = database.getFolderIdFromName(album.name, "");
-        //database.addFolderName()
-        TODO("NOT IMPLEMENTED YET")
+        val id = file.name
+        val success = file.delete()
+        if (success)
+            database.deleteMediaData(id)
+        return Result(success, if(success) "success" else "failed")
     }
-
     /**
      * Rename album from database
      */
@@ -129,7 +132,7 @@ object AlbumUtils {
 
     fun removeFromFavorites(f_model: AlbumModel, context: Context) {
         val database = PathsDatabase.getInstance(context)
-        val file = File(f_model.path)
+        val file = File(f_model.path!!)
         val name = file.name
         if (!database.removeFavoriteFolder(name)) {
             Toast.makeText(context, "failed to remove from bookmark", Toast.LENGTH_SHORT)
@@ -152,5 +155,5 @@ class Result {
     }
 
     constructor(ok: Boolean, message: String?): this(ok, message, null)
-
+    constructor(ok: Boolean): this(ok, null, null)
 }

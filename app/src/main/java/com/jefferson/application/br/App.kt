@@ -60,8 +60,7 @@ class App : Application(), Thread.UncaughtExceptionHandler {
 
     override fun uncaughtException(thread: Thread, thow: Throwable) {
         try {
-            val error = JDebug.getStackeTrace(thow)
-            JDebug.writeLog(this,error)
+            val error = JDebug.getStackTrace(thow)
             startCrashActivity(error)
             destroyActivities()
             exitProcess(-1)

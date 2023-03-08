@@ -37,16 +37,19 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.jefferson.application.br.R;
+import com.jefferson.application.br.trigger.SwitchVisibilityTrigger;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.StringUtils;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class JVideoController implements OnSeekBarChangeListener, OnClickListener, OnTouchListener {
-
+public class JVideoController implements OnSeekBarChangeListener, OnClickListener {
     public static final String TAG = "JVideoController";
     private final VideoView mVideoView;
+    private SwitchVisibilityTrigger optionsTrigger;
     private View controllerView;
     private Animation animFadeIn;
     private Animation animFadeOut;
@@ -77,19 +80,12 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         init_();
     }
 
-    @Override
-    public boolean onTouch(View view, MotionEvent event) {
-        boolean invisible = (controllerView.getVisibility() != View.VISIBLE);
-
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            showController(invisible);
-            return true;
-        } else if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (!invisible) {
-                hideDelayed(2000);
-            }
-        }
-        return false;
+    public JVideoController(@Nullable VideoView videoView, @Nullable ViewGroup viewGroup,
+                            @Nullable SwitchVisibilityTrigger optionsTrigger) {
+        this.mVideoView = videoView;
+        this.anchorView = viewGroup;
+        this.optionsTrigger = optionsTrigger;
+        init_();
     }
 
     public void setAnchor(ViewGroup view) {
@@ -102,6 +98,18 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
 
     @Override
     public void onClick(View view) {
+        if (view.getId() == mVideoView.getId()) {
+            boolean invisible = (controllerView.getVisibility() != View.VISIBLE);
+            showController(!invisible);
+            /*if (!invisible) {
+                hideDelayed(2000);
+            }*/
+            if(optionsTrigger != null) {
+                optionsTrigger.switchVisibility();
+            }
+            return;
+        }
+
         controllerHandler.removeCallbacks(controllerRunnable);
         boolean isPlaying = mVideoView.isPlaying();
 
@@ -159,13 +167,9 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     public void init_() {
         animFadeIn = AnimationUtils.loadAnimation(anchorView.getContext(), R.anim.jcontroller_fade_in);
         animFadeOut = AnimationUtils.loadAnimation(anchorView.getContext(), R.anim.jcontroller_fade_out);
-        controllerRunnable = new Runnable() {
-
-            @Override
-            public void run() {
-                if (controllerView != null && controllerView.getVisibility() == View.VISIBLE) {
-                    showController(false);
-                }
+        controllerRunnable = () -> {
+            if (controllerView != null && controllerView.getVisibility() == View.VISIBLE) {
+                showController(false);
             }
         };
         controllerHandler = new Handler();
@@ -211,10 +215,9 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         endTextView = controllerView.findViewById(R.id.video_length_label);
         controllerButton = controllerView.findViewById(R.id.controller_play_button);
         mSeekBar.setOnSeekBarChangeListener(this);
-        anchorView.setOnTouchListener(this);
+        mVideoView.setOnClickListener(this);
         controllerButton.setOnClickListener(this);
-
-        if (mVideoView.isPlaying()) {
+        setPlaying (mVideoView.isPlaying()); {
             setPlaying(true);
         }
     }

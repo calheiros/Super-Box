@@ -24,29 +24,25 @@ import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentStatePagerAdapter
-import androidx.viewpager.widget.ViewPager
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.jefferson.application.br.R
 import com.jefferson.application.br.fragment.VideoPlayerFragment
+import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
 import kotlin.math.roundToInt
 
 class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
     private lateinit var pagerAdapter: VideoPagerAdapter
     private lateinit var viewPager: ViewPager2
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.media_view_pager_layout)
         val exportImageView = findViewById<ImageView>(R.id.export_imageview)
         val deleteImageView = findViewById<ImageView>(R.id.delete_imageview)
         val optionsLayout = findViewById<View>(R.id.options_layout)
-
+        val switchVisibilityTrigger = SwitchVisibilityTrigger(optionsLayout)
         optionsLayout.setOnClickListener(this)
         exportImageView.setOnClickListener(this)
         deleteImageView.setOnClickListener(this)
@@ -55,16 +51,24 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
         val choice = intent.extras!!.getInt("position")
         val filesPath = intent.getStringArrayListExtra("filepath")
         fullscreen()
-        pagerAdapter = VideoPagerAdapter(this, filesPath!!)
+        pagerAdapter = VideoPagerAdapter(this, filesPath!!, switchVisibilityTrigger)
         viewPager = findViewById<View>(R.id.view_pager) as ViewPager2
         viewPager.adapter = pagerAdapter
         //viewPager.setOnPageChangeListener(MyPageListener(choice))
         viewPager.currentItem = choice
         viewPager.offscreenPageLimit = 3
         //viewPager.pageMargin = dpToPx(5)
-        pagerAdapter.getFragment(choice)?.setPlayOnCreate(true)
         viewPager.requestFocus()
         viewPager.setOnClickListener(this)
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                val data = Intent()
+                data.putExtra("index", viewPager.currentItem)
+                setResult(RESULT_OK, data)
+                finish()
+            }
+        })
     }
 
     override fun onClick(v: View) {
@@ -85,11 +89,6 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
 
     override fun onApplyCustomTheme() {
         //do nothing
-    }
-
-    private fun dpToPx(dp: Int): Int {
-        val displayMetrics = resources.displayMetrics
-        return (dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
     }
 
     private fun requestOrientation(width: Int, height: Int) {
@@ -113,7 +112,8 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
     }
 
     private class VideoPagerAdapter(
-        fm: FragmentActivity, private val filesPath: ArrayList<String?>
+        fm: FragmentActivity, private val filesPath: ArrayList<String?>,
+        private val switchVisibilityTrigger: SwitchVisibilityTrigger
     ) : FragmentStateAdapter(
         fm
     ) {
@@ -126,24 +126,18 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
         override fun getItemCount(): Int {
             return filesPath.size
         }
+
         fun getFragment(position: Int): VideoPlayerFragment? {
             return fragments?.get(position)
         }
+
         override fun createFragment(position: Int): VideoPlayerFragment {
             var fragment: VideoPlayerFragment? = fragments?.get(position)
             if (fragment == null) {
-                fragment = VideoPlayerFragment(filesPath[position]!!)
+                fragment = VideoPlayerFragment(filesPath[position]!!, switchVisibilityTrigger)
                 fragments?.set(position, fragment)
             }
             return fragment
         }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        val intent = Intent()
-        intent.putExtra("index", viewPager.currentItem)
-        setResult(RESULT_OK, intent)
-        super.onBackPressed()
     }
 }

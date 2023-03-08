@@ -213,5 +213,7 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="add_items_button">add items button</string>
     <string name="album_vazio_titulo">The album is empty.</string>
     <string name="accept">accept</string>
+    <string name="maove_to">Move to</string>
+    <string name="enter_you_password_here">Enter you password here</string>
 
 </resources>

@@ -203,7 +203,7 @@ class DeveloperActivity : MyCompatActivity() {
                 Toast.makeText(this@DeveloperActivity, "Interrupted!", Toast.LENGTH_SHORT).show()
             }
 
-            override fun onBeingStarted() {
+            override fun onStarted() {
                 Toast.makeText(this@DeveloperActivity, "STARTED!\nx = $x", Toast.LENGTH_SHORT)
                     .show()
             }

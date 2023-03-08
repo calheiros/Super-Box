@@ -61,7 +61,6 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
         pagerAdapter = ImagePagerAdapter(this, optionLayout)
         viewPager = findViewById(R.id.view_pager)
         viewPager.adapter = pagerAdapter
-        viewPager.offscreenPageLimit = 4
         viewPager.currentItem = position
         viewPager.setOnClickListener(this)
         exportButton.setOnClickListener(this)
@@ -99,13 +98,13 @@ class ImagePreviewActivity : MyCompatActivity(), View.OnClickListener {
     fun deleteImage(path: String, position: Int) {
         val success = MediaUtils.deleteMedia(this@ImagePreviewActivity, path)
         if (success) {
-            filesPath.removeAt(position)
             pagerAdapter.notifyItemRemoved(position)
+            filesPath.removeAt(position)
             removedItems.add(path)
         }
         Toast.makeText(
             this@ImagePreviewActivity,
-            if (success) "deleted!: $position" else "failed to delete image",
+            if (success) "deleted: $position" else "failed to delete image",
             Toast.LENGTH_SHORT
         ).show()
     }

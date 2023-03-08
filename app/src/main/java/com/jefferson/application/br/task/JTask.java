@@ -27,7 +27,7 @@ abstract public class JTask implements JTaskListener {
     private JTask.OnFinishedListener onFinishedListener;
     private static final int STATE_FINISHED = 3;
     private static final int STATE_INTERRUPTED = -1;
-    private static final int STATE_BEING_STARTED = 1;
+    private static final int STATE_STARTED = 1;
     private static final int STATE_UPDATED = 8;
     private static final int STATE_EXCEPTION_CAUGHT = 666;
     private static final int STATE_TASK_CANCELLED = 444;
@@ -56,7 +56,6 @@ abstract public class JTask implements JTaskListener {
     }
 
     private class MainHandler extends Handler {
-
         public MainHandler(Looper looper) {
             super(looper);
         }
@@ -64,7 +63,6 @@ abstract public class JTask implements JTaskListener {
         @Override
         public void dispatchMessage(Message msg) {
             int state = msg.getData().getInt("state");
-
             switch (state) {
                 case STATE_FINISHED:
                     if (revokeFinish) {
@@ -78,9 +76,9 @@ abstract public class JTask implements JTaskListener {
                         onFinishedListener.onFinished();
                     }
                     break;
-                case STATE_BEING_STARTED:
+                case STATE_STARTED:
                     status = Status.STARTED;
-                    onBeingStarted();
+                    onStarted();
                     if (onBeingStartedListener != null) {
                         onBeingStartedListener.onBeingStarted();
                     }
@@ -154,7 +152,7 @@ abstract public class JTask implements JTaskListener {
     }
 
     public void start() {
-        sendState(STATE_BEING_STARTED);
+        sendState(STATE_STARTED);
     }
 
     public void interrupt() {
@@ -182,7 +180,7 @@ abstract public class JTask implements JTaskListener {
         mainHandler.sendMessage(msg);
     }
 
-    public void setOnbeingStartedListener(OnBeingStartedListener listener) {
+    public void setOnStartedListener(OnBeingStartedListener listener) {
         this.onBeingStartedListener = listener;
     }
 
@@ -194,17 +192,11 @@ abstract public class JTask implements JTaskListener {
         this.onFinishedListener = listener;
     }
 
-    protected void onTaskCancelled() {
+    protected void onTaskCancelled() {}
 
-    }
+    protected void onInterrupted() {}
 
-    protected void onInterrupted() {
-
-    }
-
-    protected void onUpdated(Object[] get) {
-
-    }
+    protected void onUpdated(Object[] get) {}
 
     public interface OnFinishedListener {
         void onFinished();
@@ -221,7 +213,7 @@ abstract public class JTask implements JTaskListener {
 
 interface JTaskListener {
     void workingThread();
-    void onBeingStarted();
+    void onStarted();
     void onFinished();
     void onException(Exception e);
 

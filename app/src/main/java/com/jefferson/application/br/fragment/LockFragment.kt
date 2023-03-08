@@ -46,6 +46,7 @@ import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.model.AppModel
 import com.jefferson.application.br.service.AppLockService
 import com.jefferson.application.br.task.JTask
+import com.jefferson.application.br.util.ViewUtils
 import com.jefferson.application.br.widget.LockCheck
 import java.util.*
 
@@ -59,7 +60,7 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     private var visibleCount = -1
     private var totalItemCount = -1
     private var progressBar: ProgressBar? = null
-    private var mTextView: TextView? = null
+    private var loadingLabel: TextView? = null
     private var appModels: ArrayList<AppModel>? = null
     private var adapter: AppLockAdapter? = null
     private var intent: Intent? = null
@@ -83,12 +84,12 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
         if (parentView == null) {
             parentView = inflater.inflate(R.layout.list_view_app, container, false) as View
             progressBar = parentView!!.findViewById(R.id.progressApps)
-            mTextView = parentView!!.findViewById(R.id.porcent)
+            loadingLabel = parentView!!.findViewById(R.id.porcent)
             listView = parentView!!.findViewById(R.id.appList)
             swipeRefreshLayout = parentView!!.findViewById(R.id.swipe_refresh)
             listView?.itemsCanFocus = true
             listView?.clipToPadding = false
-            setListViewPaddingBottom()
+            ViewUtils.setViewPaddingBottom(listView, paddingBottom)
             val typedValue = TypedValue()
             val theme = activity.theme
             theme?.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true)
@@ -115,12 +116,8 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
                     this@LockFragment.totalItemCount = totalItemCount
                 }
             })
-
-            if (loadApplicationsTask?.getStatus() == JTask.Status.FINISHED) {
-                doTaskFinalized()
-            } else {
-                showProgressView()
-            }
+            if (loadApplicationsTask?.getStatus() == JTask.Status.FINISHED)
+                onPackagesLoaded() else showProgressView()
 
             intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             listView?.onItemClickListener = this
@@ -193,12 +190,12 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     }
 
     private fun showProgressView() {
-        if (progressBar == null || mTextView == null) return
+        if (progressBar == null || loadingLabel == null) return
         progressBar?.progress = 0
         progressBar?.isIndeterminate = true
         progressBar?.visibility = View.VISIBLE
-        mTextView?.text = ""
-        mTextView?.visibility = View.VISIBLE
+        loadingLabel?.text = ""
+        loadingLabel?.visibility = View.VISIBLE
     }
 
     override fun onItemClick(adapter: AdapterView<*>?, view: View, position: Int, id: Long) {
@@ -281,15 +278,15 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
         loadApplicationsTask?.start()
     }
 
-    fun doTaskFinalized() {
+    fun onPackagesLoaded() {
         if (adapter == null) {
             adapter = AppLockAdapter(this, appModels!!)
             listView?.adapter = adapter
         } else {
-            adapter?.putDataSet(appModels!!)
+            adapter?.setAppModels(appModels!!)
         }
         progressBar?.visibility = View.GONE
-        mTextView?.visibility = View.GONE
+        loadingLabel?.visibility = View.GONE
         if (swipeRefreshLayout?.isRefreshing == true) {
             swipeRefreshLayout?.isRefreshing = false
         }
@@ -316,7 +313,7 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
             ) {
                 return
             }
-            adapter!!.toggleSelection(lastClickedItemPosition)
+            adapter?.toggleSelection(lastClickedItemPosition)
             animateCheckView(lastClickedParentView)
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -351,17 +348,8 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     }
 
     fun notifyBottomLayoutChanged(v: View) {
-        paddingBottom = v.height
-        setListViewPaddingBottom()
-    }
-
-    private fun setListViewPaddingBottom() {
-        val left = listView?.paddingLeft
-        val right = listView?.paddingRight
-        val top = listView?.paddingTop
-        if (left != null && top != null && right != null) {
-            listView?.setPadding(left, top, right, paddingBottom)
-        }
+        this.paddingBottom = v.height
+        ViewUtils.setViewPaddingBottom(listView, paddingBottom)
     }
 
     private inner class LoadApplicationsTask(private val context: Context) : JTask() {
@@ -375,44 +363,46 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
             val intent = Intent(Intent.ACTION_MAIN, null)
             intent.addCategory(Intent.CATEGORY_LAUNCHER)
             val pm = context.packageManager
-            val apps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                context.packageManager.queryIntentActivities(
-                    intent,
-                    PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong())
+            val infoMutableList =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
+                    context.packageManager.queryIntentActivities(
+                    intent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong())
+                ) else @Suppress("DEPRECATION") context.packageManager.queryIntentActivities(
+                    intent, 0
                 )
-            } else {
-                context.packageManager.queryIntentActivities(intent, 0)
-            }
-            Collections.sort(apps, ResolveInfo.DisplayNameComparator(pm))
-            for (i in apps.indices) {
+
+            Collections.sort(infoMutableList, ResolveInfo.DisplayNameComparator(pm))
+            for (i in infoMutableList.indices) {
                 if (this.isInterrupted) {
                     break
                 }
-                val p = apps[i]
-                if (p.activityInfo.packageName == context.packageName) {
+                val resolveInfo = infoMutableList[i]
+                if (resolveInfo.activityInfo.packageName == context.packageName)
                     continue
-                }
                 val model = AppModel()
-                model.packageName = p.loadLabel(pm).toString()
-                model.name = p.activityInfo.packageName
-                model.icon = p.activityInfo.loadIcon(pm)
+                model.packageName = resolveInfo.loadLabel(pm).toString()
+                model.name = resolveInfo.activityInfo.packageName
+                model.icon = resolveInfo.activityInfo.loadIcon(pm)
                 appModels?.add(model)
-                progress = 100.0 / apps.size * i
+                progress = 100.0 / infoMutableList.size * i
                 sendUpdate()
             }
         }
 
-        override fun onBeingStarted() {}
+        override fun onStarted() {}
         override fun onFinished() {
             if (parentView != null) {
-                doTaskFinalized()
+                onPackagesLoaded()
             }
         }
 
-        override fun onException(e: Exception) {}
+        override fun onException(e: Exception) {
+            Toast.makeText(requireContext(), "exception: " + e.message, Toast.LENGTH_SHORT).show()
+        }
+
         override fun onUpdated(get: Array<Any>) {
-            if (mTextView != null) {
-                mTextView?.text = progress.toInt().toString().plus("%")
+            if (loadingLabel != null) {
+                loadingLabel?.text = progress.toInt().toString().plus("%")
             }
             if (progressBar != null) {
                 if (progressBar?.isIndeterminate == true) {

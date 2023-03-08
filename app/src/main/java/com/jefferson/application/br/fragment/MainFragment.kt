@@ -17,14 +17,12 @@
 package com.jefferson.application.br.fragment
 
 import android.app.Activity
-import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
 import android.view.*
 import android.view.View.OnLongClickListener
 import android.view.ViewGroup.MarginLayoutParams
-import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -42,7 +40,6 @@ import com.jefferson.application.br.activity.ImportGalleryActivity
 import com.jefferson.application.br.activity.ImportMediaActivity
 import com.jefferson.application.br.activity.MainActivity
 import com.jefferson.application.br.activity.SearchActivity
-import com.jefferson.application.br.model.AlbumModel
 
 class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnLongClickListener {
     private lateinit var viewPager: ViewPager2
@@ -83,7 +80,6 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             fab = view?.findViewById(R.id.fab)
             fab?.setOnClickListener(this)
             fab?.setOnLongClickListener(this)
-
             searchView?.setOnClickListener(this)
             adjustViewsPadding()
         }
@@ -117,25 +113,12 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
 
     override fun onClick(v: View) {
         when (v.id) {
-            R.id.fab -> {
-                importFromGallery()
-            }
-            R.id.ad_view -> {
-                val position = pagerPosition
-                try {
-                    startActivityForResult(
-                        Intent(Intent.ACTION_GET_CONTENT).addCategory(Intent.CATEGORY_DEFAULT)
-                            .setType(if (position == 0) "image/*" else "video/*"), GET_FILE
-                    )
-                } catch (e: ActivityNotFoundException) {
-                    Toast.makeText(context, "No external app for this action", Toast.LENGTH_LONG).show()
-                }
-            }
+            R.id.fab -> importFromGallery()
             R.id.search_bar -> openSearchView()
         }
     }
 
-    private val activityResultLauncher = registerForActivityResult(
+    private val searchResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -144,28 +127,20 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
                 val albumName = data.getStringExtra("result")
                 val action = data.action
                 if (action == SearchActivity.ACTION_GO_TO_ALBUM) {
-                    scrollToAlbum(albumName)
+                    currentFragment?.scrollToAlbum(albumName)
                     return@registerForActivityResult
                 }
                 if (action == SearchActivity.ACTION_OPEN_ALBUM) {
-                    openAlbum(albumName!!)
+                    currentFragment?.openAlbum(albumName!!)
                 }
             }
         }
     }
 
-    private fun openAlbum(albumName: String) {
-        currentFragment.openAlbum(albumName)
-    }
-
-    private fun scrollToAlbum(albumName: String?) {
-        currentFragment.scrollToAlbum(albumName)
-    }
-
-    private val currentFragment: AlbumFragment
+    private val currentFragment: AlbumFragment?
         get() {
             val pos = viewPager.currentItem
-            return pagerAdapter!!.createFragment(pos)
+            return pagerAdapter?.createFragment(pos)
         }
 
     private fun openSearchView() {
@@ -177,7 +152,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
                 SearchActivity.EXTRA_SIMPLE_MODELS,
                 fragment.simplifiedModels
             )
-            activityResultLauncher.launch(intent)
+            searchResult.launch(intent)
         }
     }
 
@@ -262,12 +237,6 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         fa
     ) {
         val fragments = arrayOfNulls<AlbumFragment>(Companion.SIZE)
-        fun update(
-            position: Int,
-            models: ArrayList<AlbumModel>?
-        ) {
-            createFragment(position).putModels(models)
-        }
 
         fun update(position: Int) {
             val fragment = fragments[position]
@@ -291,7 +260,6 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     }
 
     companion object {
-        const val UNIT_TEST_ID = "ca-app-pub-3940256099942544/6300978111"
         const val GET_FILE = 35
         const val SIZE = 2
     }

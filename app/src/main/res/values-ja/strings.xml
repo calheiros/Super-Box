@@ -137,6 +137,7 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="excluir_aviso_video">ビデオは永久に削除され、回復することはできません、続行してもよろしいですか</string>
     <string name="cancelar">キャンセル</string>
     <string name="apagar_image_mensagem">This image will be deleted forever. Are you sure?</string>
+    <string name="maove_to">Move to</string>
 
 </resources>
 

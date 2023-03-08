@@ -44,7 +44,7 @@ class RetrieveMediaTimeTask(
                     }
                     val time =
                         StringUtils.getFormattedVideoDuration(duration.toString())
-                    activity.runOnUiThread { adapter?.updateItemDuration(model.path!!, time) }
+                    activity.runOnUiThread { adapter?.updateVideoDuration(model.path!!, time) }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
