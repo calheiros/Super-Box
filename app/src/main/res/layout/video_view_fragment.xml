@@ -19,10 +19,10 @@ Copyright (C) 2023 Jefferson Calheiros
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent"
-    android:background="@android:color/black"
 	android:orientation="vertical">
 
 	<VideoView
+		android:visibility="gone"
         android:layout_centerInParent="true"
 		android:id="@+id/video_view"
 		android:keepScreenOn="true"
@@ -31,6 +31,7 @@ Copyright (C) 2023 Jefferson Calheiros
 		android:layout_height="match_parent"/>
 
 	<FrameLayout
+		android:background="@android:color/black"
         android:layout_centerInParent="true"
 		android:id="@+id/video_view_overlay"
 		android:layout_width="match_parent"

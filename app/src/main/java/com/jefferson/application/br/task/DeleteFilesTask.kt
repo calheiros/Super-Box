@@ -116,7 +116,7 @@ open class DeleteFilesTask(
     private fun deleteFolder(file: File) {
         val database = getInstance(activity)
         if (file.delete()) {
-            database.deleteFolder(
+            database.deleteAlbum(
                 file.name, if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
             )
         }

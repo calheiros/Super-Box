@@ -118,7 +118,7 @@ Copyright (C) 2023 Jefferson Calheiros
 			android:id="@+id/openPin2"
 			tools:ignore="UsingOnClickInXml" />
 
-		<com.jefferson.application.br.widget.JLoadingView
+		<com.jefferson.application.br.view.ProgressAnimation
 			android:layout_width="100dp"
 			android:layout_height="20dp"/>
 	</LinearLayout>

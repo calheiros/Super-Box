@@ -19,5 +19,4 @@ object ViewUtils {
         val displayMetrics = context.resources.displayMetrics
         return (dp * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)).roundToInt()
     }
-
 }

@@ -42,7 +42,7 @@ class PathsDatabase private constructor(context: Context, path: String) :
         if (oldVersion <= 10) {
             try {
                 sQLiteDatabase.execSQL(
-                    "ALTER TABLE " + FOLDER_TABLE_NAME + " ADD COLUMN favorite" +
+                    "ALTER TABLE $ALBUM_TABLE_NAME ADD COLUMN favorite" +
                             " INTEGER DEFAULT 0"
                 )
             } catch (e: SQLException) {
@@ -52,39 +52,34 @@ class PathsDatabase private constructor(context: Context, path: String) :
     }
 
     override fun onCreate(db: SQLiteDatabase) {
-       val CREATE_FOLDER_TABLE_SQL = "CREATE TABLE IF NOT EXISTS " + FOLDER_TABLE_NAME +
-                "(id TEXT NOT NULL, " +
-                "name TEXT," +
-                " type VARCHAR(6) NOT NULL," +
-                "favorite INTEGER DEFAULT 0);"
-        db.execSQL(createMediaTableSql)
-        db.execSQL(CREATE_FOLDER_TABLE_SQL)
+        db.execSQL(CREATE_MEDIA_TABLE_SQL)
+        db.execSQL(CREATE_ALBUM_TABLE_SQL)
     }
 
     fun setFavoriteFolder(folder: String?): Boolean {
-        return updateFavoriteFolder(folder, 1)
+        return updateFavoriteAlbum(folder, 1)
     }
 
     fun removeFavoriteFolder(folder: String?): Boolean {
-        return updateFavoriteFolder(folder, 0)
+        return updateFavoriteAlbum(folder, 0)
     }
 
-    fun updateFavoriteFolder(folderName: String?, value: Int): Boolean {
+    fun updateFavoriteAlbum(folderName: String?, value: Int): Boolean {
         var result = false
         val db = writableDatabase
         val values = ContentValues()
         values.put("favorite", value)
-        val rowsUpdated = db.update(FOLDER_TABLE_NAME, values, "id = ?", arrayOf(folderName))
+        val rowsUpdated = db.update(ALBUM_TABLE_NAME, values, "id = ?", arrayOf(folderName))
         if (rowsUpdated > 0) {
             result = true
         }
         return result
     }
 
-    fun isFavoriteFolder(folderName: String): Boolean {
+    fun isFavoriteAlbum(folderName: String): Boolean {
         var result = false
         val db = readableDatabase
-        val query = "SELECT * FROM $FOLDER_TABLE_NAME WHERE favorite = 1 AND id = ?"
+        val query = "SELECT * FROM $ALBUM_TABLE_NAME WHERE favorite = 1 AND id = ?"
         val cursor = db.rawQuery(query, arrayOf(folderName))
         if (cursor.moveToFirst()) {
             result = true
@@ -101,7 +96,7 @@ class PathsDatabase private constructor(context: Context, path: String) :
         onUpgradeDatabase(db, oldVersion, newVersion)
     }
 
-    fun updateMediaDuration(name: String, millSecond: Int) {
+    fun updateVideoDuration(name: String, millSecond: Int) {
         val database = writableDatabase
         val data = ContentValues()
         data.put(MEDIA_DURATION_COL, millSecond)
@@ -132,7 +127,7 @@ class PathsDatabase private constructor(context: Context, path: String) :
         var path: String? = null
         val db = this.readableDatabase
         val res = db.rawQuery(
-            "Select " + MEDIA_NAME_COL + " from " + MEDIA_TABLE_NAME +
+            "Select " + MEDIA_PATH_COL + " from " + MEDIA_TABLE_NAME +
                     " WHERE " + MEDIA_ID_COL + " = '" + id + "';", null
         )
         try {
@@ -170,7 +165,7 @@ class PathsDatabase private constructor(context: Context, path: String) :
     fun insertMediaData(id: String?, name: String?, duration: Long): Boolean {
         val db = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(MEDIA_NAME_COL, name)
+        contentValues.put(MEDIA_PATH_COL, name)
         contentValues.put(MEDIA_ID_COL, id)
         contentValues.put(MEDIA_DURATION_COL, duration)
         val result = db.insert(MEDIA_TABLE_NAME, null, contentValues)
@@ -181,7 +176,7 @@ class PathsDatabase private constructor(context: Context, path: String) :
     fun insertMediaData(id: String?, name: String?): Boolean {
         val db = this.writableDatabase
         val contentValues = ContentValues()
-        contentValues.put(MEDIA_NAME_COL, name)
+        contentValues.put(MEDIA_PATH_COL, name)
         contentValues.put(MEDIA_ID_COL, id)
         var result: Long = -1
         try {
@@ -193,7 +188,7 @@ class PathsDatabase private constructor(context: Context, path: String) :
         return result != -1L
     }
 
-    fun getFolderIdFromName(name: String, type: String): String? {
+    fun getAlbumIdFromName(name: String, type: String): String? {
         val readableDatabase = readableDatabase
         val rawQuery = readableDatabase.rawQuery(
             "SELECT id FROM FOLDER_ WHERE name = '$name' AND type = '$type'",
@@ -206,26 +201,27 @@ class PathsDatabase private constructor(context: Context, path: String) :
         return null
     }
 
-    fun addFolderName(id: String?, name: String?, type: String?) {
+    fun addAlbum(id: String?, name: String?, type: String?) {
         val writableDatabase = writableDatabase
         val values = ContentValues()
         values.put("id", id)
         values.put("name", name)
         values.put("type", type)
-        writableDatabase.insert(FOLDER_TABLE_NAME, null, values)
+        writableDatabase.insert(ALBUM_TABLE_NAME, null, values)
         writableDatabase.close()
     }
 
-    fun updateFolderName(id: String, name: String, type: String) {
+    fun updateAlbumName(id: String, name: String, type: String) {
         val writableDatabase = writableDatabase
-        writableDatabase.execSQL("UPDATE FOLDER_ SET name = '$name' WHERE id = '$id' AND type = '$type'")
+        writableDatabase.execSQL(
+            "UPDATE $ALBUM_TABLE_NAME SET name = '$name' WHERE id = '$id' AND type = '$type'")
         writableDatabase.close()
     }
 
-    fun getFolderName(str: String, type: String): String? {
-        val readableDatabase = readableDatabase
-        val rawQuery = readableDatabase.rawQuery(
-            "SELECT name FROM FOLDER_ WHERE id='$str' AND type = '$type';",
+    fun getAlbumName(id: String, type: String): String? {
+        val database = readableDatabase
+        val rawQuery = database.rawQuery(
+            "SELECT name FROM FOLDER_ WHERE id='$id' AND type = '$type';",
             null
         )
         var res: String? = null
@@ -235,28 +231,38 @@ class PathsDatabase private constructor(context: Context, path: String) :
             }
         } finally {
             rawQuery.close()
-            readableDatabase.close()
+            database.close()
         }
         return res
     }
 
-    fun deleteFolder(f_name: String, type: String) {
-        val writableDatabase = writableDatabase
+    fun deleteAlbum(f_name: String, type: String) {
+        val database = writableDatabase
         try {
-            writableDatabase.execSQL("DELETE FROM FOLDER_ WHERE id='$f_name' AND type = '$type';")
+            database.execSQL("DELETE FROM FOLDER_ WHERE id='$f_name' AND type = '$type';")
         } catch(e: Exception) {
             e.printStackTrace()
         } finally {
-            writableDatabase.close()
+            database.close()
         }
     }
 
-    val favoritesFolder: Map<String, Boolean>
+    fun mediaIdExists(id: String): Boolean {
+        val exists: Boolean
+        val database = readableDatabase
+        val cursor = database.rawQuery(
+            "SELECT $MEDIA_ID_COL FROM $MEDIA_TABLE_NAME WHERE $MEDIA_ID_COL = $id;", null)
+        exists = cursor.moveToFirst()
+        cursor.close()
+        return exists
+    }
+
+    val favoritesAlbum: Map<String, Boolean>
         get() {
             val favorites: MutableMap<String, Boolean> = HashMap()
             val data = readableDatabase
             val cursor = data.query(
-                FOLDER_TABLE_NAME,
+                ALBUM_TABLE_NAME,
                 arrayOf("id", "favorite"),
                 null,
                 null,
@@ -278,12 +284,22 @@ class PathsDatabase private constructor(context: Context, path: String) :
         const val MEDIA_TABLE_NAME = "PATHS_"
         const val DATABASE_VERSION = 11
         const val MEDIA_ID_COL = "ID"
-        const val MEDIA_NAME_COL = "NAME"
+        const val MEDIA_PATH_COL = "NAME"
         const val MEDIA_DURATION_COL = "DURATION"
-        const val FOLDER_TABLE_NAME = "FOLDER_"
-        val createMediaTableSql: String
+        const val ALBUM_TABLE_NAME = "FOLDER_"
+
+        val CREATE_ALBUM_TABLE_SQL: String
+            get() {
+            return "CREATE TABLE IF NOT EXISTS " + ALBUM_TABLE_NAME +
+                    "(id TEXT NOT NULL, " +
+                    "name TEXT," +
+                    " type VARCHAR(6) NOT NULL," +
+                    "favorite INTEGER DEFAULT 0);"
+        }
+        val CREATE_MEDIA_TABLE_SQL: String
             get() = ("CREATE TABLE IF NOT EXISTS " + MEDIA_TABLE_NAME + " (" + MEDIA_ID_COL + " TEXT NOT NULL,"
-                    + MEDIA_NAME_COL + " TEXT, " + MEDIA_DURATION_COL + " INTEGER DEFAULT -1);")
+                    + MEDIA_PATH_COL + " TEXT, " + MEDIA_DURATION_COL + " INTEGER DEFAULT -1);")
+
         @JvmStatic
         fun getInstance(context: Context, path: String): PathsDatabase {
             return PathsDatabase(context, "$path/$DATABASE_NAME")

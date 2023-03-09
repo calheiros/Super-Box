@@ -98,7 +98,6 @@ public class ImageTouch extends androidx.appcompat.widget.AppCompatImageButton {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-
         // Cache the view bounds.
         mCachedBounds.set(0, 0, w, h);
 		

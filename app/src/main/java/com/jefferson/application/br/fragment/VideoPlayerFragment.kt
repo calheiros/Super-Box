@@ -86,7 +86,6 @@ class VideoPlayerFragment(
             })
         }
         Glide.with(requireContext()).load("file://$videoPath").into(thumbView!!)
-        //videoView?.setOnClickListener(this)
         return parentView
     }
 

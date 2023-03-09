@@ -87,8 +87,7 @@ Copyright (C) 2023 Jefferson Calheiros
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:layout_gravity="bottom"
-                />
+                android:layout_gravity="bottom"/>
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -115,6 +114,11 @@ Copyright (C) 2023 Jefferson Calheiros
         app:layout_anchorGravity="end|bottom|end"
         app:shapeAppearanceOverlay="@style/RoundSquareShapeAppearance"
         app:tint="@color/white" />
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
         <!--EMPTY LAYOUT-->
     <RelativeLayout
         android:layout_width="match_parent"

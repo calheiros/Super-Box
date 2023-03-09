@@ -61,12 +61,14 @@ class App : Application(), Thread.UncaughtExceptionHandler {
     override fun uncaughtException(thread: Thread, thow: Throwable) {
         try {
             val error = JDebug.getStackTrace(thow)
-            startCrashActivity(error)
+            if (error != null) {
+                startCrashActivity(error)
+            }
             destroyActivities()
             exitProcess(-1)
             //android.os.Process.killProcess(android.os.Process.myPid());
         } catch (e: Exception) {
-            JDebug.writeLog(e.cause, this)
+            e.printStackTrace()
         }
         defaultExceptionHandler?.uncaughtException(thread, thow)
     }
@@ -134,10 +136,6 @@ class App : Application(), Thread.UncaughtExceptionHandler {
     companion object {
         const val TEST_ADS_ID = "ca-app-pub-3940256099942544/6300978111"
         var TAG: String? = null
-            private set
-        const val ACTION_REPORT_CRASH = "com.jefferson.application.action.REPORT_CRASH"
-        var PERMISSION_RECEIVE_BUS_DATA = "com.jefferson.application.RECEIVE_UPDATED_DATA"
-        var localeConfigured = false
         const val ACTION_OPEN_FROM_DIALER =
             "com.jefferson.application.action.ACTION_OPEN_FROM_DIALER"
         const val ACTION_APPLOCK_SERVICE_UPDATE_DATA = "com.jefferson.application.action.UPDATA"

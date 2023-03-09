@@ -71,11 +71,11 @@ class ImportTask(
     }
 
     override fun onFinished() {
-        synchronize()
+        refreshMediaStore()
         listener?.onFinished()
     }
 
-    private fun synchronize() {
+    private fun refreshMediaStore() {
         Storage.scanMediaFiles(importedFilesPath.toTypedArray(), activity)
     }
 
@@ -126,26 +126,26 @@ class ImportTask(
                 continue
             }
             sendUpdate(PROGRESS_UPDATE, file.name, null, null)
-            val folderName = file.parentFile?.name ?: ""
-            val randomString = StringUtils.getRandomString(24)
-            var randomString2 = StringUtils.getRandomString(24)
-            val folderId = database.getFolderIdFromName(folderName, model.type!!)
-            if (folderId == null) {
-                database.addFolderName(randomString2, folderName, model.type)
+            val albumName = file.parentFile?.name ?: ""
+            val mediaFileName = StringUtils.getRandomString(24)
+            var albumFileName = StringUtils.getRandomString(24)
+            val albumId = database.getAlbumIdFromName(albumName, model.type!!)
+            if (albumId == null) {
+                database.addAlbum(albumFileName, albumName, model.type)
             } else {
-                randomString2 = folderId
+                albumFileName = albumId
             }
             var parentPath = model.parentPath
             if (parentPath == null) {
                 parentPath = Storage.getFolder(
                     if (FileModel.IMAGE_TYPE == model.type) Storage.IMAGE else Storage.VIDEO,
                     activity
-                ).toString() + File.separator + randomString2
+                ).toString() + File.separator + albumFileName
             }
-            val destFile = File(parentPath, randomString)
+            val destFile = File(parentPath, mediaFileName)
             destFile.parentFile?.mkdirs()
             if (file.renameTo(destFile)) {
-                database.insertMediaData(randomString, model.resource)
+                database.insertMediaData(mediaFileName, model.resource)
                 importedFilesPath.add(file.absolutePath)
                 mTransfer.increment(destFile.length().toDouble() / 1024.0)
             } else {
@@ -161,7 +161,7 @@ class ImportTask(
                 val response = mTransfer.transferStream(inputStream, outputStream)
                 if (FileTransfer.OK == response) {
                     if (Storage.deleteFile(file, activity)) {
-                        database.insertMediaData(randomString, model.resource)
+                        database.insertMediaData(mediaFileName, model.resource)
                         importedFilesPath.add(file.absolutePath)
                     } else {
                         destFile.delete()

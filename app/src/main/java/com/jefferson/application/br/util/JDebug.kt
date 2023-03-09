@@ -33,11 +33,10 @@ object JDebug {
     private const val PREFERENCE_NAME = "Debug"
 
     @JvmStatic
-    fun writeLogFile(context: Context, name: String?, error: String?) {
+    fun writeLogFile(context: Context, name : String? = formattedDate, error: String?) {
         if (error == null || error.isEmpty()) {
             return
         }
-        val name = name ?: formattedDate
         try {
             val logFile = File(
                 getInternalStorage(
@@ -62,7 +61,8 @@ object JDebug {
     }
 
     @JvmStatic
-    fun getStackTrace(throwable: Throwable?): String {
+    fun getStackTrace(throwable: Throwable?): String? {
+        if (throwable == null) return null
         val writer = StringWriter()
         val printWriter = PrintWriter(writer)
         var throwable = throwable

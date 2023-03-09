@@ -19,7 +19,6 @@ package com.jefferson.application.br.activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -31,12 +30,12 @@ import androidx.viewpager2.widget.ViewPager2
 import com.jefferson.application.br.R
 import com.jefferson.application.br.fragment.VideoPlayerFragment
 import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
-import kotlin.math.roundToInt
 
 class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
     private lateinit var pagerAdapter: VideoPagerAdapter
     private lateinit var viewPager: ViewPager2
     override fun onCreate(savedInstanceState: Bundle?) {
+        configureTransition("shared_element_container")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.media_view_pager_layout)
         val exportImageView = findViewById<ImageView>(R.id.export_imageview)
@@ -46,18 +45,15 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
         optionsLayout.setOnClickListener(this)
         exportImageView.setOnClickListener(this)
         deleteImageView.setOnClickListener(this)
-
         val intent = intent
-        val choice = intent.extras!!.getInt("position")
+        val position = intent.extras!!.getInt("position")
         val filesPath = intent.getStringArrayListExtra("filepath")
-        fullscreen()
+        //fullscreen()
         pagerAdapter = VideoPagerAdapter(this, filesPath!!, switchVisibilityTrigger)
         viewPager = findViewById<View>(R.id.view_pager) as ViewPager2
         viewPager.adapter = pagerAdapter
-        //viewPager.setOnPageChangeListener(MyPageListener(choice))
-        viewPager.currentItem = choice
+        viewPager.setCurrentItem(position, false)
         viewPager.offscreenPageLimit = 3
-        //viewPager.pageMargin = dpToPx(5)
         viewPager.requestFocus()
         viewPager.setOnClickListener(this)
 
@@ -66,7 +62,7 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
                 val data = Intent()
                 data.putExtra("index", viewPager.currentItem)
                 setResult(RESULT_OK, data)
-                finish()
+                finishAfterTransition()
             }
         })
     }

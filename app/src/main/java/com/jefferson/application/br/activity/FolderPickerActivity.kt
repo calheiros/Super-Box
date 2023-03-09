@@ -198,7 +198,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
             if (file.isDirectory && file.absolutePath != currentPath) {
                 val pickerModel = PickerModel()
                 val dirList = file.listFiles()
-                var folderName = instance.getFolderName(
+                var folderName = instance.getAlbumName(
                     file.name,
                     if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
                 )

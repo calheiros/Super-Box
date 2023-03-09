@@ -17,7 +17,6 @@
 package com.jefferson.application.br.util
 
 import android.content.Context
-import android.telephony.mbms.StreamingServiceInfo
 import android.widget.Toast
 import com.jefferson.application.br.R
 import com.jefferson.application.br.database.PathsDatabase
@@ -28,7 +27,7 @@ import java.io.File
 
 object AlbumUtils {
 
-    private fun deleteAlbum(albumPath: String, context: Context): Result {
+    private fun deleteEmptyAlbum(albumPath: String, context: Context): Result {
         val file = File(albumPath)
         val database = PathsDatabase.getInstance(context)
         val id = file.name
@@ -51,8 +50,8 @@ object AlbumUtils {
             val folderType = if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
             val file = File(model.path!!)
             val id = file.name
-            val folderName = database.getFolderName(id, folderType)
-            val newFolderId = database.getFolderIdFromName(newName, folderType)
+            val folderName = database.getAlbumName(id, folderType)
+            val newFolderId = database.getAlbumIdFromName(newName, folderType)
             if (folderName != null && folderName == newName) {
                 Toast.makeText(
                     context,
@@ -72,9 +71,9 @@ object AlbumUtils {
                 return false
             }
             if (folderName == null) {
-                database.addFolderName(id, newName, folderType)
+                database.addAlbum(id, newName, folderType)
             } else {
-                database.updateFolderName(id, newName, folderType)
+                database.updateAlbumName(id, newName, folderType)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -90,7 +89,7 @@ object AlbumUtils {
         var folder: AlbumModel? = null
         try {
             val type = if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
-            var id = database.getFolderIdFromName(name, type)
+            var id = database.getAlbumIdFromName(name, type)
             val randomStr = StringUtils.getRandomString(24)
             if (id == null) {
                 id = randomStr
@@ -98,7 +97,7 @@ object AlbumUtils {
                 val file = File(Storage.getFolder(strType, context), randomStr)
                 if (file.mkdirs()) {
                     folder = AlbumModel()
-                    database.addFolderName(id, name, type)
+                    database.addAlbum(id, name, type)
                     folder.name = name
                     folder.path = file.absolutePath
                 }
@@ -119,7 +118,7 @@ object AlbumUtils {
     /*
      ** validate album name
     */
-    fun validateName(name: String, context: Context?): com.jefferson.application.br.util.Result {
+    fun validateName(name: String, context: Context?): Result {
         val noSpace = name.replace(" ", "")
         return if (noSpace.isEmpty()) {
             Result(false, context?.getString(R.string.pasta_nome_vazio))
@@ -130,16 +129,16 @@ object AlbumUtils {
         }
     }
 
-    fun removeFromFavorites(f_model: AlbumModel, context: Context) {
+    fun removeFromFavorites(albumModel: AlbumModel, context: Context) {
         val database = PathsDatabase.getInstance(context)
-        val file = File(f_model.path!!)
+        val file = File(albumModel.path!!)
         val name = file.name
         if (!database.removeFavoriteFolder(name)) {
             Toast.makeText(context, "failed to remove from bookmark", Toast.LENGTH_SHORT)
                 .show()
             return
         }
-        f_model.isFavorite = false
+        albumModel.isFavorite = false
     }
 }
 

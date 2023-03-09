@@ -47,7 +47,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     private var view: View? = null
     private var pagerAdapter: PagerAdapter? = null
     private var tabLayout: TabLayout? = null
-    private var fab: View? = null
+    private var floatingButton: View? = null
     private var paddingBottom = 0
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,13 +56,13 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     ): View? {
         val main = activity as MainActivity?
         if (view == null) {
-            view = inflater.inflate(R.layout.main_fragment, null)
+            view = inflater.inflate(R.layout.main_fragment, container, false)
             pagerAdapter = PagerAdapter(requireActivity())
             toolbar = view?.findViewById(R.id.toolbar)
             viewPager = view?.findViewById(R.id.mainViewPager) as ViewPager2
             viewPager.adapter = pagerAdapter
             viewPager.isSaveEnabled = false
-            //viewPager?.setOnPageChangeListener(this)
+            viewPager.offscreenPageLimit = 2
             tabLayout = view?.findViewById(R.id.tab_layout)
 
             val searchView = view?.findViewById<View>(R.id.search_bar)
@@ -77,9 +77,9 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
                     else -> ""
                 }
             }.attach()
-            fab = view?.findViewById(R.id.fab)
-            fab?.setOnClickListener(this)
-            fab?.setOnLongClickListener(this)
+            floatingButton = view?.findViewById(R.id.fab)
+            floatingButton?.setOnClickListener(this)
+            floatingButton?.setOnLongClickListener(this)
             searchView?.setOnClickListener(this)
             adjustViewsPadding()
         }
@@ -170,17 +170,17 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             }
         }
         //change params and add the fab button
-        if (fab != null) {
+        if (floatingButton != null) {
             val r = resources
             val px = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
                 16f,
                 r.displayMetrics
             ).toInt()
-            val p = fab!!.layoutParams as MarginLayoutParams
+            val p = floatingButton!!.layoutParams as MarginLayoutParams
             p.rightMargin = px
             p.bottomMargin = paddingBottom + px
-            fab!!.layoutParams = p
+            floatingButton!!.layoutParams = p
         }
     }
 
@@ -253,7 +253,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
 
         override fun createFragment(position: Int): AlbumFragment {
             if (fragments[position] == null) {
-                fragments[position] = AlbumFragment(position, this@MainFragment)
+                fragments[position] = AlbumFragment(position)
             }
             return fragments[position]!!
         }

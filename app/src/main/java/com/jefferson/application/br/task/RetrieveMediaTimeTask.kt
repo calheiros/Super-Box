@@ -40,7 +40,7 @@ class RetrieveMediaTimeTask(
                         } catch (e: Exception) {
                             -2
                         }
-                        database.updateMediaDuration(file.name, duration)
+                        database.updateVideoDuration(file.name, duration)
                     }
                     val time =
                         StringUtils.getFormattedVideoDuration(duration.toString())

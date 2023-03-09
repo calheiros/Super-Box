@@ -35,6 +35,8 @@ import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.google.android.material.transition.platform.MaterialContainerTransform
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.jefferson.application.br.App
 import com.jefferson.application.br.LocaleManager
 import com.jefferson.application.br.util.MyPreferences
@@ -107,6 +109,19 @@ open class MyCompatActivity : AppCompatActivity() {
 
     protected open fun onApplyCustomTheme() {
         setTheme(ThemeConfig.getTheme(this))
+    }
+    fun configureTransition(transitionName: String) {
+        findViewById<View>(android.R.id.content).transitionName = transitionName
+        setEnterSharedElementCallback(MaterialContainerTransformSharedElementCallback())
+        // Set this Activity’s enter and return transition to a MaterialContainerTransform
+        window.sharedElementEnterTransition = MaterialContainerTransform().apply {
+            addTarget(android.R.id.content)
+            duration = 300L
+        }
+        window.sharedElementReturnTransition = MaterialContainerTransform().apply {
+            addTarget(android.R.id.content)
+            duration = 250L
+        }
     }
 
     fun haveWriteReadPermission(): Boolean {

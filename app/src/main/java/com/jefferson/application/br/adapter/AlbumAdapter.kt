@@ -146,7 +146,8 @@ class AlbumAdapter(
             )
             val icons = intArrayOf(
                 R.drawable.ic_rename, R.drawable.ic_delete_outline,
-                if (model.isFavorite) R.drawable.ic_bookmark_remove_outline else R.drawable.ic_bookmark_add_outline
+                if (model.isFavorite) R.drawable.ic_bookmark_remove_outline
+                else R.drawable.ic_bookmark_add_outline
             )
             val dialog = SimpleDialog(fragment.requireActivity())
             dialog.setMenuItems(

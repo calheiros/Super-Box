@@ -17,7 +17,6 @@
 package com.jefferson.application.br.activity
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
@@ -27,6 +26,7 @@ import android.util.DisplayMetrics
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -34,12 +34,15 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
@@ -47,6 +50,7 @@ import com.jefferson.application.br.app.ProgressThreadUpdate
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.database.PathsDatabase
+import com.jefferson.application.br.fragment.PreviewFragment
 import com.jefferson.application.br.model.AlbumModel
 import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.model.MediaModel
@@ -65,42 +69,40 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private val minItemWidth = 110
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MultiSelectRecyclerViewAdapter
-    private lateinit var fab: FloatingActionButton
+    private lateinit var floatingButton: FloatingActionButton
     private lateinit var emptyView: View
     private lateinit var menuLayout: View
     private lateinit var toolbar: Toolbar
     private lateinit var albumLabel: TextView
-    //private lateinit var filePaths: java.util.ArrayList<MediaModel>
-    // private lateinit var albumModel: AlbumModel
+    private lateinit var previewContainer: FrameLayout;
     private var selectionMode = false
     private var position = 0
     private var title: String? = null
     private var folder: File? = null
-    private var myThread: RetrieveMediaTimeTask? = null
+    private var mediaTimeTask: RetrieveMediaTimeTask? = null
     private var baseNameDirectory: String? = null
     private var selectAllTextView: TextView? = null
     private var selectImageView: ImageView? = null
 
     public override fun onCreate(savedInstanceState: Bundle?) {
+        //configureExitTransition()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.view_album_layout)
         position = intent.getIntExtra("position", -1)
         title = intent.getStringExtra("name")
         folder = intent.getStringExtra("folder")?.let { File(it) }
         //albumModel = intent.getParcelableExtra("model")
-        val filePaths: ArrayList<MediaModel> =
+        val filePaths: ArrayList<MediaModel>? =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                intent.getParcelableArrayListExtra("data", MediaModel::class.java)!!
+                intent.getParcelableArrayListExtra("data", MediaModel::class.java)
             else @Suppress("DEPRECATION")
-                intent.getParcelableArrayListExtra("data")!!
-
+                intent.getParcelableArrayListExtra("data")
         val layoutManager = GridLayoutManager(this, autoSpan)
         recyclerView = findViewById(R.id.my_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = layoutManager
-        adapter = MultiSelectRecyclerViewAdapter(this@ViewAlbum, filePaths, this, position)
+        adapter = MultiSelectRecyclerViewAdapter(this@ViewAlbum, filePaths ?: ArrayList(), this, position)
         recyclerView.adapter = adapter
-
         val mViewUnlock = findViewById<View>(R.id.unlockView)
         val mViewDelete = findViewById<View>(R.id.deleteView)
         val mViewSelect = findViewById<View>(R.id.selectView)
@@ -111,19 +113,19 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         mViewMove.setOnClickListener(this)
         mViewSelect.setOnClickListener(this)
 
-        fab = findViewById(R.id.view_album_fab_button)
+        floatingButton = findViewById(R.id.view_album_fab_button)
         menuLayout = findViewById(R.id.lock_layout)
         albumLabel = findViewById(R.id.album_name_label)
         selectAllTextView = findViewById(R.id.options_album_selectTextView)
         selectImageView = findViewById(R.id.selectImageView)
         emptyView = findViewById(R.id.view_album_empty_view)
-        fab.setOnClickListener(this)
+        floatingButton.setOnClickListener(this)
         albumLabel.setOnClickListener(this)
 
         initToolbar()
         configureBlurView(recyclerView)
 
-        if (filePaths.isEmpty())
+        if (filePaths?.isEmpty() == true)
             emptyView.visibility = View.VISIBLE
 
         if (position == 1)
@@ -139,20 +141,33 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 if (abs(n = dy) > threshold) {
                     if (dy > 0) {
                         // Scroll Down
-                        if (fab.isShown) {
-                            fab.hide()
+                        if (floatingButton.isShown) {
+                            floatingButton.hide()
                         }
                     } else {
                         // Scroll Up
-                        if (!fab.isShown) {
-                            fab.show()
+                        if (!floatingButton.isShown) {
+                            floatingButton.show()
                         }
                     }
                 }
             }
         })
+
+        previewContainer = findViewById(R.id.fragment_container)
+        ViewCompat.setTransitionName(previewContainer, "shared_element_container");
         addBackPressedCallback()
+        if (filePaths == null) {
+            updateRecyclerView()
+        }
     }
+
+    private fun configureExitTransition() {
+        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
+        window.sharedElementsUseOverlay = false
+    }
+
     private fun addBackPressedCallback() {
         onBackPressedDispatcher.addCallback(this,
             object : OnBackPressedCallback(true) {
@@ -163,15 +178,17 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                     }
                     finish()
                 }
-            })
+            }
+        )
     }
+
     private val startPreviewForResult = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             val extras = result.data?.extras
             val index = extras?.getInt("index", 0)
-            val removeItems = extras?.getStringArrayList(ImagePreviewActivity.EXTRA_REMOVED_ITEMS)
+            val removeItems = extras?.getStringArrayList(PreviewFragment.EXTRA_REMOVED_ITEMS)
             //remove all deleted/exported items in preview activity
             if (removeItems != null && removeItems.isNotEmpty()) {
                 adapter.removeAll(removeItems)
@@ -280,11 +297,13 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     private fun updateDatabase(
-        list: ArrayList<MediaModel>?, adapter: MultiSelectRecyclerViewAdapter?
+        list: ArrayList<MediaModel>?, adapter: MultiSelectRecyclerViewAdapter
     ) {
-        myThread = RetrieveMediaTimeTask(list, adapter, this)
-        myThread?.priority = Thread.MAX_PRIORITY
-        myThread?.start()
+        if (list == null)
+            return
+        mediaTimeTask = RetrieveMediaTimeTask(list, adapter, this)
+        mediaTimeTask?.priority = Thread.MAX_PRIORITY
+        mediaTimeTask?.start()
     }
 
     private fun toggleSelection() {
@@ -460,13 +479,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
     override fun onItemClicked(position: Int, v: View?) {
         if (!selectionMode) {
-            when (this.position) {
-                0 -> startPreviewActivity(ImagePreviewActivity::class.java, position, v)
-                1 -> {
-                    val videoPlayerClass = VideoPlayerActivity::class.java
-                    startPreviewActivity(videoPlayerClass, position, v)
-                }
-            }
+            startPreviewActivity(position, v!!)
             return
         }
         toggleItemSelected(position, true)
@@ -474,15 +487,24 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         switchSelectButtonIcon()
     }
 
-    private fun startPreviewActivity(previewActivity: Class<*>, position: Int, v: View?) {
-        val intent = Intent(this, previewActivity)
-        intent.putExtra("position", position)
-        intent.putExtra("filepath", adapter.listItemsPath)
-        val opts = ActivityOptions.makeScaleUpAnimation(
-            v, 0, 0, v!!.width, v.height
-        ) // Request the activity be started, using the custom animation options.
-        startPreviewForResult.launch(intent)
+    private fun startPreviewActivity(itemPosition: Int, view: View) {
+        val fragment = PreviewFragment(adapter.listItemsPath, itemPosition, position)
+        supportFragmentManager
+            .beginTransaction()
+            // Map the start View in FragmentA and the transitionName of the end View in FragmentB
+            .replace(R.id.fragment_container, fragment, PreviewFragment.TAG)
+            .addToBackStack(PreviewFragment.TAG)
+            .commit()
     }
+       /* val intent = Intent(this, PreviewFragment::class.java)
+        intent.putExtra("position", itemPosition)
+        intent.putExtra("mediaType", position)
+        intent.putExtra("filepath", adapter.listItemsPath)
+
+        startPreviewForResult.launch(intent,
+            ActivityOptionsCompat.makeSceneTransitionAnimation(this, view,
+                "shared_element_container"))
+    }*/
 
     override fun onItemLongClicked(position: Int): Boolean {
         toggleItemSelected(position, true)
@@ -533,7 +555,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             override fun onAnimationRepeat(p1: Animation) {}
         })
         menuLayout.animation = anim
-        fab.hide()
+        floatingButton.hide()
     }
 
     private fun renameAlbum() {
@@ -577,7 +599,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         val dimen = resources.getDimension(R.dimen.recycler_view_padding).toInt()
         recyclerView.setPadding(dimen, dimen, dimen, dimen)
         toolbar.title = title
-        fab.show()
+        floatingButton.show()
     }
 
     private fun initToolbar() {
@@ -618,8 +640,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         private var threadInterrupted = false
         override fun onStarted() {
             super.onStarted()
-            if (myThread?.isWorking == true) {
-                myThread?.stopWork()
+            if (mediaTimeTask?.isWorking == true) {
+                mediaTimeTask?.stopWork()
                 threadInterrupted = true
             }
             exitSelectionMode()
@@ -726,8 +748,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
 
         override fun onStarted() {
-            if (myThread != null && myThread!!.isWorking) {
-                myThread?.stopWork()
+            if (mediaTimeTask != null && mediaTimeTask!!.isWorking) {
+                mediaTimeTask?.stopWork()
             }
             simpleDialog.resetDialog()
             simpleDialog.showProgressBar(true)
@@ -756,11 +778,11 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
         override fun onFinished() {
             retrieveInfo()
-            kill()
+            syncAllChanges()
         }
 
         private fun retrieveInfo() {
-            if (myThread != null && myThread!!.isCancelled() && adapter.itemCount > 0) {
+            if (mediaTimeTask != null && mediaTimeTask!!.isCancelled() && adapter.itemCount > 0) {
                 retrieveDataAndUpdate()
             }
         }
@@ -780,7 +802,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             Toast.makeText(this@ViewAlbum, "Finished with error!", Toast.LENGTH_SHORT).show()
         }
 
-        private fun kill() {
+        private fun syncAllChanges() {
             Storage.scanMediaFiles(mArrayPath.toTypedArray(), this@ViewAlbum)
             simpleDialog.dismiss()
             if (adapter.items.isEmpty()) {
@@ -804,7 +826,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         private fun deleteFolder() {
             val database = PathsDatabase.getInstance(this@ViewAlbum)
             if (folder?.delete() == true) {
-                database.deleteFolder(
+                database.deleteAlbum(
                     folder!!.name, if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
                 )
             }
@@ -839,7 +861,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         @Throws(FileNotFoundException::class)
         fun getOutputStream(file: File): OutputStream {
             var result: OutputStream? = null
-            if (Build.VERSION.SDK_INT >= 21) if (Environment.isExternalStorageRemovable(file)) {
+            if (Build.VERSION.SDK_INT >= 21)
+                if (Environment.isExternalStorageRemovable(file)) {
                 val document = DocumentUtil.getDocumentFile(file, true, this@ViewAlbum)
                 if (document != null) result =
                     this@ViewAlbum.contentResolver.openOutputStream(document.uri)

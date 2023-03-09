@@ -100,7 +100,6 @@ public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHo
                 builder.create().show();
                 return true;
             }
-
         });
 
         holder.mImage.setOnClickListener(new OnClickListener() {

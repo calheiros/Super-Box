@@ -31,7 +31,6 @@ Copyright (C) 2023 Jefferson Calheiros
     </style>
 
     <style name="Theme.Base.Light" parent="Theme.AppCompat.Light.NoActionBar">
-    <!--        <item name="android:navigationBarColor">@color/bondiBlue</item>-->
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/bondiBlue</item>
         <item name="colorPrimaryDark">@color/bondiBlue</item>
@@ -61,7 +60,6 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="android:textSize">18sp</item>
     </style>
 
-	<!-- Styles -->
 	<style name="menu_labels_style">
 		<item name="android:background">@drawable/fab_label_background</item>
 		<item name="android:textColor">@color/white</item>
@@ -69,14 +67,12 @@ Copyright (C) 2023 Jefferson Calheiros
 
 	<style name="ThemeOverlay.AppCompat.navTheme">
 		<item name="colorPrimary">@color/green</item> 
-		<item name="colorAccent">@color/green</item> 
-        <!-- Background color when SELECTED -->
+		<item name="colorAccent">@color/green</item>
         <item name="colorControlHighlight">@color/blue_semi_transparent</item>
     </style>
 
     <style name="LauncherTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowBackground">@color/colorPrimary</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -98,9 +94,6 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="colorAccent">@color/colorAccentLight</item>
     </style>
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
-        <!--<item name="android:background">@drawable/alert_background</item>
-        <item name="colorControlHighlight">@android:color/transparent</item>
-        -->
         <item name="colorAccent">@color/colorAccent</item>
     </style>
     
@@ -128,7 +121,7 @@ Copyright (C) 2023 Jefferson Calheiros
     </style>
 
     <style name="ThemeBlueLight" parent="Theme.Base.Light">
-<!--        <item name="android:navigationBarColor">@color/bondiBlue</item>-->
+<!--    <item name="android:navigationBarColor">@color/bondiBlue</item>-->
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/bondiBlue</item>
         <item name="colorPrimaryDark">@color/bondiBlue</item>
@@ -156,22 +149,8 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="android:windowBackground">@color/colorBackground</item>
     </style>
 
-    <!--<style name="TransparentTheme" parent="Theme.AppCompat.NoActionBar">
-    <item name="textShadowColor">#6900D6FF</item>
-    <item name="colorPrimary">@color/colorPrimary</item>
-    <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-    <item name="colorAccent">@color/colorAccent</item>
-    <item name="colorBackgroundSecondary">@color/colorBackgroundDark</item>
-    <item name="colorBackground">#8A333333</item>
-    <item name="commonColorDark">@color/colorCommonDark</item>
-    <item name="commonColor">@color/colorCommon</item>
-    <item name="commonColorLight">@color/colorCommonLight</item>
-    <item name="android:windowBackground">@color/colorBackground</item>
-    <item name="colorControlHighlight">@color/highLightColor</item>
-    </style>-->
-
     <style name="MainTheme" parent="Theme.Base.Dark">
-<!--        <item name="android:navigationBarColor">@color/colorPrimary</item>-->
+<!--    <item name="android:navigationBarColor">@color/colorPrimary</item>-->
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorBackgroundLight">#FF1B1D1D</item>
@@ -188,24 +167,18 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="colorTextMedium">#FFFFFF</item>
         <item name="colorTextSmall">#7F7F80</item>
 
-        <!--<item name="colorDialogBackground">#9A3A245E</item>
-         specify shared element transitions -->
-        <!--<item name="android:windowSharedElementEnterTransition">@transition/change_image_transform</item>
-        <item name="android:windowSharedElementExitTransition">@transition/change_image_transform</item>
-        <item name="colorControlHighlight">@color/green_semi_transparent</item>-->
-
     </style>
     <style name="drawer_theme" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorControlHighlight">@color/highLightColor</item> 
     </style>
 
-    <style name="VideoPlayerTheme" parent="Theme.AppCompat.NoActionBar">
+    <style name="MediaPreviewTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowNoTitle">true</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="android:windowActionBar">false</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowBackground">#000</item> 
+        <item name="android:windowBackground">#000</item>
+        <item name="android:windowActivityTransitions">true</item>
     </style>
 
     <style name="Theme.Transparent" parent="Theme.AppCompat"> 

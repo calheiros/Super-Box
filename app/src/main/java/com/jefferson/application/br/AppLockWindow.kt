@@ -38,18 +38,16 @@ import com.jefferson.application.br.util.MyPreferences
 import com.jefferson.application.br.util.PasswordManager
 
 class AppLockWindow(private val context: Context, private val database: AppLockDatabase) {
+
+    var lockePackageName: String? = null
+    var isLocked = false
+    var passedApp: String? = ""
     private val windowManager: WindowManager
     private var view: View? = null
     private val params: WindowManager.LayoutParams
     private var handler: Handler = Handler(Looper.getMainLooper())
-    var lockePackageName: String? = null
-        private set
     private var materialLockView: MaterialLockView? = null
-    var isLocked = false
-        private set
     private var iconImageView: ImageView? = null
-    var passedApp: String? = ""
-        private set
     private var password: String? = null
     private var lastView: View? = null
 
@@ -70,10 +68,6 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
 
     fun setPassword(realPassword: String?) {
         password = realPassword
-    }
-
-    fun revokePassed() {
-        passedApp = ""
     }
 
     private fun createParentView(): View {
@@ -100,7 +94,7 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             context.startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-            JDebug.toast(e.message)
+            e.printStackTrace()
             return false
         }
         return true
@@ -159,8 +153,7 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
     }
 
     inner class PatternListener(private val context: Context) : OnPatternListener() {
-        private val passManager: PasswordManager = PasswordManager(context)
-        val runnable: Runnable = Runnable { materialLockView!!.clearPattern() }
+        private val runnable: Runnable = Runnable { materialLockView!!.clearPattern() }
 
         override fun onPatternStart() {
             handler.removeCallbacks(runnable)

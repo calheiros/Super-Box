@@ -30,6 +30,7 @@ import com.jefferson.application.br.R;
 public class CircleProgressView extends View {
 
     private double progress;
+    RectF bounds;
     private RectF rect;
     private Paint progressPaint;
     private Paint backgroundPaint;
@@ -51,7 +52,7 @@ public class CircleProgressView extends View {
         canvas.drawArc(rect, 144, 252, false, backgroundPaint);
         canvas.drawArc(rect, 144, (float) progress * 2.52f , false, progressPaint);
         //draw progress text
-        RectF bounds = new RectF(rect);
+        bounds = new RectF(rect);
         // measure text width
         String progressText = String.valueOf(Math.round(progress));
         bounds.right = textPaint.measureText(progressText, 0, progressText.length()); 
@@ -75,8 +76,7 @@ public class CircleProgressView extends View {
         TypedValue typedValue = new TypedValue();
         Resources.Theme theme = getContext().getTheme();
         theme.resolveAttribute(res, typedValue, true);
-        int color = typedValue.data;
-        return color;
+        return typedValue.data;
     }
 
     private void defineVariables() {

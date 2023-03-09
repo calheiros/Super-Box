@@ -219,44 +219,54 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     override fun onItemClick(adapter: AdapterView<*>?, view: View, position: Int, id: Long) {
-        val itemId = this@SettingFragment.adapter!!.getItem(position).id
-        if (itemId == ID.PASSWORD) {
-            val intent = Intent(context, CreatePattern::class.java)
-            intent.action = CreatePattern.ENTER_RECREATE
-            requireActivity().startActivity(intent)
-        } else if (itemId == ID.LANGUAGE) {
-            showLanguageDialog()
-        } else if (itemId == ID.APP_THEME) {
-            showThemeDialog()
-        } else if (itemId == ID.STORAGE) {
-            showDialogStorage()
-        } else if (itemId == ID.SCREENSHOT) {
-            val mySwitch = view.findViewById<SwitchCompat>(R.id.my_switch)
-            val checked = !mySwitch.isChecked
-            MyPreferences.setAllowScreenshot(checked, requireContext())
-            val window = requireActivity().window
-            val flags = WindowManager.LayoutParams.FLAG_SECURE
-            if (checked) {
-                window.clearFlags(flags)
-            } else {
-                window.addFlags(flags)
+        val id = this@SettingFragment.adapter!!.getItem(position).id
+        when (id) {
+            ID.PASSWORD -> {
+                val intent = Intent(context, CreatePattern::class.java)
+                intent.action = CreatePattern.ENTER_RECREATE
+                requireActivity().startActivity(intent)
             }
-            setItemChecked((this.adapter)!!, mySwitch, position, checked)
-        } else if (itemId == ID.DIALER_CODE) {
-            changeCodeDialog()
-        } else if (itemId == ID.ABOUT) {
-            showAbout()
-        } else if (itemId == ID.FINGERPRINT) {
-            val mySwitch = view.findViewById<SwitchCompat>(R.id.my_switch)
-            val sharedPrefs = MyPreferences.getSharedPreferences((activity)!!)
-            val checked = !mySwitch.isChecked
-            if (supportFingerprint()) {
-                if (sharedPrefs.edit().putBoolean(MyPreferences.KEY_FINGERPRINT, checked)
-                        .commit()
-                ) setItemChecked(
-                    (this.adapter)!!, mySwitch, position, checked
-                )
+            ID.LANGUAGE -> {
+                showLanguageDialog()
             }
+            ID.APP_THEME -> {
+                showThemeDialog()
+            }
+            ID.STORAGE -> {
+                showDialogStorage()
+            }
+            ID.SCREENSHOT -> {
+                val mySwitch = view.findViewById<SwitchCompat>(R.id.my_switch)
+                val checked = !mySwitch.isChecked
+                MyPreferences.setAllowScreenshot(checked, requireContext())
+                val window = requireActivity().window
+                val flags = WindowManager.LayoutParams.FLAG_SECURE
+                if (checked) {
+                    window.clearFlags(flags)
+                } else {
+                    window.addFlags(flags)
+                }
+                setItemChecked((this.adapter)!!, mySwitch, position, checked)
+            }
+            ID.DIALER_CODE -> {
+                changeCodeDialog()
+            }
+            ID.ABOUT -> {
+                showAbout()
+            }
+            ID.FINGERPRINT -> {
+                val mySwitch = view.findViewById<SwitchCompat>(R.id.my_switch)
+                val sharedPrefs = MyPreferences.getSharedPreferences((activity)!!)
+                val checked = !mySwitch.isChecked
+                if (supportFingerprint()) {
+                    if (sharedPrefs.edit().putBoolean(MyPreferences.KEY_FINGERPRINT, checked)
+                            .commit()
+                    ) setItemChecked(
+                        (this.adapter)!!, mySwitch, position, checked
+                    )
+                }
+            }
+            else -> {}
         }
     }
 
@@ -272,7 +282,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         val items = ThemeConfig.getMenuList(requireContext())
         val dialog = SimpleDialog(requireActivity(), SimpleDialog.STYLE_MENU)
         dialog.setTitle(getString(R.string.escolha_tema))
-            .setMenuItems(items) { parent: AdapterView<*>?, view: View?, position: Int, id: Long ->
+            .setMenuItems(items) { _: AdapterView<*>?, _: View?, position: Int, _: Long ->
                 dialog.cancel()
                 val themeIndex: Int = ThemeConfig.getThemeIndex(requireContext())
                 val currentTheme: Int = MainActivity.currentTheme
@@ -393,15 +403,6 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                     )
                 }
                 requireActivity().startActivityForResult(enrollIntent, REQUEST_CODE)
-            }
-            BiometricManager.BIOMETRIC_ERROR_SECURITY_UPDATE_REQUIRED -> {
-                TODO()
-            }
-            BiometricManager.BIOMETRIC_ERROR_UNSUPPORTED -> {
-                TODO()
-            }
-            BiometricManager.BIOMETRIC_STATUS_UNKNOWN -> {
-                TODO()
             }
         }
         return false

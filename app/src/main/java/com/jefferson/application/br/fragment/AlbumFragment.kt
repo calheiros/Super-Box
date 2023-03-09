@@ -48,7 +48,7 @@ import com.jefferson.application.br.util.AlbumUtils
 import com.jefferson.application.br.util.Storage
 import java.io.File
 
-class AlbumFragment : Fragment {
+class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     private val corruptedWarnHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun dispatchMessage(msg: Message) {
             super.dispatchMessage(msg)
@@ -60,8 +60,6 @@ class AlbumFragment : Fragment {
             dialog.show()
         }
     }
-    var pagerPosition = 0
-        private set
     private var albumAdapter: AlbumAdapter? = null
     private var view: View? = null
     private var retrieveMedia: JTask? = null
@@ -69,11 +67,6 @@ class AlbumFragment : Fragment {
     private var progressBar: View? = null
     private var emptyView: View? = null
     private var paddingBottom = 0
-
-    constructor()
-    constructor(position: Int, mainFragment: MainFragment?) {
-        pagerPosition = position
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -95,12 +88,14 @@ class AlbumFragment : Fragment {
         return view
     }
 
-    fun openAlbum(f_model: AlbumModel?) {
+    fun openAlbum(model: AlbumModel?) {
         val intent = Intent(context, ViewAlbum::class.java)
         intent.putExtra("position", pagerPosition)
-        intent.putExtra("name", f_model!!.name)
-        intent.putExtra("data", f_model.items)
-        intent.putExtra("folder", f_model.path)
+        intent.putExtra("name", model!!.name)
+        if(model.items.size < 500) {
+            intent.putExtra("data", model.items)
+        }
+        intent.putExtra("folder", model.path)
         requireActivity().startActivity(intent)
     }
 
@@ -123,7 +118,7 @@ class AlbumFragment : Fragment {
             //do something
             return models
         }
-        val bookmark = database?.favoritesFolder
+        val bookmark = database?.favoritesAlbum
         if (root.exists()) {
             val files = root.list()
             if (files != null) for (s in files) {
@@ -135,7 +130,7 @@ class AlbumFragment : Fragment {
                 if (file.isDirectory) {
                     val folderList = file.listFiles()
                     var favorite = false
-                    var folderName: String? = database?.getFolderName(
+                    var folderName: String? = database?.getAlbumName(
                         s!!,
                         if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
                     )
@@ -189,7 +184,7 @@ class AlbumFragment : Fragment {
     }
 
     fun scrollTo(position: Int) {
-        recyclerView!!.scrollToPosition(position)
+        recyclerView?.scrollToPosition(position)
     }
     override fun onDestroy() {
         if (retrieveMedia?.isCancelled == false) {

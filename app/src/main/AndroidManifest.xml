@@ -1,5 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
-<!--
+<?xml version='1.0' encoding='utf-8'?><!--
 Copyright (C) 2023 Jefferson Calheiros
 
 
@@ -18,41 +17,42 @@ Copyright (C) 2023 Jefferson Calheiros
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- alterar ou excluir conteúdo do armaz. compartilhado -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <!-- ler conteúdo do armaz. comp. -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <!-- controlar vibração -->
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <!-- encontrar contas no dispositivo -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS"/>
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
     <!-- ligar diretamente para números de telefone -->
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <!-- Este app pode se sobrepor visualmente a outros apps -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <!-- executar na inicialização -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- recuperar apps em execução -->
-    <uses-permission android:name="android.permission.GET_TASKS"/>
+    <uses-permission android:name="android.permission.GET_TASKS" />
 
     <!-- PACKAGE_USAGE_STATS -->
-    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions"/>
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
 
     <!-- ter acesso total à rede -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <!-- ver conexões de rede -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <!-- ler seus contatos -->
     <!-- <uses-permission android:name="android.permission.READ_CONTACTS"/>-->
@@ -67,18 +67,19 @@ Copyright (C) 2023 Jefferson Calheiros
     <!--<uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>-->
 
     <!-- tirar fotos e gravar vídeos -->
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <!-- executar serviço em primeiro plano -->
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <!-- BIND_NOTIFICATION_LISTENER_SERVICE -->
     <uses-permission
-        tools:ignore="ProtectedPermissions"
-        android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"/>
+        android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+        tools:ignore="ProtectedPermissions" />
 
     <!-- MANAGE_EXTERNAL_STORAGE -->
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
     <!-- conectar e desconectar do Wi-Fi -->
@@ -89,130 +90,124 @@ Copyright (C) 2023 Jefferson Calheiros
 
     <uses-permission
         android:name="READ_PHONE_STATE"
-        android:maxSdkVersion="29"/>
+        android:maxSdkVersion="29" />
 
-    <uses-permission android:name="READ_PHONE_NUMBERS"/>
+    <uses-permission android:name="READ_PHONE_NUMBERS" />
 
     <uses-permission
-        android:maxSdkVersion="29"
-        android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
+        android:name="android.permission.PROCESS_OUTGOING_CALLS"
+        android:maxSdkVersion="29" />
 
-    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
         tools:ignore="QueryAllPackagesPermission" />
 
     <application
-        android:requestLegacyExternalStorage="true"
         android:name=".App"
-        android:manageSpaceActivity=".activity.ManageSpaceActivity"
-        android:fitsSystemWindows="true"
-        android:resizeableActivity="false"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:fitsSystemWindows="true"
         android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:manageSpaceActivity=".activity.ManageSpaceActivity"
+        android:requestLegacyExternalStorage="true"
+        android:resizeableActivity="false"
         android:theme="@style/MainTheme"
         tools:targetApi="n">
 
         <meta-data
             android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version"/>
+            android:value="@integer/google_play_services_version" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3062666120925607~5789743722"/>
+            android:value="ca-app-pub-3062666120925607~5789743722" />
+
+        <activity android:name=".activity.ManageSpaceActivity" />
 
         <activity
-            android:name=".activity.ManageSpaceActivity"/>
-        
-        <activity
             android:name=".activity.MainActivity"
-            android:excludeFromRecents="true"
-            android:windowSoftInputMode="adjustPan"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:theme="@style/SplashTheme">
+            android:excludeFromRecents="true"
+            android:theme="@style/SplashTheme"
+            android:windowSoftInputMode="adjustPan">
 
             <meta-data
                 android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
+                android:resource="@xml/searchable" />
 
         </activity>
 
         <activity
-            android:exported="true"
-            tools:node="merge"
+            android:name=".activity.VerifyActivity"
             android:excludeFromRecents="true"
+            android:exported="true"
             android:theme="@style/LauncherTheme"
-            android:name=".activity.VerifyActivity">
+            tools:node="merge">
 
             <intent-filter>
 
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
             </intent-filter>
 
         </activity>
 
         <activity
+            android:name=".activity.CrashActivity"
             android:excludeFromRecents="true"
-            android:launchMode="singleTask"
-            android:name=".activity.CrashActivity">
+            android:launchMode="singleTask">
 
         </activity>
-        
+
+        <activity android:name=".activity.ImportMediaActivity" />
+
         <activity
-            android:name=".activity.ImportMediaActivity"/>
-            
-        <activity
-            android:exported="true"
-            tools:node="merge"
             android:name=".activity.CalculatorActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_calculator"
             android:label="@string/calculadora"
             android:screenOrientation="unspecified"
-            android:excludeFromRecents="true"
-            android:windowSoftInputMode="stateHidden"
             android:theme="@style/CalculatorTheme"
-            android:icon="@mipmap/ic_calculator">
+            android:windowSoftInputMode="stateHidden"
+            tools:node="merge">
 
             <intent-filter>
-
-                <action android:name="android.intent.action.MAIN"/>
-
+                <action android:name="android.intent.action.MAIN" />
             </intent-filter>
 
         </activity>
-        
+
         <activity-alias
-            android:exported="true"
-            tools:node="merge"
             android:name=".CalculatorAlias"
             android:enabled="false"
-            android:targetActivity=".activity.CalculatorActivity">
-            
-            <intent-filter>
-               
-                <action android:name="android.intent.action.MAIN"/>
+            android:exported="true"
+            android:targetActivity=".activity.CalculatorActivity"
+            tools:node="merge">
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+            <intent-filter>
+
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
 
             </intent-filter>
-            
+
         </activity-alias>
-      
+
         <activity
             android:name=".IntruderFragment"
-            android:label="Possiveis intrusos"/>
+            android:label="Possiveis intrusos" />
 
         <receiver
+            android:name=".BootCompletedReceiver"
             android:exported="true"
-            tools:node="merge"
-            android:name=".BootCompletedReceiver">
+            tools:node="merge">
 
             <intent-filter>
-
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-
-                <action android:name="android.intent.action.QUICKBOOT_POWERON"/>
-
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
 
         </receiver>
@@ -220,227 +215,208 @@ Copyright (C) 2023 Jefferson Calheiros
         <activity android:name=".activity.Launcher">
 
         </activity>
-        
+
         <activity-alias
+            android:name=".LauncherAlias"
             android:exported="true"
-            tools:node="merge"
             android:fitsSystemWindows="true"
-            android:name=".LuancherAlias"
-            android:targetActivity=".activity.VerifyActivity">
+            android:targetActivity=".activity.VerifyActivity"
+            tools:node="merge">
 
             <intent-filter>
 
-                <action android:name="android.intent.action.MAIN"/>
-
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
 
             </intent-filter>
 
         </activity-alias>
 
-        <activity android:name=".activity.FolderPickerActivity"/>
-            
+        <activity android:name=".activity.FolderPickerActivity" />
+
         <activity
             android:name=".activity.FakeDialogActivity"
-            android:theme="@style/Theme.Transparent"
-            android:excludeFromRecents="true"/>
-        
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.Transparent" />
+
         <activity
             android:name=".activity.CreatePattern"
-            android:excludeFromRecents="true"
-            android:configChanges="orientation|screenSize"/>
+            android:configChanges="orientation|screenSize"
+            android:excludeFromRecents="true" />
 
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
-            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"/>
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
 
         <activity
             android:name=".activity.LockActivity"
-            android:theme="@style/MainTheme"/>
+            android:theme="@style/MainTheme" />
 
         <activity
             android:name=".activity.ImportGalleryActivity"
-            android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize"
+            android:excludeFromRecents="true"
             android:label="Galeria"
-            android:theme="@style/MainTheme"/>
+            android:theme="@style/MainTheme" />
 
         <activity
             android:name=".activity.PinActivity"
-            android:excludeFromRecents="true"/>
+            android:excludeFromRecents="true" />
 
         <activity
             android:name=".activity.SelectionActivity"
-            android:excludeFromRecents="true"
             android:configChanges="orientation|screenSize"
-            android:theme="@style/MainTheme"/>
+            android:excludeFromRecents="true"
+            android:theme="@style/MainTheme" />
 
-        <activity
-            android:name=".activity.NotificationActivity"/>
+        <activity android:name=".activity.NotificationActivity" />
 
-        <activity
-            android:name=".ContactsActivity"/>
+        <activity android:name=".ContactsActivity" />
 
         <activity
             android:name=".activity.ViewAlbum"
             android:excludeFromRecents="true"
-            android:theme="@style/MainTheme"
-           />
+            android:theme="@style/MainTheme" />
 
         <receiver
-            android:exported="true"
-            tools:node="merge"
+            android:name=".PhoneStatReceiver"
             android:enabled="false"
-            android:name=".PhoneStatReceiver">
+            android:exported="true"
+            tools:node="merge">
 
             <intent-filter>
-
-                <action android:name="android.intent.action.PHONE_STATE"/>
-
-                <action android:name="android.intent.action.NEW_OUTGOING_CALL"/>
-
+                <action android:name="android.intent.action.PHONE_STATE" />
+                <action android:name="android.intent.action.NEW_OUTGOING_CALL" />
             </intent-filter>
 
         </receiver>
 
         <receiver
-            android:exported="true"
-            tools:node="merge"
             android:name=".AdmReceiver"
             android:description="@string/description"
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN"
+            tools:node="merge">
 
             <meta-data
                 android:name="android.app.device_admin"
-                android:resource="@xml/adm_permission"/>
+                android:resource="@xml/adm_permission" />
+
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+                <action android:name="android.app.action.ACTION_DEVICE_ADMIN_DISABLED" />
+                <action android:name="android.app.action.ACTION_PASSWORD_FAILED" />
+                <action android:name="android.app.action.ACTION_PASSWORD_SUCCEEDED" />
+            </intent-filter>
+
+        </receiver>
+
+        <receiver
+            android:name=".receiver.ScreenOnOff"
+            android:exported="true"
+            tools:node="merge">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_OFF" />
+                <action android:name="android.intent.action.SCREEN_ON" />
+            </intent-filter>
+
+        </receiver>
+
+        <receiver
+            android:name=".OnUpgradeReceiver"
+            android:exported="true"
+            tools:node="merge">
 
             <intent-filter>
 
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
-
-                <action android:name="android.app.action.ACTION_DEVICE_ADMIN_DISABLED"/>
-
-                <action android:name="android.app.action.ACTION_PASSWORD_FAILED"/>
-
-                <action android:name="android.app.action.ACTION_PASSWORD_SUCCEEDED"/>
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
 
             </intent-filter>
 
         </receiver>
 
         <receiver
+            android:name=".receiver.ReceiverRestartService"
             android:exported="true"
-            tools:node="merge"
-            android:name=".receiver.ScreenOnOff">
+            tools:node="merge">
 
             <intent-filter>
-
-                <action android:name="android.intent.action.SCREEN_OFF"/>
-
-                <action android:name="android.intent.action.SCREEN_ON"/>
-
-            </intent-filter>
-
-        </receiver>
-
-        <receiver
-            android:exported="true"
-            tools:node="merge"
-            android:name=".OnUpgradeReceiver">
-
-            <intent-filter>
-
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-
-            </intent-filter>
-
-        </receiver>
-
-        <receiver
-            android:exported="true"
-            tools:node="merge"
-            android:name=".receiver.ReceiverRestartService">
-
-            <intent-filter>
-                <action android:name="RestartBlockService"/>
+                <action android:name="RestartBlockService" />
             </intent-filter>
 
         </receiver>
 
         <service
-            android:exported="true"
-            tools:node="merge"
-            android:enabled="true"
             android:name=".service.AppLockAccessibilityService"
+            android:enabled="true"
+            android:exported="true"
+            android:label="@string/app_name"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
-            android:label="@string/app_name">
+            tools:node="merge">
 
             <intent-filter>
-
-                <action android:name="android.accessibilityservice.AccessibilityService"/>
-
+                <action android:name="android.accessibilityservice.AccessibilityService" />
             </intent-filter>
 
             <meta-data
                 android:name="android.accessibility-service"
-                android:resource="@xml/accessibility_service_config"/>
+                android:resource="@xml/accessibility_service_config" />
 
         </service>
 
         <service
-            android:exported="true"
-            tools:node="merge"
             android:name=".service.NotificationListener"
+            android:exported="true"
             android:label="@string/app_name"
-            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE"
+            tools:node="merge">
 
             <intent-filter>
-                <action android:name="android.service.notification.NotificationListenerService"/>
+                <action android:name="android.service.notification.NotificationListenerService" />
             </intent-filter>
 
         </service>
 
         <service
-            android:theme="@style/MainTheme"
             android:name=".service.AppLockService"
             android:exported="false"
-            android:process=":AppLock"/>
+            android:process=":AppLock"
+            android:theme="@style/MainTheme" />
+
+        <activity android:name=".activity.DeveloperActivity" />
+
+        <activity android:name=".activity.SearchActivity" />
 
         <activity
-            android:label="Atividade de testes"
-            android:name=".activity.DeveloperActivity"/>
-
-        <activity
-            android:name=".activity.ImagePreviewActivity"
+            android:name=".fragment.PreviewFragment"
+            android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
-            android:theme="@style/MainTheme"/>
-
-        <activity
-            android:name=".activity.SearchActivity"/>
+            android:theme="@style/MediaPreviewTheme" />
 
         <activity
             android:name=".activity.VideoPlayerActivity"
+            android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
-            android:theme="@style/VideoPlayerTheme"
-            android:configChanges="orientation|screenSize"/>
+            android:theme="@style/MediaPreviewTheme" />
 
         <activity
-            android:exported="true"
-            tools:node="merge"
             android:name=".ReceiverMedia"
-            android:theme="@style/Theme.Transparent"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
-            android:excludeFromRecents="true">
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:theme="@style/Theme.Transparent"
+            tools:node="merge">
 
             <intent-filter>
 
-                <action android:name="android.intent.action.SEND_MULTIPLE"/>
+                <action android:name="android.intent.action.SEND_MULTIPLE" />
+                <action android:name="android.intent.action.SEND" />
 
-                <action android:name="android.intent.action.SEND"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.DEFAULT" />
 
-                <data android:mimeType="image/*"/>
-                <data android:mimeType="video/*"/>
+                <data android:mimeType="image/*" />
+                <data android:mimeType="video/*" />
 
             </intent-filter>
 
