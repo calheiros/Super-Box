@@ -25,52 +25,51 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.transition.platform.MaterialContainerTransform
+import com.google.android.material.transition.platform.MaterialElevationScale
 import com.jefferson.application.br.R
+import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
 import com.jefferson.application.br.util.MediaUtils
 
-class PreviewFragment(var filesPath: ArrayList<String>,
-                      var position: Int,
-                      var mediaType: Int,
+class PreviewFragment(
+    val albumAdapter: MultiSelectRecyclerViewAdapter, var position: Int, val mediaType: Int
 ) : Fragment(), View.OnClickListener {
+
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: ImagePagerAdapter
-    private val removedItems = ArrayList<String>()
+    private lateinit var filesPath: ArrayList<String>
     private var rootView: View? = null
-    private fun configureBackPressed() {
-      /*
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                val intent = Intent()
-                intent.putExtra("index", viewPager.currentItem)
-                intent.putStringArrayListExtra(EXTRA_REMOVED_ITEMS, removedItems)
-                setResult(RESULT_OK, intent)
-                finishAfterTransition()
-            }
-        })*/
-    }
+
+    val currentItem: Int
+        get() {
+            return viewPager.currentItem
+        }
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        //configureTransition("shared_element_container")
-        if(rootView == null) {
-            rootView = inflater.inflate(R.layout.media_view_pager_layout, container, false)
+        if (rootView == null) {
+            rootView = inflater.inflate(R.layout.preview_pager_layout, container, false)
             val deleteButton = rootView?.findViewById<View>(R.id.delete_imageview)
             val exportButton = rootView?.findViewById<View>(R.id.export_imageview)
             val optionLayout = rootView?.findViewById<View>(R.id.options_layout)
+            //rootView?.transitionName = "shared_element_container"
 
+            filesPath = albumAdapter.listItemsPath
             pagerAdapter = ImagePagerAdapter(requireActivity(), optionLayout!!)
             viewPager = rootView?.findViewById(R.id.view_pager) as ViewPager2
             viewPager.adapter = pagerAdapter
+            viewPager.setPageTransformer(ZoomOutPageTransformer())
             viewPager.setCurrentItem(position, false)
             viewPager.setOnClickListener(this)
             exportButton?.setOnClickListener(this)
             deleteButton?.setOnClickListener(this)
-            configureBackPressed()
+
+            exitTransition = MaterialElevationScale(false)
+            reenterTransition = MaterialElevationScale(true)
+
         }
         return rootView
     }
@@ -80,10 +79,8 @@ class PreviewFragment(var filesPath: ArrayList<String>,
         val position = viewPager.currentItem
         val path = filesPath[position]
         when (v.id) {
-            R.id.delete_imageview ->
-                deletionConfirmation(path, position)
-            R.id.export_imageview ->
-                exportImage(path, position)
+            R.id.delete_imageview -> deletionConfirmation(path, position)
+            R.id.export_imageview -> exportImage(path, position)
         }
     }
 
@@ -107,13 +104,12 @@ class PreviewFragment(var filesPath: ArrayList<String>,
         if (success) {
             pagerAdapter.notifyItemRemoved(position)
             filesPath.removeAt(position)
-            removedItems.add(path)
+            albumAdapter.removeAt(position)
+        } else {
+            Toast.makeText(
+                requireContext(), "failed to delete item at position: $position", Toast.LENGTH_SHORT
+            ).show()
         }
-        Toast.makeText(
-            requireContext(),
-            if (success) "deleted: $position" else "failed to delete image",
-            Toast.LENGTH_SHORT
-        ).show()
     }
 
     private fun exportImage(path: String, position: Int) {
@@ -135,13 +131,52 @@ class PreviewFragment(var filesPath: ArrayList<String>,
         override fun createFragment(position: Int): Fragment {
             return if (mediaType == 1)
                 VideoPlayerFragment(filesPath[position], optionsTrigger)
-            else
-                ImagePreviewFragment(filesPath[position], optionsTrigger)
+            else ImagePreviewFragment(filesPath[position], optionsTrigger)
         }
     }
 
+    class ZoomOutPageTransformer : ViewPager2.PageTransformer {
+
+        override fun transformPage(view: View, position: Float) {
+            view.apply {
+                val pageWidth = width
+                val pageHeight = height
+                when {
+                    position < -1 -> { // [-Infinity,-1)
+                        // This page is way off-screen to the left.
+                        alpha = 0f
+                    }
+                    position <= 1 -> { // [-1,1]
+                        // Modify the default slide transition to shrink the page as well.
+                        val scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position))
+                        val vertMargin = pageHeight * (1 - scaleFactor) / 2
+                        val horzMargin = pageWidth * (1 - scaleFactor) / 2
+                        translationX = if (position < 0) {
+                            horzMargin - vertMargin / 2
+                        } else {
+                            horzMargin + vertMargin / 2
+                        }
+
+                        // Scale the page down (between MIN_SCALE and 1).
+                        scaleX = scaleFactor
+                        scaleY = scaleFactor
+
+                        // Fade the page relative to its size.
+                        alpha = (MIN_ALPHA +
+                                (((scaleFactor - MIN_SCALE) / (1 - MIN_SCALE)) * (1 - MIN_ALPHA)))
+                    }
+                    else -> { // (1,+Infinity]
+                        // This page is way off-screen to the right.
+                        alpha = 0f
+                    }
+                }
+            }
+        }
+    }
     companion object {
-        val TAG: String = "PreviewFragment"
+        private const val MIN_SCALE = 0.85f
+        private const val MIN_ALPHA = 0.5f
+        const val TAG: String = "PreviewFragment"
         const val EXTRA_REMOVED_ITEMS = "key_removed_items"
     }
 }

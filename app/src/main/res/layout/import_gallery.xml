@@ -22,7 +22,7 @@ Copyright (C) 2023 Jefferson Calheiros
 	xmlns:app="http://schemas.android.com/apk/res-auto">
 
 	<com.google.android.material.appbar.AppBarLayout
-		android:id="@+id/tab_appbar"
+		android:id="@+id/appbar_view_album"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
@@ -83,12 +83,12 @@ Copyright (C) 2023 Jefferson Calheiros
     
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_refresh"
-        android:layout_below="@+id/tab_appbar"
+        android:layout_below="@+id/appbar_view_album"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <GridView
-            android:layout_below="@id/tab_appbar"
+            android:layout_below="@id/appbar_view_album"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/gv_folder"

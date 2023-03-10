@@ -34,19 +34,17 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
-import com.jefferson.application.br.app.ProgressThreadUpdate
+import com.jefferson.application.br.app.ProgressWatchThread
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.database.PathsDatabase
@@ -62,7 +60,6 @@ import com.jefferson.application.br.view.RoundedImageView
 import eightbitlab.com.blurview.BlurView
 import java.io.*
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
@@ -74,7 +71,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private lateinit var menuLayout: View
     private lateinit var toolbar: Toolbar
     private lateinit var albumLabel: TextView
-    private lateinit var previewContainer: FrameLayout;
+    private lateinit var previewContainer: FrameLayout
+    private var previewFragment: PreviewFragment? = null
     private var selectionMode = false
     private var position = 0
     private var title: String? = null
@@ -83,9 +81,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private var baseNameDirectory: String? = null
     private var selectAllTextView: TextView? = null
     private var selectImageView: ImageView? = null
-
+    private lateinit var appbar: AppBarLayout
     public override fun onCreate(savedInstanceState: Bundle?) {
-        //configureExitTransition()
         super.onCreate(savedInstanceState)
         setContentView(R.layout.view_album_layout)
         position = intent.getIntExtra("position", -1)
@@ -93,15 +90,18 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         folder = intent.getStringExtra("folder")?.let { File(it) }
         //albumModel = intent.getParcelableExtra("model")
         val filePaths: ArrayList<MediaModel>? =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
-                intent.getParcelableArrayListExtra("data", MediaModel::class.java)
-            else @Suppress("DEPRECATION")
-                intent.getParcelableArrayListExtra("data")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) intent.getParcelableArrayListExtra(
+                "data",
+                MediaModel::class.java
+            )
+            else @Suppress("DEPRECATION") intent.getParcelableArrayListExtra("data")
         val layoutManager = GridLayoutManager(this, autoSpan)
+        appbar = findViewById(R.id.appbar_view_album)
         recyclerView = findViewById(R.id.my_recycler_view)
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = layoutManager
-        adapter = MultiSelectRecyclerViewAdapter(this@ViewAlbum, filePaths ?: ArrayList(), this, position)
+        adapter =
+            MultiSelectRecyclerViewAdapter(this@ViewAlbum, filePaths ?: ArrayList(), this, position)
         recyclerView.adapter = adapter
         val mViewUnlock = findViewById<View>(R.id.unlockView)
         val mViewDelete = findViewById<View>(R.id.deleteView)
@@ -125,11 +125,9 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         initToolbar()
         configureBlurView(recyclerView)
 
-        if (filePaths?.isEmpty() == true)
-            emptyView.visibility = View.VISIBLE
+        if (filePaths?.isEmpty() == true) emptyView.visibility = View.VISIBLE
 
-        if (position == 1)
-            updateDatabase(filePaths, adapter)
+        if (position == 1) updateDatabase(filePaths, adapter)
 
         val threshold = heightPixels / 100 //1%
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -155,31 +153,48 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         })
 
         previewContainer = findViewById(R.id.fragment_container)
-        ViewCompat.setTransitionName(previewContainer, "shared_element_container");
         addBackPressedCallback()
+
         if (filePaths == null) {
             updateRecyclerView()
         }
     }
 
-    private fun configureExitTransition() {
-        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-        setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
-        window.sharedElementsUseOverlay = false
+    private fun addBackPressedCallback() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (previewFragment != null) {
+                    recyclerView.scrollToPosition(previewFragment?.currentItem!!)
+                    removePreviewFragment()
+                    exitScreenCleanMode()
+                    return
+                }
+                if (selectionMode) {
+                    exitSelectionMode()
+                    return
+                }
+                finish()
+            }
+        })
     }
 
-    private fun addBackPressedCallback() {
-        onBackPressedDispatcher.addCallback(this,
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    if (selectionMode) {
-                        exitSelectionMode()
-                        return
-                    }
-                    finish()
-                }
-            }
-        )
+    private fun removePreviewFragment() {
+        if (previewFragment == null) return
+        supportFragmentManager.beginTransaction()
+            .remove(previewFragment!!).commit()
+        previewFragment = null
+    }
+
+    private fun exitScreenCleanMode() {
+        floatingButton.show()
+        appbar.visibility = View.VISIBLE
+    }
+
+    private fun enterScreenCleanMode() {
+        floatingButton.hide()
+        appbar.postDelayed({
+            appbar.visibility = View.INVISIBLE
+        }, 150)
     }
 
     private val startPreviewForResult = registerForActivityResult(
@@ -195,8 +210,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 setAlbumHeader()
             }
             //scroll to last viewed item in preview activity
-            if (index != null)
-                recyclerView.post {
+            if (index != null) recyclerView.post {
                 recyclerView.smoothScrollToPosition(index)
             }
         }
@@ -299,8 +313,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private fun updateDatabase(
         list: ArrayList<MediaModel>?, adapter: MultiSelectRecyclerViewAdapter
     ) {
-        if (list == null)
-            return
+        if (list == null) return
         mediaTimeTask = RetrieveMediaTimeTask(list, adapter, this)
         mediaTimeTask?.priority = Thread.MAX_PRIORITY
         mediaTimeTask?.start()
@@ -317,7 +330,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             }
         }
         invalidateOptionsMenu()
-        switchSelectButtonIcon()
+        switchSelectAllButtonIcon()
     }
 
     private fun exportToGallery() {
@@ -484,32 +497,22 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
         toggleItemSelected(position, true)
         invalidateOptionsMenu()
-        switchSelectButtonIcon()
+        switchSelectAllButtonIcon()
     }
 
     private fun startPreviewActivity(itemPosition: Int, view: View) {
-        val fragment = PreviewFragment(adapter.listItemsPath, itemPosition, position)
-        supportFragmentManager
-            .beginTransaction()
-            // Map the start View in FragmentA and the transitionName of the end View in FragmentB
-            .replace(R.id.fragment_container, fragment, PreviewFragment.TAG)
-            .addToBackStack(PreviewFragment.TAG)
+        previewFragment = PreviewFragment(adapter, itemPosition, position)
+        supportFragmentManager.beginTransaction()
+            .addSharedElement(view, "shared_element_container") /* Transition works only between fragments? Help wanted */
+            .replace(R.id.fragment_container, previewFragment!!)
             .commit()
+        enterScreenCleanMode()
     }
-       /* val intent = Intent(this, PreviewFragment::class.java)
-        intent.putExtra("position", itemPosition)
-        intent.putExtra("mediaType", position)
-        intent.putExtra("filepath", adapter.listItemsPath)
-
-        startPreviewForResult.launch(intent,
-            ActivityOptionsCompat.makeSceneTransitionAnimation(this, view,
-                "shared_element_container"))
-    }*/
 
     override fun onItemLongClicked(position: Int): Boolean {
         toggleItemSelected(position, true)
         invalidateOptionsMenu()
-        switchSelectButtonIcon()
+        switchSelectAllButtonIcon()
         if (!selectionMode) {
             enterSelectionMode()
         }
@@ -529,7 +532,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         adapter.toggleItemSelected(position, notifyAll)
     }
 
-    private fun switchSelectButtonIcon() {
+    private fun switchSelectAllButtonIcon() {
         val allSelected = adapter.selectedItemCount == adapter.itemCount
         val text = if (allSelected) "Unselect all" else "Select all"
         selectAllTextView!!.text = text
@@ -551,7 +554,6 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 recyclerView.setPadding(base, base, base, button)
                 recyclerView.clipToPadding = false
             }
-
             override fun onAnimationRepeat(p1: Animation) {}
         })
         menuLayout.animation = anim
@@ -631,7 +633,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             val path = adapter.listItemsPath[0]
             Glide.with(this).load(path).into(roundedImageView)
         } else {
-            roundedImageView.setImageResource(R.drawable.ic_image_broken_variant)
+            roundedImageView.setImageResource(R.drawable.ic_folder_image)
         }
     }
 
@@ -679,8 +681,11 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         private val mArrayPath = ArrayList<String>()
         private val mTransfer = FileTransfer()
         private val junkList = ArrayList<String?>()
-        private val progressThreadUpdate: ProgressThreadUpdate =
-            ProgressThreadUpdate(mTransfer, simpleDialog)
+        private val progressThreadUpdate: ProgressWatchThread =
+            ProgressWatchThread(
+                mTransfer,
+                simpleDialog
+            )
         private val database: PathsDatabase =
             PathsDatabase.getInstance(this@ViewAlbum, Storage.getDefaultStoragePath(this@ViewAlbum))
         private var allowListModification = true
@@ -757,7 +762,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             simpleDialog.setMessage("")
             simpleDialog.setSingleLineMessage(true)
             simpleDialog.setCancelable(false)
-            simpleDialog.setNegativeButton(getString(R.string.cancelar),
+            simpleDialog.setNegativeButton(
+                getString(R.string.cancelar),
                 object : OnDialogClickListener() {
                     override fun onClick(dialog: SimpleDialog): Boolean {
                         mTransfer.cancel()
@@ -861,8 +867,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         @Throws(FileNotFoundException::class)
         fun getOutputStream(file: File): OutputStream {
             var result: OutputStream? = null
-            if (Build.VERSION.SDK_INT >= 21)
-                if (Environment.isExternalStorageRemovable(file)) {
+            if (Build.VERSION.SDK_INT >= 21) if (Environment.isExternalStorageRemovable(file)) {
                 val document = DocumentUtil.getDocumentFile(file, true, this@ViewAlbum)
                 if (document != null) result =
                     this@ViewAlbum.contentResolver.openOutputStream(document.uri)

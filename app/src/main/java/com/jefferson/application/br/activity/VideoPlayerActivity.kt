@@ -37,7 +37,7 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         configureTransition("shared_element_container")
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.media_view_pager_layout)
+        setContentView(R.layout.preview_pager_layout)
         val exportImageView = findViewById<ImageView>(R.id.export_imageview)
         val deleteImageView = findViewById<ImageView>(R.id.delete_imageview)
         val optionsLayout = findViewById<View>(R.id.options_layout)

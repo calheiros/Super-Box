@@ -135,6 +135,13 @@ class MultiSelectRecyclerViewAdapter(
         return items.size
     }
 
+    fun removeAt(position: Int) {
+        if (position in 0 until itemCount) {
+            items.removeAt(position)
+            notifyItemRemoved(position)
+        }
+    }
+
     class ViewHolder(rootView: View, private val listener: ClickListener?) :
         RecyclerView.ViewHolder(rootView), View.OnClickListener, OnLongClickListener {
         val selectionModeOverlay: View

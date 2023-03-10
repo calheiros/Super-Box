@@ -21,6 +21,7 @@ Copyright (C) 2023 Jefferson Calheiros
 	android:orientation="vertical"
     android:background="@android:color/black"
 	android:layout_width="match_parent"
+	android:transitionName="shared_element_container"
 	android:layout_height="match_parent">
     
     <androidx.viewpager2.widget.ViewPager2
