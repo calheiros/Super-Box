@@ -25,7 +25,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.transition.platform.MaterialContainerTransform
 import com.google.android.material.transition.platform.MaterialElevationScale
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
@@ -33,9 +32,7 @@ import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
 import com.jefferson.application.br.util.MediaUtils
 
-class PreviewFragment(
-    val albumAdapter: MultiSelectRecyclerViewAdapter, var position: Int, val mediaType: Int
-) : Fragment(), View.OnClickListener {
+class PreviewFragment : Fragment, View.OnClickListener {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: ImagePagerAdapter
@@ -46,7 +43,14 @@ class PreviewFragment(
         get() {
             return viewPager.currentItem
         }
-
+    private var albumAdapter: MultiSelectRecyclerViewAdapter? = null
+    var position: Int = 0
+    var mediaType: Int = 0
+    constructor(albumAdapter: MultiSelectRecyclerViewAdapter, position: Int, mediaType: Int) {
+        this.albumAdapter = albumAdapter
+        this.position = position
+        this.mediaType = mediaType
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -55,10 +59,8 @@ class PreviewFragment(
             val deleteButton = rootView?.findViewById<View>(R.id.delete_imageview)
             val exportButton = rootView?.findViewById<View>(R.id.export_imageview)
             val optionLayout = rootView?.findViewById<View>(R.id.options_layout)
-            //rootView?.transitionName = "shared_element_container"
-
-            filesPath = albumAdapter.listItemsPath
-            pagerAdapter = ImagePagerAdapter(requireActivity(), optionLayout!!)
+            filesPath = albumAdapter?.listItemsPath as ArrayList
+            pagerAdapter = ImagePagerAdapter(requireActivity(), optionLayout as View)
             viewPager = rootView?.findViewById(R.id.view_pager) as ViewPager2
             viewPager.adapter = pagerAdapter
             viewPager.setPageTransformer(ZoomOutPageTransformer())
@@ -66,14 +68,17 @@ class PreviewFragment(
             viewPager.setOnClickListener(this)
             exportButton?.setOnClickListener(this)
             deleteButton?.setOnClickListener(this)
-
-            exitTransition = MaterialElevationScale(false)
-            reenterTransition = MaterialElevationScale(true)
-
         }
         return rootView
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val transition = MaterialElevationScale(true)
+        transition.duration = 150
+        enterTransition = transition
+        exitTransition = transition
+    }
 
     override fun onClick(v: View) {
         val position = viewPager.currentItem
@@ -104,7 +109,7 @@ class PreviewFragment(
         if (success) {
             pagerAdapter.notifyItemRemoved(position)
             filesPath.removeAt(position)
-            albumAdapter.removeAt(position)
+            albumAdapter?.removeAt(position)
         } else {
             Toast.makeText(
                 requireContext(), "failed to delete item at position: $position", Toast.LENGTH_SHORT

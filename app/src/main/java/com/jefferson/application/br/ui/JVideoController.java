@@ -34,6 +34,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.jefferson.application.br.R;
@@ -100,34 +101,32 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     public void onClick(View view) {
         if (view.getId() == mVideoView.getId()) {
             boolean invisible = (controllerView.getVisibility() != View.VISIBLE);
-            showController(!invisible);
-            /*if (!invisible) {
-                hideDelayed(2000);
-            }*/
+            //showController(!invisible);
             if(optionsTrigger != null) {
                 optionsTrigger.switchVisibility();
             }
+            Toast.makeText(anchorView.getContext(), "return", Toast.LENGTH_SHORT).show();
             return;
         }
+        if (view.getId() == controllerButton.getId() ) {
+            Toast.makeText(anchorView.getContext(), "passed", Toast.LENGTH_SHORT).show();
+            controllerHandler.removeCallbacks(controllerRunnable);
+            boolean isPlaying = mVideoView.isPlaying();
 
-        controllerHandler.removeCallbacks(controllerRunnable);
-        boolean isPlaying = mVideoView.isPlaying();
-
-        if (onPlayButtonPressedListener != null) {
-            onPlayButtonPressedListener.onPressed(isPlaying);
-        }
-
-        if (isPlaying) {
-            mVideoView.pause();
-            setPlaying(false);
-
-            if (controllerView.getVisibility() != View.VISIBLE) {
-                showController(true);
+            if (onPlayButtonPressedListener != null) {
+                onPlayButtonPressedListener.onPressed(isPlaying);
             }
-        } else {
-            mVideoView.start();
-            setPlaying(true);
-            hideDelayed(1000);
+
+            if (isPlaying) {
+                mVideoView.pause();
+                setPlaying(false);
+                if (controllerView.getVisibility() != View.VISIBLE) {
+                    showController(true);
+                }
+            } else {
+                mVideoView.start();
+                setPlaying(true);
+            }
         }
     }
 
@@ -176,13 +175,6 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         createControllerView();
     }
 
-    public void hideDelayed(int millis) {
-        if (controllerHandler == null) {
-            return;
-        }
-        controllerHandler.postDelayed(controllerRunnable, millis);
-    }
-
     public void destroy() {
         if (timer != null) {
             timer.cancel();
@@ -226,6 +218,10 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         controllerHandler.removeCallbacks(controllerRunnable);
         controllerView.setVisibility(show ? View.VISIBLE : View.INVISIBLE);
         controllerView.startAnimation(show ? animFadeIn : animFadeOut);
+        if(show) {
+            controllerHandler.postDelayed(controllerRunnable, 2000);
+        }
+        Toast.makeText(anchorView.getContext(), show? "showing": "not showing", Toast.LENGTH_SHORT).show();
     }
 
     private void setPlaying(boolean playing) {
@@ -253,7 +249,6 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     public void onStartTrackingTouch(SeekBar seekbar) {
         tracking = true;
         controllerHandler.removeCallbacks(controllerRunnable);
-
         if (controllerView.getVisibility() != View.VISIBLE) {
             showController(true);
         }
@@ -261,7 +256,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
 
     @Override
     public void onStopTrackingTouch(SeekBar seekbar) {
-        hideDelayed(2000);
+        controllerHandler.postDelayed(controllerRunnable, 2000);
         mVideoView.seekTo(seekbar.getProgress());
         tracking = false;
     }

@@ -389,12 +389,6 @@ Copyright (C) 2023 Jefferson Calheiros
         <activity android:name=".activity.SearchActivity" />
 
         <activity
-            android:name=".fragment.PreviewFragment"
-            android:configChanges="orientation|screenSize"
-            android:excludeFromRecents="true"
-            android:theme="@style/MediaPreviewTheme" />
-
-        <activity
             android:name=".activity.VideoPlayerActivity"
             android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"

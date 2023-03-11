@@ -503,8 +503,9 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private fun startPreviewActivity(itemPosition: Int, view: View) {
         previewFragment = PreviewFragment(adapter, itemPosition, position)
         supportFragmentManager.beginTransaction()
-            .addSharedElement(view, "shared_element_container") /* Transition works only between fragments? Help wanted */
+            .addSharedElement(view, view.transitionName) /* Transition works only between fragments? Help wanted */
             .replace(R.id.fragment_container, previewFragment!!)
+            .addToBackStack(null)
             .commit()
         enterScreenCleanMode()
     }
