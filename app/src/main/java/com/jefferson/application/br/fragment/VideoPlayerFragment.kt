@@ -30,14 +30,14 @@ import android.widget.VideoView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.jefferson.application.br.R
-import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
+import com.jefferson.application.br.trigger.ViewVisibilitySwitch
 import com.jefferson.application.br.ui.JVideoController
 import com.jefferson.application.br.ui.JVideoController.OnButtonPressedListener
 import java.io.File
 
 class VideoPlayerFragment(
     private val videoPath: String,
-    private val optionsTrigger: SwitchVisibilityTrigger
+    private val optionsTrigger: ViewVisibilitySwitch
 ) : Fragment(), View.OnClickListener, OnButtonPressedListener {
 
     private var videoNotPrepared = false

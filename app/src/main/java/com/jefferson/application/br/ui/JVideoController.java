@@ -23,10 +23,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -34,11 +32,10 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.VideoView;
 
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.trigger.SwitchVisibilityTrigger;
+import com.jefferson.application.br.trigger.ViewVisibilitySwitch;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.StringUtils;
 
@@ -50,7 +47,7 @@ import java.util.TimerTask;
 public class JVideoController implements OnSeekBarChangeListener, OnClickListener {
     public static final String TAG = "JVideoController";
     private final VideoView mVideoView;
-    private SwitchVisibilityTrigger optionsTrigger;
+    private ViewVisibilitySwitch visibilitySwitch;
     private View controllerView;
     private Animation animFadeIn;
     private Animation animFadeOut;
@@ -82,10 +79,10 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     }
 
     public JVideoController(@Nullable VideoView videoView, @Nullable ViewGroup viewGroup,
-                            @Nullable SwitchVisibilityTrigger optionsTrigger) {
+                            @Nullable ViewVisibilitySwitch optionsTrigger) {
         this.mVideoView = videoView;
         this.anchorView = viewGroup;
-        this.optionsTrigger = optionsTrigger;
+        this.visibilitySwitch = optionsTrigger;
         init_();
     }
 
@@ -99,17 +96,12 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
 
     @Override
     public void onClick(View view) {
-        if (view.getId() == mVideoView.getId()) {
+        if (view.getId() == anchorView.getId()) {
             boolean invisible = (controllerView.getVisibility() != View.VISIBLE);
-            //showController(!invisible);
-            if(optionsTrigger != null) {
-                optionsTrigger.switchVisibility();
-            }
-            Toast.makeText(anchorView.getContext(), "return", Toast.LENGTH_SHORT).show();
+            showController(invisible);
             return;
         }
         if (view.getId() == controllerButton.getId() ) {
-            Toast.makeText(anchorView.getContext(), "passed", Toast.LENGTH_SHORT).show();
             controllerHandler.removeCallbacks(controllerRunnable);
             boolean isPlaying = mVideoView.isPlaying();
 
@@ -161,6 +153,10 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         timerTask = new MyTask();
         timer = new Timer();
         timer.scheduleAtFixedRate(timerTask, 0, 100);
+
+        if(controllerView.getVisibility() == View.VISIBLE) {
+            controllerHandler.postDelayed(controllerRunnable, 2000);
+        }
     }
 
     public void init_() {
@@ -207,11 +203,13 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         endTextView = controllerView.findViewById(R.id.video_length_label);
         controllerButton = controllerView.findViewById(R.id.controller_play_button);
         mSeekBar.setOnSeekBarChangeListener(this);
-        mVideoView.setOnClickListener(this);
+        anchorView.setOnClickListener(this);
         controllerButton.setOnClickListener(this);
         setPlaying (mVideoView.isPlaying()); {
             setPlaying(true);
         }
+        visibilitySwitch.setShowAnimation(animFadeIn);
+        visibilitySwitch.setHideAnimation(animFadeOut);
     }
 
     private void showController(boolean show) {
@@ -221,7 +219,9 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         if(show) {
             controllerHandler.postDelayed(controllerRunnable, 2000);
         }
-        Toast.makeText(anchorView.getContext(), show? "showing": "not showing", Toast.LENGTH_SHORT).show();
+        if(visibilitySwitch != null) {
+            visibilitySwitch.switchVisibility();
+        }
     }
 
     private void setPlaying(boolean playing) {

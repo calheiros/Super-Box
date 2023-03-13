@@ -28,13 +28,13 @@ import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.jefferson.application.br.R
 import com.jefferson.application.br.database.PathsDatabase.Companion.getInstance
-import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
+import com.jefferson.application.br.trigger.ViewVisibilitySwitch
 import com.jefferson.application.br.util.Storage.getDefaultStoragePath
 import java.io.File
 
 class ImagePreviewFragment(
     private val path: String,
-    private val optionsTrigger: SwitchVisibilityTrigger
+    private val optionsTrigger: ViewVisibilitySwitch
 ) : Fragment(), View.OnClickListener {
     private var parentView: View? = null
     override fun onCreateView(

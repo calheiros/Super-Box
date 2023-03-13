@@ -29,7 +29,7 @@ import com.google.android.material.transition.platform.MaterialElevationScale
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.app.SimpleDialog
-import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
+import com.jefferson.application.br.trigger.ViewVisibilitySwitch
 import com.jefferson.application.br.util.MediaUtils
 
 class PreviewFragment : Fragment, View.OnClickListener {
@@ -123,10 +123,10 @@ class PreviewFragment : Fragment, View.OnClickListener {
 
     private inner class ImagePagerAdapter(fa: FragmentActivity, optionsLayout: View) :
         FragmentStateAdapter(fa) {
-        private val optionsTrigger: SwitchVisibilityTrigger
+        private val optionsTrigger: ViewVisibilitySwitch
 
         init {
-            optionsTrigger = SwitchVisibilityTrigger(optionsLayout)
+            optionsTrigger = ViewVisibilitySwitch(optionsLayout)
         }
 
         override fun getItemCount(): Int {

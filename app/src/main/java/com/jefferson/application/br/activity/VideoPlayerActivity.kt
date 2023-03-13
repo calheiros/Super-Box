@@ -29,7 +29,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.jefferson.application.br.R
 import com.jefferson.application.br.fragment.VideoPlayerFragment
-import com.jefferson.application.br.trigger.SwitchVisibilityTrigger
+import com.jefferson.application.br.trigger.ViewVisibilitySwitch
 
 class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
     private lateinit var pagerAdapter: VideoPagerAdapter
@@ -41,7 +41,7 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
         val exportImageView = findViewById<ImageView>(R.id.export_imageview)
         val deleteImageView = findViewById<ImageView>(R.id.delete_imageview)
         val optionsLayout = findViewById<View>(R.id.options_layout)
-        val switchVisibilityTrigger = SwitchVisibilityTrigger(optionsLayout)
+        val switchVisibilityTrigger = ViewVisibilitySwitch(optionsLayout)
         optionsLayout.setOnClickListener(this)
         exportImageView.setOnClickListener(this)
         deleteImageView.setOnClickListener(this)
@@ -109,7 +109,7 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
 
     private class VideoPagerAdapter(
         fm: FragmentActivity, private val filesPath: ArrayList<String?>,
-        private val switchVisibilityTrigger: SwitchVisibilityTrigger
+        private val switchVisibilityTrigger: ViewVisibilitySwitch
     ) : FragmentStateAdapter(
         fm
     ) {

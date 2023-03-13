@@ -25,6 +25,7 @@ import android.os.Looper
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import com.jefferson.application.br.App
 import com.jefferson.application.br.MaterialLockView
 import com.jefferson.application.br.MaterialLockView.OnPatternListener
@@ -57,7 +58,6 @@ class CreatePattern : MyCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.create_pattern)
-        // applyParentViewPadding(findViewById(R.id.create_pattern_parent_layout));
         passwordManager = PasswordManager(this)
         oldPass = passwordManager.internalPassword
         action = intent.action
@@ -130,12 +130,37 @@ class CreatePattern : MyCompatActivity() {
                     .show()
             }
         }
+        addBackPressedCallback()
+    }
+
+    private fun addBackPressedCallback() {
+        onBackPressedDispatcher.addCallback(
+            this, object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (password != null) {
+                        hintLabel.text = defaultText
+                        password = null
+                        button.isEnabled = false
+                        materialLockView.clearPattern()
+                        handler?.removeCallbacks(runnable)
+                        if (!materialLockView.isEnabled) {
+                            materialLockView.isEnabled = true
+                        }
+                    } else {
+                        finish()
+                    }
+                }
+            })
     }
 
     override fun onApplyCustomTheme() {}
     private fun startMainActivity() {
         val intent = Intent(applicationContext, MainActivity::class.java)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NO_ANIMATION)
+        intent.addFlags(
+            Intent.FLAG_ACTIVITY_NEW_TASK
+                    or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    or Intent.FLAG_ACTIVITY_NO_ANIMATION
+        )
         startActivity(intent)
         overridePendingTransition(0, 0)
     }
@@ -155,28 +180,6 @@ class CreatePattern : MyCompatActivity() {
                     break
                 }
             }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (haveWriteReadPermission()) {
-            startMainActivity()
-        }
-    }
-
-    override fun onBackPressed() {
-        if (password != null) {
-            hintLabel.text = defaultText
-            password = null
-            button.isEnabled = false
-            materialLockView.clearPattern()
-            handler?.removeCallbacks(runnable)
-            if (!materialLockView.isEnabled) {
-                materialLockView.isEnabled = true
-            }
-        } else {
-            super.onBackPressed()
         }
     }
 
