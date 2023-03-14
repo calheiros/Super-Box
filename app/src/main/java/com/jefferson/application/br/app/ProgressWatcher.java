@@ -22,7 +22,7 @@ import android.util.*;
 import com.jefferson.application.br.*;
 import com.jefferson.application.br.util.*;
 
-public class ProgressWatchThread extends Thread {
+public class ProgressWatcher extends Thread {
 
 	private SimpleDialog dialog;
 	private long max;
@@ -48,7 +48,7 @@ public class ProgressWatchThread extends Thread {
 		}
 	};
     
-	public ProgressWatchThread(FileTransfer mTransfer, SimpleDialog dialog) {
+	public ProgressWatcher(FileTransfer mTransfer, SimpleDialog dialog) {
 		this.dialog = dialog;
 		this.mTransfer = mTransfer;
 		this.base = dialog.getContext().getString(R.string.movendo);

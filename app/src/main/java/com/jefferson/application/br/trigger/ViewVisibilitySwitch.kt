@@ -8,19 +8,29 @@ class ViewVisibilitySwitch(private val target: View) {
     var hideAnimation: Animation? = null
 
     fun switchVisibility() {
-        val newVisibility: Int
-        var animation: Animation? = null
-
-        if (visibility == View.VISIBLE)  {
-            newVisibility = View.GONE
-            animation = hideAnimation
+        if (visibility == View.VISIBLE) {
+            hide()
         } else {
-            newVisibility = View.VISIBLE
-            animation = showAnimation
+            show()
+        }
+    }
+    private fun changeVisibility(newVisibility: Int) {
+        if (target.visibility == newVisibility) {
+            return
+        }
+        val animation = if (newVisibility == View.VISIBLE) showAnimation else hideAnimation
+        if (animation != null) {
+            target.startAnimation(animation)
         }
         target.visibility = newVisibility
-        if (animation != null)
-            target.startAnimation(animation)
+    }
+
+    fun show() {
+        changeVisibility(View.VISIBLE)
+    }
+
+    fun hide() {
+       changeVisibility(View.GONE)
     }
 
     val view: View

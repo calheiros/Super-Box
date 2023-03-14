@@ -39,10 +39,6 @@ class MultiSelectRecyclerViewAdapter(
 
     }
 
-    private fun getItem(position: Int): Any {
-        return items[position]
-    }
-
     val selectedItems: ArrayList<String>
         get() {
             val selectedItemsPath = ArrayList<String>()

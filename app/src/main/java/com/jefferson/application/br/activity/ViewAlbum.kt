@@ -17,12 +17,14 @@
 package com.jefferson.application.br.activity
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -44,7 +46,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
-import com.jefferson.application.br.app.ProgressWatchThread
+import com.jefferson.application.br.app.ProgressWatcher
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.database.PathsDatabase
@@ -54,15 +56,17 @@ import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.model.MediaModel
 import com.jefferson.application.br.task.DeleteFilesTask
 import com.jefferson.application.br.task.JTask
-import com.jefferson.application.br.task.RetrieveMediaTimeTask
+import com.jefferson.application.br.task.VideoDurationUpdaterTask
 import com.jefferson.application.br.util.*
 import com.jefferson.application.br.view.RoundedImageView
 import eightbitlab.com.blurview.BlurView
 import java.io.*
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
+    private var videoDurationUpdaterTask: VideoDurationUpdaterTask? = null
     private val minItemWidth = 110
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MultiSelectRecyclerViewAdapter
@@ -72,12 +76,13 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private lateinit var toolbar: Toolbar
     private lateinit var albumLabel: TextView
     private lateinit var previewContainer: FrameLayout
+    private lateinit var albumDir: File
     private var previewFragment: PreviewFragment? = null
     private var selectionMode = false
+    private var populateAlbumTask: JTask? = null
     private var position = 0
     private var title: String? = null
-    private var folder: File? = null
-    private var mediaTimeTask: RetrieveMediaTimeTask? = null
+
     private var baseNameDirectory: String? = null
     private var selectAllTextView: TextView? = null
     private var selectImageView: ImageView? = null
@@ -87,7 +92,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         setContentView(R.layout.view_album_layout)
         position = intent.getIntExtra("position", -1)
         title = intent.getStringExtra("name")
-        folder = intent.getStringExtra("folder")?.let { File(it) }
+        albumDir = File(intent.getStringExtra("folder")!!)
         //albumModel = intent.getParcelableExtra("model")
         val filePaths: ArrayList<MediaModel>? =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) intent.getParcelableArrayListExtra(
@@ -112,7 +117,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         mViewDelete.setOnClickListener(this)
         mViewMove.setOnClickListener(this)
         mViewSelect.setOnClickListener(this)
-
+        previewContainer = findViewById(R.id.fragment_container)
         floatingButton = findViewById(R.id.view_album_fab_button)
         menuLayout = findViewById(R.id.lock_layout)
         albumLabel = findViewById(R.id.album_name_label)
@@ -124,11 +129,12 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
         initToolbar()
         configureBlurView(recyclerView)
+        configureFloatingButton()
+        populateRecyclerView()
+        addBackPressedCallback()
+    }
 
-        if (filePaths?.isEmpty() == true) emptyView.visibility = View.VISIBLE
-
-        if (position == 1) updateDatabase(filePaths, adapter)
-
+    private fun configureFloatingButton() {
         val threshold = heightPixels / 100 //1%
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -151,14 +157,12 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 }
             }
         })
-
-        previewContainer = findViewById(R.id.fragment_container)
-        addBackPressedCallback()
-
-        if (filePaths == null) {
-            updateRecyclerView()
-        }
     }
+
+    private val isVideoSession: Boolean
+        get() {
+            return position == 1
+        }
 
     private fun addBackPressedCallback() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -234,7 +238,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         ActivityResultContracts.StartActivityForResult()
     ) { result: ActivityResult ->
         if (result.resultCode == Activity.RESULT_OK) {
-            updateRecyclerView()
+            populateRecyclerView()
             notifyChanges()
         }
     }
@@ -250,7 +254,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
             intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
             //intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
-            intent.putExtra(ImportMediaActivity.PARENT_KEY, folder!!.absolutePath)
+            intent.putExtra(ImportMediaActivity.PARENT_KEY, albumDir.absolutePath)
             importResult.launch(intent)
         }
     }
@@ -310,15 +314,6 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         galleryResult.launch(intent)
     }
 
-    private fun updateDatabase(
-        list: ArrayList<MediaModel>?, adapter: MultiSelectRecyclerViewAdapter
-    ) {
-        if (list == null) return
-        mediaTimeTask = RetrieveMediaTimeTask(list, adapter, this)
-        mediaTimeTask?.priority = Thread.MAX_PRIORITY
-        mediaTimeTask?.start()
-    }
-
     private fun toggleSelection() {
         if (adapter.selectedItemCount == adapter.itemCount) {
             adapter.clearSelection()
@@ -371,7 +366,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         dialog.setPositiveButton(getString(R.string.sim), object : OnDialogClickListener() {
             override fun onClick(dialog: SimpleDialog): Boolean {
                 dialog.dismiss()
-                val task = DeleteFiles(this@ViewAlbum, selectedItemsPath, position, folder!!)
+                val task = DeleteFiles(this@ViewAlbum, selectedItemsPath, position, albumDir)
                 task.start()
                 return true
             }
@@ -389,7 +384,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         val intent = Intent(this@ViewAlbum, FolderPickerActivity::class.java)
         intent.putExtra("selection", selectedItemsPath)
         intent.putExtra("position", position)
-        intent.putExtra("current_path", folder!!.absolutePath)
+        intent.putExtra("current_path", albumDir.absolutePath)
         changeDirectoryResult.launch(intent)
     }
 
@@ -444,22 +439,18 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         setAlbumHeader()
     }
 
-    fun updateRecyclerView() {
-        val listItemsPath = ArrayList<MediaModel>()
-        for (file in folder?.listFiles()!!) {
-            listItemsPath.add(MediaModel(file.absolutePath))
+    private fun populateRecyclerView() {
+        populateAlbumTask = PopulateAlbumTask(
+            context = this, dir = albumDir,
+            adapter = adapter, progressBar = null,
+            emptyListHint = emptyView
+        )
+        populateAlbumTask?.start()
+        populateAlbumTask?.setOnFinishedListener {
+            if (isVideoSession) {
+               startVideoUpdaterTask()
+            }
         }
-        adapter.items = listItemsPath
-        adapter.notifyItemRangeChanged(0, listItemsPath.size)
-        /*update video duration database*/
-        if (position == 1) {
-            updateDatabase(listItemsPath, adapter)
-        }
-    }
-
-    private fun retrieveDataAndUpdate() {
-        val list = adapter.items
-        updateDatabase(list, adapter)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -478,14 +469,17 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == android.R.id.home) {
-            if (selectionMode) {
-                exitSelectionMode()
-            } else {
-                finish()
+        when (item.itemId) {
+            android.R.id.home -> {
+                if (selectionMode) {
+                    exitSelectionMode()
+                } else {
+                    finish()
+                }
             }
-        } else if (item.itemId == R.id.info_item_menu) {
-            showFilesInfo()
+            R.id.info_item_menu -> {
+                showFilesInfo()
+            }
         }
         return false
     }
@@ -503,7 +497,10 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     private fun startPreviewActivity(itemPosition: Int, view: View) {
         previewFragment = PreviewFragment(adapter, itemPosition, position)
         supportFragmentManager.beginTransaction()
-            .addSharedElement(view, view.transitionName) /* Transition works only between fragments? Help wanted */
+            .addSharedElement(
+                view,
+                view.transitionName
+            ) /* Transition works only between fragments? Help wanted */
             .replace(R.id.fragment_container, previewFragment!!)
             .addToBackStack(null)
             .commit()
@@ -555,6 +552,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 recyclerView.setPadding(base, base, base, button)
                 recyclerView.clipToPadding = false
             }
+
             override fun onAnimationRepeat(p1: Animation) {}
         })
         menuLayout.animation = anim
@@ -563,7 +561,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
     private fun renameAlbum() {
         val model = AlbumModel()
-        model.path = folder!!.absolutePath
+        model.path = albumDir.absolutePath
         val dialog = SimpleDialog(this, SimpleDialog.STYLE_INPUT)
         val input = dialog.getInputEdiText()
         input.requestFocus()
@@ -589,6 +587,10 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
     fun toast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
+    }
+    private fun startVideoUpdaterTask() {
+        videoDurationUpdaterTask = VideoDurationUpdaterTask(this, adapter)
+        videoDurationUpdaterTask?.start()
     }
 
     fun exitSelectionMode() {
@@ -637,23 +639,26 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             roundedImageView.setImageResource(R.drawable.ic_folder_image)
         }
     }
-
+    fun cancelVideoUpdaterTask(): Boolean {
+        if (videoDurationUpdaterTask?.status == JTask.Status.STARTED) {
+            videoDurationUpdaterTask?.cancelTask()
+            return true
+        }
+        return false
+    }
     inner class DeleteFiles(activity: Activity, p1: ArrayList<String>, p3: Int, p4: File) :
         DeleteFilesTask(activity, p1, p3, p4) {
-        private var threadInterrupted = false
+        private var videoTaskInterrupted = false
         override fun onStarted() {
             super.onStarted()
-            if (mediaTimeTask?.isWorking == true) {
-                mediaTimeTask?.stopWork()
-                threadInterrupted = true
-            }
+            videoTaskInterrupted = cancelVideoUpdaterTask()
             exitSelectionMode()
         }
 
         override fun onInterrupted() {
             super.onInterrupted()
-            if (threadInterrupted && adapter.items.isNotEmpty()) {
-                updateRecyclerView()
+            if (videoTaskInterrupted && adapter.items.isNotEmpty()) {
+                startVideoUpdaterTask()
             }
             notifyChanges()
         }
@@ -665,8 +670,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 finish()
                 return
             }
-            if (threadInterrupted) {
-                updateRecyclerView()
+            if (videoTaskInterrupted) {
+              startVideoUpdaterTask()
             }
         }
 
@@ -676,19 +681,66 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
     }
 
+    inner class PopulateAlbumTask(
+        private val context: Context,
+        private val dir: File,
+        private val adapter: MultiSelectRecyclerViewAdapter,
+        private val progressBar: View?,
+        private val emptyListHint: View
+    ) : JTask() {
+        private val models: ArrayList<MediaModel> = ArrayList()
+        private var showProgressRun: Runnable? = null
+        override fun workingThread() {
+            val database = PathsDatabase.getInstance(context)
+            for (file in dir.listFiles()!!) {
+                if (isCancelled) break
+                val model = MediaModel(file.absolutePath)
+                Log.i("PopulateAlbum", "LOOP at: ${file.name}")
+                models.add(model)
+            }
+            database.close()
+        }
+
+        override fun onStarted() {
+            Toast.makeText(context, "Task start", Toast.LENGTH_SHORT).show()
+            showProgressRun = Runnable { progressBar?.visibility = View.VISIBLE }
+            progressBar?.postDelayed(showProgressRun, 100)
+        }
+
+        override fun onFinished() {
+            progressBar?.removeCallbacks(showProgressRun)
+            progressBar?.visibility = View.GONE
+
+            if (models.isEmpty()) {
+                emptyListHint.visibility = View.VISIBLE
+            } else {
+                adapter.items = models
+                adapter.notifyDataSetChanged()
+                emptyListHint.visibility = View.GONE
+            }
+            Toast.makeText(context, "Task end", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onException(e: java.lang.Exception?) {
+            Toast.makeText(context, "Exception: ${e?.message}", Toast.LENGTH_SHORT).show()
+            e?.printStackTrace()
+        }
+    }
+
     inner class ExportTask(
         private val selectedItems: List<String?>, private val simpleDialog: SimpleDialog
     ) : JTask() {
-        private val mArrayPath = ArrayList<String>()
-        private val mTransfer = FileTransfer()
+        private val filesPath = ArrayList<String>()
+        private val fileTransfer = FileTransfer()
         private val junkList = ArrayList<String?>()
-        private val progressThreadUpdate: ProgressWatchThread =
-            ProgressWatchThread(
-                mTransfer,
+        private val progressUpdater: ProgressWatcher =
+            ProgressWatcher(
+                fileTransfer,
                 simpleDialog
             )
-        private val database: PathsDatabase =
-            PathsDatabase.getInstance(this@ViewAlbum, Storage.getDefaultStoragePath(this@ViewAlbum))
+        private val database: PathsDatabase = PathsDatabase.getInstance(
+            this@ViewAlbum, Storage.getDefaultStoragePath(this@ViewAlbum)
+        )
         private var allowListModification = true
 
         override fun workingThread() {
@@ -699,8 +751,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                     max += file.length()
                 }
                 max /= 1024
-                progressThreadUpdate.setMax(max)
-                progressThreadUpdate.start()
+                progressUpdater.setMax(max)
+                progressUpdater.start()
                 var start = System.currentTimeMillis()
                 for (item in selectedItems) {
                     try {
@@ -717,18 +769,18 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                         fileOutput.parentFile?.mkdirs()
                         sendUpdate(null, fileOutput.name)
                         if (file.renameTo(fileOutput)) {
-                            mArrayPath.add(fileOutput.absolutePath)
+                            filesPath.add(fileOutput.absolutePath)
                             database.deleteMediaData(file.name)
                             addJunkItem(item)
                             //sendUpdate(ACTION_ADD_JUNK, item);
-                            mTransfer.increment((fileOutput.length() / 1024f).toDouble())
+                            fileTransfer.increment((fileOutput.length() / 1024f).toDouble())
                         } else {
                             val output = getOutputStream(fileOutput)
                             val input: InputStream = FileInputStream(file)
-                            val response = mTransfer.transferStream(input, output)
+                            val response = fileTransfer.transferStream(input, output)
                             if (FileTransfer.OK == response) {
                                 if (file.delete()) {
-                                    mArrayPath.add(fileOutput.absolutePath)
+                                    filesPath.add(fileOutput.absolutePath)
                                     database.deleteMediaData(file.name)
                                     addJunkItem(item)
                                     //sendUpdate(ACTION_ADD_JUNK, item);
@@ -748,15 +800,12 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                     sendUpdate(Companion.ACTION_UPDATE_ADAPTER)
                 }
             } finally {
-                progressThreadUpdate.destroy()
+                progressUpdater.destroy()
                 database.close()
             }
         }
 
         override fun onStarted() {
-            if (mediaTimeTask != null && mediaTimeTask!!.isWorking) {
-                mediaTimeTask?.stopWork()
-            }
             simpleDialog.resetDialog()
             simpleDialog.showProgressBar(true)
             simpleDialog.setTitle(getString(R.string.mover))
@@ -767,7 +816,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 getString(R.string.cancelar),
                 object : OnDialogClickListener() {
                     override fun onClick(dialog: SimpleDialog): Boolean {
-                        mTransfer.cancel()
+                        fileTransfer.cancel()
                         interrupt()
                         return true
                     }
@@ -784,20 +833,15 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
 
         override fun onFinished() {
-            retrieveInfo()
             syncAllChanges()
-        }
-
-        private fun retrieveInfo() {
-            if (mediaTimeTask != null && mediaTimeTask!!.isCancelled() && adapter.itemCount > 0) {
-                retrieveDataAndUpdate()
-            }
         }
 
         private fun getAlternativePath(type: Int): String {
             var file = File(
-                Environment.getExternalStoragePublicDirectory(if (type == 0) Environment.DIRECTORY_PICTURES else Environment.DIRECTORY_MOVIES),
-                StringUtils.getFormattedDate("yyyy.MM.dd 'at' HH:mm:ss z") + if (type == 0) ".jpeg" else ".mp4"
+                Environment.getExternalStoragePublicDirectory(
+                    if (type == 0) Environment.DIRECTORY_PICTURES else Environment.DIRECTORY_MOVIES),
+                StringUtils.getFormattedDate("yyyy.MM.dd 'at' HH:mm:ss z") +
+                        if (type == 0) ".jpeg" else ".mp4"
             )
             if (file.exists()) {
                 file = File(getNewFileName(file))
@@ -810,7 +854,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
 
         private fun syncAllChanges() {
-            Storage.scanMediaFiles(mArrayPath.toTypedArray(), this@ViewAlbum)
+            Storage.scanMediaFiles(filesPath.toTypedArray(), this@ViewAlbum)
             simpleDialog.dismiss()
             if (adapter.items.isEmpty()) {
                 deleteFolder()
@@ -832,9 +876,10 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
         private fun deleteFolder() {
             val database = PathsDatabase.getInstance(this@ViewAlbum)
-            if (folder?.delete() == true) {
+            if (albumDir.delete()) {
                 database.deleteAlbum(
-                    folder!!.name, if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
+                    albumDir.name,
+                    if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
                 )
             }
             database.close()
@@ -884,9 +929,5 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
 
     companion object {
         private const val ACTION_UPDATE_ADAPTER = "action_update"
-        private const val IMPORT_FROM_VIEW_ALBUM_CODE = 9
-        private const val VIDEO_PLAY_CODE = 7
-        private const val CHANGE_DIRECTORY_CODE = 3
-        private const val IMPORT_FROM_GALLERY_CODE = 6
     }
 }
