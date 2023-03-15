@@ -39,7 +39,7 @@ public class MyAnimationUtils {
             } @Override public boolean willChangeBounds() { 
                 return true; }
         }; // 1dp/ms
-        a.setDuration((int) (targetHeight / v.getContext().getResources().getDisplayMetrics().density));
+        a.setDuration((int)(targetHeight / v.getContext().getResources().getDisplayMetrics().density));
         v.startAnimation(a); 
     }
     

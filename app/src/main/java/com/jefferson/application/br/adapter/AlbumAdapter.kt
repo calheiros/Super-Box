@@ -29,25 +29,26 @@ import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.Companion.createMenuItems
 import com.jefferson.application.br.fragment.AlbumFragment
 import com.jefferson.application.br.model.AlbumModel
+import com.jefferson.application.br.model.SimpleAlbumModel
 import com.jefferson.application.br.util.AlbumUtils
 
 class AlbumAdapter(
     private val fragment: AlbumFragment,
-    var models: ArrayList<AlbumModel>,
+    var models: ArrayList<SimpleAlbumModel>,
 ) : RecyclerView.Adapter<AlbumAdapter.ViewHolder>() {
     private var group: View? = null
     private var itemToHighlight = -1
 
 
-    fun getItem(itemPosition: Int): AlbumModel? {
+    fun getItem(itemPosition: Int): SimpleAlbumModel? {
         return if (itemPosition in (0 until itemCount)) {
             models[itemPosition]
         } else null
     }
 
-    fun insertItem(item: AlbumModel) {
+    fun insertItem(item: SimpleAlbumModel) {
         models.add(item)
-        AlbumModel.sort(models)
+        SimpleAlbumModel.sort(models)
         val position = models.indexOf(item)
         if (position != -1) {
             notifyItemInserted(position)
@@ -71,7 +72,7 @@ class AlbumAdapter(
     }
 
     fun updateModels(
-        newAlbumModels: ArrayList<AlbumModel>,
+        newAlbumModels: ArrayList<SimpleAlbumModel>,
     ) {
         models = newAlbumModels
         notifyDataSetChanged()
@@ -84,16 +85,16 @@ class AlbumAdapter(
         return ViewHolder(view)
     }
 
-    fun notifyItemChanged(f_model: AlbumModel) {
+    fun notifyItemChanged(f_model: SimpleAlbumModel) {
         for (i in 0 until itemCount) {
-            if ((f_model.name == getItem(i)!!.name)) {
+            if ((f_model.albumName == getItem(i)!!.albumName)) {
                 notifyItemChanged(i)
                 break
             }
         }
     }
 
-    fun removeItem(item: AlbumModel) {
+    fun removeItem(item: SimpleAlbumModel) {
         val key = models.indexOf(item)
         if (key != -1) {
             models.removeAt(key)
@@ -101,7 +102,7 @@ class AlbumAdapter(
         } else {
             Toast.makeText(
                 fragment.requireContext(),
-                "Could not find folder index for item " + item.name,
+                "Could not find folder index for item " + item.albumName,
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -110,7 +111,7 @@ class AlbumAdapter(
     fun getAlbumPositionByPath(path: String): Int {
         for (i in models.indices) {
             val model = models[i]
-            if ((model.path == path)) {
+            if ((model.albumPath == path)) {
                 return i
             }
         }
@@ -119,14 +120,13 @@ class AlbumAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val model = models[position]
-        holder.folderName.text = model.name
-        holder.folderSize.text = model.items.size.toString()
-        val isEmpty = model.items.isEmpty()
+        holder.folderName.text = model.albumName
+        holder.folderSize.text = model.itemCount.toString()
+        val isEmpty = model.itemCount == 0
         holder.favoriteView.visibility = if (model.isFavorite) View.VISIBLE else View.GONE
         if (!isEmpty) {
             Glide.with(fragment.requireContext()).load(
-                "file://" + model.items[0]
-                    .path
+                "file://" + model.thumbnailPath
             ).skipMemoryCache(true).into(holder.imageView)
         } else {
             holder.imageView.setImageBitmap(null)
@@ -174,14 +174,14 @@ class AlbumAdapter(
     fun getItemPositionByName(albumName: String): Int {
         for (i in models.indices) {
             val model = models[i]
-            if ((model.name == albumName)) {
+            if ((model.albumName == albumName)) {
                 return i
             }
         }
         return -1
     }
 
-    private fun getAlbumPositionByPath(f_model: AlbumModel): Int {
+    private fun getAlbumPositionByPath(f_model: SimpleAlbumModel): Int {
         for (i in 0 until itemCount) {
             if ((getItem(i) == f_model)) {
                 notifyItemChanged(i)
@@ -213,7 +213,7 @@ class AlbumAdapter(
         }
     }
 
-    private inner class DialogMenuListener(var f_model: AlbumModel, var dialog: SimpleDialog) :
+    private inner class DialogMenuListener(var f_model: SimpleAlbumModel, var dialog: SimpleDialog) :
         OnItemClickListener {
         override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
             when (position) {
@@ -224,7 +224,7 @@ class AlbumAdapter(
                     if (f_model.isFavorite) AlbumUtils.removeFromFavorites(
                         f_model, fragment.requireContext()
                     ) else fragment.addToFavorites(f_model)
-                    AlbumModel.sort(models)
+                    SimpleAlbumModel.sort(models)
                     val endPosition = getAlbumPositionByPath(f_model)
                     notifyItemMoved(startPosition, endPosition)
                 }

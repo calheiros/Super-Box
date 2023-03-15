@@ -30,7 +30,7 @@ import android.widget.EditText
 import android.widget.ListView
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.SearchViewAdapter
-import com.jefferson.application.br.model.SimplifiedAlbum
+import com.jefferson.application.br.model.SimpleAlbumModel
 
 class SearchActivity : MyCompatActivity(), OnItemClickListener, OnItemLongClickListener {
     private lateinit var adapter: SearchViewAdapter
@@ -43,7 +43,7 @@ class SearchActivity : MyCompatActivity(), OnItemClickListener, OnItemLongClickL
 
         val models = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             intent.getParcelableArrayListExtra(
-                EXTRA_SIMPLE_MODELS, SimplifiedAlbum::class.java
+                EXTRA_SIMPLE_MODELS, SimpleAlbumModel::class.java
             )
         else @Suppress("DEPRECATION")
         intent.getParcelableArrayListExtra(EXTRA_SIMPLE_MODELS)
@@ -56,7 +56,7 @@ class SearchActivity : MyCompatActivity(), OnItemClickListener, OnItemLongClickL
         configureSearchView(models)
     }
 
-    private fun configureSearchView(models: ArrayList<SimplifiedAlbum>?) {
+    private fun configureSearchView(models: ArrayList<SimpleAlbumModel>?) {
         val listView = findViewById<ListView>(R.id.items_list_view)
         editText = findViewById(R.id.search_edit_text)
         input = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -91,7 +91,7 @@ class SearchActivity : MyCompatActivity(), OnItemClickListener, OnItemLongClickL
         editText.clearFocus()
         val choice = adapter.getItem(position)
         val intent = Intent()
-        intent.putExtra("result", choice.name)
+        intent.putExtra("result", choice.albumName)
         intent.action = action
         setResult(RESULT_OK, intent)
         finish()

@@ -1,7 +1,7 @@
 package com.jefferson.application.br.util
 
 import android.content.Context
-import com.jefferson.application.br.database.PathsDatabase
+import com.jefferson.application.br.database.AlbumDatabase
 import java.io.File
 
 object MediaUtils {
@@ -10,7 +10,7 @@ object MediaUtils {
      * @param path
      **/
     fun deleteMedia(context: Context, path: String): Boolean {
-        val database = PathsDatabase.getInstance(context)
+        val database = AlbumDatabase.getInstance(context)
         val file = File(path)
         val id = file.name
         val deleted = file.delete()

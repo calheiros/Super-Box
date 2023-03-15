@@ -25,15 +25,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.jefferson.application.br.R
-import com.jefferson.application.br.model.SimplifiedAlbum
+import com.jefferson.application.br.model.SimpleAlbumModel
 import java.util.*
 
 class SearchViewAdapter(
-    private val items: ArrayList<SimplifiedAlbum>,
+    private val items: ArrayList<SimpleAlbumModel>,
     private val context: Context
 ) : BaseAdapter() {
     private val inflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-    private val filteredItems: ArrayList<SimplifiedAlbum> = ArrayList()
+    private val filteredItems: ArrayList<SimpleAlbumModel> = ArrayList()
 
     init {
         //when unfiltered, shows all items in alphabetical order.
@@ -41,10 +41,10 @@ class SearchViewAdapter(
         filteredItems.addAll(items)
     }
 
-    private fun sort(albums: ArrayList<SimplifiedAlbum>?) {
+    private fun sort(albums: ArrayList<SimpleAlbumModel>?) {
         albums?.sortWith { o1, o2 ->
-            o1.name.lowercase(Locale.getDefault()).compareTo(
-                o2.name.lowercase(
+            o1.albumName.lowercase(Locale.getDefault()).compareTo(
+                o2.albumName.lowercase(
                     Locale.getDefault()
                 )
             )
@@ -55,7 +55,7 @@ class SearchViewAdapter(
         return filteredItems.size
     }
 
-    override fun getItem(position: Int): SimplifiedAlbum {
+    override fun getItem(position: Int): SimpleAlbumModel {
         return filteredItems[position]
     }
 
@@ -75,7 +75,7 @@ class SearchViewAdapter(
         } else {
             holder = convertView.tag as Holder
         }
-        holder.textView?.text = item.name
+        holder.textView?.text = item.albumName
         Glide.with(context).load(item.thumbnailPath).into(holder.thumbView!!)
         return tempConvertView!!
     }
@@ -86,7 +86,7 @@ class SearchViewAdapter(
             filteredItems.addAll(items)
         } else {
             for (item in items) {
-                if (item.name.lowercase(Locale.getDefault())
+                if (item.albumName.lowercase(Locale.getDefault())
                         .startsWith(keyword.lowercase(Locale.getDefault()))
                 ) {
                     filteredItems.add(item)

@@ -67,7 +67,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         val theme = theme
         theme.resolveAttribute(R.attr.colorBackgroundLight, typedValue, true)
         val color = typedValue.data
-        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(color) // .setProgressBackgroundColor(color);
+        swipeRefreshLayout.setProgressBackgroundColorSchemeColor(color)
         title =
             if (position == 0) getString(R.string.importar_imagem) else getString(R.string.importar_video)
         retrieveMediaTask = RetrieveMediaTask()
@@ -282,7 +282,8 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
                 } else {
                     Toast.makeText(
                         this@ImportGalleryActivity,
-                        "The app was not allowed to read or write to your storage. Hence, it cannot function properly. Please consider granting it this permission",
+                        "The app was not allowed to read or write to your storage. Hence, it" +
+                                " cannot function properly. Please consider granting it this permission",
                         Toast.LENGTH_LONG
                     ).show()
                 }

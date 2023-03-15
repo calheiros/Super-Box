@@ -27,7 +27,7 @@ import com.bumptech.glide.Glide
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.jefferson.application.br.R
-import com.jefferson.application.br.database.PathsDatabase.Companion.getInstance
+import com.jefferson.application.br.database.AlbumDatabase.Companion.getInstance
 import com.jefferson.application.br.trigger.ViewVisibilitySwitch
 import com.jefferson.application.br.util.Storage.getDefaultStoragePath
 import java.io.File

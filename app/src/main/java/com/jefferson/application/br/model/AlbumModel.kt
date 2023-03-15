@@ -65,9 +65,9 @@ class AlbumModel : Parcelable {
         parcel.writeString(path)
         parcel.writeTypedList(items)
     }
-    fun getSimplifiedAlbum() : SimplifiedAlbum {
+    fun getSimplifiedAlbum() : SimpleAlbumModel {
         val firstItem = items.firstOrNull()?.path ?: ""
-        return SimplifiedAlbum(name, firstItem)
+        return SimpleAlbumModel(name, firstItem, items.size)
     }
     companion object {
         const val NO_ALBUM_NAME = "0"

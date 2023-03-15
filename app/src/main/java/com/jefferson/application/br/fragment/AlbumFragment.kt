@@ -36,13 +36,10 @@ import com.jefferson.application.br.activity.ViewAlbum
 import com.jefferson.application.br.adapter.AlbumAdapter
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
-import com.jefferson.application.br.database.PathsDatabase
-import com.jefferson.application.br.database.PathsDatabase.Companion.getInstance
-import com.jefferson.application.br.model.FileModel
-import com.jefferson.application.br.model.AlbumModel
-import com.jefferson.application.br.model.MediaModel
-import com.jefferson.application.br.model.SimplifiedAlbum
-import com.jefferson.application.br.task.DeleteFilesTask
+import com.jefferson.application.br.database.AlbumDatabase
+import com.jefferson.application.br.database.AlbumDatabase.Companion.getInstance
+import com.jefferson.application.br.model.SimpleAlbumModel
+import com.jefferson.application.br.task.DeleteAlbumTask
 import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.util.AlbumUtils
 import com.jefferson.application.br.util.Storage
@@ -88,34 +85,30 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         return view
     }
 
-    fun openAlbum(model: AlbumModel?) {
+    fun openAlbum(model: SimpleAlbumModel) {
         val intent = Intent(context, ViewAlbum::class.java)
         intent.putExtra("position", pagerPosition)
-        intent.putExtra("name", model!!.name)
-        if(model.items.size < 500) {
-            intent.putExtra("data", model.items)
-        }
-        intent.putExtra("folder", model.path)
+        intent.putExtra("name", model.albumName)
+        intent.putExtra("folder", model.albumPath)
         requireActivity().startActivity(intent)
     }
 
     fun openAlbum(albumName: String) {
-        val pos = albumAdapter!!.getItemPositionByName(albumName)
+        val pos = albumAdapter?.getItemPositionByName(albumName) ?: -1
         if (pos != -1) {
-            openAlbum(albumAdapter!!.getItem(pos))
+            openAlbum(albumAdapter?.getItem(pos)!!)
         }
     }
 
-    fun buildModels(position: Int, jTask: JTask): ArrayList<AlbumModel> {
-        val models = ArrayList<AlbumModel>()
+    fun buildModels(position: Int, jTask: JTask): ArrayList<SimpleAlbumModel> {
+        val models = ArrayList<SimpleAlbumModel>()
         val root =
             Storage.getFolder(if (position == 0) Storage.IMAGE else Storage.VIDEO, requireContext())
                 ?: return models
         root.mkdirs()
-        val database: PathsDatabase? = try {
+        val database: AlbumDatabase? = try {
             getInstance(requireContext())
         } catch (e: SQLiteDatabaseCorruptException) {
-            //do something
             return models
         }
         val bookmark = database?.favoritesAlbum
@@ -132,32 +125,31 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
                     var favorite = false
                     var folderName: String? = database?.getAlbumName(
                         s!!,
-                        if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
+                        if (position == 0) AlbumDatabase.IMAGE_TYPE else AlbumDatabase.VIDEO_TYPE
                     )
                     if (bookmark != null) {
                         favorite = java.lang.Boolean.TRUE == bookmark[file.name]
                     }
                     folderName = folderName ?: s
-                    val model = AlbumModel()
-                    model.name = folderName!!
-                    model.path = file.absolutePath
+                    val model = SimpleAlbumModel(
+                        name = folderName ?: "",
+                        albumPath = file.absolutePath
+                    )
                     model.isFavorite = favorite
-                    if (folderList != null) for (value in folderList) {
-                        val mm = MediaModel(value.absolutePath)
-                        model.addItem(mm)
-                    }
+                    model.itemCount = folderList?.size ?: 0
+                    model.thumbnailPath = folderList?.get(0)?.absolutePath ?: ""
                     models.add(model)
                 }
             }
         }
-        AlbumModel.sort(models)
+        SimpleAlbumModel.sort(models)
         database?.close()
         return models
     }
 
     private fun populateRecyclerView() {
         retrieveMedia = object : JTask() {
-            private var albumsModel: ArrayList<AlbumModel>? = null
+            private var albumsModel: ArrayList<SimpleAlbumModel>? = null
             override fun workingThread() {
                 val result = buildModels(
                     position = pagerPosition,
@@ -190,9 +182,10 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         if (retrieveMedia?.isCancelled == false) {
             retrieveMedia?.cancelTask()
         }
+
         super.onDestroy()
     }
-    fun putModels(models: ArrayList<AlbumModel>?) {
+    fun putModels(models: ArrayList<SimpleAlbumModel>?) {
         if (albumAdapter != null) {
             albumAdapter?.updateModels(models!!)
         } else {
@@ -217,7 +210,7 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         corruptedWarnHandler.sendEmptyMessage(0)
     }
 
-    fun inputFolderDialog(model: AlbumModel?, action: Int) {
+    fun inputFolderDialog(model: SimpleAlbumModel?, action: Int) {
         val activity: Activity = requireActivity()
         val title: String?
         val dialog = SimpleDialog(activity, SimpleDialog.STYLE_INPUT)
@@ -225,7 +218,7 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         editText.requestFocus()
 
         if (action == ACTION_RENAME_FOLDER) {
-            val name = model!!.name
+            val name = model!!.albumName
             title = getString(R.string.renomear_pasta)
             editText.setText(name)
             editText.setSelection(name.length)
@@ -272,18 +265,22 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
             }).setNegativeButton(getString(R.string.cancelar), null).show()
     }
 
-    fun deleteFolder(model: AlbumModel) {
-        val name = model.name
+    fun deleteFolder(model: SimpleAlbumModel) {
+        val name = model.albumName
         val simpleDialog = SimpleDialog(requireActivity(), SimpleDialog.STYLE_ALERT_HIGH)
         simpleDialog.setTitle(getString(R.string.apagar))
         simpleDialog.setMessage(getString(R.string.apagar_pasta_aviso, name))
         simpleDialog.setPositiveButton(getString(R.string.sim), object : OnDialogClickListener() {
             override fun onClick(dialog: SimpleDialog): Boolean {
-                val root = File(model.path!!)
-                val task = DeleteFilesTask(requireActivity(), model.itemsPath, pagerPosition, root)
+                val root = File(model.albumPath)
+                val filesPath = ArrayList<String>()
+                for (file in root.listFiles()!!) {
+                    filesPath.add(file.absolutePath)
+                }
+                val task = DeleteAlbumTask(requireActivity(), filesPath, pagerPosition, root)
                 task.setOnFinishedListener {
                     if (task.deletedAll()) {
-                        albumAdapter!!.removeItem(model)
+                        albumAdapter?.removeItem(model)
                         notifyDataUpdated()
                     } else {
                         (requireActivity() as MainActivity).updateFragment(pagerPosition)
@@ -301,9 +298,9 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         populateRecyclerView()
     }
 
-    fun addToFavorites(f_model: AlbumModel) {
+    fun addToFavorites(f_model: SimpleAlbumModel) {
         val database = getInstance(requireContext())
-        val file = File(f_model.path!!)
+        val file = File(f_model.albumPath)
         val name = file.name
         val success = database.setFavoriteFolder(name)
         database.close()
@@ -335,21 +332,16 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     }
 
     val isLoading: Boolean
-        get() = retrieveMedia!!.getStatus() == JTask.Status.STARTED
+        get() = retrieveMedia?.getStatus() == JTask.Status.STARTED
 
-    val simplifiedModels: ArrayList<SimplifiedAlbum>
+    val simplifiedModels: ArrayList<SimpleAlbumModel>
         get() {
-            val models = albumAdapter?.models!!
-            val result = ArrayList<SimplifiedAlbum>()
-            for (model in models) {
-                result.add(model.getSimplifiedAlbum())
-            }
-            return result
+            return albumAdapter?.models ?: ArrayList()
         }
 
     fun scrollToAlbum(albumName: String?) {
         albumName ?: return
-        val position = albumAdapter!!.getItemPositionByName(albumName)
+        val position = albumAdapter?.getItemPositionByName(albumName) ?: return
         if (position != -1) {
             val smoothScroller: SmoothScroller = object : LinearSmoothScroller(requireContext()) {
                 override fun getVerticalSnapPreference(): Int {

@@ -19,8 +19,8 @@ package com.jefferson.application.br.task
 import android.app.Activity
 import android.widget.Toast
 import com.jefferson.application.br.R
-import com.jefferson.application.br.database.PathsDatabase
-import com.jefferson.application.br.database.PathsDatabase.Companion.getInstance
+import com.jefferson.application.br.database.AlbumDatabase
+import com.jefferson.application.br.database.AlbumDatabase.Companion.getInstance
 import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.util.FileTransfer
 import com.jefferson.application.br.util.Storage
@@ -88,7 +88,7 @@ class ImportTask(
     public override fun onUpdated(values: Array<Any>) {}
     override fun workingThread() {
         var max = 0.0
-        val database: PathsDatabase = getInstance(
+        val database: AlbumDatabase = getInstance(
             activity, Storage.getDefaultStoragePath(
                 activity
             )

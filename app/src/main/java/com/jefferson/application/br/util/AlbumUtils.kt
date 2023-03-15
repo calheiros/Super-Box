@@ -19,17 +19,18 @@ package com.jefferson.application.br.util
 import android.content.Context
 import android.widget.Toast
 import com.jefferson.application.br.R
-import com.jefferson.application.br.database.PathsDatabase
+import com.jefferson.application.br.database.AlbumDatabase
 import com.jefferson.application.br.fragment.AlbumFragment
 import com.jefferson.application.br.model.AlbumModel
 import com.jefferson.application.br.model.FileModel
+import com.jefferson.application.br.model.SimpleAlbumModel
 import java.io.File
 
 object AlbumUtils {
 
     private fun deleteEmptyAlbum(albumPath: String, context: Context): Result {
         val file = File(albumPath)
-        val database = PathsDatabase.getInstance(context)
+        val database = AlbumDatabase.getInstance(context)
         val id = file.name
         val success = file.delete()
         if (success)
@@ -41,14 +42,14 @@ object AlbumUtils {
      */
     fun renameAlbum(
         context: Context?,
-        model: AlbumModel,
+        model: SimpleAlbumModel,
         newName: String,
         position: Int
     ): Boolean {
-        val database: PathsDatabase = PathsDatabase.getInstance(context!!)
+        val database: AlbumDatabase = AlbumDatabase.getInstance(context!!)
         try {
             val folderType = if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
-            val file = File(model.path!!)
+            val file = File(model.albumPath)
             val id = file.name
             val folderName = database.getAlbumName(id, folderType)
             val newFolderId = database.getAlbumIdFromName(newName, folderType)
@@ -75,6 +76,7 @@ object AlbumUtils {
             } else {
                 database.updateAlbumName(id, newName, folderType)
             }
+            model.albumName = newName
         } catch (e: Exception) {
             e.printStackTrace()
             return false
@@ -84,9 +86,9 @@ object AlbumUtils {
         return true
     }
 
-    fun createAlbum(context: Context?, name: String, position: Int): AlbumModel? {
-        val database: PathsDatabase = PathsDatabase.getInstance(context!!)
-        var folder: AlbumModel? = null
+    fun createAlbum(context: Context?, name: String, position: Int): SimpleAlbumModel? {
+        val database: AlbumDatabase = AlbumDatabase.getInstance(context!!)
+        var folder: SimpleAlbumModel? = null
         try {
             val type = if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
             var id = database.getAlbumIdFromName(name, type)
@@ -96,10 +98,8 @@ object AlbumUtils {
                 val strType = if (position == 0) Storage.IMAGE else Storage.VIDEO
                 val file = File(Storage.getFolder(strType, context), randomStr)
                 if (file.mkdirs()) {
-                    folder = AlbumModel()
+                    folder = SimpleAlbumModel(name, file.absolutePath)
                     database.addAlbum(id, name, type)
-                    folder.name = name
-                    folder.path = file.absolutePath
                 }
             } else {
                 Toast.makeText(
@@ -129,9 +129,9 @@ object AlbumUtils {
         }
     }
 
-    fun removeFromFavorites(albumModel: AlbumModel, context: Context) {
-        val database = PathsDatabase.getInstance(context)
-        val file = File(albumModel.path!!)
+    fun removeFromFavorites(albumModel: SimpleAlbumModel, context: Context) {
+        val database = AlbumDatabase.getInstance(context)
+        val file = File(albumModel.albumPath)
         val name = file.name
         if (!database.removeFavoriteFolder(name)) {
             Toast.makeText(context, "failed to remove from bookmark", Toast.LENGTH_SHORT)

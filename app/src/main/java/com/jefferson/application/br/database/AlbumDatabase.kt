@@ -25,7 +25,7 @@ import android.util.Log
 import com.jefferson.application.br.util.Storage
 import java.io.File
 
-class PathsDatabase private constructor(context: Context, path: String) :
+class AlbumDatabase private constructor(context: Context, path: String) :
     SQLiteOpenHelper(context, path, null, DATABASE_VERSION) {
     private fun onUpgradeDatabase(sQLiteDatabase: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         Log.e("DATABASE", " UPGRADE: oldVersion => $oldVersion")
@@ -280,6 +280,8 @@ class PathsDatabase private constructor(context: Context, path: String) :
         }
 
     companion object {
+        const val IMAGE_TYPE = "imagem"
+        const val VIDEO_TYPE = "video"
         const val DATABASE_NAME = "database.db"
         const val MEDIA_TABLE_NAME = "PATHS_"
         const val DATABASE_VERSION = 11
@@ -301,15 +303,15 @@ class PathsDatabase private constructor(context: Context, path: String) :
                     + MEDIA_PATH_COL + " TEXT, " + MEDIA_DURATION_COL + " INTEGER DEFAULT -1);")
 
         @JvmStatic
-        fun getInstance(context: Context, path: String): PathsDatabase {
-            return PathsDatabase(context, "$path/$DATABASE_NAME")
+        fun getInstance(context: Context, path: String): AlbumDatabase {
+            return AlbumDatabase(context, "$path/$DATABASE_NAME")
         }
 
         @JvmStatic
-        fun getInstance(context: Context): PathsDatabase {
+        fun getInstance(context: Context): AlbumDatabase {
             val file = File(Storage.getDefaultStoragePath(context), "database.db")
             file.parentFile?.mkdirs()
-            return PathsDatabase(context, file.absolutePath)
+            return AlbumDatabase(context, file.absolutePath)
         }
     }
 }

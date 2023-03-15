@@ -37,7 +37,7 @@ import com.jefferson.application.br.activity.MainActivity.Companion.instance
 import com.jefferson.application.br.adapter.FilePickerAdapter
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
-import com.jefferson.application.br.database.PathsDatabase
+import com.jefferson.application.br.database.AlbumDatabase
 import com.jefferson.application.br.model.PickerModel
 import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.util.AlbumUtils
@@ -116,7 +116,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
         actionBar?.title = getString(R.string.maove_to)
 
         fab = findViewById(R.id.fab)
-        fab.setOnClickListener{
+        fab.setOnClickListener {
             MoveFilesTask(
                 pickerAdapter.models[pickerAdapter.selectedItem].path!!
             ).start()
@@ -162,7 +162,8 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
                 val name = editText.text.toString()
                 val result = AlbumUtils.validateName(name, this@FolderPickerActivity)
                 if (!result.ok) {
-                    Toast.makeText(this@FolderPickerActivity, result.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@FolderPickerActivity, result.message, Toast.LENGTH_SHORT)
+                        .show()
                     return false
                 }
                 val success =
@@ -172,8 +173,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
                 }
                 return success
             }
-        }
-        ).show()
+        }).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -192,7 +192,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
     private fun getModels(i: Int): List<PickerModel> {
         val arrayList = ArrayList<PickerModel>()
         val storageAndFolder = Storage.getFolder(if (i == 0) Storage.IMAGE else Storage.VIDEO, this)
-        val instance = PathsDatabase.getInstance(this)
+        val instance = AlbumDatabase.getInstance(this)
         val listFiles = storageAndFolder?.listFiles()!!
         for (file in listFiles) {
             if (file.isDirectory && file.absolutePath != currentPath) {

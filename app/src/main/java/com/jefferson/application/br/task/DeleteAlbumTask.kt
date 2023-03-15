@@ -21,13 +21,13 @@ import android.widget.Toast
 import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
-import com.jefferson.application.br.database.PathsDatabase.Companion.getInstance
+import com.jefferson.application.br.database.AlbumDatabase.Companion.getInstance
 import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.util.Storage.getDefaultStoragePath
 import java.io.File
 
-open class DeleteFilesTask(
-    activity: Activity, items: ArrayList<String>, position: Int, rootFile: File
+open class DeleteAlbumTask(
+    activity: Activity, items: List<String>, position: Int, rootFile: File
 ) : JTask() {
     var progress = 0
     private val items: List<String?>

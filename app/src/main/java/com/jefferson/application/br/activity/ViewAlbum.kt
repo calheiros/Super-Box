@@ -24,7 +24,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.*
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -49,12 +48,12 @@ import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter.ViewH
 import com.jefferson.application.br.app.ProgressWatcher
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
-import com.jefferson.application.br.database.PathsDatabase
+import com.jefferson.application.br.database.AlbumDatabase
 import com.jefferson.application.br.fragment.PreviewFragment
 import com.jefferson.application.br.model.AlbumModel
 import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.model.MediaModel
-import com.jefferson.application.br.task.DeleteFilesTask
+import com.jefferson.application.br.task.DeleteAlbumTask
 import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.task.VideoDurationUpdaterTask
 import com.jefferson.application.br.util.*
@@ -308,6 +307,15 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
     }
 
+    override fun onDestroy() {
+        if (videoDurationUpdaterTask?.status == JTask.Status.STARTED)
+            videoDurationUpdaterTask?.cancelTask()
+
+        if (populateAlbumTask?.status == JTask.Status.STARTED)
+            populateAlbumTask?.cancelTask()
+        super.onDestroy()
+    }
+
     private fun importFromGallery() {
         val intent = Intent(this, ImportGalleryActivity::class.java)
         intent.putExtra("position", position)
@@ -401,7 +409,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         val size = files.size
         val resId: Int
         val view: View
-        val database = PathsDatabase.getInstance(this, Storage.getDefaultStoragePath(this))
+        val database = AlbumDatabase.getInstance(this, Storage.getDefaultStoragePath(this))
         if (size == 1) {
             resId = R.layout.files_info_layout
             view = layoutInflater.inflate(resId, null)
@@ -448,7 +456,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         populateAlbumTask?.start()
         populateAlbumTask?.setOnFinishedListener {
             if (isVideoSession) {
-               startVideoUpdaterTask()
+                startVideoUpdaterTask()
             }
         }
     }
@@ -574,11 +582,11 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 if (inputText.isEmpty()) {
                     return false
                 }
-                val success = AlbumUtils.renameAlbum(this@ViewAlbum, model, inputText, position)
+                /*val success = AlbumUtils.renameAlbum(this@ViewAlbum, model, inputText, position)
                 if (success) {
                     MainActivity.instance?.updateFragment(position)
                     albumLabel.text = inputText
-                }
+                }*/
                 return true
             }
         })
@@ -588,6 +596,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     fun toast(msg: String) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
     }
+
     private fun startVideoUpdaterTask() {
         videoDurationUpdaterTask = VideoDurationUpdaterTask(this, adapter)
         videoDurationUpdaterTask?.start()
@@ -639,6 +648,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             roundedImageView.setImageResource(R.drawable.ic_folder_image)
         }
     }
+
     fun cancelVideoUpdaterTask(): Boolean {
         if (videoDurationUpdaterTask?.status == JTask.Status.STARTED) {
             videoDurationUpdaterTask?.cancelTask()
@@ -646,8 +656,9 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
         return false
     }
+
     inner class DeleteFiles(activity: Activity, p1: ArrayList<String>, p3: Int, p4: File) :
-        DeleteFilesTask(activity, p1, p3, p4) {
+        DeleteAlbumTask(activity, p1, p3, p4) {
         private var videoTaskInterrupted = false
         override fun onStarted() {
             super.onStarted()
@@ -671,7 +682,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 return
             }
             if (videoTaskInterrupted) {
-              startVideoUpdaterTask()
+                startVideoUpdaterTask()
             }
         }
 
@@ -690,12 +701,12 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     ) : JTask() {
         private val models: ArrayList<MediaModel> = ArrayList()
         private var showProgressRun: Runnable? = null
+
         override fun workingThread() {
-            val database = PathsDatabase.getInstance(context)
+            val database = AlbumDatabase.getInstance(context)
             for (file in dir.listFiles()!!) {
                 if (isCancelled) break
                 val model = MediaModel(file.absolutePath)
-                Log.i("PopulateAlbum", "LOOP at: ${file.name}")
                 models.add(model)
             }
             database.close()
@@ -738,7 +749,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 fileTransfer,
                 simpleDialog
             )
-        private val database: PathsDatabase = PathsDatabase.getInstance(
+        private val database: AlbumDatabase = AlbumDatabase.getInstance(
             this@ViewAlbum, Storage.getDefaultStoragePath(this@ViewAlbum)
         )
         private var allowListModification = true
@@ -839,7 +850,8 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         private fun getAlternativePath(type: Int): String {
             var file = File(
                 Environment.getExternalStoragePublicDirectory(
-                    if (type == 0) Environment.DIRECTORY_PICTURES else Environment.DIRECTORY_MOVIES),
+                    if (type == 0) Environment.DIRECTORY_PICTURES else Environment.DIRECTORY_MOVIES
+                ),
                 StringUtils.getFormattedDate("yyyy.MM.dd 'at' HH:mm:ss z") +
                         if (type == 0) ".jpeg" else ".mp4"
             )
@@ -875,7 +887,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
 
         private fun deleteFolder() {
-            val database = PathsDatabase.getInstance(this@ViewAlbum)
+            val database = AlbumDatabase.getInstance(this@ViewAlbum)
             if (albumDir.delete()) {
                 database.deleteAlbum(
                     albumDir.name,
@@ -889,8 +901,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             while (!allowListModification) {
                 try {
                     Thread.sleep(10)
-                } catch (ignored: InterruptedException) {
-                }
+                } catch (ignored: InterruptedException) { }
             }
             junkList.add(item)
         }
@@ -913,7 +924,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         @Throws(FileNotFoundException::class)
         fun getOutputStream(file: File): OutputStream {
             var result: OutputStream? = null
-            if (Build.VERSION.SDK_INT >= 21) if (Environment.isExternalStorageRemovable(file)) {
+            if (Environment.isExternalStorageRemovable(file)) {
                 val document = DocumentUtil.getDocumentFile(file, true, this@ViewAlbum)
                 if (document != null) result =
                     this@ViewAlbum.contentResolver.openOutputStream(document.uri)

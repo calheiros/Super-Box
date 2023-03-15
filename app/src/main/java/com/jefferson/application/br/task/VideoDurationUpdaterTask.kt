@@ -4,7 +4,7 @@ import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
-import com.jefferson.application.br.database.PathsDatabase
+import com.jefferson.application.br.database.AlbumDatabase
 import com.jefferson.application.br.util.StringUtils
 import java.io.File
 import java.lang.Exception
@@ -13,28 +13,29 @@ class VideoDurationUpdaterTask(
     val context: Context,
     val adapter: MultiSelectRecyclerViewAdapter) : JTask(){
     override fun workingThread() {
-        val database = PathsDatabase.getInstance(context)
+        val database = AlbumDatabase.getInstance(context)
         for(item in adapter.items) {
             if (isCancelled) break
             val duration = getVideoDuration(File(item.path!!), database)
             val time = StringUtils.getFormattedVideoDuration(duration.toString())
-            adapter.updateVideoDuration(item.path!!, time)
+            sendUpdate(item.path!!, time)
         }
     }
 
-    override fun onStarted() {
-        TODO("Not yet implemented")
+    override fun onUpdated(data: Array<out Any>?) {
+        val path = data?.get(0)
+        val time = data?.get(1)
+        adapter.updateVideoDuration(path as String, time as String)
     }
+    override fun onStarted() {}
 
-    override fun onFinished() {
-        TODO("Not yet implemented")
-    }
+    override fun onFinished() {}
 
     override fun onException(e: Exception?) {
-        TODO("Not yet implemented")
+       e?.printStackTrace()
     }
 
-    private fun getVideoDuration(file: File, database: PathsDatabase): Int {
+    private fun getVideoDuration(file: File, database: AlbumDatabase): Int {
         var duration = database.getDuration(file.name)
         if (duration == -1 || duration == 0) {
             duration = try {
