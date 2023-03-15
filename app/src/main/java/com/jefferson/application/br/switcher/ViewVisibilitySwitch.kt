@@ -1,4 +1,4 @@
-package com.jefferson.application.br.trigger
+package com.jefferson.application.br.switcher
 
 import android.view.View
 import android.view.animation.Animation
@@ -14,7 +14,8 @@ class ViewVisibilitySwitch(private val target: View) {
             show()
         }
     }
-    private fun changeVisibility(newVisibility: Int) {
+
+    fun changeVisibility(newVisibility: Int) {
         if (target.visibility == newVisibility) {
             return
         }

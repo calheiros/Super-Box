@@ -30,7 +30,7 @@ import android.widget.VideoView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.jefferson.application.br.R
-import com.jefferson.application.br.trigger.ViewVisibilitySwitch
+import com.jefferson.application.br.switcher.ViewVisibilitySwitch
 import com.jefferson.application.br.ui.JVideoController
 import com.jefferson.application.br.ui.JVideoController.OnButtonPressedListener
 import java.io.File

@@ -29,7 +29,7 @@ import com.google.android.material.transition.platform.MaterialElevationScale
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.app.SimpleDialog
-import com.jefferson.application.br.trigger.ViewVisibilitySwitch
+import com.jefferson.application.br.switcher.ViewVisibilitySwitch
 import com.jefferson.application.br.util.MediaUtils
 
 class PreviewFragment : Fragment, View.OnClickListener {

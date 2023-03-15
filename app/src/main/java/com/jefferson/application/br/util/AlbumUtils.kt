@@ -35,21 +35,34 @@ object AlbumUtils {
         val success = file.delete()
         if (success)
             database.deleteMediaData(id)
-        return Result(success, if(success) "success" else "failed")
+        return Result(success, if (success) "success" else "failed")
     }
+
     /**
      * Rename album from database
      */
     fun renameAlbum(
-        context: Context?,
+        context: Context,
         model: SimpleAlbumModel,
         newName: String,
         position: Int
     ): Boolean {
-        val database: AlbumDatabase = AlbumDatabase.getInstance(context!!)
+        val success = renameAlbum(context, model.albumPath, newName, position)
+        if (success)
+            model.albumName = newName
+        return success
+    }
+
+    fun renameAlbum(
+        context: Context,
+        albumPath: String,
+        newName: String,
+        position: Int
+    ): Boolean {
+        val database: AlbumDatabase = AlbumDatabase.getInstance(context)
         try {
-            val folderType = if (position == 0) FileModel.IMAGE_TYPE else FileModel.VIDEO_TYPE
-            val file = File(model.albumPath)
+            val folderType = if (position == 0) AlbumDatabase.IMAGE_TYPE else AlbumDatabase.VIDEO_TYPE
+            val file = File(albumPath)
             val id = file.name
             val folderName = database.getAlbumName(id, folderType)
             val newFolderId = database.getAlbumIdFromName(newName, folderType)
@@ -76,7 +89,7 @@ object AlbumUtils {
             } else {
                 database.updateAlbumName(id, newName, folderType)
             }
-            model.albumName = newName
+
         } catch (e: Exception) {
             e.printStackTrace()
             return false
@@ -115,6 +128,7 @@ object AlbumUtils {
         }
         return folder
     }
+
     /*
      ** validate album name
     */
@@ -144,7 +158,7 @@ object AlbumUtils {
 
 class Result {
     var ok: Boolean = false
-    var message :String? = null
+    var message: String? = null
     var model: AlbumModel? = null
 
     constructor(ok: Boolean, message: String?, model: AlbumModel?) {
@@ -153,6 +167,6 @@ class Result {
         this.model = model
     }
 
-    constructor(ok: Boolean, message: String?): this(ok, message, null)
-    constructor(ok: Boolean): this(ok, null, null)
+    constructor(ok: Boolean, message: String?) : this(ok, message, null)
+    constructor(ok: Boolean) : this(ok, null, null)
 }

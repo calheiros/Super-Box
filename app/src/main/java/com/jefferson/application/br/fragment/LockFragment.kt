@@ -180,8 +180,7 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
             applicationFound(firstContains)
             return true
         }
-        Toast.makeText(context, "No match found!", Toast.LENGTH_SHORT).show()
-        //showInputMethod(searchView);
+        Toast.makeText(context, "Application not found!", Toast.LENGTH_SHORT).show()
         return false
     }
 
@@ -202,7 +201,6 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
         lastClickedItemPosition = position
         lastClickedParentView = view
         var noNeedOverlayPermission = false
-        //Toast.makeText(getContext(), "position " + lastClickedItemPosition, Toast.LENGTH_SHORT);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(
                 context
             )
@@ -218,13 +216,11 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
                 )
             ) // request permission via start activity for result 
             startActivityForResult(
-                intent, REQUEST_OVERLAY_CODE
+                intent, REQUEST_OVERLAY_PERMISSION_CODE
             ) //It will call onActivityResult Function After you press Yes/No and go Back after giving permission 
         } else {
             noNeedOverlayPermission = true
             Log.v("App", "We already have permission for it.")
-            // disablePullNotificationTouch(); 
-            // Do your stuff, we got permission captain 
         }
         if (!needPermissionForBlocking(context)) {
             if (noNeedOverlayPermission) {
@@ -366,8 +362,9 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
             val infoMutableList =
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
                     context.packageManager.queryIntentActivities(
-                    intent, PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong())
-                ) else @Suppress("DEPRECATION") context.packageManager.queryIntentActivities(
+                        intent,
+                        PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong())
+                    ) else @Suppress("DEPRECATION") context.packageManager.queryIntentActivities(
                     intent, 0
                 )
 
@@ -415,6 +412,6 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     }
 
     companion object {
-        private const val REQUEST_OVERLAY_CODE = 9
+        private const val REQUEST_OVERLAY_PERMISSION_CODE = 9
     }
 }

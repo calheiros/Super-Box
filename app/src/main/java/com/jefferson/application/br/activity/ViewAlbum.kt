@@ -458,6 +458,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
             if (isVideoSession) {
                 startVideoUpdaterTask()
             }
+            setAlbumHeader()
         }
     }
 
@@ -568,8 +569,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
     }
 
     private fun renameAlbum() {
-        val model = AlbumModel()
-        model.path = albumDir.absolutePath
+        val path = albumDir.absolutePath
         val dialog = SimpleDialog(this, SimpleDialog.STYLE_INPUT)
         val input = dialog.getInputEdiText()
         input.requestFocus()
@@ -582,11 +582,11 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 if (inputText.isEmpty()) {
                     return false
                 }
-                /*val success = AlbumUtils.renameAlbum(this@ViewAlbum, model, inputText, position)
+                val success = AlbumUtils.renameAlbum(this@ViewAlbum, path, inputText, position)
                 if (success) {
                     MainActivity.instance?.updateFragment(position)
                     albumLabel.text = inputText
-                }*/
+                }
                 return true
             }
         })
@@ -627,7 +627,6 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE) // sets the text color of the collapsed title
         collapsingToolbar.setExpandedTitleColor(Color.TRANSPARENT) // sets the text color of the expanded title
         collapsingToolbar.scrimAnimationDuration = 150
-        setAlbumHeader()
     }
 
     private fun setAlbumHeader() {
@@ -713,7 +712,6 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
 
         override fun onStarted() {
-            Toast.makeText(context, "Task start", Toast.LENGTH_SHORT).show()
             showProgressRun = Runnable { progressBar?.visibility = View.VISIBLE }
             progressBar?.postDelayed(showProgressRun, 100)
         }
@@ -729,7 +727,6 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
                 adapter.notifyDataSetChanged()
                 emptyListHint.visibility = View.GONE
             }
-            Toast.makeText(context, "Task end", Toast.LENGTH_SHORT).show()
         }
 
         override fun onException(e: java.lang.Exception?) {

@@ -29,7 +29,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.jefferson.application.br.R
 import com.jefferson.application.br.fragment.VideoPlayerFragment
-import com.jefferson.application.br.trigger.ViewVisibilitySwitch
+import com.jefferson.application.br.switcher.ViewVisibilitySwitch
 
 class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
     private lateinit var pagerAdapter: VideoPagerAdapter

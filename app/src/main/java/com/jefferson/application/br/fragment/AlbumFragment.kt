@@ -29,6 +29,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver
 import androidx.recyclerview.widget.RecyclerView.SmoothScroller
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.MainActivity
@@ -65,6 +66,8 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     private var emptyView: View? = null
     private var paddingBottom = 0
 
+    constructor() : this(0)
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -80,9 +83,23 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
             recyclerView?.layoutManager = layoutManager
             recyclerView?.clipToPadding = false
             recyclerView?.setPadding(0, 0, 0, paddingBottom)
+            albumAdapter = AlbumAdapter(this, ArrayList())
+            albumAdapter?.registerAdapterDataObserver(object : AdapterDataObserver() {
+                override fun onChanged() {
+                    onItemsChanged(albumAdapter!!.itemCount)
+                }
+            })
             populateRecyclerView()
         }
         return view
+    }
+
+    fun onItemsChanged(itemCount: Int) {
+        if (itemCount == 0) {
+            emptyView?.visibility = View.VISIBLE
+        } else {
+            emptyView?.visibility = View.GONE
+        }
     }
 
     fun openAlbum(model: SimpleAlbumModel) {
@@ -114,30 +131,31 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         val bookmark = database?.favoritesAlbum
         if (root.exists()) {
             val files = root.list()
-            if (files != null) for (s in files) {
+            if (files != null) for (name in files) {
                 if (jTask.isCancelled) {
                     Log.i("Album: BuildModels", "canceled work")
                     break
                 }
-                val file = File(root, s)
+                val file = File(root, name)
                 if (file.isDirectory) {
                     val folderList = file.listFiles()
                     var favorite = false
                     var folderName: String? = database?.getAlbumName(
-                        s!!,
+                        name!!,
                         if (position == 0) AlbumDatabase.IMAGE_TYPE else AlbumDatabase.VIDEO_TYPE
                     )
                     if (bookmark != null) {
                         favorite = java.lang.Boolean.TRUE == bookmark[file.name]
                     }
-                    folderName = folderName ?: s
+                    folderName = folderName ?: name
                     val model = SimpleAlbumModel(
                         name = folderName ?: "",
                         albumPath = file.absolutePath
                     )
                     model.isFavorite = favorite
                     model.itemCount = folderList?.size ?: 0
-                    model.thumbnailPath = folderList?.get(0)?.absolutePath ?: ""
+                    model.thumbnailPath = if (folderList?.isNotEmpty() == true)
+                        folderList[0].absolutePath else ""
                     models.add(model)
                 }
             }
@@ -149,7 +167,7 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
 
     private fun populateRecyclerView() {
         retrieveMedia = object : JTask() {
-            private var albumsModel: ArrayList<SimpleAlbumModel>? = null
+            private var albumsModel: ArrayList<SimpleAlbumModel> = ArrayList()
             override fun workingThread() {
                 val result = buildModels(
                     position = pagerPosition,
@@ -158,11 +176,11 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
                 albumsModel = result
             }
 
-            override fun onStarted(){
+            override fun onStarted() {
             }
 
             override fun onFinished() {
-                putModels(albumsModel)
+                albumAdapter?.updateModels(albumsModel)
                 notifyDataUpdated()
             }
 
@@ -178,20 +196,13 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     fun scrollTo(position: Int) {
         recyclerView?.scrollToPosition(position)
     }
+
     override fun onDestroy() {
         if (retrieveMedia?.isCancelled == false) {
             retrieveMedia?.cancelTask()
         }
 
         super.onDestroy()
-    }
-    fun putModels(models: ArrayList<SimpleAlbumModel>?) {
-        if (albumAdapter != null) {
-            albumAdapter?.updateModels(models!!)
-        } else {
-            albumAdapter = AlbumAdapter(this@AlbumFragment, models!!)
-            notifyDataUpdated()
-        }
     }
 
     fun removeFolder(folderPosition: Int) {
@@ -203,7 +214,6 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         recyclerView?.adapter = albumAdapter
         emptyView?.visibility = visibility
         progressBar?.visibility = View.GONE
-
     }
 
     private fun warnDatabaseCorrupted() {
@@ -240,7 +250,7 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
                     var message: String? = null
                     when (action) {
                         ACTION_RENAME_FOLDER -> if (success == AlbumUtils.renameAlbum(
-                                context, model!!, text, pagerPosition
+                                requireContext(), model!!, text, pagerPosition
                             )
                         ) {
                             message = "Folder renamed to \"$text\"."
@@ -249,16 +259,15 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
                             message = "Failed to rename folder! :("
                         }
                         ACTION_CREATE_FOLDER -> {
-                            val folder = AlbumUtils.createAlbum(context, text, pagerPosition)
-                            if (folder != null) {
+                            val album = AlbumUtils.createAlbum(context, text, pagerPosition)
+                            if (album != null) {
                                 message = "Folder \"$text\" created."
-                                albumAdapter!!.insertItem(folder)
+                                albumAdapter?.insertItem(album)
                             } else {
                                 message = "Failed to create folder! :("
                             }
                         }
                     }
-                    notifyDataUpdated()
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     return success
                 }
@@ -281,7 +290,6 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
                 task.setOnFinishedListener {
                     if (task.deletedAll()) {
                         albumAdapter?.removeItem(model)
-                        notifyDataUpdated()
                     } else {
                         (requireActivity() as MainActivity).updateFragment(pagerPosition)
                     }

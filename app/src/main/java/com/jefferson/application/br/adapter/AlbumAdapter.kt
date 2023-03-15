@@ -28,7 +28,6 @@ import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.Companion.createMenuItems
 import com.jefferson.application.br.fragment.AlbumFragment
-import com.jefferson.application.br.model.AlbumModel
 import com.jefferson.application.br.model.SimpleAlbumModel
 import com.jefferson.application.br.util.AlbumUtils
 
@@ -53,6 +52,7 @@ class AlbumAdapter(
         if (position != -1) {
             notifyItemInserted(position)
             fragment.scrollTo(position)
+            fragment.onItemsChanged(itemCount)
         } else {
             notifyDataSetChanged()
         }
@@ -69,6 +69,7 @@ class AlbumAdapter(
                 Toast.LENGTH_LONG
             ).show()
         }
+        fragment.onItemsChanged(itemCount)
     }
 
     fun updateModels(
@@ -85,11 +86,11 @@ class AlbumAdapter(
         return ViewHolder(view)
     }
 
-    fun notifyItemChanged(f_model: SimpleAlbumModel) {
+    fun notifyItemChanged(albumModel: SimpleAlbumModel) {
         for (i in 0 until itemCount) {
-            if ((f_model.albumName == getItem(i)!!.albumName)) {
+            if ((albumModel.albumPath == getItem(i)?.albumPath)) {
                 notifyItemChanged(i)
-                break
+                return
             }
         }
     }
@@ -106,6 +107,7 @@ class AlbumAdapter(
                 Toast.LENGTH_LONG
             ).show()
         }
+        fragment.onItemsChanged(itemCount)
     }
 
     fun getAlbumPositionByPath(path: String): Int {
@@ -213,7 +215,10 @@ class AlbumAdapter(
         }
     }
 
-    private inner class DialogMenuListener(var f_model: SimpleAlbumModel, var dialog: SimpleDialog) :
+    private inner class DialogMenuListener(
+        var f_model: SimpleAlbumModel,
+        var dialog: SimpleDialog
+    ) :
         OnItemClickListener {
         override fun onItemClick(parent: AdapterView<*>?, view: View, position: Int, id: Long) {
             when (position) {

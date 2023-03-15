@@ -35,7 +35,7 @@ import android.widget.TextView;
 import android.widget.VideoView;
 
 import com.jefferson.application.br.R;
-import com.jefferson.application.br.trigger.ViewVisibilitySwitch;
+import com.jefferson.application.br.switcher.ViewVisibilitySwitch;
 import com.jefferson.application.br.util.JDebug;
 import com.jefferson.application.br.util.StringUtils;
 
