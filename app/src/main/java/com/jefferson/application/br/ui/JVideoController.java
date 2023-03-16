@@ -218,9 +218,9 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
         controllerView.startAnimation(show ? animFadeIn : animFadeOut);
         if(show) {
             controllerHandler.postDelayed(controllerRunnable, 2000);
-        }
-        if(visibilitySwitch != null) {
-            visibilitySwitch.switchVisibility();
+            visibilitySwitch.show();
+        } else {
+            visibilitySwitch.hide();
         }
     }
 

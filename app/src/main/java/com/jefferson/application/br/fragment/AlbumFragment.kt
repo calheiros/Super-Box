@@ -177,9 +177,14 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
             }
 
             override fun onStarted() {
+                emptyView?.visibility = View.GONE
+                progressBar?.visibility = View.VISIBLE
+                recyclerView?.visibility = View.GONE
             }
 
             override fun onFinished() {
+                progressBar?.visibility = View.GONE
+                recyclerView?.visibility = View.VISIBLE
                 albumAdapter?.updateModels(albumsModel)
                 notifyDataUpdated()
             }
@@ -268,7 +273,8 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
                             }
                         }
                     }
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    if (message != null)
+                        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                     return success
                 }
             }).setNegativeButton(getString(R.string.cancelar), null).show()
@@ -321,14 +327,8 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     }
 
     fun reload() {
-        if (emptyView != null && emptyView?.visibility == View.VISIBLE)
-            emptyView?.visibility = View.GONE
-
         if (retrieveMedia != null && retrieveMedia?.getStatus() == JTask.Status.STARTED)
             retrieveMedia?.cancelTask()
-
-        progressBar?.visibility = View.VISIBLE
-        albumAdapter?.updateModels(ArrayList())
         populateRecyclerView()
     }
 

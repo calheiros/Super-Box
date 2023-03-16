@@ -61,6 +61,7 @@ class AlbumAdapter(
     fun removeItem(position: Int) {
         if (position in (0 until itemCount)) {
             models.removeAt(position)
+            fragment.onItemsChanged(itemCount)
             notifyItemRemoved(position)
         } else {
             Toast.makeText(
@@ -69,7 +70,6 @@ class AlbumAdapter(
                 Toast.LENGTH_LONG
             ).show()
         }
-        fragment.onItemsChanged(itemCount)
     }
 
     fun updateModels(
