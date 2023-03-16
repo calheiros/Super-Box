@@ -5,9 +5,13 @@ Application to hide sensitive content and app lock.
 # Themes
 
 Dark
-<img src='https://github.com/calheiros/super-box/blob/427bb63cc42a167cc46dc0abc4eabc23d4c02124/screenshots/Screenshot_lock.jpg' height='300px'/> <img src='https://github.com/calheiros/super-box/blob/427bb63cc42a167cc46dc0abc4eabc23d4c02124/screenshots/Screenshot_main.jpg' height='300px'/>
 
-Blue
+<img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_lock.jpg' height='300px'/>  <img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_Dark_Theme1.jpg' height='300px'/>
 
+Blue (Light)
 
-Green
+<img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_Blue_Theme1.jpg' height='300px'/>  <img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_Blue_Theme2.jpg' height='300px'/>
+
+Green (Light)
+
+<img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_Green_Theme1.jpg' height='300px'/>  <img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_Green_Theme2.jpg' height='300px'/>
