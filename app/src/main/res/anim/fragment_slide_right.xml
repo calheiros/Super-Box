@@ -15,22 +15,13 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<FrameLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:anim/accelerate_interpolator" >
 
-    <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
-        android:id="@+id/imageView"
-        android:transitionName="shared_element_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <translate
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:fromXDelta="0"
+        android:toXDelta="-100%"
+        android:duration="250"/>
 
-    <ImageView
-        android:id="@+id/gif_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/gif_image_view_description" />
-
-</FrameLayout>
-
+</set>

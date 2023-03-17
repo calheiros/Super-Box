@@ -260,8 +260,6 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
                         ) {
                             message = "Folder renamed to \"$text\"."
                             albumAdapter?.notifyItemChanged(model)
-                        } else {
-                            message = "Failed to rename folder! :("
                         }
                         ACTION_CREATE_FOLDER -> {
                             val album = AlbumUtils.createAlbum(context, text, pagerPosition)

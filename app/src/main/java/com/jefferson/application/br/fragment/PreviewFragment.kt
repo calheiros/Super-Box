@@ -21,18 +21,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.transition.platform.MaterialElevationScale
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialFadeThrough
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.switcher.ViewVisibilitySwitch
 import com.jefferson.application.br.util.MediaUtils
 
-class PreviewFragment : Fragment, View.OnClickListener {
+
+class PreviewFragment(
+    albumAdapter: MultiSelectRecyclerViewAdapter,
+    private var initialPosition: Int,
+    var mediaType: Int,
+    private var transitionName: String
+) : Fragment(), View.OnClickListener {
 
     private lateinit var viewPager: ViewPager2
     private lateinit var pagerAdapter: ImagePagerAdapter
@@ -43,14 +51,7 @@ class PreviewFragment : Fragment, View.OnClickListener {
         get() {
             return viewPager.currentItem
         }
-    private var albumAdapter: MultiSelectRecyclerViewAdapter? = null
-    var position: Int = 0
-    var mediaType: Int = 0
-    constructor(albumAdapter: MultiSelectRecyclerViewAdapter, position: Int, mediaType: Int) {
-        this.albumAdapter = albumAdapter
-        this.position = position
-        this.mediaType = mediaType
-    }
+    private var albumAdapter: MultiSelectRecyclerViewAdapter? = albumAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -64,24 +65,25 @@ class PreviewFragment : Fragment, View.OnClickListener {
             viewPager = rootView?.findViewById(R.id.view_pager) as ViewPager2
             viewPager.adapter = pagerAdapter
             viewPager.setPageTransformer(ZoomOutPageTransformer())
-            viewPager.setCurrentItem(position, false)
+            viewPager.setCurrentItem(initialPosition, false)
             viewPager.setOnClickListener(this)
             exportButton?.setOnClickListener(this)
             deleteButton?.setOnClickListener(this)
+            ViewCompat.setTransitionName(rootView!!, transitionName)
         }
         return rootView
     }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val transition = MaterialElevationScale(true)
-        transition.duration = 150
-        enterTransition = transition
-        exitTransition = transition
+        postponeEnterTransition()
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        startPostponedEnterTransition()
+    }
     override fun onClick(v: View) {
-        val position = viewPager.currentItem
+        val position = currentItem
         val path = filesPath[position]
         when (v.id) {
             R.id.delete_imageview -> deletionConfirmation(path, position)
@@ -136,8 +138,9 @@ class PreviewFragment : Fragment, View.OnClickListener {
         override fun createFragment(position: Int): Fragment {
             return if (mediaType == 1)
                 VideoPlayerFragment(filesPath[position], optionsTrigger)
-            else ImagePreviewFragment(filesPath[position], optionsTrigger)
+            else ImagePreviewFragment(filesPath[position], optionsTrigger, this@PreviewFragment)
         }
+
     }
 
     class ZoomOutPageTransformer : ViewPager2.PageTransformer {

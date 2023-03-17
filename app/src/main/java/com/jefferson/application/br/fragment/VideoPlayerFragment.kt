@@ -55,8 +55,8 @@ class VideoPlayerFragment(
         hideThumbView()
     }
 
-    private fun showThumbView() {
-        if (thumbView != null && thumbView?.visibility != View.VISIBLE) {
+    private fun showThumbnail() {
+        if (thumbView?.visibility != View.VISIBLE) {
             thumbView?.visibility = View.VISIBLE
         }
     }
@@ -135,20 +135,18 @@ class VideoPlayerFragment(
     }
 
     private fun stop() {
-        showThumbView()
-        if (videoView != null && videoView!!.isPlaying) {
+        showThumbnail()
+        if (videoView?.isPlaying == true) {
             videoView?.stopPlayback()
             videoNotPrepared = true
         }
-        if (jController != null && jController!!.isControllerActive) {
+        if (jController?.isControllerActive == true) {
             jController?.pause()
         }
     }
 
     fun pause() {
-        if (videoView != null) {
-            videoView?.pause()
-        }
+        videoView?.pause()
         mediaController?.hide()
     }
 }

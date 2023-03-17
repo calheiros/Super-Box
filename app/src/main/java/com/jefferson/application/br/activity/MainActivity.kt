@@ -250,7 +250,8 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         if (fragment !== supportFragmentManager.findFragmentById(R.id.fragment_container)) {
             val transaction = supportFragmentManager.beginTransaction()
             transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-            if (oldFrag != null) transaction.detach(oldFrag!!)
+            if(oldFrag != null)
+                transaction.detach(oldFrag!!)
             transaction.replace(R.id.fragment_container, fragment!!)
             transaction.attach(fragment)
             transaction.commit()

@@ -77,9 +77,14 @@ class App : Application(), Thread.UncaughtExceptionHandler {
         val intent = Intent(this, CrashActivity::class.java)
         intent.putExtra("message", error)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-        val pending = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_MUTABLE
+        } else {
+            PendingIntent.FLAG_ONE_SHOT
+        }
+        val pending = PendingIntent.getActivity(this, 0, intent, flags)
         val am = getSystemService(ALARM_SERVICE) as AlarmManager
-        am[AlarmManager.ELAPSED_REALTIME_WAKEUP, 200] = pending
+        am[AlarmManager.ELAPSED_REALTIME_WAKEUP, 100] = pending
     }
 
     override fun onCreate() {
