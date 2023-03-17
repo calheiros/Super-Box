@@ -54,7 +54,6 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     SearchView.OnQueryTextListener {
     var firstVisibleItem = -1
     var lastVisibleItem = -1
-
     private var lastClickedParentView: View? = null
     private var lastClickedItemPosition = 0
     private var visibleCount = -1

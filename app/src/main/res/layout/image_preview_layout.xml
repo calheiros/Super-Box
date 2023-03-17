@@ -22,6 +22,7 @@ Copyright (C) 2023 Jefferson Calheiros
 
     <com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
         android:id="@+id/imageView"
+        android:transitionName="shared_element_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

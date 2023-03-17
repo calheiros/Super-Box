@@ -28,14 +28,22 @@ import java.io.File
 
 object AlbumUtils {
 
-    private fun deleteEmptyAlbum(albumPath: String, context: Context): Result {
-        val file = File(albumPath)
+    fun deleteEmptyAlbum(albumFile: File, albumType: String, context: Context): Boolean {
         val database = AlbumDatabase.getInstance(context)
-        val id = file.name
-        val success = file.delete()
-        if (success)
-            database.deleteMediaData(id)
-        return Result(success, if (success) "success" else "failed")
+        val deleted = deleteEmptyAlbum(albumFile, albumType, database)
+        database.close()
+        return deleted
+    }
+
+    fun deleteEmptyAlbum(albumFile: File, albumType: String, database: AlbumDatabase): Boolean {
+        val deleted = albumFile.delete()
+        if (deleted) {
+            database.deleteAlbum(
+                albumFile.name,
+                albumType
+            )
+        }
+        return deleted
     }
 
     /**
@@ -61,7 +69,8 @@ object AlbumUtils {
     ): Boolean {
         val database: AlbumDatabase = AlbumDatabase.getInstance(context)
         try {
-            val folderType = if (position == 0) AlbumDatabase.IMAGE_TYPE else AlbumDatabase.VIDEO_TYPE
+            val folderType =
+                if (position == 0) AlbumDatabase.IMAGE_TYPE else AlbumDatabase.VIDEO_TYPE
             val file = File(albumPath)
             val id = file.name
             val folderName = database.getAlbumName(id, folderType)

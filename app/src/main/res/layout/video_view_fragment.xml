@@ -38,7 +38,8 @@ Copyright (C) 2023 Jefferson Calheiros
 			android:scaleType="fitCenter"
 			android:id="@+id/video_view_fragment_thumb_view"
 			android:layout_width="match_parent"
-			android:layout_height="match_parent"/>
+			android:layout_height="match_parent"
+			android:contentDescription="@string/album_thumbnail" />
 
 	</FrameLayout>
 

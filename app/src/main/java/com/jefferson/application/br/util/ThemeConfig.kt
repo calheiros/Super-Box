@@ -48,6 +48,7 @@ object ThemeConfig {
             0 -> if (isDarkThemeOn(context)) R.style.MainTheme else R.style.ThemeBlueLight
             2 -> R.style.ThemeBlueLight
             3 -> R.style.ThemeGreenLight
+            4 -> R.style.Theme_RedDark
             else -> R.style.MainTheme
         }
     }
@@ -66,7 +67,8 @@ object ThemeConfig {
             context.getString(R.string.automatico),
             context.getString(R.string.escuro),
             context.getString(R.string.claro),
-            context.getString(R.string.claro_verde)
+            context.getString(R.string.claro_verde),
+            "Red (Dark)"
         )
     }
 
@@ -77,7 +79,8 @@ object ThemeConfig {
             R.drawable.ic_auto_fix,
             R.drawable.ic_circle_purple,
             R.drawable.ic_circle_blue,
-            R.drawable.ic_circle_green
+            R.drawable.ic_circle_green,
+            R.drawable.ic_circle_red
         )
         for (i in options.indices) {
             menu.add(SimpleDialog.MenuItem(options[i], icons[i], i == 0))

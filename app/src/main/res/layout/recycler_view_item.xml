@@ -17,6 +17,7 @@ Copyright (C) 2023 Jefferson Calheiros
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/parentImageView"
     android:layout_height="110dp"
     android:transitionName="shared_element_container"
     android:padding="1dp">

@@ -49,6 +49,12 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="colorControlHighlight">#1C00ABBB</item>
     </style>
 
+    <style name="Theme.RedDark" parent="Theme.Base.Dark">
+        <item name="colorAccent">#FFC400</item>
+        <item name="colorPrimary">#FF1744</item>
+        <item name="colorPrimaryDark">#FF1744</item>
+    </style>
+
     <style name="RoundSquareShapeAppearance">
         <item name="cornerSize">25%</item>
     </style>
