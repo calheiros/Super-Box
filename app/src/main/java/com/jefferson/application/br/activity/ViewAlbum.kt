@@ -269,9 +269,7 @@ class ViewAlbum : MyCompatActivity(), ClickListener, View.OnClickListener {
         }
     private val heightPixels: Float
         get() {
-            val displayMetrics = DisplayMetrics()
-            windowManager.defaultDisplay.getMetrics(displayMetrics)
-            return displayMetrics.heightPixels.toFloat()
+           return resources.displayMetrics.heightPixels.toFloat()
         }
 
     private fun configureBlurView(view: ViewGroup?) {
