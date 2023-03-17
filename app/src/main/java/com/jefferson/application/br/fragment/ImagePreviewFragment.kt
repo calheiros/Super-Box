@@ -63,7 +63,7 @@ class ImagePreviewFragment(
             if (originalName != null) {
                 val mimeType = getMimeType(originalName)
                 if (mimeType != null && mimeType.endsWith("/gif")) {
-                    Glide.with(requireContext()).load("file://$path").listener( object : RequestListener<Drawable>
+                    Glide.with(requireContext()).load("file://$path")/*.listener( object : RequestListener<Drawable>
                         {
                             override fun onLoadFailed(
                                 e: GlideException?,
@@ -86,29 +86,12 @@ class ImagePreviewFragment(
                                 return false
                             }
 
-                        })
+                        })*/
                         .skipMemoryCache(false).into(gifView)
                     return parentView
                 }
             }
             imageView.setImage(ImageSource.uri(path))
-            imageView.setOnImageEventListener(object : OnImageEventListener {
-                override fun onReady() {
-                }
-                override fun onImageLoaded() {
-                   parentFragment.startPostponedEnterTransition()
-                }
-
-                override fun onPreviewLoadError(e: Exception?) {
-                }
-                override fun onImageLoadError(e: Exception?) {
-                }
-                override fun onTileLoadError(e: Exception?) {
-                }
-                override fun onPreviewReleased() {
-
-                }
-            })
             imageView.isSoundEffectsEnabled = false
             imageView.setOnClickListener(this)
         }

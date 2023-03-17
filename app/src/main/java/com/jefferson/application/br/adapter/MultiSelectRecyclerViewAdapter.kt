@@ -23,6 +23,7 @@ import android.view.View.OnLongClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.jefferson.application.br.R
@@ -103,11 +104,11 @@ class MultiSelectRecyclerViewAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val itemLayoutView = LayoutInflater.from(parent.context).inflate(
+        val rootView = LayoutInflater.from(parent.context).inflate(
             R.layout.recycler_view_item,
             parent, false
         )
-        return ViewHolder(itemLayoutView, clickListener)
+        return ViewHolder(rootView, clickListener)
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
@@ -120,7 +121,7 @@ class MultiSelectRecyclerViewAdapter(
         }
         val isSelected = isSelected(position)
         viewHolder.selectionModeOverlay.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
-
+        ViewCompat.setTransitionName(viewHolder.rootView, "image_$position")
         if (isSelected) {
             val realPosition = (getSelectedItemPosition(position) + 1).toString()
             viewHolder.selectedCountLabel.text = realPosition
@@ -138,18 +139,14 @@ class MultiSelectRecyclerViewAdapter(
         }
     }
 
-    class ViewHolder(rootView: View, private val listener: ClickListener?) :
+    class ViewHolder(var rootView: View, private val listener: ClickListener?) :
         RecyclerView.ViewHolder(rootView), View.OnClickListener, OnLongClickListener {
-        val selectionModeOverlay: View
-        val selectedCountLabel: TextView
-        var imageView: ImageView
-        var durationLabel: TextView
+        val selectionModeOverlay: View = rootView.findViewById(R.id.item_selected_overlay)
+        val selectedCountLabel: TextView = rootView.findViewById(R.id.selected_item_count_label)
+        var imageView: ImageView = rootView.findViewById<View>(R.id.image) as ImageView
+        var durationLabel: TextView = rootView.findViewById(R.id.gridview_itemTextView)
 
         init {
-            imageView = rootView.findViewById<View>(R.id.image) as ImageView
-            durationLabel = rootView.findViewById(R.id.gridview_itemTextView)
-            selectedCountLabel = rootView.findViewById(R.id.selected_item_count_label)
-            selectionModeOverlay = rootView.findViewById(R.id.item_selected_overlay)
             rootView.setOnClickListener(this)
             rootView.setOnLongClickListener(this)
         }

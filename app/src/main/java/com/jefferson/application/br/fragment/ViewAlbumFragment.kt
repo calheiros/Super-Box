@@ -17,15 +17,16 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
-import androidx.core.app.SharedElementCallback
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.transition.MaterialContainerTransform
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.*
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
@@ -69,7 +70,7 @@ class ViewAlbumFragment(
     private var selectImageView: ImageView? = null
     private lateinit var appbar: AppBarLayout
     private var parent: View? = null
-
+    private lateinit var layoutManager: LayoutManager
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -77,7 +78,7 @@ class ViewAlbumFragment(
     ): View? {
         if (parent == null) {
             parent = inflater.inflate(R.layout.view_album_fragment_layout, container, false)
-            val layoutManager = GridLayoutManager(requireContext(), autoSpan)
+            layoutManager = GridLayoutManager(requireContext(), autoSpan)
             appbar = parent!!.findViewById(R.id.appbar_view_album)
             recyclerView = parent!!.findViewById(R.id.my_recycler_view)
             recyclerView.setHasFixedSize(true)
@@ -107,48 +108,14 @@ class ViewAlbumFragment(
             configureBlurView(recyclerView)
             configureFloatingButton()
             populateRecyclerView()
-
-            setExitSharedElementCallback(
-                object : SharedElementCallback() {
-                    override fun onMapSharedElements(
-                        names: List<String>, sharedElements: MutableMap<String, View>
-                    ) {
-                        // Locate the ViewHolder for the clicked position.
-                        val selectedViewHolder: RecyclerView.ViewHolder = recyclerView
-                            .findViewHolderForAdapterPosition(2) ?: return
-
-                        // Map the first shared element name to the child ImageView.
-                        sharedElements[names[0]] =
-                            selectedViewHolder.itemView.findViewById(R.id.parentImageView)
-                    }
-                })
+            initToolbar()
         }
         return parent
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initToolbar()
         setAlbumHeader()
-
-        /*setExitSharedElementCallback(
-
-            object : SharedElementCallback() {
-                override fun onMapSharedElements(
-                    names: List<String?>, sharedElements: MutableMap<String?, View?>
-                ) {
-                    // Locate the ViewHolder for the clicked position.
-                    val selectedViewHolder = recyclerView
-                        .findViewHolderForAdapterPosition(MainActivity.currentPosition)
-                    if (selectedViewHolder == null || selectedViewHolder.itemView == null) {
-                        return
-                    }
-
-                    // Map the first shared element name to the child ImageView.
-                    sharedElements[names[0]] =
-                        selectedViewHolder.itemView.findViewById(R.id.card_image)
-                }
-            })*/
     }
 
     private fun configureFloatingButton() {
@@ -644,6 +611,10 @@ class ViewAlbumFragment(
             return false
         }
         return true
+    }
+
+    fun getViewByPosition(position: Int): View? {
+        return layoutManager.findViewByPosition(position)
     }
 
     inner class DeleteFiles(activity: Activity, p1: ArrayList<String>, p3: Int, p4: File) :

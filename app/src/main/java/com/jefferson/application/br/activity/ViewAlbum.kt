@@ -19,8 +19,11 @@ package com.jefferson.application.br.activity
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.transition.Transition
-import androidx.transition.TransitionInflater
+import androidx.fragment.app.Fragment
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialFade
+
+import com.google.android.material.transition.MaterialFadeThrough
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.fragment.PreviewFragment
@@ -29,18 +32,22 @@ import java.io.File
 
 
 class ViewAlbum : MyCompatActivity() {
+    private var currentFrag: Fragment? = null
     private lateinit var albumDirFile: File
-    private var position = 0
+    private var fragmentPosition = 0
     private lateinit var title: String
     private var previewFragment: PreviewFragment? = null
     private lateinit var albumFragment : ViewAlbumFragment
+
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.view_album_layout)
-        position = intent.getIntExtra("position", -1)
+        fragmentPosition = intent.getIntExtra("position", -1)
         title = intent.getStringExtra("name") as String
         albumDirFile = File(intent.getStringExtra("folder")!!)
-        albumFragment = ViewAlbumFragment(title, position, albumDirFile, this)
+        albumFragment = ViewAlbumFragment(title, fragmentPosition, albumDirFile, this)
+        albumFragment.exitTransition = MaterialFade()
+        albumFragment.reenterTransition = MaterialFadeThrough()
         supportFragmentManager.beginTransaction()
             .replace(R.id.fragment_container, albumFragment)
             .attach(albumFragment)
@@ -53,8 +60,8 @@ class ViewAlbum : MyCompatActivity() {
             this, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
 
-                    if (previewFragment != null) {
-                        removePreviewFragment()
+                    if (supportFragmentManager.backStackEntryCount != 0) {
+                        supportFragmentManager.popBackStack()
                         return
                     }
                     if (albumFragment.onBackPressed())
@@ -64,12 +71,15 @@ class ViewAlbum : MyCompatActivity() {
     }
 
     fun startPreview(adapter: MultiSelectRecyclerViewAdapter, itemPosition: Int, view: View) {
-        previewFragment = PreviewFragment(adapter, itemPosition, position)
+        previewFragment = PreviewFragment(adapter, itemPosition, fragmentPosition, view.transitionName)
+        previewFragment?.sharedElementEnterTransition = MaterialContainerTransform()
+
         supportFragmentManager.beginTransaction()
             .setReorderingAllowed(true)
             .addSharedElement(view, view.transitionName)
             .replace(R.id.fragment_container, previewFragment!!)
             .attach(previewFragment!!)
+            .addToBackStack(null)
             .commit()
     }
 
@@ -79,6 +89,5 @@ class ViewAlbum : MyCompatActivity() {
             .replace(R.id.fragment_container, albumFragment)
             .attach(albumFragment)
             .commit()
-        previewFragment = null
     }
 }

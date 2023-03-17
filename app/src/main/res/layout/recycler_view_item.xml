@@ -19,7 +19,6 @@ Copyright (C) 2023 Jefferson Calheiros
     android:layout_width="match_parent"
     android:id="@+id/parentImageView"
     android:layout_height="110dp"
-    android:transitionName="shared_element_container"
     android:padding="1dp">
 
     <ImageView
@@ -83,11 +82,10 @@ Copyright (C) 2023 Jefferson Calheiros
             android:textColor="@color/white"
             android:gravity="center"
             android:text="0"
-            android:textStyle="bold"
             android:shadowColor="#4D000000"
             android:shadowDx="0"
             android:shadowDy="0"
-            android:shadowRadius="5"
+            android:shadowRadius="4"
             android:textSize="14sp"
             android:background="@drawable/bg_checked_item"
             tools:ignore="ContentDescription" />

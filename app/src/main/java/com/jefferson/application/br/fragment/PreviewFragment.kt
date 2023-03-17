@@ -21,17 +21,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.SharedElementCallback
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.transition.Transition
-import androidx.transition.TransitionInflater
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.transition.platform.MaterialContainerTransform
-import com.google.android.material.transition.platform.MaterialElevationScale
+import com.google.android.material.transition.MaterialContainerTransform
+import com.google.android.material.transition.MaterialFadeThrough
 import com.jefferson.application.br.R
-import com.jefferson.application.br.activity.MainActivity
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.switcher.ViewVisibilitySwitch
@@ -40,8 +37,9 @@ import com.jefferson.application.br.util.MediaUtils
 
 class PreviewFragment(
     albumAdapter: MultiSelectRecyclerViewAdapter,
-    var initialPosition: Int,
-    var mediaType: Int
+    private var initialPosition: Int,
+    var mediaType: Int,
+    private var transitionName: String
 ) : Fragment(), View.OnClickListener {
 
     private lateinit var viewPager: ViewPager2
@@ -71,35 +69,18 @@ class PreviewFragment(
             viewPager.setOnClickListener(this)
             exportButton?.setOnClickListener(this)
             deleteButton?.setOnClickListener(this)
-            exitTransition = MaterialElevationScale(false)
-            enterTransition = MaterialContainerTransform()
-            setEnterSharedElementCallback(
-                object : SharedElementCallback() {
-                    override fun onMapSharedElements(
-                        names: List<String?>, sharedElements: MutableMap<String?, View?>
-                    ) {
-                        val currentFragment = pagerAdapter.createFragment(initialPosition)
-                        val view = currentFragment.view
-                        if (view == null) {
-                            Toast.makeText(requireContext(), "Fragment view is null", Toast.LENGTH_SHORT).show()
-                            return
-                        }
-                        // Map the first shared element name to the child ImageView.
-                        sharedElements[names[0]] = view
-                    }
-                })
-
+            ViewCompat.setTransitionName(rootView!!, transitionName)
         }
         return rootView
+    }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        postponeEnterTransition()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        postponeEnterTransition()
-
-        (view.parent as ViewGroup).viewTreeObserver.addOnDrawListener {
-            startPostponedEnterTransition()
-        }
+        startPostponedEnterTransition()
     }
     override fun onClick(v: View) {
         val position = currentItem
