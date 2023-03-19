@@ -36,6 +36,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.jefferson.application.br.App
 import com.jefferson.application.br.CodeManager
 import com.jefferson.application.br.R

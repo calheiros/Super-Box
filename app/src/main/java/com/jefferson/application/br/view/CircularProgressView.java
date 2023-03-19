@@ -27,7 +27,7 @@ import android.util.TypedValue;
 import android.view.View;
 import com.jefferson.application.br.R;
 
-public class CircleProgressView extends View {
+public class CircularProgressView extends View {
 
     private double progress;
     RectF bounds;
@@ -40,7 +40,7 @@ public class CircleProgressView extends View {
     private float progressWidth;
     private Paint percentPaint;
 
-    public CircleProgressView(Context context, AttributeSet attrs) {
+    public CircularProgressView(Context context, AttributeSet attrs) {
         super(context, attrs);
         defineVariables();
     }

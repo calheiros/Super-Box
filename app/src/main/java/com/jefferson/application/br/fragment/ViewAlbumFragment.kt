@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
@@ -26,7 +27,6 @@ import com.bumptech.glide.Glide
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.CollapsingToolbarLayout
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.transition.MaterialContainerTransform
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.*
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
@@ -56,13 +56,17 @@ class ViewAlbumFragment(
 
     private var videoDurationUpdaterTask: VideoDurationUpdaterTask? = null
     private val minItemWidth = 110
-    private lateinit var recyclerView: RecyclerView
+    lateinit var recyclerView: RecyclerView
     private lateinit var adapter: MultiSelectRecyclerViewAdapter
     private lateinit var floatingButton: FloatingActionButton
     private lateinit var emptyView: View
     private lateinit var menuLayout: View
     private lateinit var toolbar: Toolbar
     private lateinit var albumLabel: TextView
+    //activity result register
+    private lateinit var changeDirectoryResult: ActivityResultLauncher<Intent>
+    private  lateinit var galleryResult: ActivityResultLauncher<Intent>
+    private lateinit var importResult: ActivityResultLauncher<Intent>
 
     private var selectionMode = false
     private var populateAlbumTask: JTask? = null
@@ -79,7 +83,7 @@ class ViewAlbumFragment(
         if (parent == null) {
             parent = inflater.inflate(R.layout.view_album_fragment_layout, container, false)
             layoutManager = GridLayoutManager(requireContext(), autoSpan)
-            appbar = parent!!.findViewById(R.id.appbar_view_album)
+            appbar = parent!!.findViewById(R.id.appbar)
             recyclerView = parent!!.findViewById(R.id.my_recycler_view)
             recyclerView.setHasFixedSize(true)
             recyclerView.layoutManager = layoutManager
@@ -109,15 +113,17 @@ class ViewAlbumFragment(
             configureFloatingButton()
             populateRecyclerView()
             initToolbar()
+            setAlbumHeader()
         }
         return parent
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setAlbumHeader()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        changeDirectoryResult = registerChangeDirectoryResult()
+        galleryResult = registerGalleryResult()
+        importResult = registerImportResult()
     }
-
     private fun configureFloatingButton() {
         val threshold = heightPixels / 100 //1%
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -167,44 +173,50 @@ class ViewAlbumFragment(
         }
     }
 
-    private val changeDirectoryResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            exitSelectionMode()
-            val list = result.data!!.getStringArrayListExtra("moved_files")
-            Toast.makeText(
-                requireContext(), list!!.size.toString() + " file(s) moved", Toast.LENGTH_SHORT
-            ).show()
-            adapter.removeAll(list)
-            notifyChanges()
+    private fun registerChangeDirectoryResult(): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                exitSelectionMode()
+                val list = result.data!!.getStringArrayListExtra("moved_files")
+                Toast.makeText(
+                    requireContext(), list!!.size.toString() + " file(s) moved", Toast.LENGTH_SHORT
+                ).show()
+                adapter.removeAll(list)
+                notifyChanges()
+            }
         }
     }
 
-    private val importResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            populateRecyclerView()
-            notifyChanges()
-        }
-    }
+   fun registerImportResult(): ActivityResultLauncher<Intent> {
+       return registerForActivityResult(
+           ActivityResultContracts.StartActivityForResult()
+       ) { result: ActivityResult ->
+           if (result.resultCode == Activity.RESULT_OK) {
+               populateRecyclerView()
+               notifyChanges()
+           }
+       }
+   }
 
-    private val galleryResult = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-            val data = result.data
-            val paths = data!!.getStringArrayListExtra("selection")
-            val type = data.getStringExtra("type")
-            val intent = Intent(requireContext(), ImportMediaActivity::class.java)
-            intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
-            intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
-            //intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
-            intent.putExtra(ImportMediaActivity.PARENT_KEY, albumDirFile.absolutePath)
-            importResult.launch(intent)
-        }
-    }
+  private fun registerGalleryResult(): ActivityResultLauncher<Intent> {
+      return registerForActivityResult(
+          ActivityResultContracts.StartActivityForResult()
+      ) { result: ActivityResult ->
+          if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+              val data = result.data
+              val paths = data!!.getStringArrayListExtra("selection")
+              val type = data.getStringExtra("type")
+              val intent = Intent(requireContext(), ImportMediaActivity::class.java)
+              intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
+              intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
+              //intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
+              intent.putExtra(ImportMediaActivity.PARENT_KEY, albumDirFile.absolutePath)
+              importResult.launch(intent)
+          }
+      }
+  }
 
     // Convert the minimum width to pixels
     private val autoSpan: Int
@@ -536,6 +548,7 @@ class ViewAlbumFragment(
                     return true
                 }
             })
+        dialog.setNegativeButton(R.string.cancelar, null)
         dialog.show()
     }
 

@@ -84,7 +84,7 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="pasta_ja_existe">Pasta já existe!</string>
     <string name="sem_nome">Sem nome</string>
     <string name="apagar_pasta_aviso">Tem certeza que deseja apagar a pasta %1$s e todo o seu conteúdo permanentimente?</string>
-    <string name="criar_pasta">Criar pasta</string>
+    <string name="criar_pasta">Criar album</string>
     <string name="renomear_pasta">Renomear pasta</string>
     <string name="concluir">Concluir</string>
     <string name="modo_secreto">Modo furtivo</string>

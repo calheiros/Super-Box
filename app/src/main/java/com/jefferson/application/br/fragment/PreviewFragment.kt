@@ -26,8 +26,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.transition.MaterialContainerTransform
-import com.google.android.material.transition.MaterialFadeThrough
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.app.SimpleDialog
@@ -38,18 +36,17 @@ import com.jefferson.application.br.util.MediaUtils
 class PreviewFragment(
     albumAdapter: MultiSelectRecyclerViewAdapter,
     private var initialPosition: Int,
-    var mediaType: Int,
-    private var transitionName: String
+    var mediaType: Int
 ) : Fragment(), View.OnClickListener {
 
-    private lateinit var viewPager: ViewPager2
+    private var viewPager: ViewPager2? = null
     private lateinit var pagerAdapter: ImagePagerAdapter
     private lateinit var filesPath: ArrayList<String>
-    private var rootView: View? = null
+    var rootView: View? = null
 
     val currentItem: Int
         get() {
-            return viewPager.currentItem
+            return viewPager?.currentItem ?: initialPosition
         }
     private var albumAdapter: MultiSelectRecyclerViewAdapter? = albumAdapter
     override fun onCreateView(
@@ -63,13 +60,13 @@ class PreviewFragment(
             filesPath = albumAdapter?.listItemsPath as ArrayList
             pagerAdapter = ImagePagerAdapter(requireActivity(), optionLayout as View)
             viewPager = rootView?.findViewById(R.id.view_pager) as ViewPager2
-            viewPager.adapter = pagerAdapter
-            viewPager.setPageTransformer(ZoomOutPageTransformer())
-            viewPager.setCurrentItem(initialPosition, false)
-            viewPager.setOnClickListener(this)
+            viewPager?.adapter = pagerAdapter
+            viewPager?.setPageTransformer(ZoomOutPageTransformer())
+            viewPager?.setCurrentItem(initialPosition, false)
+            viewPager?.setOnClickListener(this)
             exportButton?.setOnClickListener(this)
             deleteButton?.setOnClickListener(this)
-            ViewCompat.setTransitionName(rootView!!, transitionName)
+            ViewCompat.setTransitionName(rootView!!, "root_container")
         }
         return rootView
     }

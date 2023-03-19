@@ -33,7 +33,7 @@ Copyright (C) 2023 Jefferson Calheiros
         android:shadowDx="-2"
         android:shadowDy="-2"
 		android:textColor="?colorAccent"
-		android:id="@+id/title_view"
+		android:id="@+id/pref_title_label"
 		android:textSize="15sp"/>
 
 </LinearLayout>

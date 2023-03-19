@@ -24,12 +24,12 @@ import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
 import android.view.View.OnLayoutChangeListener
+import android.view.Window
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
@@ -37,6 +37,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
@@ -45,12 +46,14 @@ import com.jefferson.application.br.fragment.MainFragment
 import com.jefferson.application.br.fragment.SettingFragment
 import com.jefferson.application.br.service.AppLockService
 import com.jefferson.application.br.task.ImportTask
+import com.jefferson.application.br.transation.CircularReveal
 import com.jefferson.application.br.util.*
 import eightbitlab.com.blurview.BlurView
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
+
 
 class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener,
@@ -105,6 +108,11 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        with(window) {
+            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+            sharedElementsUseOverlay = false
+            setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
+        }
         super.onCreate(savedInstanceState)
         instance = this
         MobileAds.initialize(this) {
@@ -246,13 +254,13 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
             ComponentName(this, "com.jefferson.application.br.CalculatorAlias")
         )
 
-    private fun changeFragment(fragment: Fragment?) {
+    private fun changeFragment(fragment: Fragment) {
         if (fragment !== supportFragmentManager.findFragmentById(R.id.fragment_container)) {
             val transaction = supportFragmentManager.beginTransaction()
-            transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             if(oldFrag != null)
                 transaction.detach(oldFrag!!)
-            transaction.replace(R.id.fragment_container, fragment!!)
+            transaction.replace(R.id.fragment_container, fragment)
             transaction.attach(fragment)
             transaction.commit()
             oldFrag = fragment

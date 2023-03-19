@@ -121,11 +121,14 @@ class MultiSelectRecyclerViewAdapter(
         }
         val isSelected = isSelected(position)
         viewHolder.selectionModeOverlay.visibility = if (isSelected) View.VISIBLE else View.INVISIBLE
-        ViewCompat.setTransitionName(viewHolder.rootView, "image_$position")
+        
         if (isSelected) {
             val realPosition = (getSelectedItemPosition(position) + 1).toString()
             viewHolder.selectedCountLabel.text = realPosition
         }
+        val transitionName = "image_$position"
+        ViewCompat.setTransitionName(viewHolder.rootView, transitionName)
+        viewHolder.rootView.tag = transitionName
     }
 
     override fun getItemCount(): Int {
@@ -143,7 +146,7 @@ class MultiSelectRecyclerViewAdapter(
         RecyclerView.ViewHolder(rootView), View.OnClickListener, OnLongClickListener {
         val selectionModeOverlay: View = rootView.findViewById(R.id.item_selected_overlay)
         val selectedCountLabel: TextView = rootView.findViewById(R.id.selected_item_count_label)
-        var imageView: ImageView = rootView.findViewById<View>(R.id.image) as ImageView
+        var imageView: ImageView = rootView.findViewById<View>(R.id.album_image_view) as ImageView
         var durationLabel: TextView = rootView.findViewById(R.id.gridview_itemTextView)
 
         init {

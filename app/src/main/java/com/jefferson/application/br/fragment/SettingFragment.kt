@@ -54,11 +54,12 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     private var paddingBottom: Int = 0
     private lateinit var storages: Array<String>
     private var listView: ListView? = null
-    var version: String? = null
+
     private var adapter: SettingAdapter? = null
     private var sharedPreferences: SharedPreferences? = null
     private var editor: SharedPreferences.Editor? = null
     private var egg = 0
+    private var rootView: View? = null
     var isCalculatorEnabledInSettings = false
         private set
 
@@ -73,25 +74,28 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.config, container, false)
-        val mToolbar = view.findViewById<Toolbar>(R.id.toolbar)
-        storages = arrayOf(getString(R.string.armaz_interno), getString(R.string.armaz_externo))
-        (requireActivity() as MainActivity).setupToolbar(
-            mToolbar, getString(R.string.configuracoes)
-        )
-        // calculatorEnabled = PackageManager.COMPONENT_ENABLED_STATE_ENABLED == getComponentEnabledState(CalculatorActivity.class.getCanonicalName());
-        sharedPreferences = MyPreferences.getSharedPreferences(context as Context)
-        editor = sharedPreferences?.edit()
-        listView = view.findViewById(R.id.list_config)
-        adapter = SettingAdapter(itemsList, this)
-        listView?.adapter = adapter
-        listView?.divider = null
-        listView?.onItemClickListener = this
-        listView?.onItemLongClickListener = this
-        if (paddingBottom > 0) {
-            ViewUtils.setViewPaddingBottom(listView, paddingBottom)
+        if (rootView == null) {
+            rootView =
+                inflater.inflate(R.layout.settings_fragment_layout, container, false) as ViewGroup
+            val toolbar = rootView?.findViewById<Toolbar>(R.id.toolbar)
+            storages = arrayOf(getString(R.string.armaz_interno), getString(R.string.armaz_externo))
+            (requireActivity() as MainActivity).setupToolbar(
+                toolbar, getString(R.string.configuracoes)
+            )
+            sharedPreferences = MyPreferences.getSharedPreferences(context as Context)
+            editor = sharedPreferences?.edit()
+            listView = rootView?.findViewById(R.id.settings_list_view)
+            adapter = SettingAdapter(itemsList, this)
+            listView?.adapter = adapter
+            listView?.divider = null
+            listView?.onItemClickListener = this
+            listView?.onItemLongClickListener = this
+
+            if (paddingBottom > 0) {
+                ViewUtils.setViewPaddingBottom(listView, paddingBottom)
+            }
         }
-        return view
+        return rootView
     }
 
     private val dialerCode: String?
@@ -187,10 +191,10 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
         val context = requireContext()
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU)
             context.packageManager.getPackageInfo(
-            packageName, PackageManager.PackageInfoFlags.of(flags.toLong())
-        )
+                packageName, PackageManager.PackageInfoFlags.of(flags.toLong())
+            )
         else @Suppress("DEPRECATION")
-            context.packageManager.getPackageInfo(packageName, flags)
+        context.packageManager.getPackageInfo(packageName, flags)
     }
 
     private fun setAllEggsFound() {
@@ -219,8 +223,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     override fun onItemClick(adapter: AdapterView<*>?, view: View, position: Int, id: Long) {
-        val id = this@SettingFragment.adapter!!.getItem(position).id
-        when (id) {
+        when (this@SettingFragment.adapter!!.getItem(position).id) {
             ID.PASSWORD -> {
                 val intent = Intent(context, CreatePattern::class.java)
                 intent.action = CreatePattern.ENTER_RECREATE
@@ -236,7 +239,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 showDialogStorage()
             }
             ID.SCREENSHOT -> {
-                val mySwitch = view.findViewById<SwitchCompat>(R.id.my_switch)
+                val mySwitch = view.findViewById<SwitchCompat>(R.id.prefs_switch)
                 val checked = !mySwitch.isChecked
                 MyPreferences.setAllowScreenshot(checked, requireContext())
                 val window = requireActivity().window
@@ -255,7 +258,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 showAbout()
             }
             ID.FINGERPRINT -> {
-                val mySwitch = view.findViewById<SwitchCompat>(R.id.my_switch)
+                val mySwitch = view.findViewById<SwitchCompat>(R.id.prefs_switch)
                 val sharedPrefs = MyPreferences.getSharedPreferences((activity)!!)
                 val checked = !mySwitch.isChecked
                 if (supportFingerprint()) {

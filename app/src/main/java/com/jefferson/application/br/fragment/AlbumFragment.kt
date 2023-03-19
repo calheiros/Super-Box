@@ -17,14 +17,18 @@
 package com.jefferson.application.br.fragment
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabaseCorruptException
+import android.graphics.Rect
 import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -45,6 +49,7 @@ import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.util.AlbumUtils
 import com.jefferson.application.br.util.Storage
 import java.io.File
+
 
 class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     private val corruptedWarnHandler: Handler = object : Handler(Looper.getMainLooper()) {
@@ -95,6 +100,7 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     }
 
     fun onItemsChanged(itemCount: Int) {
+
         if (itemCount == 0) {
             emptyView?.visibility = View.VISIBLE
         } else {
@@ -102,18 +108,40 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         }
     }
 
-    fun openAlbum(model: SimpleAlbumModel) {
+    fun openAlbum(model: SimpleAlbumModel, view: View?) {
         val intent = Intent(context, ViewAlbum::class.java)
         intent.putExtra("position", pagerPosition)
         intent.putExtra("name", model.albumName)
         intent.putExtra("folder", model.albumPath)
-        requireActivity().startActivity(intent)
+        if (view == null) {
+            requireActivity().startActivity(intent)
+            return
+        }
+        val options: ActivityOptionsCompat =
+            ActivityOptionsCompat.makeSceneTransitionAnimation(
+                requireActivity(), view, "transition")
+        val location = IntArray(2)
+        view.getLocationInWindow(location)
+        val x = location[0]
+        val y = location[1]
+        val revealX = (x + view.width / 2)
+        val revealY = (y + view.height / 2)
+
+        intent.putExtra(ViewAlbum.EXTRA_CIRCULAR_REVEAL_X, revealX)
+        intent.putExtra(ViewAlbum.EXTRA_CIRCULAR_REVEAL_Y, revealY)
+
+        ActivityCompat.startActivity(requireContext(), intent, options.toBundle())
+    }
+    fun getChildViewPosition(childView: View): Pair<Int, Int> {
+        val rect = Rect()
+        childView.getGlobalVisibleRect(rect)
+        return Pair(rect.left, rect.top)
     }
 
     fun openAlbum(albumName: String) {
         val pos = albumAdapter?.getItemPositionByName(albumName) ?: -1
         if (pos != -1) {
-            openAlbum(albumAdapter?.getItem(pos)!!)
+            openAlbum(albumAdapter?.getItem(pos)!!, null)
         }
     }
 

@@ -88,13 +88,13 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="pasta_ja_existe">Folder already exists!</string>
     <string name="sem_nome">Unnamed</string>
     <string name="apagar_pasta_aviso">Are you sure you want to delete the %1$s folder and all your content permanently?</string>
-    <string name="criar_pasta">Create folder</string>
-    <string name="renomear_pasta">Rename folder</string>
+    <string name="criar_pasta">Create album</string>
+    <string name="renomear_pasta">Rename album</string>
     <string name="concluir">Confirm</string>
     <string name="galeria_vazia">It looks pretty empty…</string>
-    <string name="unicode_look_of_disapproval">ಠ_ಠ</string>
-    <string name="unicode_dead_face">(×_×)</string>
-    <string name="unicode_shrug">¯\\_(ツ)_/¯</string>
+    <string name="unicode_look_of_disapproval" translatable="false">ಠ_ಠ</string>
+    <string name="unicode_dead_face" translatable="false">(×_×)</string>
+    <string name="unicode_shrug" translatable="false">¯\\_(ツ)_/¯</string>
     <string name="galeria">Gallery</string>
     <string name="modo_secreto">Stealth mode</string>
     <string name="codigo_discador">Dialer code</string>

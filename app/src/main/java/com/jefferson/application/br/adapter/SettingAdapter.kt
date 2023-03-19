@@ -16,6 +16,7 @@
 */
 package com.jefferson.application.br.adapter
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -57,125 +58,110 @@ class SettingAdapter(
         return id.toLong()
     }
 
-    override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View? {
-        /*
-         * TODO: PRECISA SER REFEITO URGENTE
-        */
-        var view = view
-        val preferenceItem = preferenceItems[i]
-        when (preferenceItem.type) {
-            PreferenceItem.ITEM_SWITCH_TYPE -> {
-                view = inflater.inflate(R.layout.preference_switch_item, null as ViewGroup?)
-                val titleView = view.findViewById<TextView>(R.id.title_view)
-                val iconView = view.findViewById<ImageView>(R.id.ic_view)
-                val mySwitch = view.findViewById<SwitchCompat>(R.id.my_switch)
-                val descriptionText = view.findViewById<TextView>(R.id.description_text_view)
-                iconView.setImageResource(preferenceItem.iconResId)
-                mySwitch.isChecked = preferenceItem.checked
-
-                if (preferenceItem.id == PreferenceItem.ID.APP_ICON) {
-                    val expandableLayout =
-                        inflater.inflate(R.layout.stealth_expandable_layout, null)
-                    (view as ViewGroup).addView(expandableLayout)
-                    if (mySwitch.isChecked) {
-                        expandableLayout.visibility = View.VISIBLE
-                    }
-                    setExpandableLayoutListener(view)
-                }
-                if (preferenceItem.description == null) {
-                    descriptionText.visibility = View.GONE
-                } else {
-                    descriptionText.text = preferenceItem.description
-                }
-                titleView.text = preferenceItem.title
-            }
-            PreferenceItem.SECTION_TYPE -> {
-                view = inflater.inflate(R.layout.preference_section_item, null as ViewGroup?)
-                (view.findViewById<View>(R.id.title_view) as TextView).text = preferenceItem.title
-            }
-            PreferenceItem.ITEM_TYPE -> {
-                view = inflater.inflate(R.layout.preference_common_item, null as ViewGroup?)
-                val descriptionText = view.findViewById<TextView>(R.id.description_text_view)
-                val iconView = view.findViewById<ImageView>(R.id.ic_view)
-                (view.findViewById<View>(R.id.item_title) as TextView).text = preferenceItem.title
-                iconView.setImageResource(preferenceItem.iconResId)
-                if (preferenceItem.description != null) {
-                    descriptionText.visibility = View.VISIBLE
-                    descriptionText.text = preferenceItem.description
-                }
-            }
+    @SuppressLint("ViewHolder")
+    override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View {
+        val prefItem = preferenceItems[i]
+        val resId = when (prefItem.type) {
+            PreferenceItem.ITEM_TYPE -> R.layout.preference_common_item
+            PreferenceItem.ITEM_SWITCH_TYPE -> R.layout.preference_switch_item
+            PreferenceItem.SECTION_TYPE -> R.layout.preference_section_item
+            else -> throw java.lang.RuntimeException("INVALID PREFERENCE ITEM TYPE: ${prefItem.type}")
         }
-        return view
+        val contentView: View = inflater.inflate(resId, viewGroup, false)
+        val titleLabel = contentView.findViewById<TextView>(R.id.pref_title_label)
+        titleLabel.text = prefItem.title
+        if (prefItem.type == PreferenceItem.SECTION_TYPE) {
+            return contentView
+        }
+        val iconView = contentView.findViewById<ImageView>(R.id.pref_icon_view)
+        val descrLabel = contentView.findViewById<TextView>(R.id.pref_description_label)
+        iconView.setImageResource(prefItem.iconResId)
+        if (prefItem.description != null) {
+            descrLabel.visibility = View.VISIBLE
+            descrLabel.text = prefItem.description
+        }
+        if (prefItem.type == PreferenceItem.ITEM_SWITCH_TYPE) {
+            val switcher = contentView.findViewById<SwitchCompat>(R.id.prefs_switch)
+            switcher.isChecked = prefItem.checked
+        }
+    return contentView
+}
+
+fun onCalculatorCodeChanged(text: String?) {
+    if (switchCancelled && mySwitch != null) {
+        switchCancelled = false
+        mySwitch?.isChecked = !mySwitch?.isChecked!!
     }
-
-    fun onCalculatorCodeChanged(text: String?) {
-        if (switchCancelled && mySwitch != null) {
-            switchCancelled = false
-            mySwitch?.isChecked = !mySwitch?.isChecked!!
-        }
-        if (calculatorDescText != null) {
-            calculatorDescText?.text = text
-        }
+    if (calculatorDescText != null) {
+        calculatorDescText?.text = text
     }
+}
 
-    private fun setExpandableLayoutListener(v: View) {
-        val expandableLayout = v.findViewById<View>(R.id.steal_thexpandable_layout)
-        val calculator = v.findViewById<View>(R.id.steal_calculator_layout)
-        calculatorDescText = v.findViewById(R.id.stealth_expandable_descriptionTextView)
-        calculatorDescText?.text = MyPreferences.getCalculatorCode(settingFragment.requireContext())
-        mySwitch = v.findViewById(R.id.my_switch)
-        calculator.setOnClickListener { startCalculatorActivity() }
+private fun setExpandableLayoutListener(v: View) {
+    val expandableLayout = v.findViewById<View>(R.id.steal_thexpandable_layout)
+    val calculator = v.findViewById<View>(R.id.steal_calculator_layout)
+    calculatorDescText = v.findViewById(R.id.stealth_expandable_descriptionTextView)
+    calculatorDescText?.text = MyPreferences.getCalculatorCode(settingFragment.requireContext())
+    mySwitch = v.findViewById(R.id.prefs_switch)
+    calculator.setOnClickListener { startCalculatorActivity() }
 
-        v.setOnClickListener(View.OnClickListener {
-            val checked = mySwitch?.isChecked
-            if (!checked!! && MyPreferences.getCalculatorCode(settingFragment.requireContext()) == "4321") {
-                val contentView = settingFragment.requireActivity().layoutInflater.inflate(
-                    R.layout.calculator_tip_dialog_layout, null
-                )
-                showNoticeDialog(contentView)
-                return@OnClickListener
-            }
-            mySwitch?.isChecked = !checked
-        })
-        mySwitch?.setOnCheckedChangeListener { _, checked ->
-            settingFragment.setCalculatorEnabled(checked)
-            val main = settingFragment.requireActivity() as MainActivity
-            if (main.calculatorStateEnabled != checked) {
-                Toast.makeText(
-                    settingFragment.context,
-                    settingFragment.getString(R.string.reiniciar_para_aplicar),
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-            if (checked) {
-                MyAnimationUtils.expand(expandableLayout)
-            } else {
-                MyAnimationUtils.collapse(expandableLayout)
-            }
+    v.setOnClickListener(View.OnClickListener {
+        val checked = mySwitch?.isChecked
+        if (!checked!! && MyPreferences.getCalculatorCode(settingFragment.requireContext()) == "4321") {
+            val contentView = settingFragment.requireActivity().layoutInflater.inflate(
+                R.layout.calculator_tip_dialog_layout, null
+            )
+            showNoticeDialog(contentView)
+            return@OnClickListener
+        }
+        mySwitch?.isChecked = !checked
+    })
+    mySwitch?.setOnCheckedChangeListener { _, checked ->
+        settingFragment.setCalculatorEnabled(checked)
+        val main = settingFragment.requireActivity() as MainActivity
+        if (main.calculatorStateEnabled != checked) {
+            Toast.makeText(
+                settingFragment.context,
+                settingFragment.getString(R.string.reiniciar_para_aplicar),
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+        if (checked) {
+            MyAnimationUtils.expand(expandableLayout)
+        } else {
+            MyAnimationUtils.collapse(expandableLayout)
         }
     }
+}
 
-    private fun showNoticeDialog(contentView: View) {
-        val dialog = SimpleDialog(settingFragment.activity as Activity)
-        dialog.setContentView(contentView)
-        dialog.setTitle(R.string.aviso)
-        dialog.setPositiveButton(android.R.string.ok, object : OnDialogClickListener() {
-            override fun onClick(dialog: SimpleDialog): Boolean {
-                startCalculatorActivity()
-                switchCancelled = true
-                return true
-            }
-        })
-        dialog.setNegativeButton(android.R.string.cancel, null)
-        dialog.setCanceledOnTouchOutside(false)
-        dialog.show()
-    }
+private fun showNoticeDialog(contentView: View) {
+    val dialog = SimpleDialog(settingFragment.activity as Activity)
+    dialog.setContentView(contentView)
+    dialog.setTitle(R.string.aviso)
+    dialog.setPositiveButton(android.R.string.ok, object : OnDialogClickListener() {
+        override fun onClick(dialog: SimpleDialog): Boolean {
+            startCalculatorActivity()
+            switchCancelled = true
+            return true
+        }
+    })
+    dialog.setNegativeButton(android.R.string.cancel, null)
+    dialog.setCanceledOnTouchOutside(false)
+    dialog.show()
+}
 
-    private fun startCalculatorActivity() {
-        val intent = Intent(settingFragment.activity, CalculatorActivity::class.java)
-        intent.action = CalculatorActivity.ACTION_CREATE_CODE
-        settingFragment.requireActivity().startActivityForResult(
-            intent, SettingFragment.CALCULATOR_CREATE_CODE_RESULT
-        )
-    }
+private fun startCalculatorActivity() {
+    val intent = Intent(settingFragment.activity, CalculatorActivity::class.java)
+    intent.action = CalculatorActivity.ACTION_CREATE_CODE
+    settingFragment.requireActivity().startActivityForResult(
+        intent, SettingFragment.CALCULATOR_CREATE_CODE_RESULT
+    )
+}
+
+class PrefsHolder {
+    var titleLabel: TextView? = null
+    var iconView: ImageView? = null
+    var descriptionLabel: TextView? = null
+    var switcher: Switch? = null
+}
 }

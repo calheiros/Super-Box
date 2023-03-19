@@ -46,7 +46,7 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="pasta_ja_existe">Ordner ist bereits vorhanden!</string>
     <string name="sem_nome">Ungenannt</string>
     <string name="apagar_pasta_aviso">Möchten Sie den Ordner %1$s und alle Ihre Inhalte dauerhaft löschen?</string>
-    <string name="criar_pasta">Ordner erstellen</string>
+    <string name="criar_pasta">Album erstellen</string>
     <string name="renomear_pasta">Ordner umbenennen</string>
     <string name="concluir">Bestätigen</string>
     <string name="galeria_vazia">Es sieht ziemlich leer aus…</string>

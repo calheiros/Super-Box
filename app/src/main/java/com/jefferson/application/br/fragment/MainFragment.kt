@@ -35,6 +35,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.google.android.material.transition.MaterialSharedAxis
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.ImportGalleryActivity
 import com.jefferson.application.br.activity.ImportMediaActivity

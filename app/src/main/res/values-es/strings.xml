@@ -41,7 +41,7 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="pasta_ja_existe">¡La carpeta ya existe!</string>
     <string name="sem_nome">Sin nombre</string>
     <string name="apagar_pasta_aviso">¿Está seguro de que desea eliminar la carpeta %1$s y todo su contenido de forma permanente?</string>
-    <string name="criar_pasta">Crear carpeta</string>
+    <string name="criar_pasta">Crear albúm</string>
     <string name="renomear_pasta">Cambiar nombre de carpeta</string>
     <string name="concluir">Confirmar</string>
     <string name="galeria_vazia">Se ve bastante vacío...</string>

@@ -96,7 +96,7 @@ public class ViewAlbumAdapter extends RecyclerView.Adapter<ViewAlbumAdapter.List
 
         public ListItemViewHolder(View view) {
             super(view);
-            image = (ImageView) view.findViewById(R.id.image);
+            image = (ImageView) view.findViewById(R.id.album_image_view);
             name = (TextView) view.findViewById(R.id.tv_folder);
             size = (TextView) view.findViewById(R.id.folder_size_label);
         }

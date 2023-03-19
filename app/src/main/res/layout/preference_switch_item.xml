@@ -31,7 +31,7 @@ Copyright (C) 2023 Jefferson Calheiros
         tools:ignore="UselessParent">
 
         <ImageView
-            android:id="@+id/ic_view"
+            android:id="@+id/pref_icon_view"
             android:layout_width="26dp"
             android:layout_height="26dp"
             android:layout_margin="10dp"
@@ -45,14 +45,14 @@ Copyright (C) 2023 Jefferson Calheiros
             android:padding="6dp">
 
             <TextView
-                android:id="@+id/title_view"
+                android:id="@+id/pref_title_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="?commonColorLight"
                 android:textSize="16sp" />
 
             <TextView
-                android:id="@+id/description_text_view"
+                android:id="@+id/pref_description_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="?commonColorDark"
@@ -61,7 +61,7 @@ Copyright (C) 2023 Jefferson Calheiros
         </LinearLayout>
 
         <androidx.appcompat.widget.SwitchCompat
-            android:id="@+id/my_switch"
+            android:id="@+id/prefs_switch"
             android:layout_width="wrap_content"
             android:layout_height="22dp"
             android:layout_margin="7dp"

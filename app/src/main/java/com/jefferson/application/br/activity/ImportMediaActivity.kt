@@ -39,7 +39,7 @@ import com.jefferson.application.br.task.ImportTask
 import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.task.JTask.*
 import com.jefferson.application.br.util.Storage
-import com.jefferson.application.br.view.CircleProgressView
+import com.jefferson.application.br.view.CircularProgressView
 import java.util.*
 
 class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStartedListener,
@@ -47,7 +47,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     private val flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
     private lateinit var parent: FrameLayout
     private lateinit var prepareTextView: TextView
-    private lateinit var progressView: CircleProgressView
+    private lateinit var progressView: CircularProgressView
     private lateinit var titleTextView: TextView
     private lateinit var button: Button
     private lateinit var prepareTitleView: TextView
@@ -73,7 +73,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         prepareTextView = findViewById<View>(R.id.import_media_prepare_text_view) as TextView
         messageTextView = findViewById<View>(R.id.import_media_message_text_view) as TextView
         titleTextView = findViewById<View>(R.id.import_media_title_move_text_view) as TextView
-        progressView = findViewById<View>(R.id.circle_progress_view) as CircleProgressView
+        progressView = findViewById<View>(R.id.circle_progress_view) as CircularProgressView
         button = findViewById<View>(R.id.import_media_button) as Button
         val mainActivity = MainActivity.instance
         adview =
