@@ -16,6 +16,7 @@
  */
 package com.jefferson.application.br.activity
 
+import android.annotation.SuppressLint
 import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -46,7 +47,6 @@ import com.jefferson.application.br.fragment.MainFragment
 import com.jefferson.application.br.fragment.SettingFragment
 import com.jefferson.application.br.service.AppLockService
 import com.jefferson.application.br.task.ImportTask
-import com.jefferson.application.br.transation.CircularReveal
 import com.jefferson.application.br.util.*
 import eightbitlab.com.blurview.BlurView
 import java.io.BufferedReader
@@ -71,14 +71,13 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
 
     @JvmField
     var calculatorStateEnabled = false
-    var oldMargin = 0
+    private var oldMargin = 0
     private lateinit var buttonNavigationView: BottomNavigationView
     private lateinit var receiver: BroadcastReceiver
     private lateinit var lockFragment: LockFragment
     private lateinit var settingFragment: SettingFragment
     lateinit var mainFragment: MainFragment
     private var oldFrag: Fragment? = null
-    private var position = 0
     private lateinit var adview: AdView
     private var restarting = false
     private var squareAdview: AdView? = null
@@ -108,11 +107,6 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        with(window) {
-            requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-            sharedElementsUseOverlay = false
-            setExitSharedElementCallback(MaterialContainerTransformSharedElementCallback())
-        }
         super.onCreate(savedInstanceState)
         instance = this
         MobileAds.initialize(this) {
@@ -130,7 +124,6 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                 )
             )
         }
-
         createFragments()
         createAdView()
         createReceiver()
@@ -189,10 +182,6 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
             }
             return squareAdview
         }
-
-    fun removeFolder(folderPosition: Int, pagerPosition: Int) {
-        mainFragment.removeFolder(folderPosition, pagerPosition)
-    }
 
     private fun createReceiver() {
         val filter = IntentFilter()
@@ -257,8 +246,8 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
     private fun changeFragment(fragment: Fragment) {
         if (fragment !== supportFragmentManager.findFragmentById(R.id.fragment_container)) {
             val transaction = supportFragmentManager.beginTransaction()
-                //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-            if(oldFrag != null)
+            //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+            if (oldFrag != null)
                 transaction.detach(oldFrag!!)
             transaction.replace(R.id.fragment_container, fragment)
             transaction.attach(fragment)
@@ -288,164 +277,159 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
                     activityNotFound()
                 }
             else -> return false
+        }
+        return true
     }
-    return true
-}
 
-private fun activityNotFound() {
-    Toast.makeText(this, "Nenhum app encontrado!", Toast.LENGTH_LONG).show()
-}
-
-override fun onPostCreate(savedInstanceState: Bundle?) {
-    super.onPostCreate(savedInstanceState)
-    if (ServiceUtils.isMyServiceRunning(AppLockService::class.java, this)) {
-        startService(
-            Intent(
-                this, AppLockService::class.java
-            ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        )
+    private fun activityNotFound() {
+        Toast.makeText(this, "Nenhum app encontrado!", Toast.LENGTH_LONG).show()
     }
-}
 
-override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-    if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (!Settings.canDrawOverlays(this)) {
-                Toast.makeText(instance, "Drawoverlay permision needed!", Toast.LENGTH_SHORT)
-                    .show()
-            }
-        }
-    }
-    if (resultCode == RESULT_OK) {
-
-        if (requestCode == SettingFragment.CALCULATOR_CREATE_CODE_RESULT) {
-            settingFragment.setCodeDescription(MyPreferences.getCalculatorCode(this))
-            return
-        }
-        if (requestCode == MainFragment.GET_FILE) {
-            val uri: Uri?
-            if (data != null) {
-                uri = data.data
-                Toast.makeText(this, uri!!.path, Toast.LENGTH_LONG).show()
-            }
-            return
-        }
-        if (requestCode == GET_SDCARD_URI_CODE) {
-            val uri = data?.data ?: return
-            if (Storage.checkIfSDCardRoot(uri)) {
-                contentResolver.takePersistableUriPermission(
-                    uri,
-                    Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-                )
-                Storage.storeExternalUri(uri.toString(), this)
-            }
-        }
-    }
-    super.onActivityResult(requestCode, resultCode, data)
-}
-
-private fun getSdCardUri(code: Int) {
-    Toast.makeText(this@MainActivity, getString(R.string.selecionar_sdcard), Toast.LENGTH_SHORT)
-        .show()
-    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
-    startActivityForResult(intent, 54)
-}
-
-private fun showExitDialog() {
-    val dialog = SimpleDialog(this)
-    dialog.setTitle(getString(R.string.confirmacao))
-    dialog.setMessage(getString(R.string.quer_realmente_sair))
-    dialog.setPositiveButton(getString(R.string.sim), object : OnDialogClickListener() {
-        override fun onClick(dialog: SimpleDialog): Boolean {
-            finish()
-            return true
-        }
-    })
-    dialog.setNegativeButton(getString(R.string.nao), null).show()
-}
-
-override fun onStart() {
-    super.onStart()
-}
-
-override fun onResume() {
-    super.onResume()
-    adview.resume()
-}
-
-override fun onPause() {
-    super.onPause()
-    adview.pause()
-}
-
-override fun onStop() {
-    super.onStop()
-}
-
-override fun onDestroy() {
-    adview.destroy()
-    unregisterReceiver(receiver)
-
-    if (!restarting) {
-        instance = null
-        val enabled = settingFragment.isCalculatorEnabledInSettings
-        if (enabled != isCalculatorComponentEnabled) {
-            settingFragment.disableLauncherActivity(enabled)
-            settingFragment.setComponentEnabled(
-                !enabled, "com.jefferson.application.br.CalculatorAlias"
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        if (ServiceUtils.isMyServiceRunning(AppLockService::class.java, this)) {
+            startService(
+                Intent(
+                    this, AppLockService::class.java
+                ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             )
-            Toast.makeText(
-                this, getString(R.string.aplicando_configuracoes), Toast.LENGTH_SHORT
-            ).show()
         }
     }
-    super.onDestroy()
-}
 
-override fun onLayoutChange(
-    v: View,
-    left: Int,
-    top: Int,
-    right: Int,
-    bottom: Int,
-    oldLeft: Int,
-    oldTop: Int,
-    oldRight: Int,
-    oldBottom: Int
-) {
-    if (oldMargin != v.height) {
-        notifyBottomLayoutChanges(v)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    Toast.makeText(instance, "Drawoverlay permision needed!", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+        if (resultCode == RESULT_OK) {
+
+            if (requestCode == SettingFragment.CALCULATOR_CREATE_CODE_RESULT) {
+                settingFragment.setCodeDescription(MyPreferences.getCalculatorCode(this))
+                return
+            }
+            if (requestCode == MainFragment.GET_FILE) {
+                val uri: Uri?
+                if (data != null) {
+                    uri = data.data
+                    Toast.makeText(this, uri!!.path, Toast.LENGTH_LONG).show()
+                }
+                return
+            }
+            if (requestCode == GET_SDCARD_URI_CODE) {
+                val uri = data?.data ?: return
+                if (Storage.checkIfSDCardRoot(uri)) {
+                    contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                    )
+                    Storage.storeExternalUri(uri.toString(), this)
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
-    oldMargin = v.height
-}
 
-private fun notifyBottomLayoutChanges(v: View) {
-    mainFragment.notifyBottomLayoutChanged(v)
-    lockFragment.notifyBottomLayoutChanged(v)
-    settingFragment.notifyBottomLayoutChanged(v)
-}
-
-companion object {
-    const val ACTION_START_IN_PREFERENCES =
-        "com.jefferson.application.action.START_IN_PREFERENCES"
-    const val ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS"
-    private const val ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12
-    private const val GET_SDCARD_URI_CODE = 98
-    private const val ADS_ID = "ca-app-pub-3062666120925607/2904985113"
-
-    @JvmField
-    var currentTheme = 0
-
-    @JvmStatic
-    var instance: MainActivity? = null
-        private set
-
-    fun createSquareAdview(context: Context?): AdView {
-        val squareAdview = AdView(context!!)
-        squareAdview.setAdSize(AdSize(300, 250))
-        squareAdview.adUnitId = ADS_ID
-        squareAdview.loadAd(AdRequest.Builder().build())
-        return squareAdview
+    private fun getSdCardUri(code: Int) {
+        Toast.makeText(this@MainActivity, getString(R.string.selecionar_sdcard), Toast.LENGTH_SHORT)
+            .show()
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
+        startActivityForResult(intent, 54)
     }
-}
+
+    private fun showExitDialog() {
+        val dialog = SimpleDialog(this)
+        dialog.setTitle(getString(R.string.confirmacao))
+        dialog.setMessage(getString(R.string.quer_realmente_sair))
+        dialog.setPositiveButton(getString(R.string.sim), object : OnDialogClickListener() {
+            override fun onClick(dialog: SimpleDialog): Boolean {
+                finish()
+                return true
+            }
+        })
+        dialog.setNegativeButton(getString(R.string.nao), null).show()
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        adview.resume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        adview.pause()
+    }
+
+
+    override fun onDestroy() {
+        adview.destroy()
+        unregisterReceiver(receiver)
+
+        if (!restarting) {
+            instance = null
+            val enabled = settingFragment.isCalculatorEnabledInSettings
+            if (enabled != isCalculatorComponentEnabled) {
+                settingFragment.disableLauncherActivity(enabled)
+                settingFragment.setComponentEnabled(
+                    !enabled, "com.jefferson.application.br.CalculatorAlias"
+                )
+                Toast.makeText(
+                    this, getString(R.string.aplicando_configuracoes), Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        super.onDestroy()
+    }
+
+    override fun onLayoutChange(
+        v: View,
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int,
+        oldLeft: Int,
+        oldTop: Int,
+        oldRight: Int,
+        oldBottom: Int
+    ) {
+        if (oldMargin != v.height) {
+            notifyBottomLayoutChanges(v)
+        }
+        oldMargin = v.height
+    }
+
+    private fun notifyBottomLayoutChanges(v: View) {
+        mainFragment.notifyBottomLayoutChanged(v)
+        lockFragment.notifyBottomLayoutChanged(v)
+        settingFragment.notifyBottomLayoutChanged(v)
+    }
+
+    companion object {
+        const val ACTION_START_IN_PREFERENCES =
+            "com.jefferson.application.action.START_IN_PREFERENCES"
+        const val ACTION_UPDATE = "com.jefferson.application.action.UPDATE_FRAGMENTS"
+        private const val ACTION_MANAGE_OVERLAY_PERMISSION_REQUEST_CODE = 12
+        private const val GET_SDCARD_URI_CODE = 98
+        private const val ADS_ID = "ca-app-pub-3062666120925607/2904985113"
+
+        @JvmField
+        var currentTheme = 0
+
+        @JvmStatic
+        var instance: MainActivity? = null
+            private set
+
+        @SuppressLint("VisibleForTests")
+        fun createSquareAdview(context: Context?): AdView {
+            val squareAdview = AdView(context!!)
+            squareAdview.setAdSize(AdSize(300, 250))
+            squareAdview.adUnitId = ADS_ID
+            squareAdview.loadAd(AdRequest.Builder().build())
+            return squareAdview
+        }
+    }
 }

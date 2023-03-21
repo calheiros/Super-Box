@@ -17,54 +17,44 @@ Copyright (C) 2023 Jefferson Calheiros
 -->
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:gravity="top|center"
 	android:orientation="vertical"
 	android:background="@color/colorPrimary">
-	
-	<RelativeLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="20dip"
-		android:layout_marginTop="45dp">
 
 		<TextView
+			android:layout_marginTop="45dp"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:gravity="center_horizontal"
 			android:textSize="26sp"
-			android:id="@+id/texto"
-			android:text="texto"/>
+			android:id="@+id/textLabel"
+			android:text="Your password"/>
 
-	</RelativeLayout>
-
+	<RelativeLayout
+		android:layout_marginTop="30dp"
+		android:gravity="center"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_marginBottom="20dip">
 	<EditText
 		android:inputType="textPassword"
 		android:layout_height="wrap_content"
 		android:layout_width="wrap_content"
 		android:ems="10"
-		android:id="@+id/senha"
+		android:id="@+id/passwordInput"
 		android:layout_gravity="center"
-		android:layout_marginTop="50dp"
 		android:singleLine="true"
 		android:autofillHints="password" />
 
 	<Button
-		style="?android:attr/buttonBarButtonStyle"
-		android:layout_height="50dp"
-		android:layout_width="100dp"
-		android:id="@+id/botão"
-		android:layout_gravity="center"
-		android:layout_marginTop="50dp"/>
-
-	<Button
-		android:layout_height="wrap_content"
+		android:layout_toRightOf="@id/passwordInput"
 		android:layout_width="wrap_content"
-		android:text="Esconder icone"
-		android:layout_gravity="center_horizontal"
-		android:layout_marginTop="100dp"/>
-
+		android:layout_height="wrap_content"
+		android:backgroundTint="?colorAccent"
+		android:text="enter"
+		android:textColor="@android:color/white" />
+	</RelativeLayout>
 </LinearLayout>
 

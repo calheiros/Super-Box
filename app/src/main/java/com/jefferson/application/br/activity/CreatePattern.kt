@@ -153,7 +153,7 @@ class CreatePattern : MyCompatActivity() {
             })
     }
 
-    override fun onApplyCustomTheme() {}
+    override fun onApplyTheme() {}
     private fun startMainActivity() {
         val intent = Intent(applicationContext, MainActivity::class.java)
         intent.addFlags(

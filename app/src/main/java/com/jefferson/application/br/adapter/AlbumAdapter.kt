@@ -138,7 +138,7 @@ class AlbumAdapter(
         if (holder.smallView.visibility != visibility) {
             holder.smallView.visibility = visibility
         }
-        holder.parent.setOnClickListener { fragment.openAlbum(model, holder.cardView) }
+        holder.parent.setOnClickListener { fragment.openAlbum(model, holder.rootView) }
         holder.parent.setOnLongClickListener { view ->
             val context = view.context
             val options = arrayOf(
@@ -198,7 +198,7 @@ class AlbumAdapter(
     }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val cardView: View
+        val rootView: View = view
         var folderName: TextView
         var folderSize: TextView
         var imageView: ImageView
@@ -207,7 +207,6 @@ class AlbumAdapter(
         var smallView: ImageView
 
         init {
-            cardView = view.findViewById(R.id.card_view)
             folderName = view.findViewById(R.id.tv_folder)
             folderSize = view.findViewById(R.id.folder_size_label)
             imageView = view.findViewById(R.id.iv_image)

@@ -292,7 +292,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 val newTheme: Int = ThemeConfig.resolveTheme(requireContext(), position)
                 val needRefresh: Boolean = newTheme != currentTheme
                 if (position != themeIndex) {
-                    ThemeConfig.setThemeIndex(position, context)
+                    ThemeConfig.setTheme(position, context)
                 }
                 if (needRefresh) {
                     refreshActivity()

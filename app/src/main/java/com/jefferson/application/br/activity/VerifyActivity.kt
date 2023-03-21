@@ -127,7 +127,7 @@ class VerifyActivity : MyCompatActivity() {
         biometricPrompt.authenticate(promptInfo)
     }
 
-    override fun onApplyCustomTheme() {
+    override fun onApplyTheme() {
         setTheme(R.style.LauncherTheme)
     }
 

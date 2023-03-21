@@ -122,7 +122,7 @@ class CalculatorActivity : MyCompatActivity(), OnLongClickListener {
         return true
     }
 
-    override fun onApplyCustomTheme() {
+    override fun onApplyTheme() {
         //do nothing...
     }
 

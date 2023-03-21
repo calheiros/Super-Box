@@ -21,7 +21,7 @@ Copyright (C) 2023 Jefferson Calheiros
     <alpha
         android:fromAlpha="1"
         android:toAlpha="0"
-        android:duration="400" >
+        android:duration="600" >
     </alpha>
 
 </set>

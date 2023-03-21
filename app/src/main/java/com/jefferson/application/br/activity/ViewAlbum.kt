@@ -18,14 +18,15 @@ package com.jefferson.application.br.activity
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
-import android.os.Build
+
 import android.os.Bundle
 import android.transition.ArcMotion
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
-import android.view.Window
 import android.view.animation.AccelerateInterpolator
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.app.SharedElementCallback
 import com.google.android.material.transition.platform.MaterialContainerTransform
@@ -35,6 +36,7 @@ import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.fragment.PreviewFragment
 import com.jefferson.application.br.fragment.ViewAlbumFragment
+import com.jefferson.application.br.util.ThemeConfig
 import java.io.File
 import kotlin.math.max
 
@@ -49,7 +51,6 @@ class ViewAlbum : MyCompatActivity() {
     private var revealX = 0
     private var revealY = 0
     public override fun onCreate(savedInstanceState: Bundle?) {
-        window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.view_album_layout)
         rootLayout = findViewById(R.id.fragment_container)
@@ -64,7 +65,7 @@ class ViewAlbum : MyCompatActivity() {
             .replace(R.id.fragment_container, albumFragment)
             .attach(albumFragment)
             .commit()
-        if (savedInstanceState == null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+        if (savedInstanceState == null &&
             intent.hasExtra(EXTRA_CIRCULAR_REVEAL_X) &&
             intent.hasExtra(EXTRA_CIRCULAR_REVEAL_Y)
         ) {
@@ -83,41 +84,47 @@ class ViewAlbum : MyCompatActivity() {
         } else {
             rootLayout.visibility = View.VISIBLE
         }
+        configureBackgroundColor()
         addBackPressedListener()
     }
 
-    protected fun revealActivity(x: Int, y: Int) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val finalRadius =
-                (max(rootLayout.width, rootLayout.height) * 1.1f)
-
-            // create the animator for this view (the start radius is zero)
-            val circularReveal: Animator =
-                ViewAnimationUtils.createCircularReveal(rootLayout, x, y, 0f, finalRadius)
-            circularReveal.duration = 400
-            circularReveal.interpolator = AccelerateInterpolator()
-
-            // make the view visible and start the animation
-            rootLayout.visibility = View.VISIBLE
-            circularReveal.start()
-        } else {
-            finish()
-        }
+    private fun configureBackgroundColor() {
+        val currentTheme = ThemeConfig.getTheme(this)
+        val backgroundColor = getThemeAttributeColor(currentTheme, R.attr.colorBackground)
+        rootLayout.setBackgroundColor(backgroundColor)
     }
 
-    protected fun unRevealActivity() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+    override fun onApplyTheme() {}
+
+    fun revealActivity(x: Int, y: Int) {
+        val finalRadius =
+            (max(rootLayout.width, rootLayout.height) * 1.1f)
+
+        // create the animator for this view (the start radius is zero)
+        val circularReveal: Animator =
+            ViewAnimationUtils.createCircularReveal(rootLayout, x, y, 0f, finalRadius)
+        circularReveal.duration = 360
+        circularReveal.interpolator = AccelerateInterpolator()
+
+        // make the view visible and start the animation
+        rootLayout.visibility = View.VISIBLE
+        circularReveal.start()
+    }
+
+   fun unRevealActivity() {
+        if (revealX == 0 && revealY == 0) {
             finish()
         } else {
             val finalRadius = (max(rootLayout.width, rootLayout.height) * 1.1f)
             val circularReveal = ViewAnimationUtils.createCircularReveal(
                 rootLayout, revealX, revealY, finalRadius, 0f
             )
-            circularReveal.duration = 400
+            circularReveal.duration = 360
             circularReveal.addListener(object : AnimatorListenerAdapter() {
                 override fun onAnimationEnd(animation: Animator) {
                     rootLayout.visibility = View.INVISIBLE
                     finish()
+
                 }
             })
             circularReveal.start()
@@ -131,14 +138,11 @@ class ViewAlbum : MyCompatActivity() {
                         supportFragmentManager.popBackStack()
                         return
                     }
-                    if (albumFragment.onBackPressed())
-                        finish()
+                    if (albumFragment.onBackPressed()) {
+                        unRevealActivity()
+                    }
                 }
             })
-    }
-
-    private fun enableTransition() {
-
     }
 
     private val transitionCallback = object : SharedElementCallback() {
@@ -147,19 +151,22 @@ class ViewAlbum : MyCompatActivity() {
             sharedElements: MutableMap<String, View>
         ) {
             if (previewFragment != null) {
-                val currentItem = previewFragment?.currentItem
-                val sharedView =
-                    albumFragment.recyclerView.findViewWithTag<View>("image_$currentItem")
+                val currentItem = previewFragment?.currentItem ?: return
+                val sharedView = (albumFragment.recyclerView.findViewHolderForAdapterPosition(currentItem)
+                        as MultiSelectRecyclerViewAdapter.ViewHolder?)?.rootView
                 if (sharedView != null) {
                     sharedElements[names[0]] = sharedView
-                }
+                } else Toast.makeText(this@ViewAlbum, "cannot find item!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    fun startPreview(adapter: MultiSelectRecyclerViewAdapter, itemPosition: Int, view: View) {
+    fun startPreview(itemPosition: Int, view: View) {
+        val imageView = view.findViewById<ImageView?>(R.id.album_image_view)
+        val thumbnail = imageView.drawable
+
         previewFragment =
-            PreviewFragment(adapter, itemPosition, fragmentPosition)
+            PreviewFragment(albumFragment.adapter, itemPosition, fragmentPosition, thumbnail)
         previewFragment?.sharedElementEnterTransition = MaterialContainerTransform().apply {
             pathMotion = ArcMotion()
         }

@@ -17,7 +17,7 @@ Copyright (C) 2023 Jefferson Calheiros
 -->
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?colorBackground"
 	android:orientation="vertical"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
@@ -27,8 +27,8 @@ Copyright (C) 2023 Jefferson Calheiros
 	android:gravity="center_horizontal">
 
 	<com.jefferson.application.br.view.CircularProgressView
-		android:layout_height="160dp"
-		android:layout_width="160dp"
+		android:layout_height="180dp"
+		android:layout_width="180dp"
         android:layout_centerHorizontal="true"
 		android:id="@+id/circle_progress_view"
 		android:layout_marginBottom="10dp"/>

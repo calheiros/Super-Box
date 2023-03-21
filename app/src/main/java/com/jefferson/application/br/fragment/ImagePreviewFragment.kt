@@ -16,6 +16,7 @@
  */
 package com.jefferson.application.br.fragment
 
+import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -23,15 +24,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.OnImageEventListener
+import com.google.android.gms.common.internal.Objects.ToStringHelper
 import com.jefferson.application.br.R
 import com.jefferson.application.br.database.AlbumDatabase.Companion.getInstance
 import com.jefferson.application.br.switcher.ViewVisibilitySwitch
@@ -42,9 +41,10 @@ import java.lang.Exception
 class ImagePreviewFragment(
     private val path: String,
     private val optionsTrigger: ViewVisibilitySwitch,
-    private var parentFragment: PreviewFragment
+    private var thumbnail: Drawable?
 ) : Fragment(), View.OnClickListener {
     private var parentView: View? = null
+    private lateinit var imageView: ImageView
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,8 +52,8 @@ class ImagePreviewFragment(
     ): View? {
         if (parentView == null) {
             parentView = inflater.inflate(R.layout.image_preview_layout, container, false)
-            val imageView = parentView!!.findViewById<SubsamplingScaleImageView>(R.id.imageView)
-            val gifView = parentView!!.findViewById<ImageView>(R.id.gif_view)
+            imageView = parentView!!.findViewById(R.id.gif_view)
+            val scaleImageView = parentView!!.findViewById<SubsamplingScaleImageView>(R.id.imageView)
             val database = getInstance(
                 requireContext(),
                 getDefaultStoragePath(requireContext())
@@ -63,7 +63,8 @@ class ImagePreviewFragment(
             if (originalName != null) {
                 val mimeType = getMimeType(originalName)
                 if (mimeType != null && mimeType.endsWith("/gif")) {
-                    Glide.with(requireContext()).load("file://$path")/*.listener( object : RequestListener<Drawable>
+                    Glide.with(requireContext()).load("file://$path")
+                        /*.listener( object : RequestListener<Drawable>
                         {
                             override fun onLoadFailed(
                                 e: GlideException?,
@@ -87,15 +88,40 @@ class ImagePreviewFragment(
                             }
 
                         })*/
-                        .skipMemoryCache(false).into(gifView)
+                        .skipMemoryCache(false).into(imageView)
                     return parentView
                 }
             }
-            imageView.setImage(ImageSource.uri(path))
-            imageView.isSoundEffectsEnabled = false
-            imageView.setOnClickListener(this)
+            scaleImageView.setImage(ImageSource.uri(path))
+            scaleImageView.isSoundEffectsEnabled = false
+            scaleImageView.setOnClickListener(this)
+            scaleImageView.setOnImageEventListener(object: OnImageEventListener {
+                override fun onReady() {
+                }
+
+                override fun onImageLoaded() {
+                    imageView.visibility = View.GONE
+                }
+
+                override fun onPreviewLoadError(e: Exception?) {
+                }
+
+                override fun onImageLoadError(e: Exception?) {
+                }
+
+                override fun onTileLoadError(e: Exception?) {
+                }
+
+                override fun onPreviewReleased() {
+                }
+
+            })
         }
         return parentView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        imageView.setImageDrawable(thumbnail)
     }
 
     override fun onClick(v: View) {

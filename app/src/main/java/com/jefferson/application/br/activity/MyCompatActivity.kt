@@ -94,7 +94,7 @@ open class MyCompatActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        onApplyCustomTheme()
+        onApplyTheme()
         super.onCreate(savedInstanceState)
         if (!MyPreferences.getAllowScreenshot(this)) window.setFlags(
             WindowManager.LayoutParams.FLAG_SECURE,
@@ -107,7 +107,7 @@ open class MyCompatActivity : AppCompatActivity() {
         initialized = true
     }
 
-    protected open fun onApplyCustomTheme() {
+    protected open fun onApplyTheme() {
         setTheme(ThemeConfig.getTheme(this))
     }
     fun configureTransition(transitionName: String) {
@@ -122,6 +122,13 @@ open class MyCompatActivity : AppCompatActivity() {
             addTarget(android.R.id.content)
             duration = 250L
         }
+    }
+    fun getThemeAttributeColor(themeId: Int, attributeId: Int): Int {
+        val attrs = intArrayOf(attributeId)
+        val ta = obtainStyledAttributes(themeId, attrs)
+        val color = ta.getColor(0, 0)
+        ta.recycle()
+        return color
     }
 
     fun haveWriteReadPermission(): Boolean {

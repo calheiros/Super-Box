@@ -100,8 +100,7 @@ class AlbumDatabase private constructor(context: Context, path: String) :
         val database = writableDatabase
         val data = ContentValues()
         data.put(MEDIA_DURATION_COL, millSecond)
-        Log.i("Database", "duration $millSecond")
-        database.update(MEDIA_TABLE_NAME, data, "$MEDIA_ID_COL = '$name'", null)
+        database.update(MEDIA_TABLE_NAME, data, "$MEDIA_ID_COL = ?", arrayOf(name))
         database.close()
     }
 
@@ -109,8 +108,8 @@ class AlbumDatabase private constructor(context: Context, path: String) :
         var duration = -1
         val database = readableDatabase
         val cursor = database.rawQuery(
-            "SELECT " + MEDIA_DURATION_COL + " FROM " + MEDIA_TABLE_NAME +
-                    " WHERE " + MEDIA_ID_COL + " = '" + fileName + "';", null
+            "SELECT $MEDIA_DURATION_COL FROM $MEDIA_TABLE_NAME" +
+                    " WHERE $MEDIA_ID_COL  = ?", arrayOf(fileName)
         )
         try {
             if (cursor.moveToFirst()) {
@@ -127,8 +126,8 @@ class AlbumDatabase private constructor(context: Context, path: String) :
         var path: String? = null
         val db = this.readableDatabase
         val res = db.rawQuery(
-            "Select " + MEDIA_PATH_COL + " from " + MEDIA_TABLE_NAME +
-                    " WHERE " + MEDIA_ID_COL + " = '" + id + "';", null
+            "Select $MEDIA_PATH_COL from $MEDIA_TABLE_NAME" +
+                    " WHERE $MEDIA_ID_COL = ?", arrayOf(id), null
         )
         try {
             if (res.moveToFirst()) path = res.getString(0)
@@ -141,7 +140,7 @@ class AlbumDatabase private constructor(context: Context, path: String) :
 
     fun deleteMediaData(id: String) {
         this.writableDatabase.use { db ->
-            db.execSQL("DELETE FROM $MEDIA_TABLE_NAME WHERE $MEDIA_ID_COL = '$id';")
+            db.execSQL("DELETE FROM $MEDIA_TABLE_NAME WHERE $MEDIA_ID_COL = ?", arrayOf(id))
             db.close()
         }
     }
@@ -191,8 +190,8 @@ class AlbumDatabase private constructor(context: Context, path: String) :
     fun getAlbumIdFromName(name: String, type: String): String? {
         val readableDatabase = readableDatabase
         val rawQuery = readableDatabase.rawQuery(
-            "SELECT id FROM FOLDER_ WHERE name = '$name' AND type = '$type'",
-            null
+            "SELECT id FROM FOLDER_ WHERE name = ? AND type = ?",
+            arrayOf(name, type),null
         )
         if (rawQuery.moveToFirst()) {
             return rawQuery.getString(0)
@@ -212,17 +211,19 @@ class AlbumDatabase private constructor(context: Context, path: String) :
     }
 
     fun updateAlbumName(id: String, name: String, type: String) {
-        val writableDatabase = writableDatabase
-        writableDatabase.execSQL(
-            "UPDATE $ALBUM_TABLE_NAME SET name = '$name' WHERE id = '$id' AND type = '$type'")
+        val values = ContentValues().apply {
+            put("name", name)
+            put("type", type)
+        }
+        writableDatabase.update(ALBUM_TABLE_NAME, values, "id = ?", arrayOf(id))
         writableDatabase.close()
     }
 
     fun getAlbumName(id: String, type: String): String? {
         val database = readableDatabase
         val rawQuery = database.rawQuery(
-            "SELECT name FROM FOLDER_ WHERE id='$id' AND type = '$type';",
-            null
+            "SELECT name FROM FOLDER_ WHERE id=? AND type=?",
+            arrayOf(id, type)
         )
         var res: String? = null
         try {
@@ -239,7 +240,9 @@ class AlbumDatabase private constructor(context: Context, path: String) :
     fun deleteAlbum(f_name: String, type: String) {
         val database = writableDatabase
         try {
-            database.execSQL("DELETE FROM FOLDER_ WHERE id='$f_name' AND type = '$type';")
+            val deleteQuery = "DELETE FROM FOLDER_ WHERE id = ? AND type = ?"
+            val deleteArgs = arrayOf(f_name, type)
+            database.execSQL(deleteQuery, deleteArgs)
         } catch(e: Exception) {
             e.printStackTrace()
         } finally {
@@ -251,7 +254,8 @@ class AlbumDatabase private constructor(context: Context, path: String) :
         val exists: Boolean
         val database = readableDatabase
         val cursor = database.rawQuery(
-            "SELECT $MEDIA_ID_COL FROM $MEDIA_TABLE_NAME WHERE $MEDIA_ID_COL = $id;", null)
+            "SELECT $MEDIA_ID_COL FROM $MEDIA_TABLE_NAME WHERE $MEDIA_ID_COL = ?", arrayOf(id)
+        )
         exists = cursor.moveToFirst()
         cursor.close()
         return exists

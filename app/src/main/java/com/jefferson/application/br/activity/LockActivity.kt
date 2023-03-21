@@ -21,7 +21,6 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.appcompat.widget.Toolbar
 import com.jefferson.application.br.R
-import com.jefferson.application.br.model.AppModel
 
 class LockActivity : MyCompatActivity() {
     var toolbar: Toolbar? = null

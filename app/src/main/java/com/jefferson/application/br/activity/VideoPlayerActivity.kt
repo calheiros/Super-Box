@@ -83,7 +83,7 @@ class VideoPlayerActivity : MyCompatActivity(), View.OnClickListener {
         Toast.makeText(this, name, Toast.LENGTH_SHORT).show()
     }
 
-    override fun onApplyCustomTheme() {
+    override fun onApplyTheme() {
         //do nothing
     }
 

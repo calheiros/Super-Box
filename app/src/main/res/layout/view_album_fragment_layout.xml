@@ -38,7 +38,6 @@ Copyright (C) 2023 Jefferson Calheiros
             android:layout_height="wrap_content"
             app:expandedTitleMarginStart="48dp"
             app:expandedTitleMarginEnd="64dp"
-            app:contentScrim="?colorPrimary"
             app:expandedTitleGravity="center_vertical"
             app:layout_scrollFlags="scroll|exitUntilCollapsed|snap">
 
@@ -110,7 +109,6 @@ Copyright (C) 2023 Jefferson Calheiros
         android:layout_margin="16dp"
         android:contentDescription="@string/descricao_botao_adicionar"
         android:src="@drawable/ic_plus"
-        app:backgroundTint="?colorAccent"
         app:layout_anchor="@id/my_recycler_view"
         app:layout_anchorGravity="end|bottom|end"
         app:shapeAppearanceOverlay="@style/RoundSquareShapeAppearance"

@@ -17,6 +17,9 @@
 package com.jefferson.application.br.adapter
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnLongClickListener
@@ -26,6 +29,10 @@ import android.widget.TextView
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener
 import com.jefferson.application.br.model.MediaModel
@@ -113,7 +120,28 @@ class MultiSelectRecyclerViewAdapter(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val mediaDuration = items[position].duration
-        Glide.with(context).load("file://" + items[position].path)
+        Glide.with(context).asDrawable().addListener(object: RequestListener<Drawable>{
+            override fun onLoadFailed(
+                e: GlideException?,
+                model: Any?,
+                target: Target<Drawable>?,
+                isFirstResource: Boolean
+            ): Boolean {
+               return false
+            }
+
+            override fun onResourceReady(
+                resource: Drawable?,
+                model: Any?,
+                target: Target<Drawable>?,
+                dataSource: DataSource?,
+                isFirstResource: Boolean
+            ): Boolean {
+                viewHolder.imageView.tag = resource
+                return false
+            }
+
+        }).load("file://" + items[position].path)
             .skipMemoryCache(false).dontAnimate().into(viewHolder.imageView)
         if (mediaDuration != null) {
             viewHolder.durationLabel.visibility = View.VISIBLE
@@ -128,7 +156,6 @@ class MultiSelectRecyclerViewAdapter(
         }
         val transitionName = "image_$position"
         ViewCompat.setTransitionName(viewHolder.rootView, transitionName)
-        viewHolder.rootView.tag = transitionName
     }
 
     override fun getItemCount(): Int {
@@ -146,7 +173,7 @@ class MultiSelectRecyclerViewAdapter(
         RecyclerView.ViewHolder(rootView), View.OnClickListener, OnLongClickListener {
         val selectionModeOverlay: View = rootView.findViewById(R.id.item_selected_overlay)
         val selectedCountLabel: TextView = rootView.findViewById(R.id.selected_item_count_label)
-        var imageView: ImageView = rootView.findViewById<View>(R.id.album_image_view) as ImageView
+        var imageView: ImageView = rootView.findViewById(R.id.album_image_view)
         var durationLabel: TextView = rootView.findViewById(R.id.gridview_itemTextView)
 
         init {

@@ -196,7 +196,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
     private void createControllerView() {
         Context context = mVideoView.getContext();
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        controllerView = inflater.inflate(R.layout.jvideo_controller_layout, null);
+        controllerView = inflater.inflate(R.layout.video_controller_layout, null);
         anchorView.addView(controllerView);
         mSeekBar = controllerView.findViewById(R.id.controller_seekbar);
         startTextView = controllerView.findViewById(R.id.controller_timer_label);

@@ -17,18 +17,18 @@
 package com.jefferson.application.br.fragment
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabaseCorruptException
 import android.graphics.Rect
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.app.ActivityOptionsCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
@@ -113,25 +113,23 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         intent.putExtra("position", pagerPosition)
         intent.putExtra("name", model.albumName)
         intent.putExtra("folder", model.albumPath)
-        if (view == null) {
-            requireActivity().startActivity(intent)
-            return
+        intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+
+        if (view != null) {
+            val location = IntArray(2)
+            view.getLocationInWindow(location)
+            val x = location[0]
+            val y = location[1]
+            val revealX = (x + view.width / 2)
+            val revealY = (y + view.height / 2)
+
+            intent.putExtra(ViewAlbum.EXTRA_CIRCULAR_REVEAL_X, revealX)
+            intent.putExtra(ViewAlbum.EXTRA_CIRCULAR_REVEAL_Y, revealY)
         }
-        val options: ActivityOptionsCompat =
-            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                requireActivity(), view, "transition")
-        val location = IntArray(2)
-        view.getLocationInWindow(location)
-        val x = location[0]
-        val y = location[1]
-        val revealX = (x + view.width / 2)
-        val revealY = (y + view.height / 2)
 
-        intent.putExtra(ViewAlbum.EXTRA_CIRCULAR_REVEAL_X, revealX)
-        intent.putExtra(ViewAlbum.EXTRA_CIRCULAR_REVEAL_Y, revealY)
-
-        ActivityCompat.startActivity(requireContext(), intent, options.toBundle())
+        requireActivity().startActivity(intent)
     }
+
     fun getChildViewPosition(childView: View): Pair<Int, Int> {
         val rect = Rect()
         childView.getGlobalVisibleRect(rect)

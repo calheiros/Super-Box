@@ -16,6 +16,7 @@
  */
 package com.jefferson.application.br.fragment
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +25,7 @@ import android.widget.Toast
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.jefferson.application.br.R
@@ -31,24 +33,24 @@ import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.switcher.ViewVisibilitySwitch
 import com.jefferson.application.br.util.MediaUtils
-
+import kotlin.math.abs
+import kotlin.math.max
 
 class PreviewFragment(
-    albumAdapter: MultiSelectRecyclerViewAdapter,
+    private var albumAdapter: MultiSelectRecyclerViewAdapter?,
     private var initialPosition: Int,
-    var mediaType: Int
+    var mediaType: Int,
+    private var thumbnail: Drawable?
 ) : Fragment(), View.OnClickListener {
-
     private var viewPager: ViewPager2? = null
     private lateinit var pagerAdapter: ImagePagerAdapter
     private lateinit var filesPath: ArrayList<String>
-    var rootView: View? = null
+    private var rootView: View? = null
 
     val currentItem: Int
         get() {
             return viewPager?.currentItem ?: initialPosition
         }
-    private var albumAdapter: MultiSelectRecyclerViewAdapter? = albumAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -70,6 +72,7 @@ class PreviewFragment(
         }
         return rootView
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         postponeEnterTransition()
@@ -79,16 +82,17 @@ class PreviewFragment(
         super.onViewCreated(view, savedInstanceState)
         startPostponedEnterTransition()
     }
+
     override fun onClick(v: View) {
         val position = currentItem
         val path = filesPath[position]
         when (v.id) {
-            R.id.delete_imageview -> deletionConfirmation(path, position)
+            R.id.delete_imageview -> deleteConfirmation(path, position)
             R.id.export_imageview -> exportImage(path, position)
         }
     }
 
-    private fun deletionConfirmation(path: String, position: Int) {
+    private fun deleteConfirmation(path: String, position: Int) {
         val builder = SimpleDialog(requireActivity(), SimpleDialog.STYLE_ALERT_HIGH)
         builder.setTitle(getString(R.string.apagar))
         builder.setMessage(getString(R.string.apagar_image_mensagem))
@@ -135,9 +139,11 @@ class PreviewFragment(
         override fun createFragment(position: Int): Fragment {
             return if (mediaType == 1)
                 VideoPlayerFragment(filesPath[position], optionsTrigger)
-            else ImagePreviewFragment(filesPath[position], optionsTrigger, this@PreviewFragment)
+            else ImagePreviewFragment(
+                filesPath[position], optionsTrigger,
+                if (position == initialPosition) thumbnail else null
+            )
         }
-
     }
 
     class ZoomOutPageTransformer : ViewPager2.PageTransformer {
@@ -153,7 +159,7 @@ class PreviewFragment(
                     }
                     position <= 1 -> { // [-1,1]
                         // Modify the default slide transition to shrink the page as well.
-                        val scaleFactor = Math.max(MIN_SCALE, 1 - Math.abs(position))
+                        val scaleFactor = max(MIN_SCALE, 1 - abs(position))
                         val vertMargin = pageHeight * (1 - scaleFactor) / 2
                         val horzMargin = pageWidth * (1 - scaleFactor) / 2
                         translationX = if (position < 0) {
@@ -178,6 +184,7 @@ class PreviewFragment(
             }
         }
     }
+
     companion object {
         private const val MIN_SCALE = 0.85f
         private const val MIN_ALPHA = 0.5f

@@ -24,7 +24,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
-import android.widget.MediaController
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.fragment.app.Fragment
@@ -43,9 +42,8 @@ class VideoPlayerFragment(
     private var videoNotPrepared = false
     private var parentView: View? = null
     private var videoView: VideoView? = null
-    private val mediaController: MediaController? = null
     private var thumbView: ImageView? = null
-    private var jController: JVideoController? = null
+    private var controller: JVideoController? = null
 
     override fun onPressed(playing: Boolean) {
         if (videoNotPrepared) {
@@ -75,15 +73,15 @@ class VideoPlayerFragment(
                     .show()
                 return parentView
             }
-            jController = JVideoController(videoView, parentView as ViewGroup?, optionsTrigger)
-            jController?.setOnButtonPressedListener(this)
+            controller = JVideoController(videoView, parentView as ViewGroup?, optionsTrigger)
+            controller?.setOnButtonPressedListener(this)
             videoView?.setOnPreparedListener { mp: MediaPlayer ->
                 mp.isLooping = true
             }
-            videoView?.setOnErrorListener(MediaPlayer.OnErrorListener { _: MediaPlayer?, _: Int, _: Int ->
+            videoView?.setOnErrorListener{ _: MediaPlayer?, _: Int, _: Int ->
                 Toast.makeText(context, getString(R.string.falha_video), Toast.LENGTH_LONG).show()
                 true
-            })
+            }
         }
         Glide.with(requireContext()).load("file://$videoPath").into(thumbView!!)
         return parentView
@@ -92,8 +90,8 @@ class VideoPlayerFragment(
     override fun onDestroy() {
         super.onDestroy()
         stop()
-        if (jController?.isControllerActive == true) {
-            jController?.pause()
+        if (controller?.isControllerActive == true) {
+            controller?.pause()
         }
     }
 
@@ -140,13 +138,9 @@ class VideoPlayerFragment(
             videoView?.stopPlayback()
             videoNotPrepared = true
         }
-        if (jController?.isControllerActive == true) {
-            jController?.pause()
+        if (controller?.isControllerActive == true) {
+            controller?.pause()
         }
     }
 
-    fun pause() {
-        videoView?.pause()
-        mediaController?.hide()
-    }
 }

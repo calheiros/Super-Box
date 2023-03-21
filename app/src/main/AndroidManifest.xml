@@ -276,7 +276,7 @@ Copyright (C) 2023 Jefferson Calheiros
         <activity
             android:name=".activity.ViewAlbum"
             android:excludeFromRecents="true"
-            android:theme="@style/MainTheme" />
+            android:theme="@style/MainTheme.Translucent"/>
 
         <receiver
             android:name=".PhoneStatReceiver"
@@ -338,7 +338,7 @@ Copyright (C) 2023 Jefferson Calheiros
 
         <receiver
             android:name=".receiver.ReceiverRestartService"
-            android:exported="true"
+            android:exported="false"
             tools:node="merge">
 
             <intent-filter>

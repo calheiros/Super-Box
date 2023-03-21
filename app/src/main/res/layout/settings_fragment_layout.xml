@@ -36,7 +36,10 @@ Copyright (C) 2023 Jefferson Calheiros
         android:id="@+id/settings_list_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="5dp" />
+        android:paddingTop="5dp"
+        android:paddingEnd="5dp"
+        android:paddingStart="5dp"
+        android:paddingBottom="5dp"/>
 
 </LinearLayout>
 

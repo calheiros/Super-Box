@@ -52,12 +52,20 @@ object ThemeConfig {
             else -> R.style.MainTheme
         }
     }
-
+    fun resolveTranslucentTheme(context: Context, index: Int): Int {
+        return when (index) {
+            0 -> if (isDarkThemeOn(context)) R.style.MainTheme else R.style.ThemeBlueLight
+            2 -> R.style.ThemeBlueLight_Translucent
+            3 -> R.style.ThemeGreenLight_Translucent
+            4 -> R.style.ThemeRedDark_Translucent
+            else -> R.style.MainTheme_Translucent
+        }
+    }
     fun getThemeIndex(context: Context?): Int {
         return MyPreferences.getSharedPreferences(context!!).getInt("app_theme", 1)
     }
 
-    fun setThemeIndex(themePosition: Int, context: Context?): Boolean {
+    fun setTheme(themePosition: Int, context: Context?): Boolean {
         return MyPreferences.getSharedPreferencesEditor(context!!)
             .putInt("app_theme", themePosition).commit()
     }
@@ -91,5 +99,9 @@ object ThemeConfig {
     fun getCurrentThemeName(context: Context): String {
         val i = getThemeIndex(context)
         return getThemesOptions(context)[i]
+    }
+
+    fun getTranslucentTheme(context: Context): Int {
+        return resolveTranslucentTheme(context, getThemeIndex(context))
     }
 }

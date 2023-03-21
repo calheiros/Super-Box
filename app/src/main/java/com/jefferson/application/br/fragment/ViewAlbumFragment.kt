@@ -3,7 +3,9 @@ package com.jefferson.application.br.fragment
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.util.Log
@@ -54,10 +56,15 @@ class ViewAlbumFragment(
 ) : Fragment(),
     MultiSelectRecyclerViewAdapter.ViewHolder.ClickListener, OnClickListener {
 
+    private var colorAccent: Int = 0
+    private var colorPrimary: Int = 0
+    private var currentTheme: Int = 0
     private var videoDurationUpdaterTask: VideoDurationUpdaterTask? = null
     private val minItemWidth = 110
     lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: MultiSelectRecyclerViewAdapter
+        private set
+    lateinit var adapter: MultiSelectRecyclerViewAdapter
+        private set
     private lateinit var floatingButton: FloatingActionButton
     private lateinit var emptyView: View
     private lateinit var menuLayout: View
@@ -65,7 +72,7 @@ class ViewAlbumFragment(
     private lateinit var albumLabel: TextView
     //activity result register
     private lateinit var changeDirectoryResult: ActivityResultLauncher<Intent>
-    private  lateinit var galleryResult: ActivityResultLauncher<Intent>
+    private lateinit var galleryResult: ActivityResultLauncher<Intent>
     private lateinit var importResult: ActivityResultLauncher<Intent>
 
     private var selectionMode = false
@@ -74,7 +81,8 @@ class ViewAlbumFragment(
     private var selectImageView: ImageView? = null
     private lateinit var appbar: AppBarLayout
     private var parent: View? = null
-    private lateinit var layoutManager: LayoutManager
+    private var layoutManager: LayoutManager? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -82,6 +90,7 @@ class ViewAlbumFragment(
     ): View? {
         if (parent == null) {
             parent = inflater.inflate(R.layout.view_album_fragment_layout, container, false)
+            viewAlbum = (requireActivity() as ViewAlbum)
             layoutManager = GridLayoutManager(requireContext(), autoSpan)
             appbar = parent!!.findViewById(R.id.appbar)
             recyclerView = parent!!.findViewById(R.id.my_recycler_view)
@@ -100,22 +109,33 @@ class ViewAlbumFragment(
             mViewMove.setOnClickListener(this)
             mViewSelect.setOnClickListener(this)
 
-            floatingButton = parent!!.findViewById(R.id.view_album_fab_button)
             menuLayout = parent!!.findViewById(R.id.lock_layout)
             albumLabel = parent!!.findViewById(R.id.album_name_label)
             selectAllTextView = parent!!.findViewById(R.id.options_album_selectTextView)
             selectImageView = parent!!.findViewById(R.id.selectImageView)
             emptyView = parent!!.findViewById(R.id.view_album_empty_view)
-            floatingButton.setOnClickListener(this)
             albumLabel.setOnClickListener(this)
 
+            defineThemeVariables()
             configureBlurView(recyclerView)
             configureFloatingButton()
             populateRecyclerView()
             initToolbar()
             setAlbumHeader()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                val window = requireActivity().window
+                window.statusBarColor = Color.TRANSPARENT
+                window.decorView.systemUiVisibility =
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+            }
         }
         return parent
+    }
+
+    private fun defineThemeVariables() {
+        currentTheme = ThemeConfig.getTheme(requireContext())
+        colorPrimary = viewAlbum.getThemeAttributeColor(currentTheme, R.attr.colorPrimary)
+        colorAccent = viewAlbum.getThemeAttributeColor(currentTheme, R.attr.colorAccent)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -126,6 +146,9 @@ class ViewAlbumFragment(
     }
     private fun configureFloatingButton() {
         val threshold = heightPixels / 100 //1%
+        floatingButton = parent!!.findViewById(R.id.view_album_fab_button)
+        floatingButton.setOnClickListener(this)
+        floatingButton.backgroundTintList = ColorStateList.valueOf(colorAccent)
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -161,12 +184,11 @@ class ViewAlbumFragment(
             val extras = result.data?.extras
             val index = extras?.getInt("index", 0)
             val removeItems = extras?.getStringArrayList(PreviewFragment.EXTRA_REMOVED_ITEMS)
-            //remove all deleted/exported items in preview activity
+
             if (removeItems != null && removeItems.isNotEmpty()) {
                 adapter.removeAll(removeItems)
                 setAlbumHeader()
             }
-            //scroll to last viewed item in preview activity
             if (index != null) recyclerView.post {
                 recyclerView.smoothScrollToPosition(index)
             }
@@ -211,7 +233,6 @@ class ViewAlbumFragment(
               val intent = Intent(requireContext(), ImportMediaActivity::class.java)
               intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
               intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
-              //intent.putExtra(ImportMediaActivity.POSITION_KEY, position);
               intent.putExtra(ImportMediaActivity.PARENT_KEY, albumDirFile.absolutePath)
               importResult.launch(intent)
           }
@@ -428,6 +449,13 @@ class ViewAlbumFragment(
             setAlbumHeader()
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        if (selectionMode) {
+            inflater.inflate(R.menu.view_album_menu, menu)
+        }
+        super.onCreateOptionsMenu(menu, inflater)
+    }
 /*
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         if (selectionMode) {
@@ -462,7 +490,7 @@ class ViewAlbumFragment(
 
     override fun onItemClicked(position: Int, v: View?) {
         if (!selectionMode) {
-            viewAlbum.startPreview(adapter, position, v!!)
+            viewAlbum.startPreview(position, v!!)
             return
         }
         toggleItemSelected(position, true)
@@ -576,11 +604,11 @@ class ViewAlbumFragment(
     }
 
     private fun initToolbar() {
+        requireActivity().window.statusBarColor = colorPrimary
         toolbar = parent!!.findViewById(R.id.toolbar)
-        val viewAlbum = (requireActivity() as ViewAlbum)
+        toolbar.setTitleTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
         viewAlbum.setSupportActionBar(toolbar)
         val actionBar = viewAlbum.supportActionBar
-        toolbar.setTitleTextColor(ContextCompat.getColor(requireContext(), android.R.color.white))
         actionBar?.title = title
         actionBar?.setDisplayHomeAsUpEnabled(true)
         val collapsingToolbar =
@@ -589,6 +617,9 @@ class ViewAlbumFragment(
         collapsingToolbar.setCollapsedTitleTextColor(Color.WHITE) // sets the text color of the collapsed title
         collapsingToolbar.setExpandedTitleColor(Color.TRANSPARENT) // sets the text color of the expanded title
         collapsingToolbar.scrimAnimationDuration = 150
+        collapsingToolbar.setContentScrimColor(colorPrimary)
+        collapsingToolbar.setBackgroundColor(colorPrimary)
+        collapsingToolbar.setStatusBarScrimColor(Color.TRANSPARENT)
     }
 
     private fun setAlbumHeader() {
@@ -624,10 +655,6 @@ class ViewAlbumFragment(
             return false
         }
         return true
-    }
-
-    fun getViewByPosition(position: Int): View? {
-        return layoutManager.findViewByPosition(position)
     }
 
     inner class DeleteFiles(activity: Activity, p1: ArrayList<String>, p3: Int, p4: File) :

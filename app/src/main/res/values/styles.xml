@@ -24,10 +24,43 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="commonColor">@color/colorCommon</item>
         <item name="commonColorLight">@color/colorCommonLight</item>
         <item name="android:windowBackground">@color/colorBackground</item>
-        <item name="colorControlHighlight">@color/highLightColor</item>]
+        <item name="colorControlHighlight">@color/highLightColor</item>
         <item name="colorDialogBackground">#CC141515</item>
         <item name="colorTextMedium">#F0F0F0</item>
         <item name="colorTextSmall">#848692</item>
+    </style>
+
+    <style name="MainTheme.Translucent" parent="MainTheme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="ThemeGreenLight.Translucent" parent="ThemeGreenLight">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="ThemeBlueLight.Translucent" parent="ThemeBlueLight">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
+
+    <style name="ThemeRedDark.Translucent" parent="Theme.RedDark">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
     </style>
 
     <style name="Theme.Base.Light" parent="Theme.AppCompat.Light.NoActionBar">
@@ -47,6 +80,7 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="commonColor">#FF4D4D51</item>
         <item name="commonColorLight">#FF3D3D41</item>
         <item name="colorControlHighlight">#1C00ABBB</item>
+
     </style>
 
     <style name="Theme.RedDark" parent="Theme.Base.Dark">
@@ -71,7 +105,7 @@ Copyright (C) 2023 Jefferson Calheiros
 	</style>
 
 	<style name="ThemeOverlay.AppCompat.navTheme">
-		<item name="colorPrimary">@color/green</item> 
+		<item name="colorPrimary">@color/green</item>
 		<item name="colorAccent">@color/green</item>
         <item name="colorControlHighlight">@color/blue_semi_transparent</item>
     </style>
@@ -101,12 +135,12 @@ Copyright (C) 2023 Jefferson Calheiros
     <style name="CustomAlertDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-    
+
     <style name="DialogAnimation">
         <item name="android:windowEnterAnimation">@anim/dialog_open</item>
         <item name="android:windowExitAnimation">@anim/dialog_close</item>
     </style>
-    
+
 	<style name="ActionBar" parent="Theme.AppCompat.Light">
 		<item name="colorPrimary">#2270FF</item>
 		<item name="colorPrimaryDark">#0449C7</item>
@@ -143,7 +177,7 @@ Copyright (C) 2023 Jefferson Calheiros
     <style name="CalculatorTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <item name="android:statusBarColor">@color/colorBackground</item> 
+        <item name="android:statusBarColor">@color/colorBackground</item>
         <item name="colorAccent">#00BCD4</item>
         <item name="colorBackgroundDark">@color/colorBackgroundDark</item>
         <item name="colorBackground">@color/colorBackground</item>
@@ -166,15 +200,14 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="commonColorDark">@color/colorCommonDark</item>
         <item name="commonColor">@color/colorCommon</item>
         <item name="commonColorLight">@color/colorCommonLight</item>
-        <item name="android:windowBackground">@color/colorBackground</item>
+
         <item name="colorControlHighlight">@color/highLightColor</item>]
         <item name="colorDialogBackground">#CC141515</item>
         <item name="colorTextMedium">#FFFFFF</item>
         <item name="colorTextSmall">#7F7F80</item>
-
     </style>
     <style name="drawer_theme" parent="Theme.Material3.DayNight.NoActionBar">
-        <item name="colorControlHighlight">@color/highLightColor</item> 
+        <item name="colorControlHighlight">@color/highLightColor</item>
     </style>
 
     <style name="MediaPreviewTheme" parent="Theme.AppCompat.NoActionBar">
@@ -186,17 +219,16 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="android:windowActivityTransitions">true</item>
     </style>
 
-    <style name="Theme.Transparent" parent="Theme.AppCompat"> 
+    <style name="Theme.Transparent" parent="Theme.AppCompat">
         <item name="commonColorDark">@color/colorCommonDark</item>
         <item name="commonColor">@color/colorCommon</item>
         <item name="commonColorLight">@color/colorCommonLight</item>
         <item name="colorBackground">@color/colorBackground</item>
-
-        <item name="android:windowIsTranslucent">true</item> 
-        <item name="android:windowBackground">@android:color/transparent</item> 
-        <item name="android:windowContentOverlay">@null</item> 
-        <item name="android:windowNoTitle">true</item> 
-        <item name="android:windowIsFloating">true</item> 
-        <item name="android:backgroundDimEnabled">true</item> 
-    </style> 
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
 </resources>
