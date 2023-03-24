@@ -207,6 +207,10 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         mainFragment.updateAllFragments()
     }
 
+    fun notifyAlbumChanged(fragmentPosition: Int, albumPosition: Int) {
+        mainFragment.notifyItemChanged(fragmentPosition, albumPosition)
+    }
+
     fun requestPermission(): Boolean {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (!Settings.canDrawOverlays(this)) {

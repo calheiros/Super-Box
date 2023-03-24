@@ -391,6 +391,10 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         }
     }
 
+    fun notifyItemChanged(itemPosition: Int) {
+
+    }
+
     companion object {
         const val ALBUM_NAME_OKAY = "folder_name_okay"
         const val ACTION_CREATE_FOLDER = 122

@@ -110,7 +110,6 @@ Copyright (C) 2023 Jefferson Calheiros
     <Button
         style="?android:attr/borderlessButtonStyle"
         android:background="@drawable/bg_rounded_transparent_button"
-        android:onClick="buttonClick"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:layout_marginBottom="10dp"

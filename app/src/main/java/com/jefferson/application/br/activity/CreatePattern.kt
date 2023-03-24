@@ -41,7 +41,6 @@ class CreatePattern : MyCompatActivity() {
     private lateinit var clearRunnable: Runnable
     private lateinit var clearHandler: Handler
     private lateinit var passwordManager: PasswordManager
-
     private var password: String? = null
     private var handler: Handler? = null
     private var action: String? = null
@@ -73,7 +72,6 @@ class CreatePattern : MyCompatActivity() {
         hintLabel.text = defaultText
         button.isEnabled = false
         materialLockView.isTactileFeedbackEnabled = false
-
         materialLockView.setOnPatternListener(object : OnPatternListener() {
             override fun onPatternStart() {
                 clearHandler.removeCallbacks(clearRunnable)

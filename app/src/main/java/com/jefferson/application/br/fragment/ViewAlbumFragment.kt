@@ -231,9 +231,9 @@ class ViewAlbumFragment(
               val paths = data!!.getStringArrayListExtra("selection")
               val type = data.getStringExtra("type")
               val intent = Intent(requireContext(), ImportMediaActivity::class.java)
-              intent.putStringArrayListExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
-              intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
-              intent.putExtra(ImportMediaActivity.PARENT_KEY, albumDirFile.absolutePath)
+              intent.putStringArrayListExtra(ImportMediaActivity.KEY_MEDIA_LIST, paths)
+              intent.putExtra(ImportMediaActivity.KEY_TYPE, type)
+              intent.putExtra(ImportMediaActivity.KEY_PARENT, albumDirFile.absolutePath)
               importResult.launch(intent)
           }
       }

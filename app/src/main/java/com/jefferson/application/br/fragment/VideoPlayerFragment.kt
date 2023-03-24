@@ -106,7 +106,8 @@ class VideoPlayerFragment(
     }
 
     private fun hideThumbView() {
-        if (thumbView != null && thumbView?.visibility != View.GONE) {
+        thumbView ?: return
+        if (thumbView?.visibility != View.GONE) {
             thumbView?.visibility = View.GONE
             thumbView?.startAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_out))
         }

@@ -25,15 +25,11 @@ import android.graphics.drawable.Drawable
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
-import android.view.KeyEvent
-import android.view.LayoutInflater
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.jefferson.application.br.MaterialLockView.OnPatternListener
 import com.jefferson.application.br.database.AppLockDatabase
-import com.jefferson.application.br.util.JDebug
 import com.jefferson.application.br.util.MyPreferences
 import com.jefferson.application.br.util.PasswordManager
 
@@ -51,14 +47,22 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
     private var password: String? = null
     private var lastView: View? = null
 
+
     init {
+        @Suppress("DEPRECATION")
         val layoutParamsType =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY else WindowManager.LayoutParams.TYPE_PHONE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            else WindowManager.LayoutParams.TYPE_PHONE
+        @Suppress("DEPRECATION")
         params = WindowManager.LayoutParams(
             WindowManager.LayoutParams.MATCH_PARENT,
             WindowManager.LayoutParams.MATCH_PARENT,
             layoutParamsType,
-            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS or WindowManager.LayoutParams.FLAG_DIM_BEHIND or WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD,
+            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+                    or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+                    or WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+                    or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
             PixelFormat.TRANSLUCENT
         )
         params.windowAnimations = android.R.style.Animation_Dialog
@@ -75,6 +79,7 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
             public override fun onAttachedToWindow() {
                 super.onAttachedToWindow()
             }
+
             override fun dispatchKeyEvent(e: KeyEvent): Boolean {
                 if (e.keyCode == KeyEvent.KEYCODE_BACK) {
                     startDefaultLauncher()
@@ -82,7 +87,7 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
                 return true
             }
         }
-        //layout.setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN);
+
         layout.isFocusable = true
         return LayoutInflater.from(context).inflate(R.layout.pattern, layout)
     }
@@ -134,11 +139,12 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
         iconImageView?.setImageDrawable(getIconDrawable(appName))
         windowManager.addView(view, params)
     }
+
     fun unlock() {
         try {
             windowManager.removeView(view)
         } catch (e: IllegalArgumentException) {
-          e.printStackTrace()
+            e.printStackTrace()
         }
         isLocked = false
     }

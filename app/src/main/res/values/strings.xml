@@ -215,5 +215,7 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="accept">accept</string>
     <string name="maove_to">Move to</string>
     <string name="enter_you_password_here">Enter you password here</string>
+    <string name="checando_arquivos">Checking files</string>
+    <string name="continuar">Continue</string>
 
 </resources>

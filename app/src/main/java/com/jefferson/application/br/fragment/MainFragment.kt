@@ -20,8 +20,10 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.TypedValue
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
 import android.view.View.OnLongClickListener
+import android.view.ViewGroup
 import android.view.ViewGroup.MarginLayoutParams
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,7 +37,6 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
-import com.google.android.material.transition.MaterialSharedAxis
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.ImportGalleryActivity
 import com.jefferson.application.br.activity.ImportMediaActivity
@@ -105,9 +106,9 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
             val type = data.getStringExtra("type")
             val paths = data.getStringArrayListExtra("selection")
             val intent = Intent(context, ImportMediaActivity::class.java)
-            intent.putExtra(ImportMediaActivity.TYPE_KEY, type)
-            intent.putExtra(ImportMediaActivity.MEDIA_LIST_KEY, paths)
-            intent.putExtra(ImportMediaActivity.POSITION_KEY, position)
+            intent.putExtra(ImportMediaActivity.KEY_TYPE, type)
+            intent.putExtra(ImportMediaActivity.KEY_MEDIA_LIST, paths)
+            intent.putExtra(ImportMediaActivity.KEY_POSITION, position)
             importMediaResult.launch(intent)
         }
     }
@@ -191,10 +192,10 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         return true
     }
 
-    fun removeFolder(folderPosition: Int, pagerPosition: Int) {
+    fun removeAlbum(albumPosition: Int, pagerPosition: Int) {
         if (pagerAdapter != null) {
             val fragment = pagerAdapter!!.createFragment(pagerPosition)
-            fragment.removeFolder(folderPosition)
+            fragment.removeFolder(albumPosition)
         }
     }
 
@@ -234,13 +235,18 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         }
     }
 
+    fun notifyItemChanged(fragmentPosition: Int, itemPosition: Int) {
+        val fragment = pagerAdapter?.getFragmentOrNull(fragmentPosition) ?: return
+        fragment.notifyItemChanged(itemPosition)
+    }
+
     private inner class PagerAdapter(fa: FragmentActivity) : FragmentStateAdapter(
         fa
     ) {
         val fragments = arrayOfNulls<AlbumFragment>(Companion.SIZE)
 
         fun update(position: Int) {
-            val fragment = fragments[position]
+            val fragment = getFragmentOrNull(position)
             fragment?.update()
         }
 
@@ -250,6 +256,11 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
 
         override fun getItemCount(): Int {
             return Companion.SIZE
+        }
+
+        fun getFragmentOrNull(position: Int): AlbumFragment? {
+           return if (position in 0 until itemCount)
+               createFragment(position) else null
         }
 
         override fun createFragment(position: Int): AlbumFragment {

@@ -127,8 +127,7 @@ class AppLockAccessibilityService : AccessibilityService() {
         val config = AccessibilityServiceInfo()
         config.eventTypes = AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
         config.feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
-        if (Build.VERSION.SDK_INT >= 16) //Just in case this helps 
-            config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
+        config.flags = AccessibilityServiceInfo.FLAG_INCLUDE_NOT_IMPORTANT_VIEWS
         serviceInfo = config
     }
 

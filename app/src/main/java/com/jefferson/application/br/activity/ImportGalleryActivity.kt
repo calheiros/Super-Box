@@ -71,7 +71,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         title =
             if (position == 0) getString(R.string.importar_imagem) else getString(R.string.importar_video)
         retrieveMediaTask = RetrieveMediaTask()
-        retrieveMediaTask!!.start()
+        retrieveMediaTask?.start()
         setupToolbar()
     }
 
@@ -132,7 +132,6 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
         actionBar?.setDisplayShowHomeEnabled(true)
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.title = title
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -201,6 +200,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
                 )
                 else -> null
             }
+
             cursor = applicationContext.contentResolver.query(
                 uri,
                 projection,

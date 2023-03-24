@@ -21,12 +21,14 @@ import android.os.*
 import android.text.Html
 import android.text.TextUtils
 import android.view.View
+import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.content.ContextCompat
 import com.google.android.gms.ads.AdView
 import com.google.android.material.snackbar.Snackbar
@@ -42,9 +44,9 @@ import com.jefferson.application.br.util.Storage
 import com.jefferson.application.br.view.CircularProgressView
 import java.util.*
 
+
 class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStartedListener,
-    OnFinishedListener {
-    private val flagKeepScreenOn = WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
+    OnFinishedListener, OnClickListener {
     private lateinit var parent: FrameLayout
     private lateinit var prepareTextView: TextView
     private lateinit var progressView: CircularProgressView
@@ -52,7 +54,6 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     private lateinit var button: Button
     private lateinit var prepareTitleView: TextView
     private lateinit var messageTextView: TextView
-
     private var importTask: ImportTask? = null
     private var builderTask: FileModelBuilderTask? = null
     private var animateText: AnimateProgressText? = null
@@ -63,11 +64,10 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.import_media_layout)
-        window.addFlags(flagKeepScreenOn)
-        if (Build.VERSION.SDK_INT >= 21) {
-            setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false)
-            window.statusBarColor = Color.TRANSPARENT
-        }
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        @Suppress("DEPRECATION")
+        setWindowFlag(this, WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS, false)
+        window.statusBarColor = Color.TRANSPARENT
         prepareTitleView =
             findViewById<View>(R.id.import_media_title_preparation_text_view) as TextView
         prepareTextView = findViewById<View>(R.id.import_media_prepare_text_view) as TextView
@@ -76,11 +76,8 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         progressView = findViewById<View>(R.id.circle_progress_view) as CircularProgressView
         button = findViewById<View>(R.id.import_media_button) as Button
         val mainActivity = MainActivity.instance
-        adview =
-            Objects.requireNonNull(
-                if (mainActivity == null) MainActivity.createSquareAdview(this)
-                else mainActivity.squareAdView
-            )
+        adview = if (mainActivity == null) MainActivity.createSquareAdview(this)
+        else mainActivity.squareAdView
         removeParent(adview)
         parent = findViewById(R.id.ad_view_layout)
         parent.addView(adview)
@@ -88,16 +85,16 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     }
 
     private fun startImportTask() {
-        val intent = intent
-        val files = intent.getParcelableArrayListExtra<FileModel>(MODELS_KEY)
+        @Suppress("DEPRECATION")
+        val files = intent.getParcelableArrayListExtra<FileModel>(KEY_MODELS)
         if (files != null) {
             typeQuantityRes = R.plurals.quantidade_arquivo_total
             startImportTask(files)
         } else {
             val filesPath =
-                getIntent().getStringArrayListExtra(MEDIA_LIST_KEY) as ArrayList<String>?
-            val parent = intent.getStringExtra(PARENT_KEY)
-            val type = intent.getStringExtra(TYPE_KEY)
+                intent.getStringArrayListExtra(KEY_MEDIA_LIST) as ArrayList<String>?
+            val parent = intent.getStringExtra(KEY_PARENT)
+            val type = intent.getStringExtra(KEY_TYPE)
             builderTask = FileModelBuilderTask(this, filesPath!!, type, parent)
             if (type != null) {
                 typeQuantityRes =
@@ -115,7 +112,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
             builderTask?.setOnUpdatedListener(this)
             builderTask?.setOnFinishedListener { startImportTask(builderTask!!.data) }
             builderTask?.start()
-            prepareTitleView.text = "Checking"
+            prepareTitleView.text = getString(R.string.checando_arquivos)
         }
     }
 
@@ -127,27 +124,18 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         importTask?.start()
     }
 
-    fun buttonClick(v: View?) {
-        if (!isTaskNotRunning) {
-            interruptTask()
-        }
-        setResult(RESULT_OK)
-        finish()
-    }
-
-    private val isTaskNotRunning: Boolean
-        get() = builderTask != null && importTask != null && builderTask!!.status !=
-                Status.STARTED && importTask!!.status != Status.STARTED
+    private val isTasksRunning: Boolean
+        get() = builderTask?.status == Status.STARTED && importTask?.status == Status.STARTED
 
     override fun onBeingStarted() {
         prepareTitleView.text = getString(R.string.transferido)
         animateText = AnimateProgressText(titleTextView, importTask!!)
-        animateText!!.start()
+        animateText?.start()
     }
 
     override fun onFinished() {
-        window.clearFlags(flagKeepScreenOn)
         animateText?.cancel()
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val res = resources
         val criticalError: Exception? = importTask?.error()
         val failures = importTask!!.failuresCount
@@ -159,7 +147,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
             if (criticalError != null) getString(R.string.erro_critico)
             else if (failures > 0) res.getQuantityString(
                 R.plurals.falha_plural, failures, failures
-            ) else if (importTask!!.isInterrupted)
+            ) else if (importTask?.isInterrupted == true)
                 "Cancelled!" else getString(R.string.transferencia_sucesso)
         titleTextView.text = getString(R.string.resultado)
         messageTextView.setTextColor(color)
@@ -168,6 +156,41 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         messageTextView.ellipsize = TextUtils.TruncateAt.END
         button.setTextColor(getAttrColor(R.attr.colorAccent))
         button.text = getString(android.R.string.ok)
+        button.setOnClickListener(this)
+        addBackPressedCallback()
+    }
+
+    private fun addBackPressedCallback() {
+        onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (isTasksRunning) {
+                    setResult(RESULT_OK)
+                    finish()
+                } else {
+                    if (allowCancel) {
+                        interruptTask()
+                        setResult(RESULT_OK)
+                        finish()
+                    } else {
+                        allowCancel = true
+                        Snackbar.make(
+                            messageTextView,
+                            "Press back button again to cancel!",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
+                        Handler(Looper.getMainLooper()).postDelayed({ allowCancel = false }, 2000)
+                    }
+                }
+            }
+        })
+    }
+
+    override fun onClick(v: View?) {
+        if (!isTasksRunning) {
+            interruptTask()
+        }
+        setResult(RESULT_OK)
+        finish()
     }
 
     override fun onUpdated(values: Array<Any>) {
@@ -214,10 +237,10 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
 
     private fun showNoSpaceAlert(task: ImportTask?, message: String) {
         val dialog = SimpleDialog(this, SimpleDialog.STYLE_ALERT)
-        dialog.setTitle("Aviso")
+        dialog.setTitle(getString(R.string.aviso))
         dialog.setMessage(message)
         dialog.setCancelable(false)
-        dialog.setPositiveButton("Continuar", object : OnDialogClickListener() {
+        dialog.setPositiveButton(getString(R.string.continuar), object : OnDialogClickListener() {
             override fun onClick(dialog: SimpleDialog): Boolean {
                 task!!.stopWaiting()
                 return true
@@ -225,7 +248,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         })
         dialog.setNegativeButton(getString(R.string.cancelar), null)
         dialog.setOnDismissListener {
-            if (task!!.isWaiting) {
+            if (task?.isWaiting == true) {
                 task.interrupt()
                 task.stopWaiting()
             }
@@ -235,33 +258,12 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
 
     public override fun onResume() {
         super.onResume()
-        adview!!.resume()
+        adview?.resume()
     }
 
     public override fun onPause() {
         super.onPause()
-        adview!!.pause()
-    }
-
-    override fun onBackPressed() {
-        if (isTaskNotRunning) {
-            setResult(RESULT_OK)
-            super.onBackPressed()
-        } else {
-            if (allowCancel) {
-                interruptTask()
-                setResult(RESULT_OK)
-                super.onBackPressed()
-            } else {
-                allowCancel = true
-                Snackbar.make(
-                    messageTextView,
-                    "Press back button again to cancel!",
-                    Snackbar.LENGTH_SHORT
-                ).show()
-                Handler(Looper.getMainLooper()).postDelayed({ allowCancel = false }, 2000)
-            }
-        }
+        adview?.pause()
     }
 
     private fun interruptTask() {
@@ -304,11 +306,11 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     }
 
     companion object {
-        const val TYPE_KEY = "type_key"
-        const val MEDIA_LIST_KEY = "media_list_key"
-        const val POSITION_KEY = "position_key"
-        const val PARENT_KEY = "parent_key"
-        const val MODELS_KEY = "models_key"
+        const val KEY_TYPE = "type_key"
+        const val KEY_MEDIA_LIST = "media_list_key"
+        const val KEY_POSITION = "position_key"
+        const val KEY_PARENT = "parent_key"
+        const val KEY_MODELS = "models_key"
 
         fun removeParent(v: View?) {
             val parent = v!!.parent

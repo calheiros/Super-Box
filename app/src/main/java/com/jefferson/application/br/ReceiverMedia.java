@@ -78,7 +78,7 @@ public class ReceiverMedia extends Activity {
 
     private void startImportActivity(ArrayList<FileModel> models) {
         Intent intent = new Intent(this, ImportMediaActivity.class);
-        intent.putParcelableArrayListExtra(ImportMediaActivity.MODELS_KEY, models);
+        intent.putParcelableArrayListExtra(ImportMediaActivity.KEY_MODELS, models);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         finish();
