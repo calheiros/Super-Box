@@ -33,10 +33,10 @@ import android.widget.*
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.AdapterView.OnItemLongClickListener
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.biometric.BiometricManager
 import androidx.fragment.app.Fragment
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.jefferson.application.br.LocaleManager
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.CreatePattern
@@ -239,7 +239,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 showDialogStorage()
             }
             ID.SCREENSHOT -> {
-                val mySwitch = view.findViewById<SwitchCompat>(R.id.prefs_switch)
+                val mySwitch = view.findViewById<MaterialSwitch>(R.id.prefs_switch)
                 val checked = !mySwitch.isChecked
                 MyPreferences.setAllowScreenshot(checked, requireContext())
                 val window = requireActivity().window
@@ -258,7 +258,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                 showAbout()
             }
             ID.FINGERPRINT -> {
-                val mySwitch = view.findViewById<SwitchCompat>(R.id.prefs_switch)
+                val mySwitch = view.findViewById<MaterialSwitch>(R.id.prefs_switch)
                 val sharedPrefs = MyPreferences.getSharedPreferences((activity)!!)
                 val checked = !mySwitch.isChecked
                 if (supportFingerprint()) {
@@ -274,7 +274,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     private fun setItemChecked(
-        adapter: SettingAdapter, mySwitch: SwitchCompat, position: Int, checked: Boolean
+        adapter: SettingAdapter, mySwitch: MaterialSwitch, position: Int, checked: Boolean
     ) {
         val item = adapter.getItem(position)
         mySwitch.isChecked = checked

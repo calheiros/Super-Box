@@ -24,7 +24,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.widget.SwitchCompat
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.CalculatorActivity
 import com.jefferson.application.br.activity.MainActivity
@@ -44,7 +44,7 @@ class SettingAdapter(
         .getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
     private var calculatorDescText: TextView? = null
     private var switchCancelled = false
-    private var mySwitch: SwitchCompat? = null
+    private var mySwitch: MaterialSwitch? = null
 
     override fun getCount(): Int {
         return preferenceItems.size
@@ -81,7 +81,7 @@ class SettingAdapter(
             descrLabel.text = prefItem.description
         }
         if (prefItem.type == PreferenceItem.ITEM_SWITCH_TYPE) {
-            val switcher = contentView.findViewById<SwitchCompat>(R.id.prefs_switch)
+            val switcher = contentView.findViewById<MaterialSwitch>(R.id.prefs_switch)
             switcher.isChecked = prefItem.checked
         }
     return contentView

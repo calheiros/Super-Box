@@ -65,41 +65,37 @@ public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position) {
         File tnome = new File(data.get(position));
         //Picasso.with(mContext).load(tnome).centerCrop().fit().into(holder.mImage);
-        holder.mImage.setOnLongClickListener(new OnLongClickListener() {
+        holder.mImage.setOnLongClickListener(v -> {
+            int position1 = holder.getAdapterPosition();
+            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-            @Override
-            public boolean onLongClick(View v) {
-                int position = holder.getAdapterPosition();
-                final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle(R.string.excluir)
+                    .setMessage(R.string.excluir_face_intruder)
+                    .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
 
-                builder.setTitle(R.string.excluir)
-                        .setMessage(R.string.excluir_face_intruder)
-                        .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface p1, int p2) {
+                            if (new File(data.get(position1)).delete()) {
 
-                            @Override
-                            public void onClick(DialogInterface p1, int p2) {
-                                if (new File(data.get(position)).delete()) {
+                                Toast.makeText(context, "Apagado", Toast.LENGTH_LONG).show();
+                                data.remove(position1);
+                                notifyItemRemoved(position1);
+                                notifyItemRangeChanged(position1, data.size());
 
-                                    Toast.makeText(context, "Apagado", Toast.LENGTH_LONG).show();
-                                    data.remove(position);
-                                    notifyItemRemoved(position);
-                                    notifyItemRangeChanged(position, data.size());
-
-                                } else {
-                                    Toast.makeText(context, "Erro desconhecido", Toast.LENGTH_LONG).show();
-                                }
+                            } else {
+                                Toast.makeText(context, "Erro desconhecido", Toast.LENGTH_LONG).show();
                             }
-                        });
-                builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
+                        }
+                    });
+            builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
 
-                    @Override
-                    public void onClick(DialogInterface p1, int p2) {
-                        builder.create().dismiss();
-                    }
-                });
-                builder.create().show();
-                return true;
-            }
+                @Override
+                public void onClick(DialogInterface p1, int p2) {
+                    builder.create().dismiss();
+                }
+            });
+            builder.create().show();
+            return true;
         });
 
         holder.mImage.setOnClickListener(new OnClickListener() {

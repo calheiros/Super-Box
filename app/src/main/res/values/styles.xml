@@ -16,7 +16,7 @@ Copyright (C) 2023 Jefferson Calheiros
  * limitations under the License.
 -->
 <resources>
-    <style name="Theme.Base.Dark" parent="Theme.AppCompat.NoActionBar">
+    <style name="Theme.Base.Dark" parent="Theme.Material3.Dark.NoActionBar">
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorBackgroundDark">@color/colorBackgroundDark</item>
         <item name="colorBackground">@color/colorBackground</item>
@@ -63,11 +63,8 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="android:backgroundDimEnabled">true</item>
     </style>
 
-    <style name="Theme.Base.Light" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="Theme.Base.Light" parent="Theme.Material3.Light.NoActionBar">
         <item name="textShadowColor">#00FFFFFF</item>
-        <item name="colorPrimary">@color/bondiBlue</item>
-        <item name="colorPrimaryDark">@color/bondiBlue</item>
-        <item name="colorAccent">@color/colorAccentLight</item>
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
         <item name="colorBackgroundDark">#FFE9E9EA</item>
@@ -151,7 +148,7 @@ Copyright (C) 2023 Jefferson Calheiros
         <item name="textShadowColor">#00FFFFFF</item>
         <item name="colorPrimary">@color/turquoiseDark</item>
         <item name="colorPrimaryDark">@color/turquoiseDark</item>
-        <item name="colorAccent">@color/colorAccentLight</item>
+        <item name="colorAccent">@color/darkOrange</item>
         <item name="colorBackgroundLight">#f0f0f0</item>item>
         <item name="colorBackground">#FAFAFA</item>
         <item name="colorBackgroundDark">#FFE9E9EA</item>

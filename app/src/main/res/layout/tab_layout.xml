@@ -21,6 +21,7 @@ Copyright (C) 2023 Jefferson Calheiros
     android:id="@+id/tab_layout"
 	android:layout_width="match_parent"
 	android:layout_height="wrap_content"
+	android:background="?colorPrimary"
 	app:tabTextAppearance="@style/CustomTextAppearanceTab"
 	app:tabIndicatorColor="?colorAccent"
 	app:tabTextColor="@android:color/white"/>

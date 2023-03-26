@@ -60,15 +60,15 @@ Copyright (C) 2023 Jefferson Calheiros
 
         </LinearLayout>
 
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/prefs_switch"
             android:layout_width="wrap_content"
             android:layout_height="22dp"
             android:layout_margin="7dp"
             android:clickable="false"
             android:focusable="false"
-            android:thumb="@drawable/switch_thumb"
-            app:track="@drawable/switch_track_selector" />
+            app:thumbTint="@drawable/switch_thumb_selector"
+            app:trackTint="@drawable/switch_track_selector" />
 
     </LinearLayout>
 </LinearLayout>

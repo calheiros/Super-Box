@@ -27,7 +27,7 @@ Copyright (C) 2023 Jefferson Calheiros
         android:height="24dp" />
     
     <solid
-        android:color="#4cd964" />
+        android:color="?colorAccent" />
 
     <!--stroke
     android:width="2dp"

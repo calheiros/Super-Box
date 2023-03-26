@@ -17,7 +17,7 @@ Copyright (C) 2023 Jefferson Calheiros
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     
-    <item android:drawable="@drawable/switch_track_off" android:state_checked="false"/>
-    <item android:drawable="@drawable/switch_track_on" android:state_checked="true"/>
+    <item android:color="?commonColorDark" android:state_checked="false"/>
+    <item android:color="?colorAccent" android:state_checked="true"/>
         
 </selector>

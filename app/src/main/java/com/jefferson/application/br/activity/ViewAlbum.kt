@@ -21,6 +21,7 @@ import android.animation.AnimatorListenerAdapter
 
 import android.os.Bundle
 import android.transition.ArcMotion
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewAnimationUtils
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
@@ -111,7 +112,11 @@ class ViewAlbum : MyCompatActivity() {
         circularReveal.start()
     }
 
-   fun unRevealActivity() {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+       invokeBackPressed()
+        return super.onOptionsItemSelected(item)
+    }
+    private fun unRevealActivity() {
         if (revealX == 0 && revealY == 0) {
             finish()
         } else {
@@ -130,18 +135,23 @@ class ViewAlbum : MyCompatActivity() {
             circularReveal.start()
         }
     }
+
+    private fun invokeBackPressed() {
+        if (supportFragmentManager.backStackEntryCount != 0) {
+            supportFragmentManager.popBackStack()
+            return
+        }
+        if (albumFragment.onBackPressed()) {
+            unRevealActivity()
+        }
+    }
+
     private fun addBackPressedListener() {
         onBackPressedDispatcher.addCallback(
             this, object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    if (supportFragmentManager.backStackEntryCount != 0) {
-                        supportFragmentManager.popBackStack()
-                        return
-                    }
-                    if (albumFragment.onBackPressed()) {
-                        unRevealActivity()
-                    }
-                }
+                   invokeBackPressed()
+            }
             })
     }
 
