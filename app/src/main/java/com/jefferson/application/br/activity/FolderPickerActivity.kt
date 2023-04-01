@@ -26,7 +26,6 @@ import android.view.animation.AnimationUtils
 import android.view.animation.DecelerateInterpolator
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
-import android.widget.EditText
 import android.widget.ListView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
@@ -54,7 +53,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
     private lateinit var fab: FloatingActionButton
 
     inner class MoveFilesTask(str: String) : JTask() {
-        override fun onException(e: Exception) {
+        override fun onException(e: Exception?) {
             Toast.makeText(this@FolderPickerActivity, "Error!", Toast.LENGTH_SHORT).show()
         }
 
@@ -74,8 +73,8 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
             dialog?.show()
         }
 
-        override fun onUpdated(objArr: Array<Any>) {
-            dialog?.setProgress((objArr[0] as Int))
+        override fun onUpdated(objArr:  Array<out Any>?) {
+            dialog?.setProgress((objArr?.get(0) as Int))
         }
 
         override fun onFinished() {
@@ -93,7 +92,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
                 if (file.renameTo(newFile)) {
                     movedArray.add(str)
                 }
-                sendUpdate(dialog!!.getProgress() + 1)
+                postUpdate(dialog!!.getProgress() + 1)
             }
         }
     }
@@ -151,15 +150,12 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
 
     @SuppressLint("InflateParams")
     private fun createFolder() {
-        val contentView = layoutInflater.inflate(R.layout.dialog_edit_text, null)
-        val editText = contentView.findViewById<EditText>(R.id.editTextInput)
         val dialog = SimpleDialog(this, SimpleDialog.STYLE_INPUT)
-        dialog.setContentView(contentView)
         dialog.setTitle(getString(R.string.criar_pasta))
         dialog.setNegativeButton(getString(android.R.string.cancel), null)
         dialog.setPositiveButton(getString(android.R.string.ok), object : OnDialogClickListener() {
             override fun onClick(dialog: SimpleDialog): Boolean {
-                val name = editText.text.toString()
+                val name = dialog.getInputText()
                 val result = AlbumUtils.validateName(name, this@FolderPickerActivity)
                 if (!result.ok) {
                     Toast.makeText(this@FolderPickerActivity, result.message, Toast.LENGTH_SHORT)

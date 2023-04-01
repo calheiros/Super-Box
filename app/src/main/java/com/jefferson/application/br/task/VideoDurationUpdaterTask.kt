@@ -18,7 +18,7 @@ class VideoDurationUpdaterTask(
             if (isCancelled) break
             val duration = getVideoDuration(File(item.path!!), database)
             val time = StringUtils.getFormattedVideoDuration(duration.toString())
-            sendUpdate(item.path!!, time)
+            postUpdate(item.path!!, time)
         }
     }
 

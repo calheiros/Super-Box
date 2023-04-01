@@ -26,12 +26,12 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.jefferson.application.br.R
-import com.jefferson.application.br.activity.ImportGalleryActivity
+import com.jefferson.application.br.activity.GalleryImportActivity
 import com.jefferson.application.br.activity.SelectionActivity
 import com.jefferson.application.br.model.AlbumModel
 
 class PhotosFolderAdapter(
-    private val galleryAlbum: ImportGalleryActivity,
+    private val galleryAlbum: GalleryImportActivity,
     private var items: ArrayList<AlbumModel>,
     private val option: Int
 ) : ArrayAdapter<AlbumModel>(

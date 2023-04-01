@@ -16,6 +16,7 @@
 */
 package com.jefferson.application.br.activity
 
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.*
 import android.text.Html
@@ -45,8 +46,7 @@ import com.jefferson.application.br.view.CircularProgressView
 import java.util.*
 
 
-class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStartedListener,
-    OnFinishedListener, OnClickListener {
+class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStartedListener, OnClickListener {
     private lateinit var parent: FrameLayout
     private lateinit var prepareTextView: TextView
     private lateinit var progressView: CircularProgressView
@@ -80,11 +80,13 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         else mainActivity.squareAdView
         removeParent(adview)
         parent = findViewById(R.id.ad_view_layout)
-        parent.addView(adview)
-        startImportTask()
+        if (adview != null)
+            parent.addView(adview)
+        initImportTask()
+        addBackPressedCallback()
     }
 
-    private fun startImportTask() {
+    private fun initImportTask() {
         @Suppress("DEPRECATION")
         val files = intent.getParcelableArrayListExtra<FileModel>(KEY_MODELS)
         if (files != null) {
@@ -110,30 +112,34 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                 )
             }
             builderTask?.setOnUpdatedListener(this)
-            builderTask?.setOnFinishedListener { startImportTask(builderTask!!.data) }
+            builderTask?.setOnFinishedListener {
+                startImportTask(builderTask!!.data)
+            }
             builderTask?.start()
             prepareTitleView.text = getString(R.string.checando_arquivos)
         }
     }
 
     private fun startImportTask(data: ArrayList<FileModel>) {
-        importTask = ImportTask(this, data, null)
+        importTask = ImportTask(this, data)
         importTask?.setOnUpdatedListener(this)
         importTask?.setOnStartedListener(this)
-        importTask?.setOnFinishedListener(this)
+        importTask?.setOnFinishedListener {
+            onFinished()
+        }
         importTask?.start()
     }
 
     private val isTasksRunning: Boolean
-        get() = builderTask?.status == Status.STARTED && importTask?.status == Status.STARTED
-
+        get() = builderTask?.status == Status.STARTED || importTask?.status == Status.STARTED
+        
     override fun onBeingStarted() {
         prepareTitleView.text = getString(R.string.transferido)
         animateText = AnimateProgressText(titleTextView, importTask!!)
         animateText?.start()
     }
 
-    override fun onFinished() {
+    fun onFinished() {
         animateText?.cancel()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val res = resources
@@ -154,46 +160,51 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         messageTextView.text = msg
         messageTextView.maxLines = 5
         messageTextView.ellipsize = TextUtils.TruncateAt.END
-        button.setTextColor(getAttrColor(R.attr.colorAccent))
+        button.backgroundTintList = ColorStateList.valueOf(getAttrColor(R.attr.colorAccent))
         button.text = getString(android.R.string.ok)
         button.setOnClickListener(this)
-        addBackPressedCallback()
+
     }
 
     private fun addBackPressedCallback() {
         onBackPressedDispatcher.addCallback(object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (isTasksRunning) {
+                if (!isTasksRunning) {
                     setResult(RESULT_OK)
                     finish()
-                } else {
-                    if (allowCancel) {
-                        interruptTask()
-                        setResult(RESULT_OK)
-                        finish()
-                    } else {
-                        allowCancel = true
-                        Snackbar.make(
-                            messageTextView,
-                            "Press back button again to cancel!",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                        Handler(Looper.getMainLooper()).postDelayed({ allowCancel = false }, 2000)
-                    }
+                    return
                 }
+
+                if (allowCancel) {
+                    interruptTask()
+                    setResult(RESULT_OK)
+                    finish()
+                    return
+                }
+
+                allowCancel = true
+                Snackbar.make(
+                    messageTextView,
+                    "Press back button again to cancel!",
+                    Snackbar.LENGTH_SHORT
+                ).show()
+                Handler(Looper.getMainLooper()).postDelayed({ allowCancel = false }, 2000)
+
             }
         })
     }
 
     override fun onClick(v: View?) {
-        if (!isTasksRunning) {
+        if (isTasksRunning) {
             interruptTask()
         }
         setResult(RESULT_OK)
         finish()
     }
 
-    override fun onUpdated(values: Array<Any>) {
+
+    override fun onUpdated(values: Array<Any>?) {
+        values ?: return
         when (values[0] as Int) {
             1 -> {
                 val format = resources.getQuantityString(
@@ -293,7 +304,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
 
         override fun run() {
             super.run()
-            while (task.getStatus() == Status.STARTED) {
+            while (task.status == Status.STARTED) {
                 try {
                     sleep(500)
                 } catch (e: InterruptedException) {
@@ -313,7 +324,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         const val KEY_MODELS = "models_key"
 
         fun removeParent(v: View?) {
-            val parent = v!!.parent
+            val parent = v?.parent
             if (parent is ViewGroup) {
                 parent.removeView(v) // w  w w .j  a  va  2  s.co m
             }

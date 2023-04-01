@@ -149,7 +149,7 @@ Copyright (C) 2023 Jefferson Calheiros
                 android:textSize="18sp" />
         </LinearLayout>
 
-        <include layout="@layout/options_album_layout" />
+        <include layout="@layout/layout_options_album" />
 
     </RelativeLayout>
 

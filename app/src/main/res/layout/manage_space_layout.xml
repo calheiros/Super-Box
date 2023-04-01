@@ -108,6 +108,6 @@ Copyright (C) 2023 Jefferson Calheiros
     </LinearLayout>
 	<include
         android:id="@+id/pattern_view"
-		layout="@layout/pattern"/>
+		layout="@layout/activiyt_pattern"/>
 
 </FrameLayout>

@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright (C) 2023 Jefferson Calheiros
 
 
@@ -15,111 +14,118 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="?colorBackground"
-	android:orientation="vertical"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
-	android:paddingTop="48dp"
-    android:paddingRight="20dp"
-    android:paddingLeft="20dp"
-	android:gravity="center_horizontal">
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-	<com.jefferson.application.br.view.CircularProgressView
-		android:layout_height="180dp"
-		android:layout_width="180dp"
-        android:layout_centerHorizontal="true"
-		android:id="@+id/circle_progress_view"
-		android:layout_marginBottom="10dp"/>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?colorBackground"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingLeft="20dp"
+        android:paddingTop="48dp"
+        android:paddingRight="20dp">
 
-	<RelativeLayout
-        android:layout_below="@+id/circle_progress_view"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-        android:id="@+id/import_media_layoutRelativeLayout">
+        <com.jefferson.application.br.view.CircularProgressView
+            android:id="@+id/circle_progress_view"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="30dp" />
 
-        <TextView
-            android:layout_below="@+id/import_media_message_text_view"
+        <RelativeLayout
+            android:id="@+id/import_media_layoutRelativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:textSize="20sp"
-            android:layout_marginTop="8dp"
-            android:textColor="?commonColorLight"
-            android:textStyle="bold"
-            android:id="@+id/import_media_title_preparation_text_view"/>
+            android:layout_below="@+id/circle_progress_view"
+            android:padding="10dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp">
 
-        <TextView
-            android:layout_below="@+id/import_media_title_preparation_text_view"
+            <TextView
+                android:id="@+id/import_media_title_preparation_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/import_media_message_text_view"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="?commonColorLight"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/import_media_prepare_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/import_media_title_preparation_text_view"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:textColor="?commonColor"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/import_media_title_move_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="Moving"
+                android:textColor="?commonColorLight"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/import_media_message_text_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/import_media_title_move_text_view"
+                android:layout_marginTop="4dp"
+                android:ellipsize="middle"
+                android:gravity="center"
+                android:singleLine="true"
+                android:textColor="?commonColor"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <FrameLayout
+            android:layout_below="@+id/import_media_layoutRelativeLayout"
+            android:id="@+id/ad_view_layout"
             android:layout_width="match_parent"
-            android:gravity="center"
-            android:layout_marginTop="4dp"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="?commonColor"
-            android:id="@+id/import_media_prepare_text_view"/>
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="34dp"
+            android:gravity="center" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Moving"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:layout_marginTop="12dp"
-            android:textColor="?commonColorLight"
-            android:textStyle="bold"
-            android:id="@+id/import_media_title_move_text_view"/>
-
-        <TextView
-            android:layout_below="@+id/import_media_title_move_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="4dp"
-			android:ellipsize="middle"
-            android:textSize="16sp"
-            android:textColor="?commonColor"
-            android:id="@+id/import_media_message_text_view"
-			android:singleLine="true" />
-
-    </RelativeLayout>
-    
-    <FrameLayout
+        <!--<com.google.android.gms.ads.AdView
         android:layout_below="@+id/import_media_layoutRelativeLayout"
         android:layout_marginTop="20dp"
         android:layout_centerHorizontal="true"
-        android:id="@+id/ad_view_layout"
+        android:id="@+id/ad_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:layout_marginBottom="34dp"/>
+        app:adSize="LARGE_BANNER"
+        android:layout_marginBottom="34dp"
+        app:adUnitId="ca-app-pub-3062666120925607/7395488498"/>
+        -->
+        <Button
+            android:id="@+id/import_media_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/red"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@android:string/cancel"
+            android:textColor="@color/white" />
 
-    <!--<com.google.android.gms.ads.AdView
-    android:layout_below="@+id/import_media_layoutRelativeLayout"
-    android:layout_marginTop="20dp"
-    android:layout_centerHorizontal="true"
-    android:id="@+id/ad_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    app:adSize="LARGE_BANNER"
-    android:layout_marginBottom="34dp"
-    app:adUnitId="ca-app-pub-3062666120925607/7395488498"/>
-    -->   
-    <Button
-        style="?android:attr/borderlessButtonStyle"
-        android:background="@drawable/bg_rounded_transparent_button"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:layout_marginBottom="10dp"
-        android:layout_centerHorizontal="true"
-        android:layout_alignParentBottom="true"
-        android:textColor="@color/red"
-        android:id="@+id/import_media_button"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@android:string/cancel"/>
+    </RelativeLayout>
 
-</RelativeLayout>
-
+</androidx.core.widget.NestedScrollView>

@@ -20,7 +20,6 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -29,7 +28,6 @@ import android.view.WindowManager
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
@@ -64,7 +62,7 @@ class VerifyActivity : MyCompatActivity() {
             return
         }
         setNavigationAndStatusBarTransparent()
-        setContentView(R.layout.pattern)
+        setContentView(R.layout.activiyt_pattern)
         setWallpaper()
         val sharedPrefs = MyPreferences.getSharedPreferences(this)
         if (sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false)) openBiometricPrompt()

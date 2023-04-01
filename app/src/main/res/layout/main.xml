@@ -15,8 +15,10 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
+
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:gravity="top|center"
@@ -32,29 +34,30 @@ Copyright (C) 2023 Jefferson Calheiros
 			android:id="@+id/textLabel"
 			android:text="Your password"/>
 
-	<RelativeLayout
-		android:layout_marginTop="30dp"
-		android:gravity="center"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:layout_marginBottom="20dip">
+
 	<EditText
-		android:inputType="textPassword"
-		android:layout_height="wrap_content"
-		android:layout_width="wrap_content"
-		android:ems="10"
 		android:id="@+id/passwordInput"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
 		android:layout_gravity="center"
-		android:singleLine="true"
-		android:autofillHints="password" />
+		android:layout_marginStart="30dp"
+		android:layout_marginTop="30dp"
+		android:layout_marginEnd="30dp"
+		android:layout_marginBottom="20dip"
+		android:autofillHints="password"
+		android:ems="10"
+		android:hint="@string/password"
+		android:inputType="textPassword"
+		android:maxWidth="400dp"
+		android:minWidth="300dp"
+		android:singleLine="true" />
 
 	<Button
-		android:layout_toRightOf="@id/passwordInput"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:backgroundTint="?colorAccent"
-		android:text="enter"
+		android:text="@string/enter"
 		android:textColor="@android:color/white" />
-	</RelativeLayout>
+
 </LinearLayout>
 

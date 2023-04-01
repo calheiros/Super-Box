@@ -39,7 +39,7 @@ Copyright (C) 2023 Jefferson Calheiros
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Draw over Apps"
-            android:textColor="?commonColorDark"
+            android:textColor="?commonColor"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -63,7 +63,7 @@ Copyright (C) 2023 Jefferson Calheiros
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="Accessibility Service"
-            android:textColor="?commonColorDark"
+            android:textColor="?commonColor"
             android:textSize="18sp"
             android:textStyle="bold" />
 

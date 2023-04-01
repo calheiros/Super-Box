@@ -66,7 +66,13 @@ Copyright (C) 2023 Jefferson Calheiros
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:layout_centerHorizontal="true"
-        android:background="#50000000">
+        android:background="@android:color/transparent">
+
+        <View
+            android:alpha="0.2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?colorAccent"/>
 
         <TextView
             android:id="@+id/selected_item_count_label"
@@ -81,13 +87,14 @@ Copyright (C) 2023 Jefferson Calheiros
             android:includeFontPadding="false"
             android:textColor="@color/white"
             android:gravity="center"
+            android:textStyle="bold"
             android:text="0"
             android:shadowColor="#4D000000"
             android:shadowDx="0"
             android:shadowDy="0"
             android:shadowRadius="4"
             android:textSize="14sp"
-            android:background="@drawable/bg_checked_item"
+            android:background="@drawable/bg_checked_item_count"
             tools:ignore="ContentDescription" />
     </FrameLayout>
 </RelativeLayout>

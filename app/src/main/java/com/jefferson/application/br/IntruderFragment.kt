@@ -28,7 +28,7 @@ class IntruderFragment : AppCompatActivity() {
     var adapter: IntruderAdapter? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.intruder_main)
+        setContentView(R.layout.fragment_intruder)
         initToolbar()
         val elements = getElements()
         if (elements.isEmpty()) {

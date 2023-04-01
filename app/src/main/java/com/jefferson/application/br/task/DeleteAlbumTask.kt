@@ -62,7 +62,7 @@ open class DeleteAlbumTask(
                 if (database.getMediaPath(file.name).also { name = it } != null) {
                     database.deleteMediaData(file.name)
                 }
-                sendUpdate(path, name)
+                postUpdate(path, name)
             }
         }
         database.close()
@@ -93,11 +93,11 @@ open class DeleteAlbumTask(
         listener?.onFinished()
     }
 
-    override fun setOnFinishedListener(listener: OnFinishedListener) {
+    fun setOnFinishedListener(listener: OnFinishedListener) {
         this.listener = listener
     }
 
-    override fun onException(e: Exception) {
+    override fun onException(e: Exception?) {
         Toast.makeText(activity, "Error", Toast.LENGTH_SHORT).show()
     }
 
@@ -107,10 +107,10 @@ open class DeleteAlbumTask(
             .show()
     }
 
-    override fun onUpdated(get: Array<Any>) {
-        super.onUpdated(get)
+    override fun onUpdated(args: Array<out Any>?) {
+        super.onUpdated(args)
         dialog.setProgress(progress)
-        dialog.setMessage((get[1] as String))
+        dialog.setMessage((args?.get(1) as String))
     }
 
     private fun deleteFolder(file: File) {

@@ -46,7 +46,7 @@ import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.util.FileUtils
 import com.jefferson.application.br.util.StringUtils
 
-class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
+class GalleryImportActivity : MyCompatActivity(), OnRefreshListener {
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var myGridView: GridView
     private lateinit var context: Context
@@ -54,10 +54,11 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
     private var position = 0
     private var title: String? = null
     private var retrieveMediaTask: RetrieveMediaTask? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         context = this
-        setContentView(R.layout.import_gallery)
+        setContentView(R.layout.activity_import_gallery)
         myGridView = findViewById(R.id.gv_folder)
         position = intent.extras!!.getInt("position")
         swipeRefreshLayout = findViewById(R.id.swipe_refresh)
@@ -109,7 +110,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
     }
 
     override fun onRefresh() {
-        if (retrieveMediaTask!!.getStatus() == JTask.Status.FINISHED) {
+        if (retrieveMediaTask!!.status == JTask.Status.FINISHED) {
             objAdapter?.clear()
             retrieveMediaTask = RetrieveMediaTask()
             retrieveMediaTask?.start()
@@ -219,7 +220,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
                 }
                 absolutePathOfImage = cursor.getString(columnIndexData)
                 val folderName = cursor.getString(columnIndexFolderName)
-                val folderPosition = getFolderIndex(galleryItems, folderName)
+                val folderPosition = getAlbumIndexByName(galleryItems, folderName)
                 if (folderPosition == -1) {
                     val model = AlbumModel()
                     val mm = MediaModel(absolutePathOfImage)
@@ -243,7 +244,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
             return galleryItems
         }
 
-    private fun getFolderIndex(list: ArrayList<AlbumModel>, name: String?): Int {
+    private fun getAlbumIndexByName(list: ArrayList<AlbumModel>, name: String?): Int {
         @Suppress("NAME_SHADOWING")
         val name: String = name ?: AlbumModel.NO_ALBUM_NAME
         for (i in list.indices) {
@@ -256,7 +257,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
     private fun setAdapter(list: ArrayList<AlbumModel>) {
         val emptyLayout = findViewById<View>(R.id.gallery_album_empty_layout)
         emptyLayout.visibility = if (list.isEmpty()) View.VISIBLE else View.GONE
-        objAdapter = PhotosFolderAdapter(this@ImportGalleryActivity, list, position)
+        objAdapter = PhotosFolderAdapter(this@GalleryImportActivity, list, position)
         myGridView.adapter = objAdapter
     }
 
@@ -281,7 +282,7 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
                     galleryItems
                 } else {
                     Toast.makeText(
-                        this@ImportGalleryActivity,
+                        this@GalleryImportActivity,
                         "The app was not allowed to read or write to your storage. Hence, it" +
                                 " cannot function properly. Please consider granting it this permission",
                         Toast.LENGTH_LONG
@@ -314,8 +315,8 @@ class ImportGalleryActivity : MyCompatActivity(), OnRefreshListener {
             swipeRefreshLayout.isRefreshing = false
         }
 
-        override fun onException(e: Exception) {
-            Toast.makeText(context, e.message, Toast.LENGTH_LONG).show()
+        override fun onException(e: Exception?) {
+            Toast.makeText(context, e?.message, Toast.LENGTH_LONG).show()
             progressBar.visibility = View.GONE
         }
     }

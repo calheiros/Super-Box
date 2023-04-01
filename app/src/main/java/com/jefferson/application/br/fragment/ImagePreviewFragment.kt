@@ -16,7 +16,6 @@
  */
 package com.jefferson.application.br.fragment
 
-import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,13 +23,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.davemorrissey.labs.subscaleview.ImageSource
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView.OnImageEventListener
-import com.google.android.gms.common.internal.Objects.ToStringHelper
 import com.jefferson.application.br.R
 import com.jefferson.application.br.database.AlbumDatabase.Companion.getInstance
 import com.jefferson.application.br.switcher.ViewVisibilitySwitch
@@ -51,7 +48,7 @@ class ImagePreviewFragment(
         savedInstanceState: Bundle?
     ): View? {
         if (parentView == null) {
-            parentView = inflater.inflate(R.layout.image_preview_layout, container, false)
+            parentView = inflater.inflate(R.layout.fragment_image_preview, container, false)
             imageView = parentView!!.findViewById(R.id.gif_view)
             val scaleImageView = parentView!!.findViewById<SubsamplingScaleImageView>(R.id.imageView)
             val database = getInstance(

@@ -76,7 +76,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     ): View? {
         if (rootView == null) {
             rootView =
-                inflater.inflate(R.layout.settings_fragment_layout, container, false) as ViewGroup
+                inflater.inflate(R.layout.fragment_settings, container, false) as ViewGroup
             val toolbar = rootView?.findViewById<Toolbar>(R.id.toolbar)
             storages = arrayOf(getString(R.string.armaz_interno), getString(R.string.armaz_externo))
             (requireActivity() as MainActivity).setupToolbar(
@@ -163,6 +163,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                         item.type = PreferenceItem.SECTION_TYPE
                     }
                     8 -> {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) continue
                         val sharedPrefs = MyPreferences.getSharedPreferences((activity)!!)
                         val checked = sharedPrefs.getBoolean(MyPreferences.KEY_FINGERPRINT, false)
                         item.id = ID.FINGERPRINT
@@ -533,7 +534,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     }
 
     private fun showWarning() {
-        val view = requireActivity().layoutInflater.inflate(R.layout.dialog_check_box_view, null)
+        val view = requireActivity().layoutInflater.inflate(R.layout.dialog_check_box, null)
         val mCheckBox = view.findViewById<CheckBox>(R.id.dialogcheckbox)
         AlertDialog.Builder(requireActivity()).setTitle(getString(R.string.information)).setIcon(
             R.drawable.ic_information

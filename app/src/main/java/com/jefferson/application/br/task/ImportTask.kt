@@ -28,7 +28,7 @@ import com.jefferson.application.br.util.StringUtils
 import java.io.*
 
 class ImportTask(
-    private val activity: Activity, models: ArrayList<FileModel>, private val listener: Listener?
+    private val activity: Activity, models: ArrayList<FileModel>
 ) : JTask() {
     private val importedFilesPath = ArrayList<String>()
     private val maxProgress: Int
@@ -49,16 +49,16 @@ class ImportTask(
         mTransfer = FileTransfer()
     }
 
-    override fun onException(e: Exception) {
+    override fun onException(e: Exception?) {
         error = e
         failuresCount = 1
         revokeFinish(false)
-        errorMessage.append(e.message)
-        e.printStackTrace()
+        errorMessage.append(e?.message)
+        e?.printStackTrace()
     }
 
     override fun onStarted() {
-        listener?.onBeingStarted()
+
     }
 
     fun error(): Exception? {
@@ -72,7 +72,7 @@ class ImportTask(
 
     override fun onFinished() {
         refreshMediaStore()
-        listener?.onFinished()
+
     }
 
     private fun refreshMediaStore() {
@@ -80,12 +80,12 @@ class ImportTask(
     }
 
     public override fun onInterrupted() {
-        listener?.onInterrupted()
+
         Toast.makeText(activity, activity.getString(R.string.canceledo_usuario), Toast.LENGTH_SHORT)
             .show()
     }
 
-    public override fun onUpdated(values: Array<Any>) {}
+    public override fun onUpdated(args: Array<out Any>?) {}
     override fun workingThread() {
         var max = 0.0
         val database: AlbumDatabase = getInstance(
@@ -103,11 +103,11 @@ class ImportTask(
             )
         )
         if (target.freeSpace < max) {
-            sendUpdate(-2, activity.getString(R.string.sem_espaco_aviso))
+            postUpdate(-2, activity.getString(R.string.sem_espaco_aviso))
             waitForResponse()
         }
         max /= 1024.0
-        sendUpdate(PROGRESS_UPDATE, null, null, max)
+        postUpdate(PROGRESS_UPDATE, null, null, max)
         watchTransfer = WatchTransference(this, mTransfer)
         watchTransfer?.start()
         for (i in models.indices) {
@@ -125,7 +125,7 @@ class ImportTask(
                 )
                 continue
             }
-            sendUpdate(PROGRESS_UPDATE, file.name, null, null)
+            postUpdate(PROGRESS_UPDATE, file.name, null, null)
             val albumName = file.parentFile?.name ?: ""
             val mediaFileName = StringUtils.getRandomString(24)
             var albumFileName = StringUtils.getRandomString(24)
@@ -180,7 +180,7 @@ class ImportTask(
                     }
                 }
             }
-            sendUpdate(PREPARATION_UPDATE, i + 1 - failuresCount, models.size)
+            postUpdate(PREPARATION_UPDATE, i + 1 - failuresCount, models.size)
         }
         database.close()
     }
@@ -201,13 +201,6 @@ class ImportTask(
         isWaiting = false
     }
 
-    interface Listener {
-        fun onBeingStarted()
-        fun onUserInteraction()
-        fun onInterrupted()
-        fun onFinished()
-    }
-
     private inner class WatchTransference(
         private val task: JTask, private val transfer: FileTransfer
     ) : Thread() {
@@ -218,7 +211,7 @@ class ImportTask(
                     sleep(50)
                 } catch (_: InterruptedException) {
                 }
-                task.sendUpdate(PROGRESS_UPDATE, null, transfer.transferredKilobytes, null)
+                postUpdate(PROGRESS_UPDATE, null, transfer.transferredKilobytes, null)
             }
         }
     }

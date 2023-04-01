@@ -89,7 +89,7 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
         }
 
         layout.isFocusable = true
-        return LayoutInflater.from(context).inflate(R.layout.pattern, layout)
+        return LayoutInflater.from(context).inflate(R.layout.activiyt_pattern, layout)
     }
 
     private fun startDefaultLauncher(): Boolean {

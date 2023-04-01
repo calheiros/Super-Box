@@ -28,7 +28,7 @@ Copyright (C) 2023 Jefferson Calheiros
 		android:orientation="vertical">
 
 		<include
-			layout="@layout/toolbar"/>
+			layout="@layout/layout_toolbar"/>
 
 	</com.google.android.material.appbar.AppBarLayout>
 

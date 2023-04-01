@@ -116,7 +116,7 @@ public class ReceiverMedia extends Activity {
             int index = 0;
 
             for (Uri uri : mediaUris) {
-                sendUpdate(++index);
+                postUpdate(++index);
                 String path = null;
                 try {
                     path = Storage.getPath(uri, activity);

@@ -79,7 +79,7 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (view == null) {
-            view = inflater.inflate(R.layout.main_gallery, container, false)
+            view = inflater.inflate(R.layout.fragment_album, container, false)
             progressBar = view?.findViewById(R.id.main_galery_progressBar)
             recyclerView = view?.findViewById(R.id.recyclerView)
             emptyView = view?.findViewById(R.id.empty_linearLayout)
@@ -100,12 +100,8 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     }
 
     fun onItemsChanged(itemCount: Int) {
-
-        if (itemCount == 0) {
-            emptyView?.visibility = View.VISIBLE
-        } else {
-            emptyView?.visibility = View.GONE
-        }
+        emptyView?.visibility = if (itemCount == 0)
+            View.VISIBLE else View.GONE
     }
 
     fun openAlbum(model: SimpleAlbumModel, view: View?) {
@@ -317,19 +313,23 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
                     filesPath.add(file.absolutePath)
                 }
                 val task = DeleteAlbumTask(requireActivity(), filesPath, pagerPosition, root)
-                task.setOnFinishedListener {
-                    if (task.deletedAll()) {
-                        albumAdapter?.removeItem(model)
-                    } else {
-                        (requireActivity() as MainActivity).updateFragment(pagerPosition)
-                    }
-                }
+                task.setOnFinishedListener(OnDeleteFinish(task, model))
                 task.start()
                 return true
             }
         })
         simpleDialog.setNegativeButton(getString(R.string.nao), null)
         simpleDialog.show()
+    }
+    inner class OnDeleteFinish(val task: DeleteAlbumTask, var model: SimpleAlbumModel) :
+        JTask.OnFinishedListener {
+        override fun onFinished() {
+            if (task.deletedAll()) {
+                albumAdapter?.removeItem(model)
+            } else {
+                (requireActivity() as MainActivity).updateFragment(pagerPosition)
+            }
+        }
     }
 
     fun update() {
@@ -351,7 +351,7 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     }
 
     fun reload() {
-        if (retrieveMedia != null && retrieveMedia?.getStatus() == JTask.Status.STARTED)
+        if (retrieveMedia != null && retrieveMedia?.status == JTask.Status.STARTED)
             retrieveMedia?.cancelTask()
         populateRecyclerView()
     }
@@ -364,7 +364,7 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     }
 
     val isLoading: Boolean
-        get() = retrieveMedia?.getStatus() == JTask.Status.STARTED
+        get() = retrieveMedia?.status == JTask.Status.STARTED
 
     val simplifiedModels: ArrayList<SimpleAlbumModel>
         get() {

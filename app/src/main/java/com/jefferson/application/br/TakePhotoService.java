@@ -31,7 +31,6 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.hardware.Camera;
 import android.hardware.Camera.Parameters;
-import android.hardware.camera2.CameraManager;
 import android.os.Environment;
 import android.os.IBinder;
 import android.view.LayoutInflater;
@@ -129,7 +128,7 @@ public class TakePhotoService extends Service implements SurfaceHolder.Callback 
 
         wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
         vi = LayoutInflater.from(this)
-                .inflate(R.layout.pre_view, null);
+                .inflate(R.layout.camera_surface, null);
 
         sv = vi.findViewById(R.id.surfaceView);
         sHolder = sv.getHolder();

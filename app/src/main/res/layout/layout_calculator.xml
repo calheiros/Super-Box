@@ -16,14 +16,14 @@ Copyright (C) 2023 Jefferson Calheiros
  * limitations under the License.
 -->
 <LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
 	android:layout_width="match_parent"
     android:gravity="center_horizontal|bottom"
     android:padding="5pt"
-    tools:ignore="UsingOnClickInXml"
-	android:layout_height="match_parent">
+    tools:ignore="UsingOnClickInXml,HardcodedText"
+    android:layout_height="match_parent">
     
     <TextView
         android:layout_height="wrap_content"
@@ -51,7 +51,10 @@ Copyright (C) 2023 Jefferson Calheiros
             android:textSize="22pt"
             android:ems="200"
             android:digits="1234567890+×÷-.,()"
-            android:background="@android:color/transparent"/>
+            android:background="@android:color/transparent"
+            android:autofillHints=""
+            android:inputType="text"
+            tools:ignore="LabelFor" />
     </LinearLayout>
     
     <TableLayout
@@ -354,7 +357,8 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:id="@+id/calculator_three"
                     android:includeFontPadding="false"
                     android:focusable="true"
-                    android:textSize="18pt"/>
+                    android:textSize="18pt"
+                    />
             </LinearLayout>
 
             <LinearLayout
@@ -433,7 +437,8 @@ Copyright (C) 2023 Jefferson Calheiros
                     android:gravity="center"
                     android:id="@+id/calculator_backspaceButton"
                     android:layout_height="38pt"
-                    android:layout_width="38pt"/>
+                    android:layout_width="38pt"
+                    android:contentDescription="TODO" />
             </LinearLayout>
 
             <LinearLayout

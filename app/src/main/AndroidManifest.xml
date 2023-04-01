@@ -253,7 +253,7 @@ Copyright (C) 2023 Jefferson Calheiros
             android:theme="@style/MainTheme" />
 
         <activity
-            android:name=".activity.ImportGalleryActivity"
+            android:name=".activity.GalleryImportActivity"
             android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
             android:label="Galeria"

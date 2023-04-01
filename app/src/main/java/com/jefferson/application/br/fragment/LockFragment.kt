@@ -36,7 +36,6 @@ import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.google.android.material.transition.platform.MaterialSharedAxis
 import com.jefferson.application.br.App
 import com.jefferson.application.br.CodeManager
 import com.jefferson.application.br.R
@@ -82,7 +81,7 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         if (parentView == null) {
-            parentView = inflater.inflate(R.layout.list_view_app, container, false) as View
+            parentView = inflater.inflate(R.layout.fragment_app_lock, container, false) as View
             progressBar = parentView!!.findViewById(R.id.progressApps)
             loadingLabel = parentView!!.findViewById(R.id.porcent)
             listView = parentView!!.findViewById(R.id.appList)
@@ -116,13 +115,13 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
                     this@LockFragment.totalItemCount = totalItemCount
                 }
             })
-            if (loadApplicationsTask?.getStatus() == JTask.Status.FINISHED)
+            if (loadApplicationsTask?.status == JTask.Status.FINISHED)
                 onPackagesLoaded() else showProgressView()
 
             intent = Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS)
             listView?.onItemClickListener = this
             swipeRefreshLayout?.setOnRefreshListener {
-                if (loadApplicationsTask?.getStatus() == JTask.Status.STARTED) {
+                if (loadApplicationsTask?.status == JTask.Status.STARTED) {
                     swipeRefreshLayout?.isRefreshing = false
                 } else {
                     adapter?.clear()
@@ -294,7 +293,7 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
     }
 
     override fun onDestroy() {
-        if (loadApplicationsTask?.getStatus() != JTask.Status.FINISHED) {
+        if (loadApplicationsTask?.status != JTask.Status.FINISHED) {
             loadApplicationsTask?.revokeFinish(true)
             loadApplicationsTask?.interrupt()
         }
@@ -382,7 +381,7 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
                 model.icon = resolveInfo.activityInfo.loadIcon(pm)
                 appModels?.add(model)
                 progress = 100.0 / infoMutableList.size * i
-                sendUpdate()
+                postUpdate()
             }
         }
 
@@ -393,11 +392,11 @@ class LockFragment(mainActivity: MainActivity) : Fragment(), OnItemClickListener
             }
         }
 
-        override fun onException(e: Exception) {
-            Toast.makeText(requireContext(), "exception: " + e.message, Toast.LENGTH_SHORT).show()
+        override fun onException(e: Exception?) {
+            Toast.makeText(requireContext(), "exception: " + e?.message, Toast.LENGTH_SHORT).show()
         }
 
-        override fun onUpdated(get: Array<Any>) {
+        override fun onUpdated(get:  Array<out Any>?) {
             if (loadingLabel != null) {
                 loadingLabel?.text = progress.toInt().toString().plus("%")
             }

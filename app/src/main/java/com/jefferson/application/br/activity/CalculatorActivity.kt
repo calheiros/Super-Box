@@ -56,7 +56,7 @@ class CalculatorActivity : MyCompatActivity(), OnLongClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.calculator_layout)
+        setContentView(R.layout.layout_calculator)
         createCode = ACTION_CREATE_CODE == intent.action
         editText = findViewById<View>(R.id.calculator_layoutEditText) as EditText
         resultButton = findViewById<View>(R.id.calculator_result) as Button

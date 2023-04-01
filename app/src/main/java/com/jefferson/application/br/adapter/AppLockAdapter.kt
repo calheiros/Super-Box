@@ -84,7 +84,7 @@ class AppLockAdapter(private val fragment: LockFragment, var models: ArrayList<A
         val holder: Holder?
 
         if (convertView == null) {
-            convertView = inflater.inflate(R.layout.list_item, parent, false)
+            convertView = inflater.inflate(R.layout.item_app_lock, parent, false)
             holder = Holder()
             holder.imageView = convertView.findViewById<View>(R.id.iconeApps) as ImageView
             holder.textView = convertView.findViewById<View>(R.id.app_name) as TextView

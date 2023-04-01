@@ -49,21 +49,21 @@ Copyright (C) 2023 Jefferson Calheiros
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="?commonColorLight"
-                android:textSize="16sp" />
+                android:textSize="17sp" />
 
             <TextView
                 android:id="@+id/pref_description_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="?commonColorDark"
-                android:textSize="13.5sp" />
+                android:textSize="14sp" />
 
         </LinearLayout>
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/prefs_switch"
             android:layout_width="wrap_content"
-            android:layout_height="22dp"
+            android:layout_height="wrap_content"
             android:layout_margin="7dp"
             android:clickable="false"
             android:focusable="false"

@@ -81,13 +81,15 @@ Copyright (C) 2023 Jefferson Calheiros
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab"
+			app:backgroundTint="?colorAccent"
 			app:shapeAppearanceOverlay="@style/RoundSquareShapeAppearance"
 			android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:src="@drawable/item_checked"
-            android:layout_margin="16dp" />
+            android:layout_margin="16dp"
+			android:contentDescription="@string/add_items" />
     </RelativeLayout>
 
 </LinearLayout>

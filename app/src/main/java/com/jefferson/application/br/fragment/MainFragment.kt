@@ -38,7 +38,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.jefferson.application.br.R
-import com.jefferson.application.br.activity.ImportGalleryActivity
+import com.jefferson.application.br.activity.GalleryImportActivity
 import com.jefferson.application.br.activity.ImportMediaActivity
 import com.jefferson.application.br.activity.MainActivity
 import com.jefferson.application.br.activity.SearchActivity
@@ -58,7 +58,7 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
     ): View? {
         val main = activity as MainActivity?
         if (view == null) {
-            view = inflater.inflate(R.layout.main_fragment, container, false)
+            view = inflater.inflate(R.layout.fragment_main, container, false)
             pagerAdapter = PagerAdapter(requireActivity())
             toolbar = view?.findViewById(R.id.toolbar)
             viewPager = view?.findViewById(R.id.mainViewPager) as ViewPager2
@@ -203,7 +203,8 @@ class MainFragment : Fragment(), OnPageChangeListener, View.OnClickListener, OnL
         get() = viewPager.currentItem
 
     private fun importFromGallery() {
-        val intent = Intent(context, ImportGalleryActivity::class.java)
+        //val options = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity())
+        val intent = Intent(context, GalleryImportActivity::class.java)
         intent.putExtra("position", pagerPosition)
         gallerySelectionResult.launch(intent)
     }

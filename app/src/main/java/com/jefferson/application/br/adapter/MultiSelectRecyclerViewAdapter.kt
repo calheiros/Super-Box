@@ -17,8 +17,6 @@
 package com.jefferson.application.br.adapter
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
@@ -112,7 +110,7 @@ class MultiSelectRecyclerViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val rootView = LayoutInflater.from(parent.context).inflate(
-            R.layout.recycler_view_item,
+            R.layout.item_media,
             parent, false
         )
         return ViewHolder(rootView, clickListener)

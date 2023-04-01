@@ -27,7 +27,11 @@ import java.io.File
 
 class AlbumDatabase private constructor(context: Context, path: String) :
     SQLiteOpenHelper(context, path, null, DATABASE_VERSION) {
-    private fun onUpgradeDatabase(sQLiteDatabase: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+    private fun onUpgradeDatabase(
+        sQLiteDatabase: SQLiteDatabase,
+        oldVersion: Int,
+        newVersion: Int
+    ) {
         Log.e("DATABASE", " UPGRADE: oldVersion => $oldVersion")
         if (oldVersion <= 9) {
             try {
@@ -138,10 +142,14 @@ class AlbumDatabase private constructor(context: Context, path: String) :
         return path
     }
 
-    fun deleteMediaData(id: String) {
-        this.writableDatabase.use { db ->
-            db.execSQL("DELETE FROM $MEDIA_TABLE_NAME WHERE $MEDIA_ID_COL = ?", arrayOf(id))
-            db.close()
+    fun deleteMediaData(id: String): Boolean {
+        return try {
+            writableDatabase.use { db ->
+                db.execSQL("DELETE FROM $MEDIA_TABLE_NAME WHERE $MEDIA_ID_COL = ?", arrayOf(id))
+                true
+            }
+        } catch (e: SQLException) {
+            false
         }
     }
 
@@ -191,7 +199,7 @@ class AlbumDatabase private constructor(context: Context, path: String) :
         val readableDatabase = readableDatabase
         val rawQuery = readableDatabase.rawQuery(
             "SELECT id FROM FOLDER_ WHERE name = ? AND type = ?",
-            arrayOf(name, type),null
+            arrayOf(name, type), null
         )
         if (rawQuery.moveToFirst()) {
             return rawQuery.getString(0)
@@ -243,7 +251,7 @@ class AlbumDatabase private constructor(context: Context, path: String) :
             val deleteQuery = "DELETE FROM FOLDER_ WHERE id = ? AND type = ?"
             val deleteArgs = arrayOf(f_name, type)
             database.execSQL(deleteQuery, deleteArgs)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             e.printStackTrace()
         } finally {
             database.close()
@@ -296,12 +304,12 @@ class AlbumDatabase private constructor(context: Context, path: String) :
 
         val CREATE_ALBUM_TABLE_SQL: String
             get() {
-            return "CREATE TABLE IF NOT EXISTS " + ALBUM_TABLE_NAME +
-                    "(id TEXT NOT NULL, " +
-                    "name TEXT," +
-                    " type VARCHAR(6) NOT NULL," +
-                    "favorite INTEGER DEFAULT 0);"
-        }
+                return "CREATE TABLE IF NOT EXISTS " + ALBUM_TABLE_NAME +
+                        "(id TEXT NOT NULL, " +
+                        "name TEXT," +
+                        " type VARCHAR(6) NOT NULL," +
+                        "favorite INTEGER DEFAULT 0);"
+            }
         val CREATE_MEDIA_TABLE_SQL: String
             get() = ("CREATE TABLE IF NOT EXISTS " + MEDIA_TABLE_NAME + " (" + MEDIA_ID_COL + " TEXT NOT NULL,"
                     + MEDIA_PATH_COL + " TEXT, " + MEDIA_DURATION_COL + " INTEGER DEFAULT -1);")

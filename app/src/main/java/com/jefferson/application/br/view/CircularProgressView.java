@@ -97,21 +97,22 @@ public class CircularProgressView extends View {
         progressPaint.setStyle(Paint.Style.STROKE);
         percentPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         percentPaint.setColor(textColor);
-        textPaint.setColor(textColor);
+        textPaint.setColor(colorAccent);
     }
 
     private void resizeView(int w, int h) {
         padding = w / 16;
+        float textSize = w / 4f;
         progressWidth = padding * 1.5f;
-        backgroundPaint.setStrokeWidth(progressWidth);
+        backgroundPaint.setStrokeWidth(progressWidth / 2);
         progressPaint.setStrokeWidth(progressWidth);
-        textPaint.setTextSize(w / 4f);
+        textPaint.setTextSize(textSize);
+        textPaint.setFakeBoldText(true);
         percentPaint.setTextSize(w / 8f);
         rect.set(padding, padding, w - padding, h - padding);
     }
 
     public void setProgress(double progress) {
-        
         if (max == 0) {
             this.progress = progress;
             return;

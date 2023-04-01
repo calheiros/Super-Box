@@ -61,7 +61,7 @@ class FilePickerAdapter(
         @Suppress("NAME_SHADOWING") var view = view
         val holder: Holder
         if (view == null) {
-            view = mLayoutInflater.inflate(R.layout.file_picker_item, viewGroup, false)
+            view = mLayoutInflater.inflate(R.layout.item_file_picker, viewGroup, false)
             holder = Holder()
             holder.checkOverlay = view.findViewById(R.id.folder_picker_check_overlay)
             holder.titleLabel = view.findViewById(R.id.item_name)

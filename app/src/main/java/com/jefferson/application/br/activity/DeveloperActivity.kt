@@ -170,10 +170,10 @@ class DeveloperActivity : MyCompatActivity() {
         dialog.setMax(100)
         dialog.show()
         object : JTask() {
-            override fun onException(e: Exception) {
+            override fun onException(e: Exception?) {
                 dialog.resetDialog()
                 dialog.setTitle("Execeção ocorrida!")
-                dialog.setMessage("Error caught! " + e.message)
+                dialog.setMessage("Error caught! " + e?.message)
                 dialog.setPositiveButton("okay", null)
             }
 
@@ -190,12 +190,12 @@ class DeveloperActivity : MyCompatActivity() {
                     if (progress >= 56) {
                         throw RuntimeException("Exception test!")
                     }
-                    sendUpdate(progress)
+                    postUpdate(progress)
                     progress++
                 }
             }
 
-            override fun onUpdated(vararg args: Any) {
+            override fun onUpdated(vararg args: Any?) {
                 dialog.setProgress(args[0] as Int)
             }
 

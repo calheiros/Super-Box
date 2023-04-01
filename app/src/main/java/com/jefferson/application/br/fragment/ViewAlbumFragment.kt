@@ -89,7 +89,7 @@ class ViewAlbumFragment(
         savedInstanceState: Bundle?
     ): View? {
         if (parent == null) {
-            parent = inflater.inflate(R.layout.view_album_fragment_layout, container, false)
+            parent = inflater.inflate(R.layout.fragment_view_album, container, false)
             viewAlbum = (requireActivity() as ViewAlbum)
             layoutManager = GridLayoutManager(requireContext(), autoSpan)
             appbar = parent!!.findViewById(R.id.appbar)
@@ -144,6 +144,7 @@ class ViewAlbumFragment(
         galleryResult = registerGalleryResult()
         importResult = registerImportResult()
     }
+
     private fun configureFloatingButton() {
         val threshold = heightPixels / 100 //1%
         floatingButton = parent!!.findViewById(R.id.view_album_fab_button)
@@ -286,17 +287,8 @@ class ViewAlbumFragment(
         }
     }
 
-    /* override fun onDestroy() {
-         if (videoDurationUpdaterTask?.status == JTask.Status.STARTED)
-             videoDurationUpdaterTask?.cancelTask()
-
-         if (populateAlbumTask?.status == JTask.Status.STARTED)
-             populateAlbumTask?.cancelTask()
-         super.onDestroy()
-     }*/
-
     private fun importFromGallery() {
-        val intent = Intent(viewAlbum, ImportGalleryActivity::class.java)
+        val intent = Intent(viewAlbum, GalleryImportActivity::class.java)
         intent.putExtra("position", position)
         galleryResult.launch(intent)
     }
@@ -398,7 +390,7 @@ class ViewAlbumFragment(
             Storage.getDefaultStoragePath(requireContext())
         )
         if (size == 1) {
-            resId = R.layout.files_info_layout
+            resId = R.layout.dialog_files_info
             view = layoutInflater.inflate(resId, null)
             val file = File(files[0])
             val nameText = view.findViewById<TextView>(R.id.file_name_info)
@@ -686,9 +678,9 @@ class ViewAlbumFragment(
             }
         }
 
-        override fun onUpdated(get: Array<Any>) {
-            super.onUpdated(get)
-            adapter.removeItem((get[0] as String))
+        override fun onUpdated(args: Array<out Any>?) {
+            super.onUpdated(args)
+            adapter.removeItem((args?.get(0) as String))
         }
     }
 
@@ -782,7 +774,7 @@ class ViewAlbumFragment(
                                         "${parent?.absolutePath}"
                             )
                         }
-                        sendUpdate(null, fileOutput.name)
+                        postUpdate({}, fileOutput.name)
                         if (file.renameTo(fileOutput)) {
                             filesPath.add(fileOutput.absolutePath)
                             database.deleteMediaData(file.name)
@@ -803,14 +795,14 @@ class ViewAlbumFragment(
                             }
                         }
                         if (System.currentTimeMillis() - start >= 600 && junkList.size > 0) {
-                            sendUpdate(Companion.ACTION_UPDATE_ADAPTER)
+                            postUpdate(ACTION_UPDATE_ADAPTER)
                             start = System.currentTimeMillis()
                         }
                     } catch (ignored: Exception) {
                     }
                 }
                 if (junkList.isNotEmpty()) {
-                    sendUpdate(Companion.ACTION_UPDATE_ADAPTER)
+                    postUpdate(ACTION_UPDATE_ADAPTER)
                 }
             } finally {
                 progressUpdater.destroy()
@@ -836,11 +828,11 @@ class ViewAlbumFragment(
                 })
         }
 
-        override fun onUpdated(get: Array<Any>) {
-            if (Companion.ACTION_UPDATE_ADAPTER == get[0]) {
+        override fun onUpdated(args: Array<out Any>?) {
+            if (ACTION_UPDATE_ADAPTER == args?.get(0)) {
                 updateAdapter()
             } else {
-                val name = get[1] as String
+                val name = args?.get(1) as String
                 simpleDialog.setMessage(name)
             }
         }
@@ -863,7 +855,7 @@ class ViewAlbumFragment(
             return file.absolutePath
         }
 
-        override fun onException(e: Exception) {
+        override fun onException(e: Exception?) {
             Toast.makeText(requireContext(), "Finished with error!", Toast.LENGTH_SHORT).show()
         }
 
@@ -935,7 +927,7 @@ class ViewAlbumFragment(
     }
 
     companion object {
-        private const val ACTION_UPDATE_ADAPTER = "action_update"
+        const val ACTION_UPDATE_ADAPTER = "action_update"
     }
 
 }

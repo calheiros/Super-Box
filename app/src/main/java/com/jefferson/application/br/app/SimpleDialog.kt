@@ -110,7 +110,7 @@ class SimpleDialog {
     private fun createView(style: Int) {
         progressBarDialog = this
         parentView =
-            LayoutInflater.from(activity).inflate(R.layout.dialog_main_layout, null) as ViewGroup
+            LayoutInflater.from(activity).inflate(R.layout.dialog_main, null) as ViewGroup
         progressBar = parentView.findViewById(R.id.number_progress_bar)
         val blurView = parentView.findViewById<BlurView>(R.id.blurView)
         contentTitle = parentView.findViewById(R.id.title_text_view)
@@ -175,7 +175,7 @@ class SimpleDialog {
 
     private fun createMenu() {
         val menuView = (context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater)
-            .inflate(R.layout.dialog_list_view_layout, parentView, false)
+            .inflate(R.layout.dialog_list_view, parentView, false)
         menuListView = menuView.findViewById<View>(R.id.dialog_list_view) as ListView
         setContentView(menuView)
     }

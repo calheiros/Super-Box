@@ -217,5 +217,9 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="enter_you_password_here">Enter you password here</string>
     <string name="checando_arquivos">Checking files</string>
     <string name="continuar">Continue</string>
+    <string name="add_items">add items</string>
+    <string name="enter_your_password_here">Enter your password here</string>
+    <string name="enter">Enter</string>
+    <string name="password">password</string>
 
 </resources>

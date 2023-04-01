@@ -2,7 +2,6 @@
 <!--
 Copyright (C) 2023 Jefferson Calheiros
 
-
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,20 +32,25 @@ Copyright (C) 2023 Jefferson Calheiros
 		<TextView
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:textSize="18sp"
+			android:textSize="20sp"
             android:textColor="?attr/commonColor"
-			android:text="Permission Request"
+			android:text="Permission Required"
 			android:layout_marginBottom="6dp"/>
 
 		<TextView
+			android:textStyle="bold"
+			android:textSize="16sp"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
             android:textColor="?attr/commonColorDark"
-			android:text="Fully access to internal memory is required"
+			android:text="Access to storge"
 			android:layout_marginBottom="10dp"/>
 
 		<ImageView
+			android:layout_marginTop="20dp"
             app:tint="?commonColorDark"
+
+			android:src="@drawable/ic_folder"
 			android:layout_width="120dp"
 			android:layout_height="120dp"/>
 
@@ -55,7 +59,7 @@ Copyright (C) 2023 Jefferson Calheiros
 			android:layout_height="wrap_content"
             android:backgroundTint="?attr/colorAccent"
 			android:text="allow"
-			android:layout_marginTop="10dp"/>
+			android:layout_marginTop="20dp"/>
 
 	</LinearLayout>
 

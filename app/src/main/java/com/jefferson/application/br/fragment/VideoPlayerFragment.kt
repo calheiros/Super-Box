@@ -64,7 +64,7 @@ class VideoPlayerFragment(
     ): View? {
         if (parentView == null) {
             videoNotPrepared = true
-            parentView = inflater.inflate(R.layout.video_view_fragment, container, false)
+            parentView = inflater.inflate(R.layout.fragment_video_view, container, false)
             videoView = parentView?.findViewById(R.id.video_view)
             thumbView = parentView?.findViewById(R.id.video_view_fragment_thumb_view)
             val file = File(videoPath)

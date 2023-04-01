@@ -25,7 +25,6 @@ import android.provider.Settings
 import android.view.MenuItem
 import android.view.View
 import android.view.View.OnLayoutChangeListener
-import android.view.Window
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -38,7 +37,6 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView.OnItemSelectedListener
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.transition.platform.MaterialContainerTransformSharedElementCallback
 import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
@@ -56,7 +54,7 @@ import java.util.*
 
 
 class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
-    NavigationView.OnNavigationItemSelectedListener, ImportTask.Listener,
+    NavigationView.OnNavigationItemSelectedListener,
     OnItemSelectedListener {
     private val getSdCardUriHandler: Handler = object : Handler(Looper.getMainLooper()) {
         override fun dispatchMessage(msg: Message) {
@@ -96,23 +94,21 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         this.restarting = restarting
     }
 
-    override fun onBeingStarted() {}
-    override fun onUserInteraction() {}
-    override fun onInterrupted() {
-        updateCurrentFragment()
-    }
-
-    override fun onFinished() {
-        updateCurrentFragment()
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+       /* window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
+        val exit = MaterialSharedAxis(MaterialSharedAxis.X, true).apply {
+            // Only run the transition on the contents of this activity, excluding
+            // system bars or app bars if provided by the app’s theme.
+            addTarget(android.R.id.content)
+        }
+        window.exitTransition = exit*/
         super.onCreate(savedInstanceState)
         instance = this
         MobileAds.initialize(this) {
             squareAdview = createSquareAdview(this@MainActivity)
         }
-        setContentView(R.layout.main_activity)
+        setContentView(R.layout.activity_main)
         currentTheme = ThemeConfig.getTheme(this)
         buttonNavigationView = findViewById(R.id.navigationView)
         buttonNavigationView.setOnItemSelectedListener(this)
@@ -126,8 +122,8 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
         }
         createFragments()
         createAdView()
-        createReceiver()
         configureBlur()
+        createResultReceivers()
         configureBackPressed()
     }
 
@@ -183,7 +179,7 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
             return squareAdview
         }
 
-    private fun createReceiver() {
+    private fun createResultReceivers() {
         val filter = IntentFilter()
         filter.addAction(ACTION_UPDATE)
         receiver = object : BroadcastReceiver() {

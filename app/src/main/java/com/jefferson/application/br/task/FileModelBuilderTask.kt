@@ -38,7 +38,7 @@ class FileModelBuilderTask(
             model.parentPath = parentPath
             model.type = type
             data.add(model)
-            sendUpdate(1, i + 1, paths.size)
+            postUpdate(1, i + 1, paths.size)
         }
     }
 
@@ -49,6 +49,6 @@ class FileModelBuilderTask(
     }
 
     override fun onFinished() {}
-    override fun onException(e: Exception) {}
+    override fun onException(e: Exception?) {}
     fun setDestination(absolutePath: String?) {}
 }

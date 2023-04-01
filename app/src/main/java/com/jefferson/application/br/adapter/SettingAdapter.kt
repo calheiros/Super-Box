@@ -62,9 +62,9 @@ class SettingAdapter(
     override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View {
         val prefItem = preferenceItems[i]
         val resId = when (prefItem.type) {
-            PreferenceItem.ITEM_TYPE -> R.layout.preference_common_item
-            PreferenceItem.ITEM_SWITCH_TYPE -> R.layout.preference_switch_item
-            PreferenceItem.SECTION_TYPE -> R.layout.preference_section_item
+            PreferenceItem.ITEM_TYPE -> R.layout.item_preference_common
+            PreferenceItem.ITEM_SWITCH_TYPE -> R.layout.item_preference_switch
+            PreferenceItem.SECTION_TYPE -> R.layout.item_preference_section
             else -> throw java.lang.RuntimeException("INVALID PREFERENCE ITEM TYPE: ${prefItem.type}")
         }
         val contentView: View = inflater.inflate(resId, viewGroup, false)
