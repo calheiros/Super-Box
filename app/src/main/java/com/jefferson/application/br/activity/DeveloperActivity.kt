@@ -195,8 +195,8 @@ class DeveloperActivity : MyCompatActivity() {
                 }
             }
 
-            override fun onUpdated(vararg args: Any?) {
-                dialog.setProgress(args[0] as Int)
+            override fun onUpdated(args: Array<out Any>?) {
+                dialog.setProgress(args?.get(0) as Int)
             }
 
             override fun onInterrupted() {
