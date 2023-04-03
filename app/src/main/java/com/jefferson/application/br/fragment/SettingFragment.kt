@@ -39,9 +39,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.materialswitch.MaterialSwitch
 import com.jefferson.application.br.LocaleManager
 import com.jefferson.application.br.R
-import com.jefferson.application.br.activity.CreatePattern
-import com.jefferson.application.br.activity.DeveloperActivity
-import com.jefferson.application.br.activity.MainActivity
+import com.jefferson.application.br.activity.*
 import com.jefferson.application.br.adapter.SettingAdapter
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
@@ -54,7 +52,6 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
     private var paddingBottom: Int = 0
     private lateinit var storages: Array<String>
     private var listView: ListView? = null
-
     private var adapter: SettingAdapter? = null
     private var sharedPreferences: SharedPreferences? = null
     private var editor: SharedPreferences.Editor? = null
@@ -119,7 +116,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                     }
                     2 -> {
                         item.id = ID.LANGUAGE
-                        item.iconResId = R.drawable.ic_language
+                        item.iconResId = R.drawable.twotone_globe
                         item.title = getString(R.string.idioma)
                         item.type = PreferenceItem.ITEM_TYPE
                         item.description = languageDisplay
@@ -127,7 +124,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                     3 -> {
                         item.id = ID.APP_THEME
                         item.type = PreferenceItem.ITEM_TYPE
-                        item.iconResId = R.drawable.ic_palette
+                        item.iconResId = R.drawable.twotone_palette
                         item.title = getString(R.string.tema_applicativo)
                         item.description = ThemeConfig.getCurrentThemeName(requireContext())
                     }
@@ -144,15 +141,15 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                     }
                     6 -> {
                         item.id = ID.APP_ICON
-                        item.title = getString(R.string.disfarce_calculadora)
-                        item.iconResId = R.drawable.ic_calculator_variant
-                        item.type = PreferenceItem.ITEM_SWITCH_TYPE
+                        item.title = getString(R.string.modo_secreto)
+                        item.iconResId = R.drawable.ic_guy_fawkes_mask
+                        item.type = PreferenceItem.ITEM_TYPE
                         item.description = getString(R.string.ocultar_descricao)
                         item.checked = isCalculatorEnabledInSettings
                     }
                     7 -> {
                         item.id = ID.SCREENSHOT
-                        item.iconResId = R.drawable.ic_cellphone_screenshot
+                        item.iconResId = R.drawable.twotone_screenshot
                         item.type = PreferenceItem.ITEM_SWITCH_TYPE
                         item.title = getString(R.string.permitir_captura_tela)
                         item.description = getString(R.string.menos_seguro_se_habilitado)
@@ -254,6 +251,11 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
             }
             ID.DIALER_CODE -> {
                 changeCodeDialog()
+            }
+            ID.APP_ICON -> {
+                requireActivity().startActivity(
+                    Intent(requireActivity(), CustomLockScreen::class.java)
+                )
             }
             ID.ABOUT -> {
                 showAbout()

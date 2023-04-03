@@ -37,9 +37,7 @@ import com.jefferson.application.br.R
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.app.SimpleDialog.OnDialogClickListener
 import com.jefferson.application.br.model.FileModel
-import com.jefferson.application.br.task.FileModelBuilderTask
-import com.jefferson.application.br.task.ImportTask
-import com.jefferson.application.br.task.JTask
+import com.jefferson.application.br.task.*
 import com.jefferson.application.br.task.JTask.*
 import com.jefferson.application.br.util.Storage
 import com.jefferson.application.br.view.CircularProgressView
@@ -54,7 +52,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     private lateinit var button: Button
     private lateinit var prepareTitleView: TextView
     private lateinit var messageTextView: TextView
-    private var importTask: ImportTask? = null
+    private var importMediaTask: ImportMediaTask? = null
     private var builderTask: FileModelBuilderTask? = null
     private var animateText: AnimateProgressText? = null
     private var allowCancel = false
@@ -105,7 +103,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
             }
             if (parent == null) {
                 builderTask?.setDestination(
-                    Storage.getFolder(
+                    Storage.getAlbumsFolder(
                         if (FileModel.IMAGE_TYPE == type)
                             Storage.IMAGE else Storage.VIDEO, this
                     )!!.absolutePath
@@ -121,21 +119,21 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     }
 
     private fun startImportTask(data: ArrayList<FileModel>) {
-        importTask = ImportTask(this, data)
-        importTask?.setOnUpdatedListener(this)
-        importTask?.setOnStartedListener(this)
-        importTask?.setOnFinishedListener {
+        importMediaTask = ImportMediaTask(this, data)
+        importMediaTask?.setOnUpdatedListener(this)
+        importMediaTask?.setOnStartedListener(this)
+        importMediaTask?.setOnFinishedListener {
             onFinished()
         }
-        importTask?.start()
+        importMediaTask?.start()
     }
 
     private val isTasksRunning: Boolean
-        get() = builderTask?.status == Status.STARTED || importTask?.status == Status.STARTED
+        get() = builderTask?.status == Status.STARTED || importMediaTask?.status == Status.STARTED
         
     override fun onBeingStarted() {
         prepareTitleView.text = getString(R.string.transferido)
-        animateText = AnimateProgressText(titleTextView, importTask!!)
+        animateText = AnimateProgressText(titleTextView, importMediaTask!!)
         animateText?.start()
     }
 
@@ -143,9 +141,9 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
         animateText?.cancel()
         window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val res = resources
-        val criticalError: Exception? = importTask?.error()
-        val failures = importTask!!.failuresCount
-        val color = if (failures > 0 || importTask!!.isInterrupted) ContextCompat.getColor(
+        val criticalError: Exception? = importMediaTask?.error()
+        val failures = importMediaTask!!.failuresCount
+        val color = if (failures > 0 || importMediaTask!!.isInterrupted) ContextCompat.getColor(
             this,
             R.color.red
         ) else getAttrColor(R.attr.commonColor)
@@ -153,7 +151,7 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
             if (criticalError != null) getString(R.string.erro_critico)
             else if (failures > 0) res.getQuantityString(
                 R.plurals.falha_plural, failures, failures
-            ) else if (importTask?.isInterrupted == true)
+            ) else if (importMediaTask?.isInterrupted == true)
                 "Cancelled!" else getString(R.string.transferencia_sucesso)
         titleTextView.text = getString(R.string.resultado)
         messageTextView.setTextColor(color)
@@ -235,18 +233,18 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
                 }
                 val progress: Double? = values[2] as Double?
                 if (progress != null) {
-                    progressView.progress = progress
+                    progressView.setProgress(progress)
                 }
                 val maxProgress: Double? = values[3] as Double?
                 if (maxProgress != null) {
-                    progressView.max = maxProgress
+                    progressView.max = maxProgress.toLong()
                 }
             }
-            -2 -> showNoSpaceAlert(importTask, values[1].toString())
+            -2 -> showNoSpaceAlert(importMediaTask, values[1].toString())
         }
     }
 
-    private fun showNoSpaceAlert(task: ImportTask?, message: String) {
+    private fun showNoSpaceAlert(task: ImportMediaTask?, message: String) {
         val dialog = SimpleDialog(this, SimpleDialog.STYLE_ALERT)
         dialog.setTitle(getString(R.string.aviso))
         dialog.setMessage(message)
@@ -278,8 +276,8 @@ class ImportMediaActivity : MyCompatActivity(), OnUpdatedListener, OnBeingStarte
     }
 
     private fun interruptTask() {
-        if (importTask != null && importTask!!.status == Status.STARTED) {
-            importTask?.interrupt()
+        if (importMediaTask != null && importMediaTask!!.status == Status.STARTED) {
+            importMediaTask?.interrupt()
         }
         if (builderTask != null && builderTask!!.status == Status.STARTED) {
             builderTask?.cancelTask()

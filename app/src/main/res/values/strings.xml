@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright (C) 2023 Jefferson Calheiros
 
 
@@ -15,21 +14,21 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="erro_critico">A critical error occurred!</string>
-    
+
     <plurals name="imagem_total_plural">
         <item quantity="one">%1$d image</item>
         <item quantity="other">%1$d images</item>
     </plurals>
-    
+
     <plurals name="video_total_plural">
         <item quantity="one">%1$d video</item>
         <item quantity="other">%1$d videos</item>
     </plurals>
 
     <plurals name="quantidade_video_total">
-        <item quantity="one" >&lt;b>%1$d&lt;/b> video of &lt;b>%2$d&lt;/b></item>
+        <item quantity="one">&lt;b>%1$d&lt;/b> video of &lt;b>%2$d&lt;/b></item>
         <item quantity="other">&lt;b>%1$d&lt;/b> videos of &lt;b>%2$d&lt;/b></item>
     </plurals>
 
@@ -37,12 +36,12 @@ Copyright (C) 2023 Jefferson Calheiros
         <item quantity="one">%1$d failure</item>
         <item quantity="other">%1$d failures</item>
     </plurals>
-    
+
     <plurals name="quantidade_arquivo_total">
         <item quantity="one">&lt;b>%1$d&lt;/b> file of &lt;b>%2$d&lt;/b></item>
         <item quantity="other">&lt;b>%1$d&lt;/b> files of &lt;b>%2$d&lt;/b></item>
     </plurals>
-    
+
     <plurals name="quantidade_imagem_total">
         <item quantity="one">&lt;b>%1$d&lt;/b> image of &lt;b>%2$d&lt;/b></item>
         <item quantity="other">&lt;b>%1$d&lt;/b> images of &lt;b>%2$d&lt;/b></item>
@@ -103,33 +102,33 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="preferecias_gerais">General management</string>
     <string name="preferecias_sobre">About</string>
     <string name="preferecias_avancadas">Advanced</string>
-	<string name="importar_imagem">Import images</string>
-	<string name="importar_video">Import videos</string>
-	<string name="selecionar_sdcard">You need to select the root folder of your SD card to continue the task.</string>
-	<string name="video">video</string>
-	<string name="imagem">image</string>
-	<string name="item">item</string>
-	<string name="itens">items</string>
-	<string name="erro">Error</string>
-	<string name="criar_album">Create album</string>
-	<string name="quer_realmente_sair">Do you really want to exit?</string>
-	<string name="nao">No</string>
-	<string name="app_name">Super Box</string>
-	<string name="excluir_aviso">This action cannot be undone.</string>
+    <string name="importar_imagem">Import images</string>
+    <string name="importar_video">Import videos</string>
+    <string name="selecionar_sdcard">You need to select the root folder of your SD card to continue the task.</string>
+    <string name="video">video</string>
+    <string name="imagem">image</string>
+    <string name="item">item</string>
+    <string name="itens">items</string>
+    <string name="erro">Error</string>
+    <string name="criar_album">Create album</string>
+    <string name="quer_realmente_sair">Do you really want to exit?</string>
+    <string name="nao">No</string>
+    <string name="app_name">Super Box</string>
+    <string name="excluir_aviso">This action cannot be undone.</string>
     <string name="selecionar_um">You must select at least one.</string>
     <string name="conceder">Grant</string>
     <string name="salvar">Save</string>
     <string name="renomear">Rename</string>
     <string name="armazenamento">Storage</string>
-	<string name="armaz_interno">Internal storage</string>
-	<string name="armaz_externo">Micro SD</string>
+    <string name="armaz_interno">Internal storage</string>
+    <string name="armaz_externo">Micro SD</string>
     <string name="bloquear_apps">App lock</string>
     <string name="configuracoes">Settings</string>
     <string name="esconder_icone">Hide icon</string>
     <string name="codigo_chamada">Call code</string>
     <string name="mover_galeria">Are you sure you want to move %s to the gallery?</string>
     <string name="mover">Move</string>
-	<string name="vazio">Nothing here for now</string>
+    <string name="vazio">Nothing here for now</string>
     <string name="movendo">Moving</string>
     <string name="confirmacao">Confirmation</string>
     <string name="caixa_principal">Main box</string>
@@ -221,5 +220,8 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="enter_your_password_here">Enter your password here</string>
     <string name="enter">Enter</string>
     <string name="password">password</string>
+    <string name="realtext">Realtext</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

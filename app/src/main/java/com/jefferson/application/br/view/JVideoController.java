@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package com.jefferson.application.br.ui;
+package com.jefferson.application.br.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

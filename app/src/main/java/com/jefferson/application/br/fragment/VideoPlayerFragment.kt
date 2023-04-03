@@ -30,8 +30,8 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.jefferson.application.br.R
 import com.jefferson.application.br.switcher.ViewVisibilitySwitch
-import com.jefferson.application.br.ui.JVideoController
-import com.jefferson.application.br.ui.JVideoController.OnButtonPressedListener
+import com.jefferson.application.br.view.JVideoController
+import com.jefferson.application.br.view.JVideoController.OnButtonPressedListener
 import java.io.File
 
 class VideoPlayerFragment(
@@ -73,7 +73,11 @@ class VideoPlayerFragment(
                     .show()
                 return parentView
             }
-            controller = JVideoController(videoView, parentView as ViewGroup?, optionsTrigger)
+            controller = JVideoController(
+                videoView,
+                parentView as ViewGroup?,
+                optionsTrigger
+            )
             controller?.setOnButtonPressedListener(this)
             videoView?.setOnPreparedListener { mp: MediaPlayer ->
                 mp.isLooping = true

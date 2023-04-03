@@ -187,7 +187,7 @@ class FolderPickerActivity : MyCompatActivity(), OnItemClickListener {
 
     private fun getModels(i: Int): List<PickerModel> {
         val arrayList = ArrayList<PickerModel>()
-        val storageAndFolder = Storage.getFolder(if (i == 0) Storage.IMAGE else Storage.VIDEO, this)
+        val storageAndFolder = Storage.getAlbumsFolder(if (i == 0) Storage.IMAGE else Storage.VIDEO, this)
         val instance = AlbumDatabase.getInstance(this)
         val listFiles = storageAndFolder?.listFiles()!!
         for (file in listFiles) {

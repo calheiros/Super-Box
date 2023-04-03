@@ -142,7 +142,7 @@ class AlbumFragment(private var pagerPosition: Int) : Fragment() {
     fun buildModels(position: Int, jTask: JTask): ArrayList<SimpleAlbumModel> {
         val models = ArrayList<SimpleAlbumModel>()
         val root =
-            Storage.getFolder(if (position == 0) Storage.IMAGE else Storage.VIDEO, requireContext())
+            Storage.getAlbumsFolder(if (position == 0) Storage.IMAGE else Storage.VIDEO, requireContext())
                 ?: return models
         root.mkdirs()
         val database: AlbumDatabase? = try {

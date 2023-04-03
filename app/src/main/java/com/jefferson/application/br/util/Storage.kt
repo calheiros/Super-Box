@@ -16,7 +16,6 @@
 */
 package com.jefferson.application.br.util
 
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
@@ -24,10 +23,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Build.VERSION
 import android.os.Environment
-import android.preference.PreferenceManager
 import android.provider.DocumentsContract
 import android.provider.MediaStore
-import android.util.Log
 import java.io.*
 import java.nio.ByteBuffer
 
@@ -138,7 +135,7 @@ object Storage : DocumentUtil() {
         return Uri.parse(string)
     }
 
-    fun getFolder(type: Int, context: Context): File? {
+    fun getAlbumsFolder(type: Int, context: Context): File? {
         return when (type) {
             IMAGE -> File(
                 getDefaultStoragePath(
@@ -155,7 +152,8 @@ object Storage : DocumentUtil() {
     }
 
     fun getStorageLocation(context: Context?): String? {
-        return PreferenceManager.getDefaultSharedPreferences(context)
+        context ?: return null
+        return MyPreferences.getSharedPreferences(context)
             .getString(STORAGE_LOCATION, INTERNAL)
     }
 
@@ -187,7 +185,6 @@ object Storage : DocumentUtil() {
                 if (Environment.isExternalStorageRemovable(file)) {
                     return file.absolutePath
                 }
-                Log.i("SD PATH", file.toString())
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -235,7 +232,9 @@ object Storage : DocumentUtil() {
 
     fun scanMediaFiles(paths: Array<String>, context: Context) {
         if (VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            mediaScannerConnection(paths, context)
+            MediaScannerConnection.scanFile(
+                context, paths, null
+            ) { p1, p2 -> }
         } else {
             for (path in paths) {
                 val intent = Intent(Intent.ACTION_MEDIA_MOUNTED)
@@ -250,23 +249,16 @@ object Storage : DocumentUtil() {
         return FileUtils(context).getPath(uri)
     }
 
-    fun mediaScannerConnection(strArr: Array<String>?, context: Context?) {
-        MediaScannerConnection.scanFile(
-            context, strArr, null
-        ) { p1, p2 -> }
-    }
 
-    @TargetApi(21)
     fun checkIfSDCardRoot(uri: Uri): Boolean {
         return isExternalStorageDocument(uri) && isRootUri(uri) && !isInternalStorage(uri)
     }
 
-    @TargetApi(21)
     fun isRootUri(uri: Uri?): Boolean {
         return DocumentsContract.getTreeDocumentId(uri).endsWith(":")
     }
 
-    @TargetApi(21)
+
     fun isInternalStorage(uri: Uri): Boolean {
         return isExternalStorageDocument(uri) && DocumentsContract.getTreeDocumentId(uri)
             .contains("primary")
@@ -275,4 +267,34 @@ object Storage : DocumentUtil() {
     fun isExternalStorageDocument(uri: Uri): Boolean {
         return "com.android.externalstorage.documents" == uri.authority
     }
+
+     fun getAlternativePath(type: Int): String {
+        var file = File(
+            Environment.getExternalStoragePublicDirectory(
+                if (type == 0) Environment.DIRECTORY_PICTURES else Environment.DIRECTORY_MOVIES
+            ),
+            StringUtils.getFormattedDate("yyyy.MM.dd 'at' HH:mm:ss z") +
+                    if (type == 0) ".jpg" else ".mp4"
+        )
+        if (file.exists()) {
+            file = File(generateFileName(file))
+        }
+        return file.absolutePath
+    }
+
+    fun generateFileName(file: File): String {
+        val path = file.absolutePath
+        val lasIndexOf = path.lastIndexOf(".")
+        return if (lasIndexOf != -1) concatenateParts(
+            path.substring(0, lasIndexOf), path.substring(lasIndexOf), 1
+        ) else concatenateParts(path, "", 1)
+    }
+
+    private fun concatenateParts(part1: String, part2: String, time: Int): String {
+        val file = File("$part1($time)$part2")
+        return if (file.exists()) concatenateParts(
+            part1, part2, time + 1
+        ) else file.absolutePath
+    }
+
 }

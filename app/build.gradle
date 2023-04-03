@@ -37,6 +37,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'com.google.truth:truth:1.0.1'
+    testImplementation 'junit:junit:4.12'
 
     androidTestImplementation  'com.google.truth:truth:1.0.1'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
@@ -47,5 +48,8 @@ dependencies {
 android {
     lint {
         baseline = file("lint.xml")
+    }
+    buildFeatures {
+        viewBinding true
     }
 }

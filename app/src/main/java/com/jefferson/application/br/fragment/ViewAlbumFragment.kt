@@ -7,8 +7,6 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.util.Log
 import android.view.*
 import android.view.View.OnClickListener
 import android.view.animation.Animation
@@ -32,12 +30,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.*
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
-import com.jefferson.application.br.app.ProgressWatcher
 import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.database.AlbumDatabase
 import com.jefferson.application.br.model.FileModel
 import com.jefferson.application.br.model.MediaModel
 import com.jefferson.application.br.task.DeleteAlbumTask
+import com.jefferson.application.br.task.ExportMediaTask
 import com.jefferson.application.br.task.JTask
 import com.jefferson.application.br.task.VideoDurationUpdaterTask
 import com.jefferson.application.br.util.*
@@ -50,7 +48,7 @@ import kotlin.math.abs
 
 class ViewAlbumFragment(
     private var title: String,
-    private var position: Int,
+    private var mPagerPosition: Int,
     private var albumDirFile: File,
     private var viewAlbum: ViewAlbum
 ) : Fragment(),
@@ -70,6 +68,7 @@ class ViewAlbumFragment(
     private lateinit var menuLayout: View
     private lateinit var toolbar: Toolbar
     private lateinit var albumLabel: TextView
+
     //activity result register
     private lateinit var changeDirectoryResult: ActivityResultLauncher<Intent>
     private lateinit var galleryResult: ActivityResultLauncher<Intent>
@@ -97,7 +96,7 @@ class ViewAlbumFragment(
             recyclerView.setHasFixedSize(true)
             recyclerView.layoutManager = layoutManager
             adapter =
-                MultiSelectRecyclerViewAdapter(requireContext(), ArrayList(), this, position)
+                MultiSelectRecyclerViewAdapter(requireContext(), ArrayList(), this, mPagerPosition)
             recyclerView.adapter = adapter
             val mViewUnlock = parent!!.findViewById<View>(R.id.unlockView)
             val mViewDelete = parent!!.findViewById<View>(R.id.deleteView)
@@ -175,7 +174,7 @@ class ViewAlbumFragment(
 
     private val isVideoSession: Boolean
         get() {
-            return position == 1
+            return mPagerPosition == 1
         }
 
     private val startPreviewForResult = registerForActivityResult(
@@ -212,33 +211,33 @@ class ViewAlbumFragment(
         }
     }
 
-   fun registerImportResult(): ActivityResultLauncher<Intent> {
-       return registerForActivityResult(
-           ActivityResultContracts.StartActivityForResult()
-       ) { result: ActivityResult ->
-           if (result.resultCode == Activity.RESULT_OK) {
-               populateRecyclerView()
-               notifyChanges()
-           }
-       }
-   }
+    private fun registerImportResult(): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                populateRecyclerView()
+                notifyChanges()
+            }
+        }
+    }
 
-  private fun registerGalleryResult(): ActivityResultLauncher<Intent> {
-      return registerForActivityResult(
-          ActivityResultContracts.StartActivityForResult()
-      ) { result: ActivityResult ->
-          if (result.resultCode == Activity.RESULT_OK && result.data != null) {
-              val data = result.data
-              val paths = data!!.getStringArrayListExtra("selection")
-              val type = data.getStringExtra("type")
-              val intent = Intent(requireContext(), ImportMediaActivity::class.java)
-              intent.putStringArrayListExtra(ImportMediaActivity.KEY_MEDIA_LIST, paths)
-              intent.putExtra(ImportMediaActivity.KEY_TYPE, type)
-              intent.putExtra(ImportMediaActivity.KEY_PARENT, albumDirFile.absolutePath)
-              importResult.launch(intent)
-          }
-      }
-  }
+    private fun registerGalleryResult(): ActivityResultLauncher<Intent> {
+        return registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+                val data = result.data
+                val paths = data!!.getStringArrayListExtra("selection")
+                val type = data.getStringExtra("type")
+                val intent = Intent(requireContext(), ImportMediaActivity::class.java)
+                intent.putStringArrayListExtra(ImportMediaActivity.KEY_MEDIA_LIST, paths)
+                intent.putExtra(ImportMediaActivity.KEY_TYPE, type)
+                intent.putExtra(ImportMediaActivity.KEY_PARENT, albumDirFile.absolutePath)
+                importResult.launch(intent)
+            }
+        }
+    }
 
     // Convert the minimum width to pixels
     private val autoSpan: Int
@@ -289,7 +288,7 @@ class ViewAlbumFragment(
 
     private fun importFromGallery() {
         val intent = Intent(viewAlbum, GalleryImportActivity::class.java)
-        intent.putExtra("position", position)
+        intent.putExtra("position", mPagerPosition)
         galleryResult.launch(intent)
     }
 
@@ -308,7 +307,8 @@ class ViewAlbumFragment(
     }
 
     private fun exportToGallery() {
-        if (adapter.selectedItemCount == 0) {
+        val itemsPath = selectedItemsPath
+        if (itemsPath.isEmpty()) {
             Toast.makeText(requireContext(), getString(R.string.selecionar_um), Toast.LENGTH_LONG)
                 .show()
         } else {
@@ -322,13 +322,31 @@ class ViewAlbumFragment(
                     getString(R.string.sim),
                     object : SimpleDialog.OnDialogClickListener() {
                         override fun onClick(dialog: SimpleDialog): Boolean {
-                            val task = ExportTask(selectedItemsPath, dialog)
                             exitSelectionMode()
+                            val task = ExportMediaTask(itemsPath, dialog, mPagerPosition)
+                            task.setOnFinishedListener {
+                                task.simpleDialog.dismiss()
+                                syncExportChanges(task.filesPath)
+                            }
+                            task.adapter = adapter
                             task.start()
                             return false
                         }
                     }).setNegativeButton(getString(R.string.cancelar), null).show()
         }
+    }
+
+    private fun syncExportChanges(filesPath: ArrayList<String>) {
+        Storage.scanMediaFiles(filesPath.toTypedArray(), requireContext())
+        if (adapter.items.isEmpty()) {
+            AlbumUtils.deleteEmptyAlbum(
+                albumDirFile,
+                if (mPagerPosition == 0) AlbumDatabase.IMAGE_TYPE else AlbumDatabase.VIDEO_TYPE,
+                requireContext()
+            )
+            viewAlbum.finish()
+        }
+        notifyChanges()
     }
 
     private fun deleteFilesDialog() {
@@ -350,7 +368,7 @@ class ViewAlbumFragment(
                 override fun onClick(dialog: SimpleDialog): Boolean {
                     dialog.dismiss()
                     val task =
-                        DeleteFiles(requireActivity(), selectedItemsPath, position, albumDirFile)
+                        DeleteFiles(requireActivity(), selectedItemsPath, mPagerPosition, albumDirFile)
                     task.start()
                     return true
                 }
@@ -367,13 +385,13 @@ class ViewAlbumFragment(
         }
         val intent = Intent(requireContext(), FolderPickerActivity::class.java)
         intent.putExtra("selection", selectedItemsPath)
-        intent.putExtra("position", position)
+        intent.putExtra("position", mPagerPosition)
         intent.putExtra("current_path", albumDirFile.absolutePath)
         changeDirectoryResult.launch(intent)
     }
 
     private fun getItemName(count: Int): String {
-        return (if (position == 0) if (count > 1) getString(R.string.imagens) else getString(R.string.imagem) else if (count > 1) getString(
+        return (if (mPagerPosition == 0) if (count > 1) getString(R.string.imagens) else getString(R.string.imagem) else if (count > 1) getString(
             R.string.videos
         ) else getString(R.string.video)).lowercase(
             Locale.getDefault()
@@ -411,7 +429,7 @@ class ViewAlbumFragment(
     }
 
     val type: String?
-        get() = when (position) {
+        get() = when (mPagerPosition) {
             0 -> FileModel.IMAGE_TYPE
             1 -> FileModel.VIDEO_TYPE
             else -> null
@@ -421,7 +439,7 @@ class ViewAlbumFragment(
         val visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
         val mainActivity = MainActivity.instance
         emptyView.visibility = visibility
-        mainActivity?.updateFragment(position) ?: Toast.makeText(
+        mainActivity?.updateFragment(mPagerPosition) ?: Toast.makeText(
             requireContext(), "Can't synchronize MainActivity!", Toast.LENGTH_SHORT
         ).show()
         setAlbumHeader()
@@ -560,9 +578,9 @@ class ViewAlbumFragment(
                         return false
                     }
                     val success =
-                        AlbumUtils.renameAlbum(requireContext(), path, inputText, position)
+                        AlbumUtils.renameAlbum(requireContext(), path, inputText, mPagerPosition)
                     if (success) {
-                        MainActivity.instance?.updateFragment(position)
+                        MainActivity.instance?.updateFragment(mPagerPosition)
                         albumLabel.text = inputText
                     }
                     return true
@@ -619,7 +637,7 @@ class ViewAlbumFragment(
         val itemCountLabel = parent!!.findViewById<TextView>(R.id.text_view_item_count)
         val albumNameLabel = parent!!.findViewById<TextView>(R.id.album_name_label)
         val resId =
-            if (position == 0) R.plurals.imagem_total_plural else R.plurals.video_total_plural
+            if (mPagerPosition == 0) R.plurals.imagem_total_plural else R.plurals.video_total_plural
         var itemCount = resources.getQuantityString(resId, adapter.itemCount)
         itemCount = String.format(itemCount, adapter.itemCount)
         itemCountLabel.text = itemCount
@@ -725,204 +743,6 @@ class ViewAlbumFragment(
         override fun onException(e: java.lang.Exception?) {
             Toast.makeText(context, "Exception: ${e?.message}", Toast.LENGTH_SHORT).show()
             e?.printStackTrace()
-        }
-    }
-
-    inner class ExportTask(
-        private val selectedItems: List<String?>, private val simpleDialog: SimpleDialog
-    ) : JTask() {
-        private val filesPath = ArrayList<String>()
-        private val fileTransfer = FileTransfer()
-        private val junkList = ArrayList<String?>()
-        private val progressUpdater: ProgressWatcher =
-            ProgressWatcher(
-                fileTransfer,
-                simpleDialog
-            )
-        private val database: AlbumDatabase = AlbumDatabase.getInstance(
-            requireContext(), Storage.getDefaultStoragePath(requireContext())
-        )
-        private var allowListModification = true
-
-        override fun workingThread() {
-            try {
-                var max: Long = 0
-                for (item in selectedItems) {
-                    val file = File(item!!)
-                    max += file.length()
-                }
-                max /= 1024
-                progressUpdater.setMax(max)
-                progressUpdater.start()
-                var start = System.currentTimeMillis()
-                for (item in selectedItems) {
-                    try {
-                        if (this.isInterrupted) {
-                            break
-                        }
-                        val file = File(item!!)
-                        val path = database.getMediaPath(file.name) ?: //need something 0.o
-                        continue
-                        var fileOutput = File(path)
-                        if (fileOutput.exists()) {
-                            fileOutput = File(getNewFileName(fileOutput))
-                        }
-                        val parent = fileOutput.parentFile
-                        if (parent?.mkdirs() != true) {
-                            Log.e(
-                                "ExportMediaTask", "Error to create parent file: " +
-                                        "${parent?.absolutePath}"
-                            )
-                        }
-                        postUpdate({}, fileOutput.name)
-                        if (file.renameTo(fileOutput)) {
-                            filesPath.add(fileOutput.absolutePath)
-                            database.deleteMediaData(file.name)
-                            addJunkItem(item)
-                            fileTransfer.increment((fileOutput.length() / 1024f).toDouble())
-                        } else {
-                            val output = getOutputStream(fileOutput)
-                            val input: InputStream = FileInputStream(file)
-                            val response = fileTransfer.transferStream(input, output)
-                            if (FileTransfer.OK == response) {
-                                if (file.delete()) {
-                                    filesPath.add(fileOutput.absolutePath)
-                                    database.deleteMediaData(file.name)
-                                    addJunkItem(item)
-                                }
-                            } else {
-                                Storage.deleteFile(fileOutput, requireActivity())
-                            }
-                        }
-                        if (System.currentTimeMillis() - start >= 600 && junkList.size > 0) {
-                            postUpdate(ACTION_UPDATE_ADAPTER)
-                            start = System.currentTimeMillis()
-                        }
-                    } catch (ignored: Exception) {
-                    }
-                }
-                if (junkList.isNotEmpty()) {
-                    postUpdate(ACTION_UPDATE_ADAPTER)
-                }
-            } finally {
-                progressUpdater.destroy()
-                database.close()
-            }
-        }
-
-        override fun onStarted() {
-            simpleDialog.resetDialog()
-            simpleDialog.showProgressBar(true)
-            simpleDialog.setTitle(getString(R.string.mover))
-            simpleDialog.setMessage("")
-            simpleDialog.setSingleLineMessage(true)
-            simpleDialog.setCancelable(false)
-            simpleDialog.setNegativeButton(
-                getString(R.string.cancelar),
-                object : SimpleDialog.OnDialogClickListener() {
-                    override fun onClick(dialog: SimpleDialog): Boolean {
-                        fileTransfer.cancel()
-                        interrupt()
-                        return true
-                    }
-                })
-        }
-
-        override fun onUpdated(args: Array<out Any>?) {
-            if (ACTION_UPDATE_ADAPTER == args?.get(0)) {
-                updateAdapter()
-            } else {
-                val name = args?.get(1) as String
-                simpleDialog.setMessage(name)
-            }
-        }
-
-        override fun onFinished() {
-            syncAllChanges()
-        }
-
-        private fun getAlternativePath(type: Int): String {
-            var file = File(
-                Environment.getExternalStoragePublicDirectory(
-                    if (type == 0) Environment.DIRECTORY_PICTURES else Environment.DIRECTORY_MOVIES
-                ),
-                StringUtils.getFormattedDate("yyyy.MM.dd 'at' HH:mm:ss z") +
-                        if (type == 0) ".jpg" else ".mp4"
-            )
-            if (file.exists()) {
-                file = File(getNewFileName(file))
-            }
-            return file.absolutePath
-        }
-
-        override fun onException(e: Exception?) {
-            Toast.makeText(requireContext(), "Finished with error!", Toast.LENGTH_SHORT).show()
-        }
-
-        private fun syncAllChanges() {
-            Storage.scanMediaFiles(filesPath.toTypedArray(), requireContext())
-            simpleDialog.dismiss()
-            if (adapter.items.isEmpty()) {
-                AlbumUtils.deleteEmptyAlbum(
-                    albumDirFile,
-                    if (position == 0) AlbumDatabase.IMAGE_TYPE else AlbumDatabase.VIDEO_TYPE,
-                    requireContext()
-                )
-                viewAlbum.finish()
-            }
-            notifyChanges()
-        }
-
-        private fun updateAdapter() {
-            allowListModification = false
-            if (junkList.isNotEmpty()) {
-                for (s in junkList) {
-                    adapter.removeItem(s!!)
-                }
-                junkList.clear()
-            }
-            allowListModification = true
-        }
-
-        private fun addJunkItem(item: String?) {
-            while (!allowListModification) {
-                try {
-                    Thread.sleep(10)
-                } catch (ignored: InterruptedException) {
-                }
-            }
-            junkList.add(item)
-        }
-
-        private fun getNewFileName(file: File): String {
-            val path = file.absolutePath
-            val lasIndexOf = path.lastIndexOf(".")
-            return if (lasIndexOf != -1) concatenateParts(
-                path.substring(0, lasIndexOf), path.substring(lasIndexOf), 1
-            ) else concatenateParts(path, "", 1)
-        }
-
-        private fun concatenateParts(part1: String, part2: String, time: Int): String {
-            val file = File("$part1($time)$part2")
-            return if (file.exists()) concatenateParts(
-                part1, part2, time + 1
-            ) else file.absolutePath
-        }
-
-        @Throws(FileNotFoundException::class)
-        fun getOutputStream(file: File): OutputStream {
-            var result: OutputStream? = null
-            if (Environment.isExternalStorageRemovable(file)) {
-                val document = DocumentUtil.getDocumentFile(file, true, requireContext())
-                if (document != null) result =
-                    requireActivity().contentResolver.openOutputStream(document.uri)
-            } else {
-                val parentFile = file.parentFile
-                if (parentFile != null && !parentFile.exists()) {
-                    parentFile.mkdirs()
-                }
-            }
-            return result ?: FileOutputStream(file)
         }
     }
 

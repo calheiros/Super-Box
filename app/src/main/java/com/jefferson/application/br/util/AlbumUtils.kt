@@ -118,7 +118,7 @@ object AlbumUtils {
             if (id == null) {
                 id = randomStr
                 val strType = if (position == 0) Storage.IMAGE else Storage.VIDEO
-                val file = File(Storage.getFolder(strType, context), randomStr)
+                val file = File(Storage.getAlbumsFolder(strType, context), randomStr)
                 if (file.mkdirs()) {
                     folder = SimpleAlbumModel(name, file.absolutePath)
                     database.addAlbum(id, name, type)

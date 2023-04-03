@@ -1976,7 +1976,7 @@
 
     <issue
         id="HandlerLeak"
-        message="This `Handler` class should be static or leaks might occur (com.jefferson.application.br.ui.JVideoController.MyHandler)"
+        message="This `Handler` class should be static or leaks might occur (com.jefferson.application.br.view.JVideoController.MyHandler)"
         errorLine1="    public class MyHandler extends Handler {"
         errorLine2="                 ~~~~~~~~~">
         <location

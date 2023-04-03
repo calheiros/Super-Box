@@ -212,9 +212,9 @@ Copyright (C) 2023 Jefferson Calheiros
 
         </receiver>
 
-        <activity android:name=".activity.Launcher">
-
-        </activity>
+        <activity android:name=".activity.Launcher"/>
+        <activity android:name=".activity.AnonymousActivity"/>
+        <activity android:name=".activity.CustomLockScreen"/>
 
         <activity-alias
             android:name=".LauncherAlias"

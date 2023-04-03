@@ -15,11 +15,20 @@ Copyright (C) 2023 Jefferson Calheiros
  * See the License for the specific language governing permissions and
  * limitations under the License.
 -->
-<RelativeLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
 	android:background="@color/colorPrimary"
+	android:id="@+id/patternRelativeLayout"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent">
+
+	<ImageView
+		android:background="@color/colorPrimary"
+		android:id="@+id/wallpaper_image_view"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		android:scaleType="centerCrop"
+		tools:ignore="ContentDescription" />
 
 	<LinearLayout
 		android:layout_height="match_parent"

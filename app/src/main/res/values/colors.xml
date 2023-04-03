@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright (C) 2023 Jefferson Calheiros
 
 
@@ -22,14 +21,14 @@ Copyright (C) 2023 Jefferson Calheiros
     <color name="darkTransparent">#4E000000</color>
     <!-- <color name="colorAccentLight">#FFECB500</color>-->
     <color name="colorAccentLight">@color/darkGreen</color>
-	<color name="verdana">#875443</color>
+    <color name="verdana">#875443</color>
     <color name="turquoise">#02CCB2</color>
     <color name="turquoiseDark">#09B29D</color>
     <color name="pureGreen">#00D07C</color>
     <color name="bondiBlue">#FF03A8CE</color>
     <color name="bondiBlueDark">#FF0A94B4</color>
-	<color name="yellow">#FFDB00</color>
-	<color name="darkyellow">#FFC400</color>
+    <color name="yellow">#FFDB00</color>
+    <color name="darkyellow">#FFC400</color>
     <color name="blue">#ff33b5e5</color>
     <color name="purple">#ffaa66cc</color>
     <color name="green">#ff99cc00</color>
@@ -67,7 +66,12 @@ Copyright (C) 2023 Jefferson Calheiros
     <color name="blue_bt_pressed">#88dcff</color>
     <color name="red_bt">#f8584d</color>
     <color name="red_bt_pressed">#ff8f88</color>
-    
+    <color name="light_blue_600">#FF039BE5</color>
+    <color name="light_blue_900">#FF01579B</color>
+    <color name="light_blue_A200">#FF40C4FF</color>
+    <color name="light_blue_A400">#FF00B0FF</color>
+    <color name="black_overlay">#66000000</color>
+
     <!-- BACKUP THIS! 
     <color name="item_normal">#5d626c</color>
     -->

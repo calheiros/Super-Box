@@ -44,7 +44,6 @@ import com.jefferson.application.br.fragment.LockFragment
 import com.jefferson.application.br.fragment.MainFragment
 import com.jefferson.application.br.fragment.SettingFragment
 import com.jefferson.application.br.service.AppLockService
-import com.jefferson.application.br.task.ImportTask
 import com.jefferson.application.br.util.*
 import eightbitlab.com.blurview.BlurView
 import java.io.BufferedReader
@@ -96,13 +95,6 @@ class MainActivity : MyCompatActivity(), OnLayoutChangeListener,
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-       /* window.requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS)
-        val exit = MaterialSharedAxis(MaterialSharedAxis.X, true).apply {
-            // Only run the transition on the contents of this activity, excluding
-            // system bars or app bars if provided by the app’s theme.
-            addTarget(android.R.id.content)
-        }
-        window.exitTransition = exit*/
         super.onCreate(savedInstanceState)
         instance = this
         MobileAds.initialize(this) {

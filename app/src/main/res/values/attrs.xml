@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Copyright (C) 2023 Jefferson Calheiros
 
 
@@ -17,15 +16,26 @@ Copyright (C) 2023 Jefferson Calheiros
 -->
 <resources>
     <declare-styleable name="MaterialLockView">
-        <attr name="LOCK_COLOR" format="color"/>
-        <attr name="WRONG_COLOR" format="color"/>
-        <attr name="CORRECT_COLOR" format="color"/>
+        <attr name="LOCK_COLOR" format="color" />
+        <attr name="WRONG_COLOR" format="color" />
+        <attr name="CORRECT_COLOR" format="color" />
     </declare-styleable>
 
-	<declare-styleable name="ExpandablePanel">
+    <declare-styleable name="ExpandablePanel">
         <attr name="handle" format="reference" />
         <attr name="content" format="reference" />
         <attr name="contentContainer" format="reference" />
-        <attr name="animationDuration" format="integer"/>
+        <attr name="animationDuration" format="integer" />
     </declare-styleable>
+
+
+    <declare-styleable name="CircularProgressView">
+        <attr name="progressColor" format="color" />
+    </declare-styleable>
+    <declare-styleable name="FullscreenAttrs">
+        <attr name="fullscreenBackgroundColor" format="color" />
+        <attr name="fullscreenTextColor" format="color" />
+    </declare-styleable>
+
+
 </resources>

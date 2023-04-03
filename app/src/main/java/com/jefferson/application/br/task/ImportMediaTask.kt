@@ -27,7 +27,7 @@ import com.jefferson.application.br.util.Storage
 import com.jefferson.application.br.util.StringUtils
 import java.io.*
 
-class ImportTask(
+class ImportMediaTask(
     private val activity: Activity, models: ArrayList<FileModel>
 ) : JTask() {
     private val importedFilesPath = ArrayList<String>()
@@ -137,7 +137,7 @@ class ImportTask(
             }
             var parentPath = model.parentPath
             if (parentPath == null) {
-                parentPath = Storage.getFolder(
+                parentPath = Storage.getAlbumsFolder(
                     if (FileModel.IMAGE_TYPE == model.type) Storage.IMAGE else Storage.VIDEO,
                     activity
                 ).toString() + File.separator + albumFileName

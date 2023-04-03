@@ -32,6 +32,7 @@ import com.jefferson.application.br.app.SimpleDialog
 import com.jefferson.application.br.util.MathUtils
 import com.jefferson.application.br.util.MyPreferences
 import com.jefferson.application.br.util.StringUtils
+import com.jefferson.application.br.view.CircularProgressView
 import java.text.DecimalFormat
 
 class CalculatorActivity : MyCompatActivity(), OnLongClickListener {
@@ -64,6 +65,7 @@ class CalculatorActivity : MyCompatActivity(), OnLongClickListener {
         editText.isLongClickable = false
         findViewById<View>(R.id.calculator_backspaceButton).setOnLongClickListener(this)
         createOperatorMap()
+
         if (createCode) {
             hintTextView = findViewById<View>(R.id.calculator_hintTextView) as TextView
             hintTextView!!.text = "Enter your code and press and hold the = button to confirm it."
