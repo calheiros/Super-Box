@@ -1,22 +1,34 @@
 package com.jefferson.application.br.activity
 
 import android.os.Bundle
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.jefferson.application.br.R
 import com.jefferson.application.br.fragment.PatternPreviewFragment
 import com.jefferson.application.br.fragment.PinPreviewFragment
+import com.jefferson.application.br.view.ViewPagerIndicator
 
 class CustomLockScreen: MyCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_lock_config)
+        setContentView(R.layout.activity_custom_lock)
+        val pagerIndicator = findViewById<ViewPagerIndicator>(R.id.view_pager_indicator)
         val viewPager: ViewPager2  = findViewById(R.id.view_pager)
-        viewPager.adapter = ViewPagerAdapter(this)
-
+        val adapter = ViewPagerAdapter(this)
+        viewPager.adapter = adapter
+        pagerIndicator.setCount(adapter.itemCount)
+        viewPager.registerOnPageChangeCallback(object: OnPageChangeCallback() {
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                pagerIndicator.setCurrentPosition(position)
+            }
+        })
     }
 
     inner class ViewPagerAdapter(fa: FragmentActivity)
@@ -36,9 +48,7 @@ class CustomLockScreen: MyCompatActivity() {
                     PinPreviewFragment()
                 }
             }
-
         }
-
     }
 
     enum class LockType {

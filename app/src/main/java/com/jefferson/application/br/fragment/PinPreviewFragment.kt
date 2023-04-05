@@ -17,7 +17,7 @@ class PinPreviewFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.pin_activity, container, false)
+            rootView = inflater.inflate(R.layout.fragment_pin_preview, container, false)
         }
         return rootView
     }

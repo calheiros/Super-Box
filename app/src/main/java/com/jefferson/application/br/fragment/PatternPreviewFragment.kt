@@ -22,7 +22,7 @@ class PatternPreviewFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         if (rootView == null) {
-            rootView = inflater.inflate(R.layout.activiyt_pattern, container, false)
+            rootView = inflater.inflate(R.layout.fragment_pattern_preview, container, false)
         }
         return rootView
 
