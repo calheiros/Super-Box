@@ -51,7 +51,7 @@ class ViewPagerIndicator(context: Context?, attrs: AttributeSet?) :
         if (position < 0 || position >= mCount) {
             throw IndexOutOfBoundsException()
         }
-        if (mAnimator != null) {
+       /* if (mAnimator != null) {
             mAnimator!!.cancel()
         }
         val start = mCurrentPosition * (mIndicatorSize + mIndicatorSpacing)
@@ -59,10 +59,10 @@ class ViewPagerIndicator(context: Context?, attrs: AttributeSet?) :
         mAnimator = ValueAnimator.ofInt(start, end)
         mAnimator?.duration = 200
         mAnimator?.addUpdateListener(AnimatorUpdateListener { valueAnimator ->
-            val offset = valueAnimator.animatedValue as Int
+            val offset = valueAnimator.animatedValue
             translationX = offset.toFloat()
         })
-        mAnimator?.start()
+        mAnimator?.start()*/
         mCurrentPosition = position
         invalidate()
     }
@@ -75,6 +75,12 @@ class ViewPagerIndicator(context: Context?, attrs: AttributeSet?) :
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        //center the canvas
+        /*val totalWidth = mCount * mIndicatorSize + (mCount - 1) * mIndicatorSpacing
+        val canvasCenterX = (width / 2).toFloat()
+        val canvasLeft = canvasCenterX - totalWidth / 2
+        canvas.translate(canvasLeft, 0f)*/
+
         var cx: Float
         var cy: Float
         for (i in 0 until mCount) {
