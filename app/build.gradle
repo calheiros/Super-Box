@@ -11,6 +11,7 @@ android {
         versionCode 13
         versionName "1.10.0 alpha"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.debug
     }
     
     buildTypes {

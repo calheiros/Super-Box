@@ -183,7 +183,7 @@ class ViewAlbumFragment(
         if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             val extras = result.data?.extras
             val index = extras?.getInt("index", 0)
-            val removeItems = extras?.getStringArrayList(PreviewFragment.EXTRA_REMOVED_ITEMS)
+            val removeItems = extras?.getStringArrayList(MediaPreviewFragment.EXTRA_REMOVED_ITEMS)
 
             if (removeItems != null && removeItems.isNotEmpty()) {
                 adapter.removeAll(removeItems)

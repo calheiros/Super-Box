@@ -35,7 +35,7 @@ import com.google.android.material.transition.platform.MaterialFade
 import com.google.android.material.transition.platform.MaterialFadeThrough
 import com.jefferson.application.br.R
 import com.jefferson.application.br.adapter.MultiSelectRecyclerViewAdapter
-import com.jefferson.application.br.fragment.PreviewFragment
+import com.jefferson.application.br.fragment.MediaPreviewFragment
 import com.jefferson.application.br.fragment.ViewAlbumFragment
 import com.jefferson.application.br.util.ThemeConfig
 import java.io.File
@@ -46,7 +46,7 @@ class ViewAlbum : MyCompatActivity() {
     private lateinit var albumDirFile: File
     private var fragmentPosition = 0
     private lateinit var title: String
-    private var previewFragment: PreviewFragment? = null
+    private var previewFragment: MediaPreviewFragment? = null
     private lateinit var albumFragment: ViewAlbumFragment
     private lateinit var rootLayout: View
     private var revealX = 0
@@ -176,7 +176,7 @@ class ViewAlbum : MyCompatActivity() {
         val thumbnail = imageView.drawable
 
         previewFragment =
-            PreviewFragment(albumFragment.adapter, itemPosition, fragmentPosition, thumbnail)
+            MediaPreviewFragment(albumFragment.adapter, itemPosition, fragmentPosition, thumbnail)
         previewFragment?.sharedElementEnterTransition = MaterialContainerTransform().apply {
             pathMotion = ArcMotion()
         }

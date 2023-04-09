@@ -1,14 +1,13 @@
 package com.jefferson.application.br.activity
 
 import android.os.Bundle
-import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.jefferson.application.br.R
+import com.jefferson.application.br.fragment.PasswdPreviewFragment
 import com.jefferson.application.br.fragment.PatternPreviewFragment
 import com.jefferson.application.br.fragment.PinPreviewFragment
 import com.jefferson.application.br.view.ViewPagerIndicator
@@ -44,6 +43,9 @@ class CustomLockScreen: MyCompatActivity() {
                 LockType.PATTERN -> {
                     PatternPreviewFragment()
                 }
+                LockType.PASSWORD -> {
+                    PasswdPreviewFragment()
+                }
                 LockType.PIN -> {
                     PinPreviewFragment()
                 }
@@ -53,6 +55,7 @@ class CustomLockScreen: MyCompatActivity() {
 
     enum class LockType {
         PATTERN,
+        PASSWORD,
         PIN,
     }
 }

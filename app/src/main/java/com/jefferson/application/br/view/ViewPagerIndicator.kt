@@ -28,9 +28,9 @@ class ViewPagerIndicator(context: Context?, attrs: AttributeSet?) :
     private fun init() {
         mPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         mPaint?.style = Paint.Style.FILL
-        mPaint?.color = Color.WHITE
+        mPaint?.color = Color.GRAY
         mSelectedPaint = Paint(mPaint)
-        mSelectedPaint?.color = Color.RED
+        mSelectedPaint?.color = Color.WHITE
         mIndicatorSize = dpToPx(8f).toInt()
         mIndicatorSpacing = dpToPx(8f).toInt()
     }
@@ -75,12 +75,6 @@ class ViewPagerIndicator(context: Context?, attrs: AttributeSet?) :
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        //center the canvas
-        /*val totalWidth = mCount * mIndicatorSize + (mCount - 1) * mIndicatorSpacing
-        val canvasCenterX = (width / 2).toFloat()
-        val canvasLeft = canvasCenterX - totalWidth / 2
-        canvas.translate(canvasLeft, 0f)*/
-
         var cx: Float
         var cy: Float
         for (i in 0 until mCount) {
