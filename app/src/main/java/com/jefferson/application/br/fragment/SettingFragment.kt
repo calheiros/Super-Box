@@ -142,7 +142,7 @@ class SettingFragment : Fragment(), OnItemClickListener, View.OnClickListener,
                     6 -> {
                         item.id = ID.APP_ICON
                         item.title = getString(R.string.modo_secreto)
-                        item.iconResId = R.drawable.ic_guy_fawkes_mask
+                        item.iconResId = R.drawable.guy_fawkes_mask
                         item.type = PreferenceItem.ITEM_TYPE
                         item.description = getString(R.string.ocultar_descricao)
                         item.checked = isCalculatorEnabledInSettings

@@ -28,14 +28,15 @@ Copyright (C) 2023 Jefferson Calheiros
 	<TextView
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
-		android:layout_gravity="left|center"
+		android:layout_gravity="start|center"
+		android:textAllCaps="true"
 		android:padding="6dp"
         android:shadowColor="#FF151414"
         android:shadowDx="-2"
         android:shadowDy="-2"
 		android:textColor="?colorAccent"
 		android:id="@+id/pref_title_label"
-		android:textSize="16sp"/>
+		android:textSize="14sp"/>
 
 </LinearLayout>
 

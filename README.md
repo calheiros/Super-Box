@@ -6,7 +6,7 @@ Application to hide sensitive content and app lock.
 
 Dark
 
-<img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_lock.jpg' height='300px'/>  <img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_Dark_Theme1.jpg' height='300px'/>
+<img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_Dark_Theme1.jpg' height='300px'/>  <img src='https://raw.githubusercontent.com/calheiros/super-box/dev/screenshots/Screenshot_Dark_Theme2.jpg' height='300px'/>
 
 Blue (Light)
 
