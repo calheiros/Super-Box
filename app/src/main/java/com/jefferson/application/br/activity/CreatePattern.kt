@@ -57,8 +57,7 @@ class CreatePattern : MyCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.create_pattern)
-        passwordManager = PasswordManager(this)
-        oldPass = passwordManager.internalPassword
+        oldPass = PasswordManager.getPatternCode(this)
         action = intent.action
         defaultText = getString(R.string.desenhe_seu_padrao)
         //init views
@@ -115,7 +114,7 @@ class CreatePattern : MyCompatActivity() {
             }
         })
         button.setOnClickListener {
-            passwordManager.setPassword(password)
+            PasswordManager.setPatternCode(this, password)
             sendCommandService(password)
             when (action) {
                 ENTER_FIST_CREATE -> if (haveWriteReadPermission()) {

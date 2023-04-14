@@ -30,7 +30,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import com.jefferson.application.br.MaterialLockView.OnPatternListener
 import com.jefferson.application.br.database.AppLockDatabase
-import com.jefferson.application.br.util.MyPreferences
 import com.jefferson.application.br.util.PasswordManager
 
 class AppLockWindow(private val context: Context, private val database: AppLockDatabase) {
@@ -185,8 +184,7 @@ class AppLockWindow(private val context: Context, private val database: AppLockD
             return if (password != null) {
                 password
             } else {
-                val prefs = MyPreferences.getSharedPreferences(context)
-                prefs.getString(PasswordManager.PATTERN_KEY, "1234")
+                PasswordManager.getPatternCode(context)
             }
         }
     }

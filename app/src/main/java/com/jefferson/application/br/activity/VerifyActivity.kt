@@ -48,7 +48,7 @@ class VerifyActivity : MyCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        password = PasswordManager(this).internalPassword
+        password = PasswordManager.getPatternCode(this)
         if (password.isEmpty()) {
             startActivity(
                 Intent(
