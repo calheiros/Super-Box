@@ -189,9 +189,8 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="call_descricao">After hiding, you can open the app from the dialer by calling the number above</string>
     <string name="message_dialog_camera">you need to the permission camera for the application work</string>
     <string name="dialog_permission_title">Permission!</string>
-    <string name="excluir_face_intruder">The photo will be deleted, are you sure you want to continue?</string>
-    <string name="excluir_aviso_imagem">the image will be deleted forever and can not be recovered, are you sure you want to continue?</string>
-    <string name="excluir_aviso_video">the video will be deleted forever and can not be recovered, are you sure you want to continue?</string>
+    <string name="excluir_aviso_imagem">The image will be deleted forever and can not be recovered, are you sure you want to continue?</string>
+    <string name="excluir_aviso_video">The video will be deleted forever and can not be recovered, are you sure you want to continue?</string>
     <string name="super_box_by_jefferson_calheiros">Super Box by Jefferson Calheiros</string>
     <string name="github_com_calheiros">github.com/calheiros</string>
     <string name="github_icon">github icon</string>
@@ -220,8 +219,5 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="enter_your_password_here">Enter your password here</string>
     <string name="enter">Enter</string>
     <string name="password">password</string>
-    <string name="realtext">Realtext</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 </resources>

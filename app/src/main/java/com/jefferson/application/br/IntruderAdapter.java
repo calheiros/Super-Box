@@ -21,8 +21,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -30,6 +28,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,74 +41,62 @@ public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHo
     Context context;
 
     public IntruderAdapter(ArrayList<String> mData, Context mContext) {
-
         this.data = mData;
         this.context = mContext;
     }
 
-    @NonNull
     @Override
+    @NonNull
     public IntruderAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int position) {
-        View vi = LayoutInflater.from(parent.getContext())
+        View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.intruder_item, parent, false);
-
-        return new ViewHolder(vi);
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull List<Object> payloads) {
         super.onBindViewHolder(holder, position, payloads);
+    }
 
+    private boolean deletePhotoDialog(int position) {
+        AlertDialog.Builder dialog = new AlertDialog.Builder(context);
+        dialog.setTitle(R.string.excluir)
+                .setMessage(R.string.excluir_aviso_imagem)
+                .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface p1, int p2) {
+                        deletePhoto(position);
+                    }
+                });
+        dialog.setNegativeButton(R.string.cancelar, (p1, p2) -> dialog.create().dismiss());
+        dialog.create().show();
+        return true;
+    }
+
+    private void deletePhoto(int position) {
+        if (new File(data.get(position)).delete()) {
+            Toast.makeText(context, context.getString(R.string.sucesso), Toast.LENGTH_LONG).show();
+            data.remove(position);
+            notifyItemRemoved(position);
+            notifyItemRangeChanged(position, data.size());
+        } else {
+            Toast.makeText(context, context.getString(R.string.erro), Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        File tnome = new File(data.get(position));
-        //Picasso.with(mContext).load(tnome).centerCrop().fit().into(holder.mImage);
-        holder.mImage.setOnLongClickListener(v -> {
-            int position1 = holder.getAdapterPosition();
-            final AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-            builder.setTitle(R.string.excluir)
-                    .setMessage(R.string.excluir_face_intruder)
-                    .setPositiveButton(R.string.sim, new DialogInterface.OnClickListener() {
-
-                        @Override
-                        public void onClick(DialogInterface p1, int p2) {
-                            if (new File(data.get(position1)).delete()) {
-
-                                Toast.makeText(context, "Apagado", Toast.LENGTH_LONG).show();
-                                data.remove(position1);
-                                notifyItemRemoved(position1);
-                                notifyItemRangeChanged(position1, data.size());
-
-                            } else {
-                                Toast.makeText(context, "Erro desconhecido", Toast.LENGTH_LONG).show();
-                            }
-                        }
-                    });
-            builder.setNegativeButton(R.string.cancelar, new DialogInterface.OnClickListener() {
-
-                @Override
-                public void onClick(DialogInterface p1, int p2) {
-                    builder.create().dismiss();
-                }
-            });
-            builder.create().show();
-            return true;
-        });
-
-        holder.mImage.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View p1) {
-					/*
-					 Intent i = new Intent(mContext, Visualizar_Imagem.class);
-                     i.putExtra("filepath", mData);
-                     i.putExtra("position", position);
-                     mContext.startActivity(i);
-                     */
-            }
+        File file = new File(data.get(position));
+        Glide.with(context).load(file).centerCrop().into(holder.mImageView);
+        holder.mImageView.setOnLongClickListener(v -> deletePhotoDialog(holder.getAdapterPosition()));
+        holder.mImageView.setOnClickListener(p1 -> {
+                 /*
+                 Intent i = new Intent(mContext, Visualizar_Imagem.class);
+                 i.putExtra("filepath", mData);
+                 i.putExtra("position", position);
+                 context.startActivity(i);
+                 */
         });
     }
 
@@ -118,11 +106,11 @@ public class IntruderAdapter extends RecyclerView.Adapter<IntruderAdapter.ViewHo
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        ImageView mImage;
+        ImageView mImageView;
 
         public ViewHolder(View view) {
             super(view);
-            mImage = view.findViewById(R.id.image_intruder);
+            mImageView = view.findViewById(R.id.image_intruder);
         }
     }
 }

@@ -269,6 +269,7 @@ public class JVideoController implements OnSeekBarChangeListener, OnClickListene
 
         @Override
         public void dispatchMessage(Message message) {
+            if (mVideoView == null) return;
             boolean playing = mVideoView.isPlaying();
 
             if (playing) {
