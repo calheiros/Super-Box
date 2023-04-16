@@ -93,7 +93,6 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="importar_galeria">importar desde galería</string>
     <string name="mudar_senha_descricao">Configura tu idioma</string>
     <string name="idioma">Idioma</string>
-    <string name="galeria_privada">Galería privada</string>
     <string name="mudar_senha">Cambiar contraseña</string>
     <string name="escolha_idioma">Elige tu idioma</string>
     <string name="carregando">Cargando...</string>
@@ -142,7 +141,6 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="call_descricao">After hiding, you can open the app from the dialer by calling the number above</string>
     <string name="message_dialog_camera">you need to the permission camera for the application work</string>
     <string name="dialog_permission_title">Permission!</string>
-    <string name="excluir_face_intruder">The photo will be deleted, are you sure you want to continue?</string>
     <string name="excluir_aviso_imagem">the image will be deleted forever and can not be recovered, are you sure you want to continue?</string>
     <string name="excluir_aviso_video">the video will be deleted forever and can not be recovered, are you sure you want to continue?</string>
     <string name="apagar_image_mensagem">This image will be deleted forever. Are you sure?</string>

@@ -98,7 +98,6 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="importar_galeria">Import aus der Galerie</string>
     <string name="mudar_senha_descricao">Legen Sie Ihre Sprache fest</string>
     <string name="idioma">Sprache</string>
-    <string name="galeria_privada">Private Galerie</string>
     <string name="mudar_senha">Passwort ändern</string>
     <string name="escolha_idioma">Wählen Sie Ihre Sprache</string>
     <string name="carregando">Verarbeitung...</string>
@@ -147,7 +146,6 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="call_descricao">Nach dem Ausblenden können Sie die App vom Dialer aus öffnen, indem Sie die obige Nummer anrufen</string>
     <string name="message_dialog_camera">you need to the permission camera for the application work</string>
     <string name="dialog_permission_title">Permission!</string>
-    <string name="excluir_face_intruder">The photo will be deleted, are you sure you want to continue?</string>
     <string name="excluir_aviso_imagem">the image will be deleted forever and can not be recovered, are you sure you want to continue?</string>
     <string name="excluir_aviso_video">the video will be deleted forever and can not be recovered, are you sure you want to continue?</string>
     <string name="apagar_image_mensagem">This image will be deleted forever. Are you sure?</string>

@@ -139,7 +139,6 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="importar_galeria">import from galery</string>
     <string name="mudar_senha_descricao">Set your language </string>
     <string name="idioma">Language</string>
-    <string name="galeria_privada">Private gallery</string>
     <string name="mudar_senha">Change password</string>
     <string name="escolha_idioma">Choose your language</string>
     <string name="carregando">Loading…</string>

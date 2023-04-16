@@ -132,7 +132,6 @@ Copyright (C) 2023 Jefferson Calheiros
     <string name="apagar">消去</string>
     <string name="dialog_permission_title">許可</string>
     <string name="excluir">削除</string>
-    <string name="excluir_face_intruder">写真は削除されますが、続行してもよろしいですか</string>
     <string name="excluir_aviso_imagem">イメージは永久に削除され、回復できません。続行してもよろしいですか</string>
     <string name="excluir_aviso_video">ビデオは永久に削除され、回復することはできません、続行してもよろしいですか</string>
     <string name="cancelar">キャンセル</string>
