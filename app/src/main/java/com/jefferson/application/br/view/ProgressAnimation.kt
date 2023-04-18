@@ -35,7 +35,7 @@ class ProgressAnimation(context: Context?, attrs: AttributeSet) : View(context, 
     fun startAnimation() {
         handler.post(runnable)
     }
-    fun stopAnimation() {
+    private fun stopAnimation() {
         handler.removeCallbacks(runnable)
     }
 
