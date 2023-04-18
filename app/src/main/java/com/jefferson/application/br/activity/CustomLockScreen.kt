@@ -1,6 +1,8 @@
 package com.jefferson.application.br.activity
 
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
@@ -31,7 +33,9 @@ class CustomLockScreen: MyCompatActivity() {
     }
 
     inner class ViewPagerAdapter(fa: FragmentActivity)
+
         : FragmentStateAdapter(fa) {
+        private val selectListener: OnSelectLockTypeListener = OnSelectLockTypeListener()
         private val typeValues = LockType.values()
 
         override fun getItemCount(): Int {
@@ -41,13 +45,13 @@ class CustomLockScreen: MyCompatActivity() {
         override fun createFragment(position: Int): Fragment {
             return when (typeValues[position]) {
                 LockType.PATTERN -> {
-                    PatternPreviewFragment()
+                    PatternPreviewFragment(selectListener)
                 }
                 LockType.PASSWORD -> {
-                    PasswdPreviewFragment()
+                    PasswdPreviewFragment(selectListener)
                 }
                 LockType.PIN -> {
-                    PinPreviewFragment()
+                    PinPreviewFragment(selectListener)
                 }
             }
         }
@@ -57,5 +61,21 @@ class CustomLockScreen: MyCompatActivity() {
         PATTERN,
         PASSWORD,
         PIN,
+    }
+
+    inner class OnSelectLockTypeListener: OnSelectLockTypeInterface {
+        override fun onLockSelected(type: LockType) {
+            Log.i("SelectedLockListener", "Selected: $type")
+            Toast.makeText(this@CustomLockScreen, "Text off null", Toast.LENGTH_SHORT).show()
+            val key = when (type) {
+                LockType.PATTERN-> "pattern"
+                LockType.PASSWORD -> "password"
+                LockType.PIN -> "pin"
+            }
+        }
+    }
+
+    private interface OnSelectLockTypeInterface{
+        fun onLockSelected(type: LockType)
     }
 }

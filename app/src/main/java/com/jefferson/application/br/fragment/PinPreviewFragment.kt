@@ -6,8 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.jefferson.application.br.R
+import com.jefferson.application.br.activity.CustomLockScreen
 
-class PinPreviewFragment: Fragment() {
+class PinPreviewFragment(val selectListener: CustomLockScreen.OnSelectLockTypeListener) : Fragment() {
 
     private var rootView: View? = null
 

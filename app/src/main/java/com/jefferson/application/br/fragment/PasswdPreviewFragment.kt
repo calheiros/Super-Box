@@ -9,9 +9,10 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.jefferson.application.br.R
+import com.jefferson.application.br.activity.CustomLockScreen
 import com.jefferson.application.br.util.PasswordManager
 
-class PasswdPreviewFragment: Fragment() {
+class PasswdPreviewFragment(val selectListener: CustomLockScreen.OnSelectLockTypeListener) : Fragment() {
     private var rootView: View? = null
     private lateinit var passwdInput: EditText
     private lateinit var confirmButton: Button
@@ -35,6 +36,7 @@ class PasswdPreviewFragment: Fragment() {
             if (passwdInput.text.equals(password)) {
                 //TODO passed
                 Toast.makeText(requireContext(), "Passed!", Toast.LENGTH_SHORT).show()
+                selectListener.onLockSelected(CustomLockScreen.LockType.PASSWORD)
             }
         }
     }

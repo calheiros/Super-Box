@@ -6,13 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.jefferson.application.br.R
+import com.jefferson.application.br.activity.CustomLockScreen
 
 
 /**
  * An example full-screen fragment that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-class PatternPreviewFragment : Fragment() {
+class PatternPreviewFragment(val selectListener: CustomLockScreen.OnSelectLockTypeListener) : Fragment() {
 
     private var rootView: View? = null
 
