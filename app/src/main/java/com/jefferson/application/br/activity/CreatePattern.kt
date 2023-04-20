@@ -114,7 +114,7 @@ class CreatePattern : MyCompatActivity() {
             }
         })
         button.setOnClickListener {
-            PasswordManager.setPatternCode(this, password)
+            password?.let { pass -> PasswordManager.setPatternCode(this, pass) }
             sendCommandService(password)
             when (action) {
                 ENTER_FIST_CREATE -> if (haveWriteReadPermission()) {

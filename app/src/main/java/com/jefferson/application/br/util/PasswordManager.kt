@@ -42,28 +42,28 @@ class PasswordManager {
         private const val PATTERN_KEY = "pattern"
         private const val KEY_PASSWORD_TEXT = "password_text"
 
-        fun getPinCode(context: Context?): String? {
-            return MyPreferences.getSharedPreferences(context!!).getString(PIN_KEY, "")
+        fun getPinCode(context: Context?): String {
+            return MyPreferences.getSharedPreferences(context!!).getString(PIN_KEY, "") ?: ""
         }
 
-        fun setPinCode(context: Context?, pin: String?) {
+        fun setPinCode(context: Context?, pin: String) {
             MyPreferences.getSharedPreferences(context!!).edit().putString(PIN_KEY, pin).apply()
         }
 
-        fun setPatternCode(context: Context?, pattern: String?) {
+        fun setPatternCode(context: Context?, pattern: String) {
             MyPreferences.getSharedPreferences(context!!).edit().putString(PATTERN_KEY, pattern)
                 .apply()
         }
 
-        fun getPatternCode(context: Context?): String? {
-            return MyPreferences.getSharedPreferences(context!!).getString(PATTERN_KEY, "")
+        fun getPatternCode(context: Context?): String {
+            return MyPreferences.getSharedPreferences(context!!).getString(PATTERN_KEY, "") ?: ""
         }
 
-        fun getTextPassword(context: Context?): String? {
-            return MyPreferences.getSharedPreferences(context!!).getString(KEY_PASSWORD_TEXT, "")
+        fun getTextPassword(context: Context?): String {
+            return MyPreferences.getSharedPreferences(context!!).getString(KEY_PASSWORD_TEXT, "") ?: ""
         }
 
-        fun setTextPassword(context: Context?, password: String?) {
+        fun setTextPassword(context: Context?, password: String) {
             MyPreferences.getSharedPreferences(context!!).edit()
                 .putString(KEY_PASSWORD_TEXT, password)
                 .apply()
