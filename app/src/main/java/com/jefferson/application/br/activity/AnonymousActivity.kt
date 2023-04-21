@@ -26,7 +26,8 @@ class AnonymousActivity : MyCompatActivity() {
     class MyAdapter(private val context: Context) : RecyclerView.Adapter<MyAdapter.Holder>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
-            val root = LayoutInflater.from(context).inflate(R.layout.item_preference_switch, parent, false)
+            val root = LayoutInflater.from(context)
+                .inflate(R.layout.item_preference_switch, parent, false)
             return Holder(root)
         }
 

@@ -12,7 +12,7 @@ import com.jefferson.application.br.R
 import com.jefferson.application.br.activity.CustomLockScreen
 import com.jefferson.application.br.util.PasswordManager
 
-class PasswdPreviewFragment(val selectListener: CustomLockScreen.OnSelectLockTypeListener) : Fragment() {
+class PasswdPreviewFragment(private val selectListener: CustomLockScreen.OnSelectLockTypeListener) : Fragment() {
     private var rootView: View? = null
     private lateinit var passwdInput: EditText
     private lateinit var confirmButton: Button
@@ -34,7 +34,6 @@ class PasswdPreviewFragment(val selectListener: CustomLockScreen.OnSelectLockTyp
         val password = PasswordManager.getTextPassword(requireContext())
         confirmButton.setOnClickListener{
             if (passwdInput.text.equals(password)) {
-                //TODO passed
                 Toast.makeText(requireContext(), "Passed!", Toast.LENGTH_SHORT).show()
                 selectListener.onLockSelected(CustomLockScreen.LockType.PASSWORD)
             }
