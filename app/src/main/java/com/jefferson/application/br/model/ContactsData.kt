@@ -14,28 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.jefferson.application.br.model
 
-package com.jefferson.application.br.model;
-
-import java.util.ArrayList;
-
-public class ImagesModel {
-    String str_folder;
-    ArrayList<String> files;
-
-    public String getStrFolder() {
-        return str_folder;
-    }
-
-    public void setStrFolder(String str_folder) {
-        this.str_folder = str_folder;
-    }
-
-    public ArrayList<String> getFiles() {
-        return files;
-    }
-
-    public void setFiles(ArrayList<String> files) {
-        this.files = files;
-    }
+class ContactsData {
+    var name: String? = null
+    var phoneNumber: String? = null
+    var email: String? = null
+    var photo: ByteArray? = null
 }

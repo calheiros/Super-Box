@@ -14,13 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package com.jefferson.application.br.model
 
-package com.jefferson.application.br;
-
-public class ContactsData {
-    String name;
-    String phoneNumber;
-    String email;
-    byte[] photo;
+class ImagesModel {
+    var strFolder: String? = null
+    var files: ArrayList<String>? = null
 }
-

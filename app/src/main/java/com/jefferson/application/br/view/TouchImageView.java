@@ -25,7 +25,7 @@
  * Updated By: singpolyma
  * -------------------
  * Extends Android ImageView to include pinch zooming, panning, fling and double tap zoom.*/
-package com.jefferson.application.br.service;
+package com.jefferson.application.br.view;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.Configuration;
